@@ -12,12 +12,12 @@
     </properties>
     <distributionManagement>
         <repository>
-            <id>deployment</id>
+            <id>digitalid-deployment</id>
             <name>Final Releases</name>
             <url>https://repo.digitalid.net/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
-            <id>deployment</id>
+            <id>digitalid-deployment</id>
             <name>Snapshot Releases</name>
             <url>https://repo.digitalid.net/content/repositories/snapshots/</url>
         </snapshotRepository>
@@ -40,14 +40,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.10.3</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
                     <quiet>true</quiet>
                     <linksource>true</linksource>
@@ -64,6 +56,14 @@
                         </tagletArtifact>
                     </tagletArtifacts>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
