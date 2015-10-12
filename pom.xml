@@ -81,7 +81,7 @@
                     <tagletArtifacts>
                         <tagletArtifact>
                             <groupId>net.digitalid</groupId>
-                            <artifactId>utility-taglets</artifactId>
+                            <artifactId>digitalid-utility-taglets</artifactId>
                             <version>1.0.0</version>
                         </tagletArtifact>
                     </tagletArtifacts>
