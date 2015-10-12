@@ -28,16 +28,16 @@ public abstract class Taglet implements com.sun.tools.doclets.Taglet {
      * @param taglet the taglet to be registered at the map.
      */
     static void register(@Nonnull Map<String, Taglet> map, @Nonnull Taglet taglet) {
-        System.out.println("Registering: " + taglet.getName());
+        // System.out.println("Registering: " + taglet.getName());
         try {
             final @Nonnull String name = taglet.getName();
             final @Nullable Object other = map.get(name);
             if (other != null) { map.remove(name); }
             map.put(name, taglet);
-        } catch (Throwable t) {
+        } catch (@Nonnull Throwable throwable) {
             System.err.println("Failed to register taglet '" + taglet.getName() + "':");
-            t.printStackTrace();
-            throw t;
+            throwable.printStackTrace();
+            throw throwable;
         }
     }
     
