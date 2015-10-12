@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.state.Pure;
 import net.digitalid.utility.annotations.state.Stateless;
 
@@ -29,9 +30,9 @@ public abstract class Taglet implements com.sun.tools.doclets.Taglet {
     static void register(@Nonnull Map<String, Taglet> map, @Nonnull Taglet taglet) {
         System.out.println("Registering: " + taglet.getName());
         try {
-            String name = taglet.getName();
-            Object other = map.get(name);
-            if (other != null) map.remove(name);
+            final @Nonnull String name = taglet.getName();
+            final @Nullable Object other = map.get(name);
+            if (other != null) { map.remove(name); }
             map.put(name, taglet);
         } catch (Throwable t) {
             System.err.println("Failed to register taglet '" + taglet.getName() + "':");
@@ -83,6 +84,12 @@ public abstract class Taglet implements com.sun.tools.doclets.Taglet {
     public boolean isInlineTag() {
         return false;
     }
+    
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Name –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    
+    @Pure
+    @Override
+    public abstract @Nonnull String getName();
     
     /* –––––––––––––––––––––––––––––––––––––––––––––––––– Title –––––––––––––––––––––––––––––––––––––––––––––––––– */
     
