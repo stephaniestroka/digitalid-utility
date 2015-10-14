@@ -33,16 +33,19 @@ public final class Ensure extends Taglet {
         return true;
     }
     
+    @Pure
     @Override
     public boolean inMethod() {
         return true;
     }
     
+    @Pure
     @Override
     public @Nonnull String getName() {
         return "ensure";
     }
     
+    @Pure
     @Override
     public @Nonnull String getTitle() {
         return "Ensures";
