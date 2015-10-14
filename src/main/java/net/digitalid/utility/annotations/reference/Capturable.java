@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * 
  * @see Captured
  * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
+ * @author Kaspar Etter
  * @version 1.0.0
  */
 @Documented

@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * 
  * @see NonNullable
  * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
+ * @author Kaspar Etter
  * @version 1.0.0
  */
 @Deprecated

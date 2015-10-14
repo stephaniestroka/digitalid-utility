@@ -13,7 +13,7 @@ import net.digitalid.utility.annotations.meta.TargetType;
  * 
  * @see NonNegative
  * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
+ * @author Kaspar Etter
  * @version 1.0.0
  */
 @Documented

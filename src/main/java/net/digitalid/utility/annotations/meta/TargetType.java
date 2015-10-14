@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 /**
  * This meta-annotation indicates to which types of values the annotated annotation can be applied.
  * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
+ * @author Kaspar Etter
  * @version 1.0.0
  */
 @Documented

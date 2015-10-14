@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
  * Therefore, you cannot rely on the {@link Nonnull} property of a field or method called on a raw variable.<br>
  * Please make sure that you only pass {@code this} in a constructor to methods that are aware of this situation.
  * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
+ * @author Kaspar Etter
  * @version 1.0.0
  */
 @Documented

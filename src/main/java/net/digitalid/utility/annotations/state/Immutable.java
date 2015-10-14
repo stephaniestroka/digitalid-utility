@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  * In other words, an immutable object is only conceptually immutable but its values may change.
  * (This is the case with references to persons, which remain constant but can still be merged.)
  * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
+ * @author Kaspar Etter
  * @version 1.0.0
  */
 @Documented
