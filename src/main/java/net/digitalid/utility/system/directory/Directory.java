@@ -12,9 +12,6 @@ import net.digitalid.utility.system.errors.InitializationError;
 
 /**
  * This class provides references to all directories that are used by this implementation.
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 @Stateless
 public final class Directory {

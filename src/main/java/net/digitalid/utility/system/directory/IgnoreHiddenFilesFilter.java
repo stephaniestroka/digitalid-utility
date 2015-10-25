@@ -8,9 +8,6 @@ import net.digitalid.utility.annotations.state.Stateless;
 
 /**
  * This class implements a filter to ignore hidden files.
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 @Stateless
 public class IgnoreHiddenFilesFilter implements FilenameFilter {

@@ -5,9 +5,6 @@ import net.digitalid.utility.annotations.state.Immutable;
 
 /**
  * This error is thrown when an error occurs which should never happen.
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 @Immutable
 public final class ShouldNeverHappenError extends FatalError {

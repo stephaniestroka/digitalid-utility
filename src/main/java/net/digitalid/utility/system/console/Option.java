@@ -7,9 +7,6 @@ import net.digitalid.utility.system.console.exceptions.EscapeOptionException;
 
 /**
  * Every option in the {@link Console console} has to extend this class.
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 @Immutable
 public abstract class Option {

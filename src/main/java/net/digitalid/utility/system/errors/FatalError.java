@@ -10,9 +10,6 @@ import net.digitalid.utility.system.logger.Log;
  * 
  * @see InitializationError
  * @see ShouldNeverHappenError
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 @Immutable
 public abstract class FatalError extends Error {

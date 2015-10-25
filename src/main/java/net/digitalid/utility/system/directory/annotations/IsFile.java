@@ -10,9 +10,6 @@ import net.digitalid.utility.annotations.meta.TargetType;
 
 /**
  * This annotation indicates that a {@link File file} is a {@link File#isFile() file}.
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 @Documented
 @TargetType(File.class)

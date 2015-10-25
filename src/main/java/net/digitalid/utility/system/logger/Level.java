@@ -7,9 +7,6 @@ import net.digitalid.utility.annotations.state.Pure;
  * This class enumerates the various level of log messages.
  * 
  * @see Logger
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public enum Level {
     

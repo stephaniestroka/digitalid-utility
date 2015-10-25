@@ -9,9 +9,6 @@ import net.digitalid.utility.annotations.state.Pure;
  * The logger logs messages of various {@link Level levels}.
  * 
  * @see DefaultLogger
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public abstract class Logger {
     

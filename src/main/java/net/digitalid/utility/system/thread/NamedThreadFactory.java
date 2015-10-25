@@ -7,9 +7,6 @@ import net.digitalid.utility.annotations.state.Pure;
 
 /**
  * This class allows the created threads to be named.
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public class NamedThreadFactory implements ThreadFactory {
     

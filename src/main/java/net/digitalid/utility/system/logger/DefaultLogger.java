@@ -16,9 +16,6 @@ import net.digitalid.utility.system.errors.InitializationError;
  * This class implements a logger that logs the messages to a file.
  * <p>
  * <em>Warning:</em> Logging from different processes to the same file may fail!
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public final class DefaultLogger extends Logger {
     

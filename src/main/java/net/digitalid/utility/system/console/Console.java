@@ -15,9 +15,6 @@ import net.digitalid.utility.system.errors.ShouldNeverHappenError;
  * This class helps to read from standard input and write to standard output.
  * 
  * @see Option
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 @Stateless
 public final class Console {
