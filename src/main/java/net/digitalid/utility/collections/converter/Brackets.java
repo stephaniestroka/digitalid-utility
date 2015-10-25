@@ -7,9 +7,6 @@ import net.digitalid.utility.annotations.state.Pure;
  * This class enumerates the various brackets that can be used.
  * 
  * @see IterableConverter
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 @Immutable
 public enum Brackets {

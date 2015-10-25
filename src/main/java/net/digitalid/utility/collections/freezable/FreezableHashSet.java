@@ -22,9 +22,6 @@ import net.digitalid.utility.collections.readonly.ReadOnlySet;
  * Be careful when treating instances of this class as normal {@link Set sets} because all modifying methods may fail with an {@link AssertionError}.
  * <p>
  * <em>Important:</em> Only use {@link Immutable immutable} or {@link Freezable frozen} objects as elements!
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     

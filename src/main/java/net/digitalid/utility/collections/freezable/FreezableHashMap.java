@@ -22,9 +22,6 @@ import net.digitalid.utility.collections.readonly.ReadOnlyMap;
  * Be careful when treating instances of this class as normal {@link Map maps} because all modifying methods may fail with an {@link AssertionError}.
  * <p>
  * <em>Important:</em> Only use {@link Immutable immutable} or {@link Freezable frozen} objects as keys!
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMap<K, V> {
     

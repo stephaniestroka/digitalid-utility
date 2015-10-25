@@ -9,9 +9,6 @@ import net.digitalid.utility.collections.readonly.ReadOnly;
 
 /**
  * This class implements the freezing mechanism which can be reused with inheritance.
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public class FreezableObject implements Freezable {
     

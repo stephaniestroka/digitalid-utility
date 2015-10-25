@@ -23,9 +23,6 @@ import net.digitalid.utility.collections.readonly.ReadOnlyList;
  * <p>
  * <em>Important:</em> Only use freezable or immutable types for the elements!
  * (The type is not restricted to {@link Freezable} or {@link Immutable} so that library types can also be used.)
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableList<E> {
     

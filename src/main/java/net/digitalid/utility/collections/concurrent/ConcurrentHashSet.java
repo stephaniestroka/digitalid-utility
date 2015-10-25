@@ -17,9 +17,6 @@ import net.digitalid.utility.collections.converter.IterableConverter;
  * Implements a concurrent hash set based on {@link ConcurrentHashMap}.
  * 
  * @param <E> the type of the elements of this set.
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSet<E> {
     

@@ -23,9 +23,6 @@ import net.digitalid.utility.collections.readonly.ReadOnlyMap;
  * <p>
  * <em>Important:</em> Only use immutable types for the keys and freezable or immutable types for the values!
  * (The types are not restricted to {@link Freezable} or {@link Immutable} so that library types can also be used.)
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public class FreezableLinkedHashMap<K,V> extends LinkedHashMap<K,V> implements FreezableMap<K,V> {
     

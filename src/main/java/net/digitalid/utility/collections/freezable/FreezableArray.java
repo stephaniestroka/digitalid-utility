@@ -22,9 +22,6 @@ import net.digitalid.utility.collections.readonly.ReadOnlyArray;
  * <p>
  * <em>Important:</em> Only use freezable or immutable types for the elements!
  * (The type is not restricted to {@link Freezable} or {@link Immutable} so that library types can also be used.)
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<E>, FreezableIterable<E> {
     

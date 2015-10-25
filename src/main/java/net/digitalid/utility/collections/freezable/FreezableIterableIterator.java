@@ -21,9 +21,6 @@ import net.digitalid.utility.collections.readonly.ReadOnlyIterator;
  * (The type is not restricted to {@link Freezable} or {@link Immutable} so that library types can also be used.)
  * 
  * @see FreezableListIterator
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 class FreezableIterableIterator<E> implements FreezableIterator<E> {
     

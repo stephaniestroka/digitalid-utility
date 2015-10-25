@@ -7,10 +7,9 @@ import net.digitalid.utility.annotations.state.Pure;
 /**
  * Implementations of this interface convert elements to strings.
  * 
- * @see IterableConverter
+ * TODO: Rename to NullableElementConverter and create a subclass NonNullableElementConverter.
  * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
+ * @see IterableConverter
  */
 public interface ElementConverter<E> {
     

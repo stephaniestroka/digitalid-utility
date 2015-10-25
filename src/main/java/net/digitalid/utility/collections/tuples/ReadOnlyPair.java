@@ -11,9 +11,6 @@ import net.digitalid.utility.collections.readonly.ReadOnly;
  * This interface models a {@link ReadOnly read-only} pair.
  * 
  * @see FreezablePair
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public interface ReadOnlyPair<E0, E1> extends ReadOnly {
     

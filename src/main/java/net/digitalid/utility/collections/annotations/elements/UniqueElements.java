@@ -11,9 +11,6 @@ import net.digitalid.utility.collections.freezable.FreezableCollection;
 
 /**
  * This annotation indicates that a {@link Collection collection} does not contain {@link FreezableCollection#containsDuplicates() duplicates}.
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 @Documented
 @Retention(RetentionPolicy.CLASS)

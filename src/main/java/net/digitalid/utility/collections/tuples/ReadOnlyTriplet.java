@@ -11,9 +11,6 @@ import net.digitalid.utility.collections.readonly.ReadOnly;
  * This interface models a {@link ReadOnly read-only} triplet.
  * 
  * @see FreezableTriplet
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public interface ReadOnlyTriplet<E0, E1, E2> extends ReadOnlyPair<E0, E1> {
     

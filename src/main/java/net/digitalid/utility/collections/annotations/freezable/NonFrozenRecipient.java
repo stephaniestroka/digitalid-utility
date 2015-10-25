@@ -12,9 +12,6 @@ import net.digitalid.utility.collections.freezable.Freezable;
  * This annotation indicates that a method should only be invoked on {@link NonFrozen non-frozen} objects.
  * 
  * @see Freezable
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 @Documented
 @Target(ElementType.METHOD)

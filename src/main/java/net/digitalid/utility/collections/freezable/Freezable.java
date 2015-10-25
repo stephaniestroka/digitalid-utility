@@ -12,9 +12,6 @@ import net.digitalid.utility.collections.readonly.ReadOnly;
  * @see FreezableIterator
  * @see FreezableObject
  * @see FreezableMap
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public interface Freezable extends ReadOnly {
     

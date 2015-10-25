@@ -18,9 +18,6 @@ import net.digitalid.utility.collections.readonly.ReadOnlySet;
  * <p>
  * <em>Important:</em> Only use freezable or immutable types for the elements!
  * (The type is not restricted to {@link Freezable} or {@link Immutable} so that library types can also be used.)
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 final class BackedFreezableSet<E> extends BackedFreezableCollection<E> implements FreezableSet<E> {
     

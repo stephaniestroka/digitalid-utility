@@ -19,9 +19,6 @@ import net.digitalid.utility.collections.readonly.ReadOnlyList;
  * @see FreezableArrayList
  * @see FreezableLinkedList
  * @see BackedFreezableList
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public interface FreezableList<E> extends ReadOnlyList<E>, List<E>, FreezableCollection<E> {
     

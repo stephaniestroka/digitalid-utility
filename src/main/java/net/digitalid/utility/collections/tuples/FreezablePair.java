@@ -16,9 +16,6 @@ import net.digitalid.utility.collections.freezable.FreezableObject;
  * This class models a {@link Freezable freezable} pair.
  * 
  * @see FreezableTriplet
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPair<E0, E1> {
     

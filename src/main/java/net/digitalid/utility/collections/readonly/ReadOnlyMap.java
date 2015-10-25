@@ -18,9 +18,6 @@ import net.digitalid.utility.collections.freezable.FreezableMap;
  * (The types are not restricted to {@link Freezable} or {@link Immutable} so that library types can also be used.)
  * 
  * @see FreezableMap
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public interface ReadOnlyMap<K,V> extends ReadOnly {
     

@@ -16,9 +16,6 @@ import net.digitalid.utility.collections.converter.IterableConverter;
  * 
  * @param <K> the type of the keys of this map.
  * @param <V> the type of the values of this map.
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHashMap<K, V> implements ConcurrentMap<K, V> {
     

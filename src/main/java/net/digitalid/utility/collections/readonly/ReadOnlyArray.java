@@ -18,9 +18,6 @@ import net.digitalid.utility.collections.freezable.FreezableList;
  * (The type is not restricted to {@link Freezable} or {@link Immutable} so that library types can also be used.)
  * 
  * @see FreezableArray
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public interface ReadOnlyArray<E> extends ReadOnlyIterable<E> {
     

@@ -11,9 +11,6 @@ import net.digitalid.utility.annotations.meta.TargetType;
 /**
  * This annotation indicates that an index is valid for retrieving or removing an element of a {@link Collection collection}.
  * Such an index is valid if it is greater or equal to zero and less than the number of elements (usually given by {@link Collection#size()}).
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 @Documented
 @TargetType(int.class)

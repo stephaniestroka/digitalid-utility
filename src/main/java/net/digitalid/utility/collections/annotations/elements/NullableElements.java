@@ -13,9 +13,6 @@ import javax.annotation.Nullable;
  * (This annotation is only necessary until the source code can be transitioned to Java 1.8 with its type annotations).
  * 
  * @see NonNullableElements
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 @Documented
 @Retention(RetentionPolicy.CLASS)

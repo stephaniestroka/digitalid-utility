@@ -8,8 +8,5 @@ import java.util.Set;
  * @param <E> the type of the elements of this set.
  * 
  * @see ConcurrentHashSet
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public interface ConcurrentSet<E> extends Set<E> {}

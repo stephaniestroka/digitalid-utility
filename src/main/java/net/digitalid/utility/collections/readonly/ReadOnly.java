@@ -14,9 +14,6 @@ import net.digitalid.utility.collections.freezable.Freezable;
  * @see ReadOnlyIterable
  * @see ReadOnlyIterator
  * @see ReadOnlyMap
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public interface ReadOnly extends Cloneable {
     

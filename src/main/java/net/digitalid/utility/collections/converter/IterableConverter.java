@@ -8,8 +8,8 @@ import net.digitalid.utility.annotations.state.Stateless;
 /**
  * This class converts iterables to strings.
  * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
+ * TODO: Refactor this class to a builder pattern.
+ * TODO: Rename to NullableIterableConverter and make a subclass NonNullableIterableConverter.
  */
 @Stateless
 public final class IterableConverter {

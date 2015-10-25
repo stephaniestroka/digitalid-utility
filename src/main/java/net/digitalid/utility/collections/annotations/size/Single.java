@@ -14,9 +14,6 @@ import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
  * This annotation indicates that a {@link Collection collection} contains a {@link ReadOnlyCollection#isSingle() single} element.
  * 
  * @see NonSingle
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 @Documented
 @Retention(RetentionPolicy.CLASS)

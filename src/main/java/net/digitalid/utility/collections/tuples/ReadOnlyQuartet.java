@@ -11,9 +11,6 @@ import net.digitalid.utility.collections.readonly.ReadOnly;
  * This interface models a {@link ReadOnly read-only} quartet.
  * 
  * @see FreezableQuartet
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public interface ReadOnlyQuartet<E0, E1, E2, E3> extends ReadOnlyTriplet<E0, E1, E2> {
     

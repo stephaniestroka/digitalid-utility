@@ -13,9 +13,6 @@ import net.digitalid.utility.collections.freezable.Freezable;
 
 /**
  * This class models a {@link Freezable freezable} quartet.
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public class FreezableQuartet<E0, E1, E2, E3> extends FreezableTriplet<E0, E1, E2> implements ReadOnlyQuartet<E0, E1, E2, E3> {
     

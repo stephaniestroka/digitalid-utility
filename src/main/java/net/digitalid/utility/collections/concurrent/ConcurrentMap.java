@@ -11,9 +11,6 @@ import net.digitalid.utility.annotations.state.Pure;
  * @param <V> the type of the values of this map.
  * 
  * @see ConcurrentHashMap
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public interface ConcurrentMap<K, V> extends java.util.concurrent.ConcurrentMap<K, V>, Cloneable {
     

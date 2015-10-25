@@ -22,9 +22,6 @@ import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
  * 
  * @see BackedFreezableSet
  * @see BackedFreezableList
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 class BackedFreezableCollection<E> implements FreezableCollection<E> {
     

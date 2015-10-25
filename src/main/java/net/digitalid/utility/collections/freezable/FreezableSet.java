@@ -16,9 +16,6 @@ import net.digitalid.utility.collections.readonly.ReadOnlySet;
  * @see FreezableHashSet
  * @see FreezableLinkedHashSet
  * @see BackedFreezableSet
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 public interface FreezableSet<E> extends ReadOnlySet<E>, Set<E>, FreezableCollection<E> {
     
