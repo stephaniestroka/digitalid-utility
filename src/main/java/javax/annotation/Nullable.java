@@ -10,9 +10,6 @@ import java.lang.annotation.Target;
  * This annotation indicates that the annotated reference can be null.
  * 
  * @see Nonnull
- * 
- * @author Kaspar Etter
- * @version 1.0.0
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

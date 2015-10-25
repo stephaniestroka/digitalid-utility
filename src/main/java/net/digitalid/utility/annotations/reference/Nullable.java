@@ -12,9 +12,6 @@ import java.lang.annotation.Target;
  * can be transitioned to Java 1.8 with type annotations).
  * 
  * @see NonNullable
- * 
- * @author Kaspar Etter
- * @version 1.0.0
  */
 @Deprecated
 @Documented

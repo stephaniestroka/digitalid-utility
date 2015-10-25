@@ -10,9 +10,6 @@ import java.lang.annotation.Target;
  * This annotation indicates that a value is not validated.
  * 
  * @see Validated
- * 
- * @author Kaspar Etter
- * @version 1.0.0
  */
 @Documented
 @Retention(RetentionPolicy.CLASS)

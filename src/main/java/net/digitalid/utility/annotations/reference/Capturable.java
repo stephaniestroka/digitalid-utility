@@ -11,9 +11,6 @@ import java.lang.annotation.Target;
  * This requires that the returned object has been created locally and has not been leaked.
  * 
  * @see Captured
- * 
- * @author Kaspar Etter
- * @version 1.0.0
  */
 @Documented
 @Target(ElementType.METHOD)

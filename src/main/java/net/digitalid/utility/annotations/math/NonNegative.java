@@ -12,9 +12,6 @@ import net.digitalid.utility.annotations.meta.TargetType;
  * This annotation indicates that a numeric value is not negative.
  * 
  * @see Negative
- * 
- * @author Kaspar Etter
- * @version 1.0.0
  */
 @Documented
 @Retention(RetentionPolicy.CLASS)

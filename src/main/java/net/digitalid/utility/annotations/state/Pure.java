@@ -8,9 +8,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation indicates that a method has no side-effects (other than caching) on the called object and the method parameters.
- * 
- * @author Kaspar Etter
- * @version 1.0.0
  */
 @Documented
 @Target(ElementType.METHOD)

@@ -8,9 +8,6 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation indicates that a method can be invoked on {@link Raw raw} objects.
- * 
- * @author Kaspar Etter
- * @version 1.0.0
  */
 @Documented
 @Target(ElementType.METHOD)

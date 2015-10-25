@@ -10,9 +10,6 @@ import java.lang.annotation.Target;
  * This annotation indicates that the objects of the annotated class are stateless (have no non-static fields).
  * 
  * @see Immutable
- * 
- * @author Kaspar Etter
- * @version 1.0.0
  */
 @Documented
 @Target(ElementType.TYPE)

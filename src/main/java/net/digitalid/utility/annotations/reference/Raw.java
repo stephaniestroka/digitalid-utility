@@ -11,9 +11,6 @@ import javax.annotation.Nonnull;
  * This annotation indicates that a parameter or local variable might not yet be fully initialized.<br>
  * Therefore, you cannot rely on the {@link Nonnull} property of a field or method called on a raw variable.<br>
  * Please make sure that you only pass {@code this} in a constructor to methods that are aware of this situation.
- * 
- * @author Kaspar Etter
- * @version 1.0.0
  */
 @Documented
 @Retention(RetentionPolicy.CLASS)

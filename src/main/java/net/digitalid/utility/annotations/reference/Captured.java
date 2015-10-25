@@ -11,9 +11,6 @@ import java.lang.annotation.Target;
  * should afterwards no longer be modified by the caller of the constructor or (setter) method.
  * 
  * @see Capturable
- * 
- * @author Kaspar Etter
- * @version 1.0.0
  */
 @Documented
 @Target(ElementType.PARAMETER)

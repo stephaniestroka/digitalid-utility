@@ -12,9 +12,6 @@ import java.lang.annotation.Target;
  * be transitioned to Java 1.8 with its type annotations).
  * 
  * @see Nullable
- * 
- * @author Kaspar Etter
- * @version 1.0.0
  */
 @Deprecated
 @Documented
