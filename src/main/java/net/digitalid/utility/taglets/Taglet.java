@@ -12,9 +12,6 @@ import net.digitalid.utility.annotations.state.Stateless;
 
 /**
  * This class serves as a template for custom block tags.
- * 
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
- * @version 1.0.0
  */
 @Stateless
 public abstract class Taglet implements com.sun.tools.doclets.Taglet {

@@ -9,8 +9,6 @@
  * <p>
  * {@code -quiet -linksource -tag require:cm:"Requires:" -tag ensure:cm:"Ensures:" -tag invariant:tf:"Invariant:" -link "http://docs.oracle.com/javase/7/docs/api/" -overview "/DigitalID/src/overview.html" -doctitle "Digital ID Reference Implementation"}
  * 
- * @version 1.0.0
- * @author Kaspar Etter (kaspar.etter@digitalid.net)
  * @see <a href="http://docs.oracle.com/javase/6/docs/technotes/tools/solaris/javadoc.html">Javadoc Documentation</a>
  * @see <a href="http://docs.oracle.com/javase/6/docs/technotes/guides/javadoc/taglet/overview.html">Taglet Overview</a>
  */
