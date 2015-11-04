@@ -200,8 +200,8 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
         for (final @Nullable E element : this) {
             if (element == null) continue;
             if (lastElement != null) {
-                if (element instanceof Comparable) {
-                    if (((Comparable) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) return false;
+                if (element instanceof Comparable<?>) {
+                    if (((Comparable<E>) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) return false;
                 }
             }
             lastElement = element;
