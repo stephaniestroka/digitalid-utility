@@ -16,7 +16,7 @@ import net.digitalid.utility.annotations.state.Stateless;
 @Stateless
 public abstract class Taglet implements com.sun.tools.doclets.Taglet {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Registration –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Registration -------------------------------------------------- */
     
     /**
      * Registers the given taglet at the given map.
@@ -38,7 +38,7 @@ public abstract class Taglet implements com.sun.tools.doclets.Taglet {
         }
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Default Methods –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Default Methods -------------------------------------------------- */
     
     @Pure
     @Override
@@ -82,13 +82,13 @@ public abstract class Taglet implements com.sun.tools.doclets.Taglet {
         return false;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Name –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Name -------------------------------------------------- */
     
     @Pure
     @Override
     public abstract @Nonnull String getName();
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Title –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Title -------------------------------------------------- */
     
     /**
      * Returns the title of this taglet.
@@ -108,7 +108,7 @@ public abstract class Taglet implements com.sun.tools.doclets.Taglet {
         return "<dt><span class=\"strong\">" + getTitle() + ":</span></dt>\n";
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Text –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Text -------------------------------------------------- */
     
     /**
      * Stores the pattern that a text needs to match in order to be displayed as code.
@@ -141,7 +141,7 @@ public abstract class Taglet implements com.sun.tools.doclets.Taglet {
         return "<dd>" + getText(text) + "</dd>\n";
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Output –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Output -------------------------------------------------- */
     
     /**
      * Returns the string representation of the given tag, which is output to the generated page.

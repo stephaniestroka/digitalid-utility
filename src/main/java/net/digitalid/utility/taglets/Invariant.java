@@ -11,7 +11,7 @@ import net.digitalid.utility.annotations.state.Stateless;
 @Stateless
 public final class Invariant extends Taglet {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Registration –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Registration -------------------------------------------------- */
     
     /**
      * Registers this taglet at the given map.
@@ -22,7 +22,7 @@ public final class Invariant extends Taglet {
         Taglet.register(map, new Invariant());
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Overrides –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Overrides -------------------------------------------------- */
     
     @Pure
     @Override
