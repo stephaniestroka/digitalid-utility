@@ -24,7 +24,7 @@ import net.digitalid.utility.collections.readonly.ReadOnlyIterator;
  */
 class FreezableIterableIterator<E> implements FreezableIterator<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Fields –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Fields -------------------------------------------------- */
     
     /**
      * Stores a reference to the underlying iterable.
@@ -36,7 +36,7 @@ class FreezableIterableIterator<E> implements FreezableIterator<E> {
      */
     private final @Nonnull Iterator<E> iterator;
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructor –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a new freezable iterator.
@@ -62,7 +62,7 @@ class FreezableIterableIterator<E> implements FreezableIterator<E> {
         return new FreezableIterableIterator<>(iterable, iterator);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     @Pure
     @Override
@@ -76,7 +76,7 @@ class FreezableIterableIterator<E> implements FreezableIterator<E> {
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Iterator –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Iterator -------------------------------------------------- */
     
     @Pure
     @Override
@@ -89,7 +89,7 @@ class FreezableIterableIterator<E> implements FreezableIterator<E> {
         return iterator.next();
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Operation –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Operation -------------------------------------------------- */
     
     @Override
     @NonFrozenRecipient
@@ -99,7 +99,7 @@ class FreezableIterableIterator<E> implements FreezableIterator<E> {
         iterator.remove();
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override

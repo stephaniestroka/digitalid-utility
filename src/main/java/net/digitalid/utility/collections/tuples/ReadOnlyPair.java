@@ -14,7 +14,7 @@ import net.digitalid.utility.collections.readonly.ReadOnly;
  */
 public interface ReadOnlyPair<E0, E1> extends ReadOnly {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Getters –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Getters -------------------------------------------------- */
     
     /**
      * Returns the first element of this tuple.
@@ -48,7 +48,7 @@ public interface ReadOnlyPair<E0, E1> extends ReadOnly {
     @Pure
     public @Nonnull E1 getNonNullableElement1();
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override

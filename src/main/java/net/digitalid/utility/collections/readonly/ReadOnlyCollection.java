@@ -21,7 +21,7 @@ import net.digitalid.utility.collections.freezable.FreezableCollection;
  */
 public interface ReadOnlyCollection<E> extends ReadOnlyIterable<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Collection –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Collection -------------------------------------------------- */
     
     /**
      * @see Collection#size()
@@ -67,7 +67,7 @@ public interface ReadOnlyCollection<E> extends ReadOnlyIterable<E> {
     @Pure
     public boolean containsAll(@Nonnull Collection<?> collection);
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Conditions –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Conditions -------------------------------------------------- */
     
     /**
      * Returns whether this collection contains an element which is null.
@@ -85,7 +85,7 @@ public interface ReadOnlyCollection<E> extends ReadOnlyIterable<E> {
     @Pure
     public boolean containsDuplicates();
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Conversions –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Conversions -------------------------------------------------- */
     
     @Pure
     @Override

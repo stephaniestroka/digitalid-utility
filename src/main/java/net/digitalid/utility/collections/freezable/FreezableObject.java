@@ -12,7 +12,7 @@ import net.digitalid.utility.collections.readonly.ReadOnly;
  */
 public class FreezableObject implements Freezable {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     /**
      * Stores whether this object is frozen.
@@ -31,7 +31,7 @@ public class FreezableObject implements Freezable {
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override

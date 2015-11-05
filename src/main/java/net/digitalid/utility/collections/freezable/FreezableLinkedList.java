@@ -26,7 +26,7 @@ import net.digitalid.utility.collections.readonly.ReadOnlyList;
  */
 public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableList<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     /**
      * Stores whether this object is frozen.
@@ -54,7 +54,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructors –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
      * @see LinkedList#LinkedList()
@@ -121,7 +121,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
         return collection == null ? null : getNonNullable(collection);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Collection –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Collection -------------------------------------------------- */
     
     @Pure
     @Override
@@ -129,7 +129,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
         return size() == 1;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– List –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- List -------------------------------------------------- */
     
     @Pure
     @Override
@@ -182,7 +182,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
         return BackedFreezableList.get(this, super.subList(fromIndex, toIndex));
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Add –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Add -------------------------------------------------- */
     
     @Override
     @NonFrozenRecipient
@@ -232,7 +232,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
         return super.addAll(index, collection);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Offer –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Offer -------------------------------------------------- */
     
     @Override
     @NonFrozenRecipient
@@ -258,7 +258,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
         return super.offerLast(element);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Remove –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Remove -------------------------------------------------- */
     
     @Override
     @NonFrozenRecipient
@@ -332,7 +332,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
         return super.removeAll(collection);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Poll –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Poll -------------------------------------------------- */
     
     @Override
     @NonFrozenRecipient
@@ -358,7 +358,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
         return super.pollLast();
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Stack –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Stack -------------------------------------------------- */
     
     @Override
     @NonFrozenRecipient
@@ -376,7 +376,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
         return super.pop();
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Operations –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Operations -------------------------------------------------- */
     
     @Override
     @NonFrozenRecipient
@@ -402,7 +402,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
         return super.retainAll(collection);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Conditions –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Conditions -------------------------------------------------- */
     
     @Pure
     @Override
@@ -424,7 +424,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
         return false;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Ordering –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Ordering -------------------------------------------------- */
     
     /**
      * Returns whether the elements in this list are ordered (excluding null values).
@@ -474,7 +474,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
         return isOrdered(true, false);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Conversions –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Conversions -------------------------------------------------- */
     
     @Pure
     @Override

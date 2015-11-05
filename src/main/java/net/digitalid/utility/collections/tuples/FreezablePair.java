@@ -19,7 +19,7 @@ import net.digitalid.utility.collections.freezable.FreezableObject;
  */
 public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPair<E0, E1> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Fields –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Fields -------------------------------------------------- */
     
     /**
      * Stores the first element of this tuple.
@@ -31,7 +31,7 @@ public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPa
      */
     private @Nullable E1 element1;
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructors –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
      * Creates a new pair with the given elements.
@@ -81,7 +81,7 @@ public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPa
         return pair == null ? null : getNonNullable(pair);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Getters –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Getters -------------------------------------------------- */
     
     @Pure
     @Override
@@ -111,7 +111,7 @@ public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPa
         return element1;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Setters –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Setters -------------------------------------------------- */
     
     /**
      * Sets the first element of this tuple.
@@ -137,7 +137,7 @@ public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPa
         this.element1 = element1;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     @Override
     public @Nonnull @Frozen ReadOnlyPair<E0, E1> freeze() {
@@ -145,7 +145,7 @@ public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPa
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override
@@ -153,7 +153,7 @@ public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPa
         return FreezablePair.getNonNullable(this);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Object –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
     @Override

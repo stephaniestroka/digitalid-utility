@@ -25,7 +25,7 @@ import net.digitalid.utility.collections.readonly.ReadOnlySet;
  */
 public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements FreezableSet<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     /**
      * Stores whether this object is frozen.
@@ -53,7 +53,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructors –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
      * @see LinkedHashSet#LinkedHashSet(int, float)
@@ -123,7 +123,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
         return new FreezableLinkedHashSet<>(collection);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Collection –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Collection -------------------------------------------------- */
     
     @Pure
     @Override
@@ -137,7 +137,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
         return FreezableIterableIterator.get(this, super.iterator());
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Conditions –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Conditions -------------------------------------------------- */
     
     @Pure
     @Override
@@ -154,7 +154,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
         return false;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Operations –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Operations -------------------------------------------------- */
     
     @Override
     @NonFrozenRecipient
@@ -204,7 +204,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
         super.clear();
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– ReadOnlySet –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- ReadOnlySet -------------------------------------------------- */
     
     @Pure
     @Override
@@ -230,7 +230,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
         return clone;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Conversions –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Conversions -------------------------------------------------- */
     
     @Pure
     @Override
@@ -245,7 +245,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
         return FreezableArray.getNonNullable(toArray((E[]) new Object[size()]));
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Object –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
     @Override

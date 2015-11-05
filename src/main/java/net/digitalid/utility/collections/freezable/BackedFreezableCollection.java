@@ -25,7 +25,7 @@ import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
  */
 class BackedFreezableCollection<E> implements FreezableCollection<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Fields –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Fields -------------------------------------------------- */
     
     /**
      * Stores a reference to the underlying freezable.
@@ -37,7 +37,7 @@ class BackedFreezableCollection<E> implements FreezableCollection<E> {
      */
     private final @Nonnull Collection<E> collection;
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructor –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a new backed freezable collection.
@@ -63,7 +63,7 @@ class BackedFreezableCollection<E> implements FreezableCollection<E> {
         return new BackedFreezableCollection<>(freezable, collection);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     @Pure
     @Override
@@ -77,7 +77,7 @@ class BackedFreezableCollection<E> implements FreezableCollection<E> {
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Collection –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Collection -------------------------------------------------- */
     
     @Pure
     @Override
@@ -128,7 +128,7 @@ class BackedFreezableCollection<E> implements FreezableCollection<E> {
         return FreezableIterableIterator.get(this, collection.iterator());
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Conditions –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Conditions -------------------------------------------------- */
     
     @Pure
     @Override
@@ -150,7 +150,7 @@ class BackedFreezableCollection<E> implements FreezableCollection<E> {
         return false;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Operations –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Operations -------------------------------------------------- */
     
     @Override
     @NonFrozenRecipient
@@ -200,7 +200,7 @@ class BackedFreezableCollection<E> implements FreezableCollection<E> {
         collection.clear();
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Conversions –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Conversions -------------------------------------------------- */
     
     @Pure
     @Override
@@ -215,7 +215,7 @@ class BackedFreezableCollection<E> implements FreezableCollection<E> {
         return FreezableArray.getNonNullable(toArray((E[]) new Object[size()]));
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Object –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
     @Override

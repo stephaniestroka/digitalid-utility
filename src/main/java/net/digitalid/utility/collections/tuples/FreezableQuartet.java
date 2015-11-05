@@ -16,14 +16,14 @@ import net.digitalid.utility.collections.freezable.Freezable;
  */
 public class FreezableQuartet<E0, E1, E2, E3> extends FreezableTriplet<E0, E1, E2> implements ReadOnlyQuartet<E0, E1, E2, E3> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Field –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Field -------------------------------------------------- */
     
     /**
      * Stores the fourth element of this tuple.
      */
     private @Nullable E3 element3;
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructors –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
      * Creates a new quartet with the given elements.
@@ -66,7 +66,7 @@ public class FreezableQuartet<E0, E1, E2, E3> extends FreezableTriplet<E0, E1, E
         return get(quartet.getNullableElement0(), quartet.getNullableElement1(), quartet.getNullableElement2(), quartet.getNullableElement3());
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Getter –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Getter -------------------------------------------------- */
     
     @Pure
     @Override
@@ -82,7 +82,7 @@ public class FreezableQuartet<E0, E1, E2, E3> extends FreezableTriplet<E0, E1, E
         return element3;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Setter –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Setter -------------------------------------------------- */
     
     /**
      * Sets the fourth element of this tuple.
@@ -96,7 +96,7 @@ public class FreezableQuartet<E0, E1, E2, E3> extends FreezableTriplet<E0, E1, E
         this.element3 = element3;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     @Override
     public @Nonnull @Frozen ReadOnlyQuartet<E0, E1, E2, E3> freeze() {
@@ -104,7 +104,7 @@ public class FreezableQuartet<E0, E1, E2, E3> extends FreezableTriplet<E0, E1, E
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override
@@ -112,7 +112,7 @@ public class FreezableQuartet<E0, E1, E2, E3> extends FreezableTriplet<E0, E1, E
         return FreezableQuartet.getNonNullable(this);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Object –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
     @Override

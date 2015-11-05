@@ -27,7 +27,7 @@ import net.digitalid.utility.collections.readonly.ReadOnlyList;
  */
 public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     /**
      * Stores whether this object is frozen.
@@ -55,7 +55,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructors –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
      * @see ArrayList#ArrayList()
@@ -139,7 +139,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
         return collection == null ? null : getNonNullable(collection);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Collection –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Collection -------------------------------------------------- */
     
     @Pure
     @Override
@@ -147,7 +147,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
         return size() == 1;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– List –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- List -------------------------------------------------- */
     
     @Pure
     @Override
@@ -194,7 +194,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
         return BackedFreezableList.get(this, super.subList(fromIndex, toIndex));
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Operations –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Operations -------------------------------------------------- */
     
     @Override
     @NonFrozenRecipient
@@ -276,7 +276,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
         return super.retainAll(collection);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Conditions –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Conditions -------------------------------------------------- */
     
     @Pure
     @Override
@@ -298,7 +298,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
         return false;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Ordering –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Ordering -------------------------------------------------- */
     
     /**
      * Returns whether the elements in this list are ordered (excluding null values).
@@ -348,7 +348,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
         return isOrdered(true, false);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Conversions –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Conversions -------------------------------------------------- */
     
     @Pure
     @Override

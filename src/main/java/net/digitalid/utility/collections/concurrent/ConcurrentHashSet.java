@@ -20,7 +20,7 @@ import net.digitalid.utility.collections.converter.IterableConverter;
  */
 public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSet<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Fields –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Fields -------------------------------------------------- */
     
     /**
      * Stores the elements of this concurrent hash set.
@@ -32,7 +32,7 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
      */
     private final @Nonnull Set<E> set;
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructors –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
      * @see ConcurrentHashMap#ConcurrentHashMap(int, float, int)
@@ -99,7 +99,7 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
         return set == null ? null : getNonNullable(set);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Set –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Set -------------------------------------------------- */
     
     @Pure
     @Override
@@ -138,7 +138,7 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
         return set.toArray(array);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Operations –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Operations -------------------------------------------------- */
     
     @Override
     public boolean add(@Nonnull E element) {
@@ -180,7 +180,7 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
         map.clear();
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Object –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
     @Override

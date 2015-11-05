@@ -19,7 +19,7 @@ import net.digitalid.utility.collections.freezable.FreezableSet;
  */
 public interface ReadOnlySet<E> extends ReadOnlyCollection<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Operations –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Operations -------------------------------------------------- */
     
     /**
      * Returns the union of this and the given set.
@@ -51,7 +51,7 @@ public interface ReadOnlySet<E> extends ReadOnlyCollection<E> {
     @Pure
     public @Capturable @Nonnull @NonFrozen FreezableSet<E> intersect(@Nonnull ReadOnlySet<E> set);
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override

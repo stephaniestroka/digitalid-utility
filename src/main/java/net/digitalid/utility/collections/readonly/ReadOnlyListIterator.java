@@ -21,7 +21,7 @@ import net.digitalid.utility.collections.freezable.FreezableListIterator;
  */
 public interface ReadOnlyListIterator<E> extends ReadOnlyIterator<E>, ListIterator<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override

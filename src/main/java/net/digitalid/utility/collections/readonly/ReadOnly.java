@@ -17,7 +17,7 @@ import net.digitalid.utility.collections.freezable.Freezable;
  */
 public interface ReadOnly extends Cloneable {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     /**
      * Returns whether this object is frozen and can thus no longer be modified.
@@ -29,7 +29,7 @@ public interface ReadOnly extends Cloneable {
     @Pure
     public boolean isFrozen();
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     public @Capturable @Nonnull @NonFrozen Freezable clone();

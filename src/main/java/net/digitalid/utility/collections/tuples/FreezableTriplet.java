@@ -18,14 +18,14 @@ import net.digitalid.utility.collections.freezable.Freezable;
  */
 public class FreezableTriplet<E0, E1, E2> extends FreezablePair<E0, E1> implements ReadOnlyTriplet<E0, E1, E2> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Field –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Field -------------------------------------------------- */
     
     /**
      * Stores the third element of this tuple.
      */
     private @Nullable E2 element2;
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructors –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
      * Creates a new triplet with the given elements.
@@ -78,7 +78,7 @@ public class FreezableTriplet<E0, E1, E2> extends FreezablePair<E0, E1> implemen
         return triplet == null ? null : getNonNullable(triplet);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Getter –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Getter -------------------------------------------------- */
     
     @Pure
     @Override
@@ -94,7 +94,7 @@ public class FreezableTriplet<E0, E1, E2> extends FreezablePair<E0, E1> implemen
         return element2;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Setter –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Setter -------------------------------------------------- */
     
     /**
      * Sets the third element of this tuple.
@@ -108,7 +108,7 @@ public class FreezableTriplet<E0, E1, E2> extends FreezablePair<E0, E1> implemen
         this.element2 = element2;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     @Override
     public @Nonnull @Frozen ReadOnlyTriplet<E0, E1, E2> freeze() {
@@ -116,7 +116,7 @@ public class FreezableTriplet<E0, E1, E2> extends FreezablePair<E0, E1> implemen
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override
@@ -124,7 +124,7 @@ public class FreezableTriplet<E0, E1, E2> extends FreezablePair<E0, E1> implemen
         return FreezableTriplet.getNonNullable(this);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Object –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
     @Override

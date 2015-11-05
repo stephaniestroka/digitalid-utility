@@ -19,7 +19,7 @@ import net.digitalid.utility.collections.converter.IterableConverter;
  */
 public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHashMap<K, V> implements ConcurrentMap<K, V> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructors –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(int, float, int)
@@ -83,7 +83,7 @@ public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHash
         return map == null ? null : getNonNullable(map);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– ConcurrentMap –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- ConcurrentMap -------------------------------------------------- */
     
     @Override
     public @Nonnull V putIfAbsentElseReturnPresent(@Nonnull K key, @Nonnull V value) {
@@ -92,7 +92,7 @@ public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHash
         else return previous;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override
@@ -100,7 +100,7 @@ public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHash
         return new ConcurrentHashMap<>(this);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Object –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
     @Override

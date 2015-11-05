@@ -19,7 +19,7 @@ import net.digitalid.utility.collections.readonly.ReadOnlyIterator;
  */
 public interface FreezableIterator<E> extends ReadOnlyIterator<E>, Freezable {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     @Override
     public @Nonnull @Frozen ReadOnlyIterator<E> freeze();

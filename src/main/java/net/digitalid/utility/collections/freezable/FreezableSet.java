@@ -19,7 +19,7 @@ import net.digitalid.utility.collections.readonly.ReadOnlySet;
  */
 public interface FreezableSet<E> extends ReadOnlySet<E>, Set<E>, FreezableCollection<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     @Override
     public @Nonnull @Frozen ReadOnlySet<E> freeze();

@@ -14,7 +14,7 @@ import net.digitalid.utility.collections.readonly.ReadOnly;
  */
 public interface ReadOnlyQuartet<E0, E1, E2, E3> extends ReadOnlyTriplet<E0, E1, E2> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Getter –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Getter -------------------------------------------------- */
     
     /**
      * Returns the third element of this tuple.
@@ -32,7 +32,7 @@ public interface ReadOnlyQuartet<E0, E1, E2, E3> extends ReadOnlyTriplet<E0, E1,
     @Pure
     public @Nonnull E3 getNonNullableElement3();
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override

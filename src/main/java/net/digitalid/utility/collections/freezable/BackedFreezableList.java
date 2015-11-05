@@ -28,14 +28,14 @@ import net.digitalid.utility.collections.readonly.ReadOnlyList;
  */
 final class BackedFreezableList<E> extends BackedFreezableCollection<E> implements FreezableList<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Field –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Field -------------------------------------------------- */
     
     /**
      * Stores a reference to the list.
      */
     private final @Nonnull List<E> list;
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructor –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a new freezable sublist.
@@ -60,7 +60,7 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
         return new BackedFreezableList<>(freezable, list);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     @Override
     public @Nonnull @Frozen ReadOnlyList<E> freeze() {
@@ -68,7 +68,7 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– List –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- List -------------------------------------------------- */
     
     @Pure
     @Override
@@ -127,7 +127,7 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
         return new BackedFreezableList<>(this, list.subList(fromIndex, toIndex));
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Operations –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Operations -------------------------------------------------- */
     
     @Override
     @NonFrozenRecipient
@@ -161,7 +161,7 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
         return list.addAll(index, collection);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Conditions –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Conditions -------------------------------------------------- */
     
     @Pure
     @Override
@@ -183,7 +183,7 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
         return false;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Ordering –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Ordering -------------------------------------------------- */
     
     /**
      * Returns whether the elements in this list are ordered (excluding null values).
@@ -233,7 +233,7 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
         return isOrdered(true, false);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override
@@ -241,7 +241,7 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
         return FreezableArrayList.getNonNullable(list);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Object –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
     @Override

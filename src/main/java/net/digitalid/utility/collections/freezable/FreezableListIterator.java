@@ -24,14 +24,14 @@ import net.digitalid.utility.collections.readonly.ReadOnlyListIterator;
  */
 public class FreezableListIterator<E> extends FreezableIterableIterator<E> implements ReadOnlyListIterator<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Field –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Field -------------------------------------------------- */
     
     /**
      * Stores a reference to the underlying iterator.
      */
     private final @Nonnull ListIterator<E> iterator;
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructor –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a new freezable list iterator.
@@ -58,7 +58,7 @@ public class FreezableListIterator<E> extends FreezableIterableIterator<E> imple
         return new FreezableListIterator<>(iterable, iterator);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     @Override
     public @Nonnull @Frozen ReadOnlyListIterator<E> freeze() {
@@ -66,7 +66,7 @@ public class FreezableListIterator<E> extends FreezableIterableIterator<E> imple
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– ListIterator –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- ListIterator -------------------------------------------------- */
     
     @Pure
     @Override
@@ -91,7 +91,7 @@ public class FreezableListIterator<E> extends FreezableIterableIterator<E> imple
         return iterator.previousIndex();
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Operations –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Operations -------------------------------------------------- */
     
     @Override
     @NonFrozenRecipient
@@ -109,7 +109,7 @@ public class FreezableListIterator<E> extends FreezableIterableIterator<E> imple
         iterator.add(element);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override

@@ -21,7 +21,7 @@ import net.digitalid.utility.collections.freezable.FreezableMap;
  */
 public interface ReadOnlyMap<K,V> extends ReadOnly {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Map –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Map -------------------------------------------------- */
     
     /**
      * @see Map#size()
@@ -65,7 +65,7 @@ public interface ReadOnlyMap<K,V> extends ReadOnly {
     @Pure
     public @Nonnull ReadOnlyCollection<V> values();
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override

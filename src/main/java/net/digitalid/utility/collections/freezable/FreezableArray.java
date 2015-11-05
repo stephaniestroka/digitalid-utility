@@ -25,14 +25,14 @@ import net.digitalid.utility.collections.readonly.ReadOnlyArray;
  */
 public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<E>, FreezableIterable<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Field –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Field -------------------------------------------------- */
     
     /**
      * Stores the elements in an array.
      */
     private final @Nonnull E[] array;
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructors –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
      * Creates a new freezable array with the given size.
@@ -91,7 +91,7 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
         return array == null ? null : getNonNullable(array);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     @Override
     public @Nonnull @Frozen ReadOnlyArray<E> freeze() {
@@ -108,7 +108,7 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Retrieval –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Retrieval -------------------------------------------------- */
     
     @Pure
     @Override
@@ -145,7 +145,7 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
         return FreezableArrayIterator.get(this);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Operation –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Operation -------------------------------------------------- */
     
     /**
      * Sets the element at the given index to the new value.
@@ -176,7 +176,7 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Conditions –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Conditions -------------------------------------------------- */
     
     @Pure
     @Override
@@ -198,7 +198,7 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
         return false;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Conversions –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Conversions -------------------------------------------------- */
     
     @Pure
     @Override
@@ -220,7 +220,7 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
         return freezableList;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Object –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
     @Override

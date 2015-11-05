@@ -22,12 +22,12 @@ import net.digitalid.utility.collections.readonly.ReadOnlyList;
  */
 public interface FreezableList<E> extends ReadOnlyList<E>, List<E>, FreezableCollection<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     @Override
     public @Nonnull @Frozen ReadOnlyList<E> freeze();
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– List –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- List -------------------------------------------------- */
     
     @Pure
     @Override

@@ -22,7 +22,7 @@ import net.digitalid.utility.collections.freezable.FreezableArrayIterator;
  */
 public interface ReadOnlyArrayIterator<E> extends ReadOnlyIterator<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Iteration –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Iteration -------------------------------------------------- */
     
     /**
      * Returns whether this iterator has a previous element.
@@ -55,7 +55,7 @@ public interface ReadOnlyArrayIterator<E> extends ReadOnlyIterator<E> {
     @Pure
     public int previousIndex();
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override

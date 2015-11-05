@@ -25,7 +25,7 @@ public interface ConcurrentMap<K, V> extends java.util.concurrent.ConcurrentMap<
      */
     public @Nonnull V putIfAbsentElseReturnPresent(@Nonnull K key, @Nonnull V value);
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     /**
      * Returns a shallow copy of this map (the keys and values themselves are not cloned).

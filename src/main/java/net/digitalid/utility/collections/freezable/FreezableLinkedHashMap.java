@@ -26,7 +26,7 @@ import net.digitalid.utility.collections.readonly.ReadOnlyMap;
  */
 public class FreezableLinkedHashMap<K,V> extends LinkedHashMap<K,V> implements FreezableMap<K,V> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     /**
      * Stores whether this object is frozen.
@@ -55,7 +55,7 @@ public class FreezableLinkedHashMap<K,V> extends LinkedHashMap<K,V> implements F
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructors –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
      * @see LinkedHashMap#LinkedHashMap(int, float, boolean)
@@ -119,7 +119,7 @@ public class FreezableLinkedHashMap<K,V> extends LinkedHashMap<K,V> implements F
         return map == null ? null : getNonNullable(map);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Entries –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Entries -------------------------------------------------- */
     
     @Pure
     @Override
@@ -139,7 +139,7 @@ public class FreezableLinkedHashMap<K,V> extends LinkedHashMap<K,V> implements F
         return BackedFreezableSet.get(this, super.entrySet());
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Operations –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Operations -------------------------------------------------- */
     
     @Override
     @NonFrozenRecipient
@@ -184,7 +184,7 @@ public class FreezableLinkedHashMap<K,V> extends LinkedHashMap<K,V> implements F
         super.clear();
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override
@@ -192,7 +192,7 @@ public class FreezableLinkedHashMap<K,V> extends LinkedHashMap<K,V> implements F
         return new FreezableLinkedHashMap<>(this);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Object –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
     @Override

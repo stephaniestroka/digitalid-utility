@@ -23,7 +23,7 @@ import net.digitalid.utility.collections.readonly.ReadOnlyArrayIterator;
  */
 public class FreezableArrayIterator<E> implements ReadOnlyArrayIterator<E>, FreezableIterator<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Fields –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Fields -------------------------------------------------- */
     
     /**
      * Stores a reference to the underlying array.
@@ -35,7 +35,7 @@ public class FreezableArrayIterator<E> implements ReadOnlyArrayIterator<E>, Free
      */
     private int index = 0;
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructor –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a new freezable iterator.
@@ -56,7 +56,7 @@ public class FreezableArrayIterator<E> implements ReadOnlyArrayIterator<E>, Free
         return new FreezableArrayIterator<>(array);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     @Pure
     @Override
@@ -70,7 +70,7 @@ public class FreezableArrayIterator<E> implements ReadOnlyArrayIterator<E>, Free
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Iterator –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Iterator -------------------------------------------------- */
     
     @Pure
     @Override
@@ -84,7 +84,7 @@ public class FreezableArrayIterator<E> implements ReadOnlyArrayIterator<E>, Free
         return array.getNullable(index++);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– ArrayIterator –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- ArrayIterator -------------------------------------------------- */
     
     @Pure
     @Override
@@ -110,7 +110,7 @@ public class FreezableArrayIterator<E> implements ReadOnlyArrayIterator<E>, Free
         return index - 1;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Operation –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Operation -------------------------------------------------- */
     
     @Override
     @NonFrozenRecipient
@@ -120,7 +120,7 @@ public class FreezableArrayIterator<E> implements ReadOnlyArrayIterator<E>, Free
         array.set(index, null);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override

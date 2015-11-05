@@ -25,7 +25,7 @@ import net.digitalid.utility.collections.readonly.ReadOnlyMap;
  */
 public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMap<K, V> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     /**
      * Stores whether this object is frozen.
@@ -54,7 +54,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructors –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
      * @see HashMap#HashMap(int, float)
@@ -110,7 +110,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
         return map == null ? null : getNonNullable(map);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Entries –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Entries -------------------------------------------------- */
     
     @Pure
     @Override
@@ -130,7 +130,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
         return BackedFreezableSet.get(this, super.entrySet());
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Operations –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Operations -------------------------------------------------- */
     
     @Override
     @NonFrozenRecipient
@@ -175,7 +175,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
         super.clear();
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override
@@ -183,7 +183,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
         return new FreezableHashMap<>(this);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Object –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
     @Override

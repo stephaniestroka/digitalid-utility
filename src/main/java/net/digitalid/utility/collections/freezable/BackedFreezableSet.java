@@ -21,14 +21,14 @@ import net.digitalid.utility.collections.readonly.ReadOnlySet;
  */
 final class BackedFreezableSet<E> extends BackedFreezableCollection<E> implements FreezableSet<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Field –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Field -------------------------------------------------- */
     
     /**
      * Stores a reference to the set.
      */
     private final @Nonnull Set<E> set;
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructor –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a new backed freezable set.
@@ -55,7 +55,7 @@ final class BackedFreezableSet<E> extends BackedFreezableCollection<E> implement
         return new BackedFreezableSet<>(freezable, set);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Freezable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     @Override
     public @Nonnull @Frozen ReadOnlySet<E> freeze() {
@@ -63,7 +63,7 @@ final class BackedFreezableSet<E> extends BackedFreezableCollection<E> implement
         return this;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– ReadOnlySet –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- ReadOnlySet -------------------------------------------------- */
     
     @Pure
     @Override
@@ -89,7 +89,7 @@ final class BackedFreezableSet<E> extends BackedFreezableCollection<E> implement
         return clone;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override
@@ -97,7 +97,7 @@ final class BackedFreezableSet<E> extends BackedFreezableCollection<E> implement
         return FreezableHashSet.getNonNullable(set);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Object –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
     @Override

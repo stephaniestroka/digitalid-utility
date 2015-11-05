@@ -21,7 +21,7 @@ import net.digitalid.utility.collections.freezable.FreezableList;
  */
 public interface ReadOnlyArray<E> extends ReadOnlyIterable<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Retrieval –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Retrieval -------------------------------------------------- */
     
     /**
      * Returns the size of this array.
@@ -67,7 +67,7 @@ public interface ReadOnlyArray<E> extends ReadOnlyIterable<E> {
     @Override
     public @Nonnull ReadOnlyArrayIterator<E> iterator();
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Conditions –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Conditions -------------------------------------------------- */
     
     /**
      * Returns whether this array contains an element which is null.
@@ -86,7 +86,7 @@ public interface ReadOnlyArray<E> extends ReadOnlyIterable<E> {
     @Pure
     public boolean containsDuplicates();
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Conversions –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Conversions -------------------------------------------------- */
     
     /**
      * Returns the elements of this array as an array.

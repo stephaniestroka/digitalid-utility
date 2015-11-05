@@ -22,7 +22,7 @@ import net.digitalid.utility.collections.freezable.FreezableList;
  */
 public interface ReadOnlyList<E> extends ReadOnlyCollection<E> {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– List –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- List -------------------------------------------------- */
     
     /**
      * @see List#get(int)
@@ -82,7 +82,7 @@ public interface ReadOnlyList<E> extends ReadOnlyCollection<E> {
     @Pure
     public @Nonnull ReadOnlyList<E> subList(@ValidIndex int fromIndex, @ValidIndexForInsertion int toIndex);
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Ordering –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Ordering -------------------------------------------------- */
     
     /**
      * Returns whether the elements in this list are ascending (excluding null values).
@@ -116,7 +116,7 @@ public interface ReadOnlyList<E> extends ReadOnlyCollection<E> {
     @Pure
     public boolean isStrictlyDescending();
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Cloneable –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override
