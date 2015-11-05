@@ -19,7 +19,7 @@ import net.digitalid.utility.system.errors.ShouldNeverHappenError;
 @Stateless
 public final class Console {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Reading –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Reading -------------------------------------------------- */
     
     /**
      * Stores the buffered reader from the standard input.
@@ -90,7 +90,7 @@ public final class Console {
         }
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Prompting –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Prompting -------------------------------------------------- */
     
     /**
      * Writes the given prompt to the standard output and reads a string from the standard input.
@@ -131,7 +131,7 @@ public final class Console {
         return readBoolean(defaultValue);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Writing –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Writing -------------------------------------------------- */
     
     /**
      * Writes the given string to the standard output (including a new line).
@@ -156,7 +156,7 @@ public final class Console {
         System.out.flush();
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Options –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Options -------------------------------------------------- */
     
     /**
      * Stores the available options for the user.

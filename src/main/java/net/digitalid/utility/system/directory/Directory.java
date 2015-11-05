@@ -16,14 +16,14 @@ import net.digitalid.utility.system.errors.InitializationError;
 @Stateless
 public final class Directory {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Default –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Default -------------------------------------------------- */
     
     /**
      * References the default directory to store all other directories.
      */
     public static final @Nonnull @IsDirectory File DEFAULT = new File(System.getProperty("user.home") + File.separator + ".DigitalID");
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Root –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Root -------------------------------------------------- */
     
     /**
      * Stores the directory that contains all other directories.
@@ -49,7 +49,7 @@ public final class Directory {
         return root != null;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Directories –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Directories -------------------------------------------------- */
     
     /**
      * Creates the directory with the given name in the root directory.
@@ -117,7 +117,7 @@ public final class Directory {
         return createDirectory("Services");
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Listing –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Listing -------------------------------------------------- */
     
     /**
      * Stores a filter to ignore hidden files.
@@ -136,7 +136,7 @@ public final class Directory {
         return directory.listFiles(ignoreHiddenFilesFilter);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Removal –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Removal -------------------------------------------------- */
     
     /**
      * Deletes the given file or directory and returns whether it was successful.

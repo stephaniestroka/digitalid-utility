@@ -19,7 +19,7 @@ import net.digitalid.utility.system.errors.InitializationError;
  */
 public final class DefaultLogger extends Logger {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Formats –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Formats -------------------------------------------------- */
     
     /**
      * Stores the date formatter for the file name.
@@ -39,7 +39,7 @@ public final class DefaultLogger extends Logger {
         }
     };
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Fields –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Fields -------------------------------------------------- */
     
     /**
      * Stores the level of this logger.
@@ -66,7 +66,7 @@ public final class DefaultLogger extends Logger {
      */
     private @Nonnull PrintStream out;
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Rotation –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Rotation -------------------------------------------------- */
     
     /**
      * Rotates the log file.
@@ -80,7 +80,7 @@ public final class DefaultLogger extends Logger {
         }
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructor –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a new logger that writes to the file with the given name.
@@ -96,7 +96,7 @@ public final class DefaultLogger extends Logger {
         rotate();
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Logging –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Logging -------------------------------------------------- */
     
     @Override
     @SuppressWarnings("deprecation")

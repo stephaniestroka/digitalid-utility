@@ -12,7 +12,7 @@ import net.digitalid.utility.annotations.state.Pure;
  */
 public abstract class Logger {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Logger –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Logger -------------------------------------------------- */
     
     /**
      * Stores the actual logger.
@@ -45,7 +45,7 @@ public abstract class Logger {
         return logger != null;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Logging –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Logging -------------------------------------------------- */
     
     /**
      * Logs the given message with the given tag and exception.

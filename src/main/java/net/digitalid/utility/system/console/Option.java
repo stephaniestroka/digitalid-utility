@@ -11,7 +11,7 @@ import net.digitalid.utility.system.console.exceptions.EscapeOptionException;
 @Immutable
 public abstract class Option {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Description –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Description -------------------------------------------------- */
     
     /**
      * Stores the description of the option.
@@ -28,7 +28,7 @@ public abstract class Option {
         return description;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructor –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a new option with the given description.
@@ -39,7 +39,7 @@ public abstract class Option {
         this.description = description;
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Execution –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Execution -------------------------------------------------- */
     
     /**
      * Executes this option.

@@ -10,7 +10,7 @@ import net.digitalid.utility.annotations.state.Pure;
  */
 public class NamedThreadFactory implements ThreadFactory {
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Fields –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Fields -------------------------------------------------- */
     
     /**
      * Stores the prefix of the threads.
@@ -22,7 +22,7 @@ public class NamedThreadFactory implements ThreadFactory {
      */
     private final @Nonnull AtomicInteger number = new AtomicInteger(1);
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Constructor –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a new thread factory with the given name prefix.
@@ -45,7 +45,7 @@ public class NamedThreadFactory implements ThreadFactory {
         return new NamedThreadFactory(prefix);
     }
     
-    /* –––––––––––––––––––––––––––––––––––––––––––––––––– Method –––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* -------------------------------------------------- Method -------------------------------------------------- */
     
     @Override
     public @Nonnull Thread newThread(@Nonnull Runnable runnable) {
