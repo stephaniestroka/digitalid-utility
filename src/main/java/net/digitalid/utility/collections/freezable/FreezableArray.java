@@ -80,6 +80,30 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
     }
     
     /**
+     * Creates a new freezable array that flattens the given arrays for one degree.
+     * 
+     * @param arrays the arrays containing the elements of the new array.
+     * 
+     * @return a new freezable array that flattens the given arrays for one degree.
+     */
+    @Pure
+    @SafeVarargs
+    public static @Capturable @Nonnull @NonFrozen <E> FreezableArray<E> getNonNullable(@Nonnull FreezableArray<E>... arrays) {
+        int size = 0;
+        for (@Nonnull FreezableArray<E> array : arrays) {
+            size += array.size();
+        }
+        final @Nonnull FreezableArray<E> result = new FreezableArray<>(size);
+        int index = 0;
+        for (@Nonnull FreezableArray<E> array : arrays) {
+            for (int i = 0; i < array.size(); i++, index++) {
+                result.set(index, array.getNullable(i));
+            }
+        }
+        return result;
+    }
+    
+    /**
      * Creates a new freezable array from the given array.
      * 
      * @param array the elements of the new array.
