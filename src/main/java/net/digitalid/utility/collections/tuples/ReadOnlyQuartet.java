@@ -3,8 +3,8 @@ package net.digitalid.utility.collections.tuples;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.reference.Capturable;
-import net.digitalid.utility.collections.annotations.freezable.NonFrozen;
 import net.digitalid.utility.annotations.state.Pure;
+import net.digitalid.utility.collections.annotations.freezable.NonFrozen;
 import net.digitalid.utility.collections.readonly.ReadOnly;
 
 /**
@@ -28,6 +28,8 @@ public interface ReadOnlyQuartet<E0, E1, E2, E3> extends ReadOnlyTriplet<E0, E1,
      * Returns the third element of this tuple.
      * 
      * @return the third element of this tuple.
+     * 
+     * @require getNullableElement3() != null : "The element is not null.";
      */
     @Pure
     public @Nonnull E3 getNonNullableElement3();
