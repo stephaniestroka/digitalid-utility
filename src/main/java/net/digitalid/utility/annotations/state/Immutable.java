@@ -16,6 +16,8 @@ import java.lang.annotation.Target;
  * However, it is in general not guaranteed that the hash of immutable objects stays the same.
  * In other words, an immutable object is only conceptually immutable but its values may change.
  * (This is the case with references to persons, which remain constant but can still be merged.)
+ * 
+ * @see Mutable
  */
 @Documented
 @Target(ElementType.TYPE)
