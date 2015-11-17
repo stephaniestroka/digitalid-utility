@@ -38,7 +38,7 @@ public final class Executor {
         if (OSname.contains("mac")) {
             try {
                 final @Nullable String userName = execute("id -F");
-                if (userName != null) return userName;
+                if (userName != null) { return userName; }
             } catch (@Nonnull IOException exception) {}
         } else if (OSname.contains("win")) {
             // TODO: http://stackoverflow.com/questions/7809648/get-display-name-of-current-windows-domain-user-from-a-command-prompt

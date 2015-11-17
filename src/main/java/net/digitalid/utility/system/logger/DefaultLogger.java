@@ -74,7 +74,7 @@ public final class DefaultLogger extends Logger {
     private void rotate() {
         this.date = new Date();
         try {
-            this.out = new PrintStream(new FileOutputStream(Directory.getLogsDirectory().getPath() +  File.separator + day.get().format(new Date()) + " " + name + ".log", true));
+            this.out = new PrintStream(new FileOutputStream(Directory.getLogsDirectory().getPath() + File.separator + day.get().format(new Date()) + " " + name + ".log", true));
         } catch (@Nonnull FileNotFoundException exception) {
             throw new InitializationError("Could not open the log file '" + name + "'.", exception);
         }
@@ -103,7 +103,7 @@ public final class DefaultLogger extends Logger {
     protected synchronized void protectedLog(@Nonnull Level level, @Nonnull String tag, @Nonnull String message, @Nullable Throwable throwable) {
         if (level.getValue() >= this.level.getValue()) {
             final @Nonnull Date date = new Date();
-            if (date.getDate() != this.date.getDate()) rotate();
+            if (date.getDate() != this.date.getDate()) { rotate(); }
             out.println(time.get().format(date) + " in " + version + " [" + Thread.currentThread().getName() + "] (" + level + ") <" + tag + ">: " + message);
             if (throwable != null) {
                 out.println();

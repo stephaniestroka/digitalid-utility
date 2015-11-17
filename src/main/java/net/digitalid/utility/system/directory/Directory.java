@@ -63,7 +63,7 @@ public final class Directory {
         assert root != null : "This class is initialized.";
         
         final @Nonnull File directory = new File(root.getPath() + File.separator + name);
-        if (!directory.exists() && !directory.mkdirs()) throw new InitializationError("Could not create the directory '" + directory.getPath() + "'.");
+        if (!directory.exists() && !directory.mkdirs()) { throw new InitializationError("Could not create the directory '" + directory.getPath() + "'."); }
         return directory;
     }
     
@@ -149,7 +149,7 @@ public final class Directory {
         if (file.isDirectory()) {
             final @Nonnull File[] subfiles = file.listFiles();
             for (final @Nonnull File subfile : subfiles) {
-                if (!delete(subfile)) return false;
+                if (!delete(subfile)) { return false; }
             }
         }
         return file.delete();
@@ -165,7 +165,7 @@ public final class Directory {
     public static boolean empty(@Nonnull @IsDirectory File directory) {
         final @Nonnull File[] subfiles = directory.listFiles();
         for (final @Nonnull File subfile : subfiles) {
-            if (!delete(subfile)) return false;
+            if (!delete(subfile)) { return false; }
         }
         return true;
     }

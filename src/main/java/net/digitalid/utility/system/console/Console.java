@@ -34,7 +34,7 @@ public final class Console {
     private static @Nonnull String read() {
         try {
             final @Nullable String input = reader.readLine();
-            if (input == null) throw new IOException("The end of the standard input has been reached.");
+            if (input == null) { throw new IOException("The end of the standard input has been reached."); }
             return input;
         } catch (@Nonnull IOException exception) {
             throw new ShouldNeverHappenError("Could not read from the standard input.", exception);
@@ -50,8 +50,8 @@ public final class Console {
      */
     public static @Nonnull String readString(@Nullable String defaultValue) {
         final @Nonnull String input = read();
-        if (input.isEmpty() && defaultValue != null) return defaultValue;
-        else return input;
+        if (input.isEmpty() && defaultValue != null) { return defaultValue; }
+        else { return input; }
     }
     
     /**
@@ -64,7 +64,7 @@ public final class Console {
     public static int readNumber(@Nullable Integer defaultValue) {
         while (true) {
             final @Nonnull String input = read();
-            if (input.isEmpty() && defaultValue != null) return defaultValue;
+            if (input.isEmpty() && defaultValue != null) { return defaultValue; }
             try {
                 return Integer.decode(input);
             } catch (@Nonnull NumberFormatException exception) {
@@ -83,9 +83,9 @@ public final class Console {
     public static boolean readBoolean(@Nullable Boolean defaultValue) {
         while (true) {
             final @Nonnull String input = read();
-            if (input.isEmpty() && defaultValue != null) return defaultValue;
-            if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("yes") || input.equalsIgnoreCase("y")) return true;
-            if (input.equalsIgnoreCase("false") || input.equalsIgnoreCase("no") || input.equalsIgnoreCase("n")) return false;
+            if (input.isEmpty() && defaultValue != null) { return defaultValue; }
+            if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("yes") || input.equalsIgnoreCase("y")) { return true; }
+            if (input.equalsIgnoreCase("false") || input.equalsIgnoreCase("no") || input.equalsIgnoreCase("n")) { return false; }
             System.out.print("Could not parse the input. Please enter 'yes' or 'no': ");
         }
     }
