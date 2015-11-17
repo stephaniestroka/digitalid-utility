@@ -125,8 +125,8 @@ public abstract class Taglet implements com.sun.tools.doclets.Taglet {
     @Pure
     protected @Nonnull String getText(@Nonnull String text) {
         final @Nonnull Matcher matcher = pattern.matcher(text);
-        if (matcher.matches()) return "<code> " + matcher.group(1) + "</code> - " + Introspector.decapitalize(matcher.group(2));
-        else return text;
+        if (matcher.matches()) { return "<code> " + matcher.group(1) + "</code> - " + Introspector.decapitalize(matcher.group(2)); }
+        else { return text; }
     }
     
     /**
@@ -166,9 +166,9 @@ public abstract class Taglet implements com.sun.tools.doclets.Taglet {
     @Pure
     @Override
     public @Nonnull String toString(@Nonnull Tag[] tags) {
-        if (tags.length == 0) return "";
+        if (tags.length == 0) { return ""; }
         final @Nonnull StringBuilder string = new StringBuilder(getTitleWithHTML());
-        for (final @Nonnull Tag tag : tags) string.append(getTextWithHTML(tag.text()));
+        for (final @Nonnull Tag tag : tags) { string.append(getTextWithHTML(tag.text())); }
         return string.toString();
     }
     
