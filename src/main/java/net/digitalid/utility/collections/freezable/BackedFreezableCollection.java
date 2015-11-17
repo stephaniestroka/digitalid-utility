@@ -134,7 +134,7 @@ class BackedFreezableCollection<E> implements FreezableCollection<E> {
     @Override
     public boolean containsNull() {
         for (final @Nullable E element : this) {
-            if (element == null) return true;
+            if (element == null) { return true; }
         }
         return false;
     }
@@ -144,8 +144,8 @@ class BackedFreezableCollection<E> implements FreezableCollection<E> {
     public boolean containsDuplicates() {
         final @Nonnull HashSet<E> set = new HashSet<>(size());
         for (final @Nullable E element : this) {
-            if (set.contains(element)) return true;
-            else set.add(element);
+            if (set.contains(element)) { return true; }
+            else { set.add(element); }
         }
         return false;
     }

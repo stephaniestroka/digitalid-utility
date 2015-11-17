@@ -88,8 +88,8 @@ public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHash
     @Override
     public @Nonnull V putIfAbsentElseReturnPresent(@Nonnull K key, @Nonnull V value) {
         @Nullable V previous = putIfAbsent(key, value);
-        if (previous == null) return value;
-        else return previous;
+        if (previous == null) { return value; }
+        else { return previous; }
     }
     
     /* -------------------------------------------------- Cloneable -------------------------------------------------- */

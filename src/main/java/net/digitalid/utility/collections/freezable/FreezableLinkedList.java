@@ -43,7 +43,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     public @Nonnull @Frozen ReadOnlyList<E> freeze() {
         if (!frozen) {
             frozen = true;
-            for (@Nullable E element : this) {
+            for (final @Nullable E element : this) {
                 if (element instanceof Freezable) {
                     ((Freezable) element).freeze();
                 } else {
@@ -408,7 +408,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     public boolean containsNull() {
         for (final @Nullable E element : this) {
-            if (element == null) return true;
+            if (element == null) { return true; }
         }
         return false;
     }
@@ -418,8 +418,8 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     public boolean containsDuplicates() {
         final @Nonnull HashSet<E> set = new HashSet<>(size());
         for (final @Nullable E element : this) {
-            if (set.contains(element)) return true;
-            else set.add(element);
+            if (set.contains(element)) { return true; }
+            else { set.add(element); }
         }
         return false;
     }
@@ -439,10 +439,10 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     private boolean isOrdered(boolean strictly, boolean ascending) {
         @Nullable E lastElement = null;
         for (final @Nullable E element : this) {
-            if (element == null) continue;
+            if (element == null) { continue; }
             if (lastElement != null) {
                 if (element instanceof Comparable<?>) {
-                    if (((Comparable<E>) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) return false;
+                    if (((Comparable<E>) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
                 }
             }
             lastElement = element;

@@ -282,7 +282,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
     @Override
     public boolean containsNull() {
         for (final @Nullable E element : this) {
-            if (element == null) return true;
+            if (element == null) { return true; }
         }
         return false;
     }
@@ -292,8 +292,8 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
     public boolean containsDuplicates() {
         final @Nonnull HashSet<E> set = new HashSet<>(size());
         for (final @Nullable E element : this) {
-            if (set.contains(element)) return true;
-            else set.add(element);
+            if (set.contains(element)) { return true; }
+            else { set.add(element); }
         }
         return false;
     }
@@ -313,10 +313,10 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
     private boolean isOrdered(boolean strictly, boolean ascending) {
         @Nullable E lastElement = null;
         for (final @Nullable E element : this) {
-            if (element == null) continue;
+            if (element == null) { continue; }
             if (lastElement != null) {
                 if (element instanceof Comparable) {
-                    if (((Comparable) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) return false;
+                    if (((Comparable) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
                 }
             }
             lastElement = element;

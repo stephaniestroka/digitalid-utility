@@ -159,9 +159,9 @@ public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPa
     @Override
     @SuppressWarnings("rawtypes")
     public boolean equals(@Nullable Object object) {
-        if (object == this) return true;
-        if (object == null) return false;
-        if (!(object instanceof FreezablePair)) return object.equals(this);
+        if (object == this) { return true; }
+        if (object == null) { return false; }
+        if (!(object instanceof FreezablePair)) { return object.equals(this); }
         final @Nonnull FreezablePair other = (FreezablePair) object;
         return Objects.equals(this.element0, other.element0) && Objects.equals(this.element1, other.element1);
     }

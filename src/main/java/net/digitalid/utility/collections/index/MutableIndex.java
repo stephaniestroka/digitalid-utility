@@ -1,6 +1,7 @@
 package net.digitalid.utility.collections.index;
 
 import javax.annotation.Nonnull;
+import net.digitalid.utility.annotations.math.NonNegative;
 import net.digitalid.utility.annotations.state.Mutable;
 import net.digitalid.utility.annotations.state.Pure;
 
@@ -15,7 +16,7 @@ public final class MutableIndex {
     /**
      * Stores the value of this index.
      */
-    private int value;
+    private @NonNegative int value;
     
     /**
      * Returns the value of this index.
@@ -23,7 +24,7 @@ public final class MutableIndex {
      * @return the value of this index.
      */
     @Pure
-    public int getValue() {
+    public @NonNegative int getValue() {
         return value;
     }
     
@@ -40,7 +41,7 @@ public final class MutableIndex {
      * @return the current value of this index.
      */
     @Pure
-    public int getAndIncrementValue() {
+    public @NonNegative int getAndIncrementValue() {
         return value++;
     }
     
@@ -51,7 +52,9 @@ public final class MutableIndex {
      * 
      * @param value the value of the new index.
      */
-    private MutableIndex(int value) {
+    private MutableIndex(@NonNegative int value) {
+        assert value >= 0 : "The value is non-negative.";
+        
         this.value = value;
     }
     
@@ -63,7 +66,7 @@ public final class MutableIndex {
      * @return a new index with the given value.
      */
     @Pure
-    public static @Nonnull MutableIndex get(int value) {
+    public static @Nonnull MutableIndex get(@NonNegative int value) {
         return new MutableIndex(value);
     }
     

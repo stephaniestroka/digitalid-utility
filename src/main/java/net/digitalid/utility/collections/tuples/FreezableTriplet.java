@@ -130,9 +130,9 @@ public class FreezableTriplet<E0, E1, E2> extends FreezablePair<E0, E1> implemen
     @Override
     @SuppressWarnings("rawtypes")
     public boolean equals(@Nullable Object object) {
-        if (object == this) return true;
-        if (object == null) return false;
-        if (!(object instanceof FreezableTriplet)) return object.equals(this);
+        if (object == this) { return true; }
+        if (object == null) { return false; }
+        if (!(object instanceof FreezableTriplet)) { return object.equals(this); }
         final @Nonnull FreezableTriplet other = (FreezableTriplet) object;
         return super.equals(object) && Objects.equals(this.element2, other.element2);
     }

@@ -9,6 +9,8 @@ import net.digitalid.utility.annotations.math.Positive;
 import net.digitalid.utility.annotations.reference.Capturable;
 import net.digitalid.utility.annotations.state.Immutable;
 import net.digitalid.utility.annotations.state.Pure;
+import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
+import net.digitalid.utility.collections.annotations.elements.NullableElements;
 import net.digitalid.utility.collections.annotations.freezable.Frozen;
 import net.digitalid.utility.collections.annotations.freezable.NonFrozen;
 import net.digitalid.utility.collections.annotations.freezable.NonFrozenRecipient;
@@ -43,7 +45,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
         if (!frozen) {
             frozen = true;
             // Assuming that the keys are already immutable.
-            for (V value : values()) {
+            for (final @Nullable V value : values()) {
                 if (value instanceof Freezable) {
                     ((Freezable) value).freeze();
                 } else {
@@ -114,19 +116,19 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
     
     @Pure
     @Override
-    public @Nonnull FreezableSet<K> keySet() {
+    public @Nonnull @NullableElements FreezableSet<K> keySet() {
         return BackedFreezableSet.get(this, super.keySet());
     }
     
     @Pure
     @Override
-    public @Nonnull FreezableCollection<V> values() {
+    public @Nonnull @NullableElements FreezableCollection<V> values() {
         return BackedFreezableCollection.get(this, super.values());
     }
     
     @Pure
     @Override
-    public @Nonnull FreezableSet<Map.Entry<K,V>> entrySet() {
+    public @Nonnull @NonNullableElements FreezableSet<Map.Entry<K,V>> entrySet() {
         return BackedFreezableSet.get(this, super.entrySet());
     }
     
@@ -154,7 +156,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
         assert !isFrozen() : "This object is not frozen.";
         
         final @Nullable V oldValue = get(key);
-        if (oldValue != null) return oldValue;
+        if (oldValue != null) { return oldValue; }
         put(key, value);
         return value;
     }

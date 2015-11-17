@@ -118,9 +118,9 @@ public class FreezableQuartet<E0, E1, E2, E3> extends FreezableTriplet<E0, E1, E
     @Override
     @SuppressWarnings("rawtypes")
     public boolean equals(@Nullable Object object) {
-        if (object == this) return true;
-        if (object == null) return false;
-        if (!(object instanceof FreezableQuartet)) return object.equals(this);
+        if (object == this) { return true; }
+        if (object == null) { return false; }
+        if (!(object instanceof FreezableQuartet)) { return object.equals(this); }
         final @Nonnull FreezableQuartet other = (FreezableQuartet) object;
         return super.equals(object) && Objects.equals(this.element3, other.element3);
     }

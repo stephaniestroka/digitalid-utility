@@ -90,12 +90,12 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
     @SafeVarargs
     public static @Capturable @Nonnull @NonFrozen <E> FreezableArray<E> getNonNullable(@Nonnull FreezableArray<E>... arrays) {
         int size = 0;
-        for (@Nonnull FreezableArray<E> array : arrays) {
+        for (final @Nonnull FreezableArray<E> array : arrays) {
             size += array.size();
         }
         final @Nonnull FreezableArray<E> result = new FreezableArray<>(size);
         int index = 0;
-        for (@Nonnull FreezableArray<E> array : arrays) {
+        for (final @Nonnull FreezableArray<E> array : arrays) {
             for (int i = 0; i < array.size(); i++, index++) {
                 result.set(index, array.getNullable(i));
             }
@@ -196,7 +196,7 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
     public @Nonnull @NonFrozen FreezableArray<E> setAll(@Nullable E element) {
         assert !isFrozen() : "This object is not frozen.";
         
-        for (int i = 0; i < array.length; i++) array[i] = element;
+        for (int i = 0; i < array.length; i++) { array[i] = element; }
         return this;
     }
     
@@ -206,7 +206,7 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
     @Override
     public boolean containsNull() {
         for (final @Nullable E element : this) {
-            if (element == null) return true;
+            if (element == null) { return true; }
         }
         return false;
     }
@@ -216,8 +216,8 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
     public boolean containsDuplicates() {
         final @Nonnull HashSet<E> set = new HashSet<>(size());
         for (final @Nullable E element : this) {
-            if (set.contains(element)) return true;
-            else set.add(element);
+            if (set.contains(element)) { return true; }
+            else { set.add(element); }
         }
         return false;
     }
@@ -240,7 +240,7 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
     @Override
     public @Capturable @Nonnull @NonFrozen FreezableList<E> toFreezableList() {
         final @Nonnull FreezableList<E> freezableList = FreezableArrayList.getWithCapacity(array.length);
-        for (final @Nullable E element : array) freezableList.add(element);
+        for (final @Nullable E element : array) { freezableList.add(element); }
         return freezableList;
     }
     
@@ -249,10 +249,10 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
     @Pure
     @Override
     public boolean equals(@Nullable Object object) {
-        if (object == this) return true;
-        if (object == null) return false;
-        if (object instanceof FreezableArray) return Arrays.equals(array, ((FreezableArray) object).array);
-        if (object instanceof Object[]) return Arrays.equals(array, (Object[]) object);
+        if (object == this) { return true; }
+        if (object == null) { return false; }
+        if (object instanceof FreezableArray) { return Arrays.equals(array, ((FreezableArray) object).array); }
+        if (object instanceof Object[]) { return Arrays.equals(array, (Object[]) object); }
         return false;
     }
     

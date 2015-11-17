@@ -29,12 +29,12 @@ public final class IterableConverter {
     @Pure
     public static @Nonnull <E> String toString(@Nonnull Iterable<E> iterable, @Nonnull ElementConverter<? super E> converter, @Nullable Brackets brackets, @Nonnull String delimiter) {
         final @Nonnull StringBuilder string = new StringBuilder();
-        if (brackets != null) string.append(brackets.getOpening());
+        if (brackets != null) { string.append(brackets.getOpening()); }
         for (final @Nonnull E element : iterable) {
-            if (brackets == null && string.length() > 0 || brackets != null && string.length() > 1) string.append(delimiter);
+            if (brackets == null && string.length() > 0 || brackets != null && string.length() > 1) { string.append(delimiter); }
             string.append(converter.toString(element));
         }
-        if (brackets != null) string.append(brackets.getClosing());
+        if (brackets != null) { string.append(brackets.getClosing()); }
         return string.toString();
     }
     

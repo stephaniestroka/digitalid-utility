@@ -42,7 +42,7 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     public @Nonnull @Frozen ReadOnlySet<E> freeze() {
         if (!frozen) {
             frozen = true;
-            for (E element : this) {
+            for (final @Nullable E element : this) {
                 if (element instanceof Freezable) {
                     ((Freezable) element).freeze();
                 } else {
@@ -143,7 +143,7 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     @Override
     public boolean containsNull() {
         for (final @Nullable E element : this) {
-            if (element == null) return true;
+            if (element == null) { return true; }
         }
         return false;
     }
@@ -210,7 +210,7 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     @Override
     public @Capturable @Nonnull @NonFrozen FreezableSet<E> add(@Nonnull ReadOnlySet<E> set) {
         final @Nonnull FreezableSet<E> clone = clone();
-        clone.addAll((FreezableSet<E>) set);
+        clone.addAll((Collection<E>) set);
         return clone;
     }
     
@@ -218,7 +218,7 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     @Override
     public @Capturable @Nonnull @NonFrozen FreezableSet<E> subtract(@Nonnull ReadOnlySet<E> set) {
         final @Nonnull FreezableSet<E> clone = clone();
-        clone.removeAll((FreezableSet<E>) set);
+        clone.removeAll((Collection<E>) set);
         return clone;
     }
     
@@ -226,7 +226,7 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     @Override
     public @Capturable @Nonnull @NonFrozen FreezableSet<E> intersect(@Nonnull ReadOnlySet<E> set) {
         final @Nonnull FreezableSet<E> clone = clone();
-        clone.retainAll((FreezableSet<E>) set);
+        clone.retainAll((Collection<E>) set);
         return clone;
     }
     

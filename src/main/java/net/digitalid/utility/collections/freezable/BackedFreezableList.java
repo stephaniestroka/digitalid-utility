@@ -167,7 +167,7 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
     @Override
     public boolean containsNull() {
         for (final @Nullable Object element : this) {
-            if (element == null) return true;
+            if (element == null) { return true; }
         }
         return false;
     }
@@ -177,8 +177,8 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
     public boolean containsDuplicates() {
         final @Nonnull HashSet<E> set = new HashSet<>(size());
         for (final @Nullable E element : this) {
-            if (set.contains(element)) return true;
-            else set.add(element);
+            if (set.contains(element)) { return true; }
+            else { set.add(element); }
         }
         return false;
     }
@@ -198,10 +198,10 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
     private boolean isOrdered(boolean strictly, boolean ascending) {
         @Nullable E lastElement = null;
         for (final @Nullable E element : this) {
-            if (element == null) continue;
+            if (element == null) { continue; }
             if (lastElement != null) {
                 if (element instanceof Comparable<?>) {
-                    if (((Comparable<E>) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) return false;
+                    if (((Comparable<E>) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
                 }
             }
             lastElement = element;

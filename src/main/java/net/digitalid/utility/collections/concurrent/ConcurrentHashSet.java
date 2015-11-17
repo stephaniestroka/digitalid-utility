@@ -159,14 +159,16 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
     @Override
     public boolean addAll(@Nonnull Collection<? extends E> collection) {
         boolean changed = false;
-        for (@Nonnull E element : collection) if (add(element)) changed = true;
+        for (final @Nonnull E element : collection) {
+            if (add(element)) { changed = true; }
+        }
         return changed;
     }
     
     @Override
     public boolean retainAll(@Nonnull Collection<?> collection) {
         boolean changed = false;
-        for (@Nonnull E element : this) {
+        for (final @Nonnull E element : this) {
             if (!collection.contains(element)) {
                 remove(element);
                 changed = true;
