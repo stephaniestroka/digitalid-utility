@@ -26,7 +26,7 @@ public final class Log {
         final @Nonnull StackTraceElement element = Thread.currentThread().getStackTrace()[INDEX];
         final @Nonnull String className = element.getClassName();
         final int lineNumber = element.getLineNumber();
-        return className.substring(className.lastIndexOf(".") + 1) + "." + element.getMethodName() + (lineNumber > 0 ? ":" + lineNumber : "");
+        return className.substring(className.lastIndexOf('.') + 1) + "." + element.getMethodName() + (lineNumber > 0 ? ":" + lineNumber : "");
     }
     
     /**
