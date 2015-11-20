@@ -1,6 +1,7 @@
 package net.digitalid.utility.system.auxiliary;
 
 import javax.annotation.Nonnull;
+import net.digitalid.utility.annotations.math.NonNegative;
 import net.digitalid.utility.annotations.state.Pure;
 import net.digitalid.utility.annotations.state.Stateless;
 
@@ -9,6 +10,46 @@ import net.digitalid.utility.annotations.state.Stateless;
  */
 @Stateless
 public final class StringUtility {
+    
+    /* -------------------------------------------------- Pluralization -------------------------------------------------- */
+    
+    /**
+     * Pluralizes the given word based on simple heuristics.
+     * 
+     * @param word the word in singular to be pluralized.
+     * 
+     * @return the word in plural based on simple heuristics.
+     */
+    @Pure
+    public static @Nonnull String pluralize(@Nonnull String word) {
+        final @Nonnull String[][] rules = { { "a", "ae" }, { "an", "en" }, { "ch", "ches" }, { "ex", "ices" }, { "f", "ves" }, { "fe", "ves" }, { "is", "es" }, { "ix", "ices" }, { "s", "ses" }, { "sh", "shes" }, { "um", "a" }, { "x", "xes" }, { "y", "ies" } };
+        
+        if (word.contains("oo")) { return word.replace("oo", "ee"); }
+        for (final @Nonnull String[] rule : rules) {
+            if (word.endsWith(rule[0])) {
+                return word.substring(0, word.length() - rule[0].length()) + rule[1];
+            }
+        }
+        return word + "s";
+    }
+    
+    /**
+     * Prepends the given word with the given number (written-out if smaller than 13).
+     * 
+     * @param number the number which is to be prepended to the given singular word.
+     * @param word the word in singular which is to be prepended by the given number.
+     * 
+     * @return the potentially pluralized word prepended with the given written-out number.
+     */
+    @Pure
+    public static @Nonnull String prependWithNumber(@NonNegative int number, @Nonnull String word) {
+        assert number >= 0 : "The given number is non-negative.";
+        
+        final @Nonnull String[] numbers = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve" };
+        return (number < numbers.length ? numbers[number] : number) + " " + (number == 1 ? word : pluralize(word));
+    }
+    
+    /* -------------------------------------------------- Prefixes -------------------------------------------------- */
     
     /**
      * Returns whether the given word starts with any of the given prefixes.
@@ -60,6 +101,8 @@ public final class StringUtility {
     public static @Nonnull String prependWithIndefiniteArticle(@Nonnull String word) {
         return prependWithIndefiniteArticle(word, false);
     }
+    
+    /* -------------------------------------------------- Capitalization -------------------------------------------------- */
     
     /**
      * Returns the phrase with the first letter of each word in uppercase.
