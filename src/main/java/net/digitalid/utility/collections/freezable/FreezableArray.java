@@ -80,6 +80,18 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
     }
     
     /**
+     * Creates a new freezable array from the given array.
+     * 
+     * @param array the elements of the new array.
+     * 
+     * @return a new freezable array from the given array.
+     */
+    @Pure
+    public static @Capturable @Nullable @NonFrozen <E> FreezableArray<E> getNullable(@Captured @Nullable E[] array) {
+        return array == null ? null : getNonNullable(array);
+    }
+    
+    /**
      * Creates a new freezable array that flattens the given arrays for one degree.
      * 
      * @param arrays the arrays containing the elements of the new array.
@@ -88,7 +100,7 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
      */
     @Pure
     @SafeVarargs
-    public static @Capturable @Nonnull @NonFrozen <E> FreezableArray<E> getNonNullable(@Nonnull FreezableArray<E>... arrays) {
+    public static @Capturable @Nonnull @NonFrozen <E> FreezableArray<E> flatten(@Nonnull FreezableArray<E>... arrays) {
         int size = 0;
         for (final @Nonnull FreezableArray<E> array : arrays) {
             size += array.size();
@@ -101,18 +113,6 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
             }
         }
         return result;
-    }
-    
-    /**
-     * Creates a new freezable array from the given array.
-     * 
-     * @param array the elements of the new array.
-     * 
-     * @return a new freezable array from the given array.
-     */
-    @Pure
-    public static @Capturable @Nullable @NonFrozen <E> FreezableArray<E> getNullable(@Captured @Nullable E[] array) {
-        return array == null ? null : getNonNullable(array);
     }
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */
