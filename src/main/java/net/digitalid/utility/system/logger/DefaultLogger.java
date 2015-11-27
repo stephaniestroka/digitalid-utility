@@ -76,7 +76,7 @@ public final class DefaultLogger extends Logger {
         try {
             this.out = new PrintStream(new FileOutputStream(Directory.getLogsDirectory().getPath() + File.separator + day.get().format(new Date()) + " " + name + ".log", true));
         } catch (@Nonnull FileNotFoundException exception) {
-            throw new InitializationError("Could not open the log file '" + name + "'.", exception);
+            throw InitializationError.get("Could not open the log file '" + name + "'.", exception);
         }
     }
     

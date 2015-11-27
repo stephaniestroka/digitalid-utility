@@ -37,7 +37,7 @@ public final class Console {
             if (input == null) { throw new IOException("The end of the standard input has been reached."); }
             return input;
         } catch (@Nonnull IOException exception) {
-            throw new ShouldNeverHappenError("Could not read from the standard input.", exception);
+            throw ShouldNeverHappenError.get("Could not read from the standard input.", exception);
         }
     }
     

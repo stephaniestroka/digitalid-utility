@@ -1,40 +1,63 @@
 package net.digitalid.utility.system.errors;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.state.Immutable;
+import net.digitalid.utility.annotations.state.Pure;
 
 /**
  * This error is thrown when an error occurs during initialization.
  */
 @Immutable
-public final class InitializationError extends FatalError {
+public class InitializationError extends FatalError {
     
-    /**
-     * Creates a new initialization error with the given message.
-     * 
-     * @param message a string explaining the error that occurred.
-     */
-    public InitializationError(@Nonnull String message) {
-        super(message, null);
-    }
-    
-    /**
-     * Creates a new initialization error with the given cause.
-     * 
-     * @param cause a reference to the cause of the error.
-     */
-    public InitializationError(@Nonnull Throwable cause) {
-        super(null, cause);
-    }
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a new initialization error with the given message and cause.
      * 
-     * @param message a string explaining the error that occurred.
-     * @param cause a reference to the cause of the error.
+     * @param message a string explaining the problem which has occurred.
+     * @param cause the exception that caused this problem, if available.
      */
-    public InitializationError(@Nonnull String message, @Nonnull Throwable cause) {
+    protected InitializationError(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
+    }
+    
+    /**
+     * Returns a new initialization error with the given message and cause.
+     * 
+     * @param message a string explaining the problem which has occurred.
+     * @param cause the exception that caused this problem, if available.
+     * 
+     * @return a new initialization error with the given message and cause.
+     */
+    @Pure
+    public static @Nonnull InitializationError get(@Nullable String message, @Nullable Throwable cause) {
+        return new InitializationError(message, cause);
+    }
+    
+    /**
+     * Returns a new initialization error with the given message.
+     * 
+     * @param message a string explaining the problem which has occurred.
+     * 
+     * @return a new initialization error with the given message.
+     */
+    @Pure
+    public static @Nonnull InitializationError get(@Nullable String message) {
+        return new InitializationError(message, null);
+    }
+    
+    /**
+     * Returns a new initialization error with the given cause.
+     * 
+     * @param cause the exception that caused this problem, if available.
+     * 
+     * @return a new initialization error with the given cause.
+     */
+    @Pure
+    public static @Nonnull InitializationError get(@Nullable Throwable cause) {
+        return new InitializationError(null, cause);
     }
     
 }

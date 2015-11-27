@@ -63,7 +63,7 @@ public final class Directory {
         assert root != null : "This class is initialized.";
         
         final @Nonnull File directory = new File(root.getPath() + File.separator + name);
-        if (!directory.exists() && !directory.mkdirs()) { throw new InitializationError("Could not create the directory '" + directory.getPath() + "'."); }
+        if (!directory.exists() && !directory.mkdirs()) { throw InitializationError.get("Could not create the directory '" + directory.getPath() + "'."); }
         return directory;
     }
     
