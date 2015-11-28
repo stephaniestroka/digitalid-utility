@@ -4,11 +4,11 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.reference.Capturable;
+import net.digitalid.utility.annotations.state.Pure;
+import net.digitalid.utility.collections.annotations.elements.NullableElements;
 import net.digitalid.utility.collections.annotations.freezable.Frozen;
 import net.digitalid.utility.collections.annotations.freezable.NonFrozen;
 import net.digitalid.utility.collections.annotations.freezable.NonFrozenRecipient;
-import net.digitalid.utility.collections.annotations.elements.NullableElements;
-import net.digitalid.utility.annotations.state.Pure;
 import net.digitalid.utility.collections.freezable.Freezable;
 import net.digitalid.utility.collections.freezable.FreezableObject;
 
