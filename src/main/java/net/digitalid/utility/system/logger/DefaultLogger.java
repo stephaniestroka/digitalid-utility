@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.digitalid.utility.annotations.state.Pure;
 import net.digitalid.utility.system.directory.Directory;
 import net.digitalid.utility.system.errors.InitializationError;
 
@@ -89,11 +90,25 @@ public final class DefaultLogger extends Logger {
      * @param name the name of the file to write the log messages to.
      * @param version the version of the code which called this logger.
      */
-    public DefaultLogger(@Nonnull Level level, @Nonnull String name, @Nonnull String version) {
+    protected DefaultLogger(@Nonnull Level level, @Nonnull String name, @Nonnull String version) {
         this.level = level;
         this.name = name;
         this.version = version;
         rotate();
+    }
+    
+    /**
+     * Returns a new logger that writes to the file with the given name.
+     * 
+     * @param level the level above which messages should be logged.
+     * @param name the name of the file to write the log messages to.
+     * @param version the version of the code which called this logger.
+     * 
+     * @return a new logger that writes to the file with the given name.
+     */
+    @Pure
+    public static @Nonnull DefaultLogger get(@Nonnull Level level, @Nonnull String name, @Nonnull String version) {
+        return new DefaultLogger(level, name, version);
     }
     
     /* -------------------------------------------------- Logging -------------------------------------------------- */
