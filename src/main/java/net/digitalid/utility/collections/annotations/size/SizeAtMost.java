@@ -19,6 +19,6 @@ import net.digitalid.utility.collections.freezable.FreezableCollection;
 @Retention(RetentionPolicy.CLASS)
 @TargetType({Collection.class, FreezableCollection.class, Object[].class, String.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
-public @interface AtMostSize {
+public @interface SizeAtMost {
     int value();
 }
