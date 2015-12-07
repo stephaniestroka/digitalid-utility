@@ -122,4 +122,23 @@ public final class StringUtility {
         return string.toString();
     }
     
+    /**
+     * Returns the word in lower case with spaces.
+     * 
+     * @param word the word which is in camel case.
+     * 
+     * @return the word in lower case with spaces.
+     */
+    @Pure
+    public static @Nonnull String decamelize(@Nonnull String word) {
+        final @Nonnull StringBuilder string = new StringBuilder(word);
+        for (int index = 0; index < string.length(); index++) {
+            if (Character.isUpperCase(string.charAt(index))) {
+                string.replace(index, index + 1, string.substring(index, index + 1).toLowerCase());
+                if (index > 0) { string.insert(index, ' '); }
+            }
+        }
+        return string.toString();
+    }
+    
 }
