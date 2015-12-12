@@ -9,6 +9,7 @@ import net.digitalid.utility.annotations.state.Pure;
  * This class represents a mutable index.
  */
 @Mutable
+@Deprecated // TODO: Might no longer be necessary if the ValueCollector and SelectionResult implement their own internal indexes.
 public final class MutableIndex {
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
