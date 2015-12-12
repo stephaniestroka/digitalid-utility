@@ -1,8 +1,9 @@
-package net.digitalid.utility.system.exceptions;
+package net.digitalid.utility.system.exceptions.internal;
 
 import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.state.Immutable;
 import net.digitalid.utility.annotations.state.Pure;
+import net.digitalid.utility.system.exceptions.CustomException;
 
 /**
  * An internal exception indicates a wrong use of the library.
