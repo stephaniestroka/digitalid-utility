@@ -9,28 +9,28 @@ import net.digitalid.utility.system.logger.Log;
  * All custom exceptions extend this class.
  */
 @Immutable
-public abstract class CustomException extends Exception {
+public abstract class DigitalIDException extends Exception {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
-     * Creates a new custom exception with the given message and cause.
+     * Creates a new Digital ID exception with the given message and cause.
      * 
      * @param message a string explaining the problem which has occurred.
      * @param cause the exception that caused this problem, if available.
      */
-    protected CustomException(@Nonnull String message, @Nullable Exception cause) {
+    protected DigitalIDException(@Nonnull String message, @Nullable Exception cause) {
         super(message, cause);
         
         Log.warning("A problem occurred.", this);
     }
     
     /**
-     * Creates a new custom exception with the given message.
+     * Creates a new Digital ID exception with the given message.
      * 
      * @param message a string explaining the problem which has occurred.
      */
-    protected CustomException(@Nonnull String message) {
+    protected DigitalIDException(@Nonnull String message) {
         this(message, null);
     }
     

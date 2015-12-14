@@ -3,7 +3,7 @@ package net.digitalid.utility.system.exceptions.external;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.state.Immutable;
-import net.digitalid.utility.system.exceptions.CustomException;
+import net.digitalid.utility.system.exceptions.DigitalIDException;
 
 /**
  * An external exception is caused by another party.
@@ -11,7 +11,7 @@ import net.digitalid.utility.system.exceptions.CustomException;
  * @see InvalidEncodingException
  */
 @Immutable
-public abstract class ExternalException extends CustomException {
+public abstract class ExternalException extends DigitalIDException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     

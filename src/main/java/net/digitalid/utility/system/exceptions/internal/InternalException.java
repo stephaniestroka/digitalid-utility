@@ -3,13 +3,13 @@ package net.digitalid.utility.system.exceptions.internal;
 import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.state.Immutable;
 import net.digitalid.utility.annotations.state.Pure;
-import net.digitalid.utility.system.exceptions.CustomException;
+import net.digitalid.utility.system.exceptions.DigitalIDException;
 
 /**
  * An internal exception indicates a wrong use of the library.
  */
 @Immutable
-public class InternalException extends CustomException {
+public class InternalException extends DigitalIDException {
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
