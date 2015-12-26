@@ -87,5 +87,10 @@
             <artifactId>digitalid-utility-annotations</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>net.digitalid</groupId>
+            <artifactId>digitalid-utility-collections</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 </project>
