@@ -5,7 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Ignore {
+@Target(ElementType.FIELD)
+public @interface GenericTypesMap {
+
+    Class<?> keyType() default Object.class;
+
+    Class<?> valueType() default Object.class;
+    
 }

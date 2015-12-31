@@ -1,20 +1,24 @@
 package net.digitalid.utility.system.converter.exceptions;
 
 import javax.annotation.Nonnull;
-import net.digitalid.utility.system.exceptions.internal.InternalException;
 
-public abstract class ConverterException extends Exception {
+public class ConverterException extends Exception {
+     
+    protected ConverterException(@Nonnull Class<?> clazz) {
+        super("Failed to find serializer for type '" + clazz + "'");
+    }
 
-    /**
-     * Creates a new internal exception with the given message.
-     *
-     * @param message a string explaining the illegal operation.
-     */
-    protected ConverterException(@Nonnull String message) {
-        super(message);
+    protected ConverterException(@Nonnull Class<?> clazz, @Nonnull Throwable throwable) {
+        super("Failed to find serializer for type '" + clazz + "'", throwable);
     }
     
-    protected ConverterException(@Nonnull String message, @Nonnull Throwable throwable) {
-        super(message, throwable);
+    public static @Nonnull
+    ConverterException get(@Nonnull Class<?> clazz, @Nonnull Throwable throwable) {
+        return new ConverterException(clazz, throwable);
+    }
+    
+    public static @Nonnull
+    ConverterException get(@Nonnull Class<?> clazz) {
+        return new ConverterException(clazz);
     }
 }
