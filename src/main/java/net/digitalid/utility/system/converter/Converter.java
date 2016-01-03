@@ -28,107 +28,107 @@ import net.digitalid.utility.system.converter.exceptions.StructureException;
  * Abstract class for format converters. Defines abstract methods that must be implemented in every
  * converter, and helper methods that can be used to identify how to convert types.
  * 
- * @param <B> The specific format converter.
+ * @param <C> The specific format converter.
  */
-public abstract class Converter<B extends Converter<?>> {
+public abstract class Converter<C extends Converter<?>> {
     
     /* -------------------------------------------------- Type Converter -------------------------------------------------- */
     
     /**
      * Maps types to converters. 
      */
-    private final Map<Class<?>, B> converters = new HashMap<>();
+    private final Map<Class<?>, C> converters = new HashMap<>();
 
     /**
      * Returns the converter which converts objects of type boolean or {@link Boolean} to and from the format.
      * 
      * @return the converter which converts objects of type boolean or {@link Boolean} to and from the format.
      */
-    protected abstract B getBooleanConverter();
+    protected abstract C getBooleanConverter();
     
     /**
      * Returns the converter which converts objects of type char or {@link Character} to and from the format.
      * 
      * @return the converter which converts objects of type char or {@link Character} to and from the format.
      */
-    protected abstract B getCharacterConverter();
+    protected abstract C getCharacterConverter();
     
     /**
      * Returns the converter which converts objects of type {@link String} to and from the format.
      * 
      * @return the converter which converts objects of type {@link String} to and from the format.
      */
-    protected abstract B getStringConverter();
+    protected abstract C getStringConverter();
 
     /**
      * Returns the converter which converts objects of type byte[] or {@link Byte[]} to and from the format.
      * 
      * @return the converter which converts objects of type byte[] or {@link Byte[]} to and from the format.
      */
-    protected abstract B getBinaryConverter();
+    protected abstract C getBinaryConverter();
 
     /**
      * Returns the converter which converts objects of type {@link BigInteger} to and from the format.
      * 
      * @return the converter which converts objects of type {@link BigInteger} to and from the format.
      */
-    protected abstract B getIntegerConverter();
+    protected abstract C getIntegerConverter();
     
     /**
      * Returns the converter which converts objects of type {@link Byte} to and from the format.
      * 
      * @return the converter which converts objects of type {@link Byte} to and from the format.
      */
-    protected abstract B getInteger08Converter();
+    protected abstract C getInteger08Converter();
     
     /**
      * Returns the converter which converts objects of type {@link Short} to and from the format.
      * 
      * @return the converter which converts objects of type {@link Short} to and from the format.
      */
-    protected abstract B getInteger16Converter();
+    protected abstract C getInteger16Converter();
      
     /**
      * Returns the converter which converts objects of type {@link Integer} to and from the format.
      * 
      * @return the converter which converts objects of type {@link Integer} to and from the format.
      */
-    protected abstract B getInteger32Converter();
+    protected abstract C getInteger32Converter();
      
     /**
      * Returns the converter which converts objects of type {@link Long} to and from the format.
      * 
      * @return the converter which converts objects of type {@link Long} to and from the format.
      */
-    protected abstract B getInteger64Converter();
+    protected abstract C getInteger64Converter();
      
     /**
      * Returns the converter which converts objects of type {@link Convertible} to and from the format.
      * 
      * @return the converter which converts objects of type {@link Convertible} to and from the format.
      */
-    protected abstract B getConvertibleConverter();
+    protected abstract C getConvertibleConverter();
      
     /**
      * Returns the converter which converts objects of type {@link Collection} to and from the format.
      * 
      * @return the converter which converts objects of type {@link Collection} to and from the format.
      */
-    protected abstract B getCollectionConverter();
+    protected abstract C getCollectionConverter();
     
     /**
      * Returns the converter which converts objects of type {@link Map} to and from the format.
      * 
      * @return the converter which converts objects of type {@link Map} to and from the format.
      */    
-    protected abstract B getMapConverter();
+    protected abstract C getMapConverter();
      
     /**
      * Returns the converter which converts objects of type {@link Object[} to and from the format.
      * 
      * @return the converter which converts objects of type {@link Object[]} to and from the format.
      */
-    protected abstract B getArrayConverter();
+    protected abstract C getArrayConverter();
       
     /**
      * Returns the converter which maps objects of one type to another using the {@link TypeToTypeMapper} and then converts it to and from the format.
@@ -137,7 +137,7 @@ public abstract class Converter<B extends Converter<?>> {
      *  
      * @return the converter which maps objects of one type to another using the {@link TypeToTypeMapper} and then converts it to and from the format.
      */
-    protected abstract B getTypeToTypeConverter(TypeToTypeMapper<?, ?> typeToTypeMapper);
+    protected abstract C getTypeToTypeConverter(TypeToTypeMapper<?, ?> typeToTypeMapper);
      
     /**
      * Registers a converter for a specific type.
@@ -145,7 +145,7 @@ public abstract class Converter<B extends Converter<?>> {
      * @param type The type for which the specific converter should be registered.
      * @param converter The converter which should be used when an object of the specific type must be converted.
      */
-    protected void registerConverter(@Nonnull Class<?> type, @Nonnull B converter) {
+    protected void registerConverter(@Nonnull Class<?> type, @Nonnull C converter) {
         converters.put(type, converter);
     }
 
@@ -158,7 +158,7 @@ public abstract class Converter<B extends Converter<?>> {
      * 
      * @throws RestoringException If a type converter was not found for this type.
      */
-    protected B getRestoringTypeConverter(@Nonnull Class<?> type) throws RestoringException {
+    protected C getRestoringTypeConverter(@Nonnull Class<?> type) throws RestoringException {
         try {
             return getTypeConverter(type);
         } catch (ConverterException e) {
@@ -175,7 +175,7 @@ public abstract class Converter<B extends Converter<?>> {
      * 
      * @throws StoringException If a type converter was not found for this type.
      */
-    protected B getStoringTypeConverter(@Nonnull Class<?> type) throws StoringException {
+    protected C getStoringTypeConverter(@Nonnull Class<?> type) throws StoringException {
         try {
             return getTypeConverter(type);
         } catch (ConverterException e) {
@@ -192,8 +192,8 @@ public abstract class Converter<B extends Converter<?>> {
      * 
      * @throws ConverterException if no type converter was found for the specified type.
      */
-    private B getTypeConverter(@Nonnull Class<?> type) throws ConverterException {
-        B typeConverter = converters.get(type);
+    private @Nonnull C getTypeConverter(@Nonnull Class<?> type) throws ConverterException {
+        @Nonnull C typeConverter = converters.get(type);
         
         if (typeConverter == null) {
             if (type.equals(Boolean.class) || type.equals(boolean.class)) {
@@ -223,6 +223,7 @@ public abstract class Converter<B extends Converter<?>> {
             } else if (Map.class.isAssignableFrom(type)) {
                 typeConverter = getMapConverter();
             } else if (TypeToTypeMapper.class.isAssignableFrom(type)) {
+                // TODO: check that TypeToTypeMapper is instantiable
                 try {
                     TypeToTypeMapper typeToTypeMapperInstance = (TypeToTypeMapper) type.newInstance();
                     typeConverter = getTypeToTypeConverter(typeToTypeMapperInstance);
@@ -230,7 +231,9 @@ public abstract class Converter<B extends Converter<?>> {
                     throw ConverterException.get(type, e);
                 }
             } 
-            converters.put(type, typeConverter);
+            if (typeConverter != null) {
+                converters.put(type, typeConverter);
+            }
         }
         if (typeConverter == null) {
             throw ConverterException.get(type);
@@ -251,9 +254,9 @@ public abstract class Converter<B extends Converter<?>> {
      * @throws FieldConverterException 
      */
     @SuppressWarnings("unchecked")
-    protected B getFieldConverter(@Nonnull Field field) throws FieldConverterException {
+    protected C getFieldConverter(@Nonnull Field field) throws FieldConverterException {
         boolean isConvertToConvertibleTypeAnnotationPresent = field.isAnnotationPresent(ConvertToConvertibleType.class);
-        B fieldConverter;
+        C fieldConverter;
         if (isConvertToConvertibleTypeAnnotationPresent) {
             ConvertToConvertibleType convertedWith = field.getAnnotation(ConvertToConvertibleType.class);
             Class<? extends TypeToTypeMapper> typeToTypeMapper = convertedWith.typeToTypeMapper();
