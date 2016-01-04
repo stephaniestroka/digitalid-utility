@@ -20,6 +20,6 @@ public @interface ConvertToConvertibleType {
      * 
      * @return the type mapper used to map the type.
      */
-    @Nonnull Class<? extends TypeMapper<?, ?>> typeMapper();
+    @Nonnull Class<? extends TypeMapper<?, ?>> value();
     
 }
