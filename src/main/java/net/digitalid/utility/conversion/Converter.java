@@ -10,11 +10,13 @@ import java.lang.reflect.TypeVariable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
+import net.digitalid.utility.collections.annotations.freezable.Frozen;
 import net.digitalid.utility.collections.freezable.FreezableArrayList;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.conversion.annotations.Constructing;
 import net.digitalid.utility.conversion.annotations.IgnoreForConversion;
-import net.digitalid.utility.conversion.exceptions.RestoringException;
+import net.digitalid.utility.conversion.annotations.RequiredForReconstruction;
+import net.digitalid.utility.conversion.exceptions.RecoveryException;
 import net.digitalid.utility.conversion.exceptions.StructureException;
 
 /**
@@ -41,59 +43,78 @@ public abstract class Converter {
         return fieldMetaData;
     }
     
-    /* -------------------------------------------------- Object Construction -------------------------------------------------- */
+    /* -------------------------------------------------- Object Recovery -------------------------------------------------- */
     
     /**
-     * Constructs an object of a given type with the given values using the type constructor.
+     * Returns a constructor for a given type.
      * 
-     * @param type the type of the object that is constructed.
+     * @param type the type for which the constructor should be returned.
+     * 
+     * @return a constructor for a given type.
+     * 
+     * @throws StructureException if the type has multiple of no declared constructors.
+     */
+    protected static @Nonnull Constructor<?> getConstructor(@Nonnull Class<?> type) throws StructureException {
+        final @Nonnull Constructor<?>[] constructors = type.getDeclaredConstructors();
+        if (constructors.length > 1) {
+            throw StructureException.get("The type has multiple constructors.");
+        } else if (constructors.length == 0) {
+            throw StructureException.get("The type does not have any declared constructors.");
+        }
+        return constructors[0];
+    }
+    
+    /**
+     * Recovers an object of a given type with the given values using the type constructor.
+     * 
+     * @param type the type of the object that is recovered.
      * @param values the values used to construct the object.
      *  
-     * @return the constructed object.
+     * @return the recovered object.
      * 
-     * @throws RestoringException if the object cannot be constructed.
+     * @throws RecoveryException if the object cannot be constructed.
      */
-    private static @Nonnull Object constructObjectWithConstructor(@Nonnull Class<?> type, @Nonnull Object values) throws RestoringException {
-        @Nonnull Constructor constructor;
+    private static @Nonnull Object recoverObjectWithConstructor(@Nonnull Class<?> type, @Nullable Object... values) throws RecoveryException {
+        final @Nonnull Constructor constructor;
         try {
             constructor = getConstructor(type);
         } catch (StructureException e) {
-            throw RestoringException.get(type, "Failed to restore object with the constructor.", e);
+            throw RecoveryException.get(type, "Failed to restore object with the constructor.", e);
         }
         try {
             return constructor.newInstance(values);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw RestoringException.get(type, "Failed to restore object with the constructor.", e);
+            throw RecoveryException.get(type, "Failed to restore object with the constructor.", e);
         }
     }
     
     /**
-     * Constructs an object with the given values using the type's static constructing method.
+     * Recovers an object with the given values using the type's static recovery method.
      * 
-     * @param constructorMethod the type's constructor method.
-     * @param values the values used to construct the object.
+     * @param recoveryMethod the type's recovery method.
+     * @param values the values used to recover the object.
      *               
-     * @return the constructed object.
+     * @return the recovered object.
      * 
-     * @throws RestoringException if the object cannot be constructed.
+     * @throws RecoveryException if the object cannot be recovered.
      */
-    private static @Nullable Object constructObjectWithStaticMethod(@Nonnull Method constructorMethod, @Nonnull Object[] values) throws RestoringException {
+    private static @Nullable Object recoverObjectWithStaticMethod(@Nonnull Method recoveryMethod, @Nullable Object... values) throws RecoveryException {
         try {
-            return constructorMethod.invoke(null, values);
+            return recoveryMethod.invoke(null, values);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw RestoringException.get(constructorMethod.getDeclaringClass(), "Failed to restore object with static constructor method.", e);
+            throw RecoveryException.get(recoveryMethod.getDeclaringClass(), "Failed to restore object with static constructor method.", e);
         }
     }
 
     /**
-     * Returns the static constructor method for the given type.
+     * Returns the static recovery method for the given type.
      * 
-     * @param type the type for which the static constructor method should be returned.
+     * @param type the type for which the static recovery method should be returned.
      *             
-     * @return the static constructor method for the given type.
+     * @return the static recovery method for the given type.
      */
-    private static @Nullable Method getStaticConstructorMethod(@Nonnull Class<?> type) {
-        Method[] methods = type.getDeclaredMethods();
+    private static @Nullable Method getStaticRecoveryMethod(@Nonnull Class<?> type) {
+        final @Nonnull @NonNullableElements Method[] methods = type.getDeclaredMethods();
         for (Method method : methods) {
             if (method.isAnnotationPresent(Constructing.class)) {
                 return method;
@@ -101,80 +122,121 @@ public abstract class Converter {
         }
         return null;
     }
-    
-    protected static @Nonnull Object constructObjectNonNullable(@Nonnull Class<?> type, @Nonnull Object... values) throws RestoringException {
-        @Nullable Method constructorMethod = getStaticConstructorMethod(type);
-        @Nullable Object restoredObject;
+
+    /**
+     * Recovers an object of a given type using the given values.
+     * 
+     * @param type the type of the object which should be recovered.
+     * @param values the values used to recover the object.
+     * 
+     * @return the recovered object.
+     * 
+     * @throws RecoveryException if the recovery method unexpectedly returns null.
+     */
+    protected static @Nonnull Object recoverNonNullableObject(@Nonnull Class<?> type, @Nullable Object... values) throws RecoveryException {
+        final @Nullable Method constructorMethod = getStaticRecoveryMethod(type);
+        final @Nullable Object restoredObject;
         if (constructorMethod == null) {
-            restoredObject = constructObjectWithConstructor(type, values);
+            restoredObject = recoverObjectWithConstructor(type, values);
         } else {
-            restoredObject = constructObjectWithStaticMethod(constructorMethod, values);
+            restoredObject = recoverObjectWithStaticMethod(constructorMethod, values);
         }
         if (restoredObject == null) {
             // TODO: Rather verify that the constructor method returns a non-nullable object.
-            throw RestoringException.get(type, "Expected non-null object.");
+            throw RecoveryException.get(type, "Expected non-null object.");
         }
         return restoredObject;
     }
     
-    protected static @Nonnull Constructor<?> getConstructor(@Nonnull Class<?> clazz) throws StructureException {
-        Constructor<?>[] constructors = clazz.getDeclaredConstructors();
-        if (constructors.length > 1) {
-            throw StructureException.get("The class has multiple constructors.");
-        } else if (constructors.length == 0) {
-            throw StructureException.get("The class does not have any declared constructors.");
-        }
-        return constructors[0];
-    }
-    
     /* -------------------------------------------------- Structure -------------------------------------------------- */
-    
-    protected enum Structure {
+
+    /**
+     * The structure of a type. 
+     * SINGLE_TYPE represents types with a single field, because a converted object of this type stores the field`s value as its content.
+     * TUPLE represents types with multiple fields, because a converted object of this type must store its fields in a tuple.
+     */
+    public enum Structure {
         TUPLE, SINGLE_TYPE
     }
-    
-    private static TypeVariable<? extends Constructor<?>>[] getTypeParameters(@Nonnull Class<?> clazz) throws StructureException {
-        // TODO: Shouldn't this also (or only) consider the static constructor method?
-        Constructor<?> constructor = getConstructor(clazz);
-        return constructor.getTypeParameters();
+
+    /**
+     * Returns the type parameters of a recovery method or constructor of a given type.
+     * 
+     * @param type the type for which the type parameters of a recovery method or constructor are returned.
+     * 
+     * @return the type parameters of a recovery method or constructor of a given type.
+     * 
+     * @throws StructureException
+     */
+    private static @Nonnull @NonNullableElements TypeVariable<?>[] getTypesOfConvertibleFields(@Nonnull Class<?> type) throws StructureException {
+        final @Nullable Method constructorMethod = getStaticRecoveryMethod(type);
+        if (constructorMethod == null) {
+            final @Nonnull Constructor<?> constructor = getConstructor(type);
+            return constructor.getTypeParameters();
+        } else {
+            return constructorMethod.getTypeParameters();
+        }
     }
-    
+
+    /**
+     * Returns all convertible fields of a given type. 
+     * A field is considered convertible if it is passed to the recovery method or constructor of the type.
+     * 
+     * @param type the type for which the convertible fields should be returned.
+     * 
+     * @return all convertible fields of a given type.
+     * 
+     * @throws StructureException if a type parameter of a recovery method cannot be identified as a field.
+     */
     // TODO: optimize with a cache
-    protected static @Nonnull @NonNullableElements ReadOnlyList<Field> getStorableFields(@Nonnull Class<?> clazz) throws StructureException {
-        TypeVariable<? extends Constructor<?>>[] typeParameters = getTypeParameters(clazz);
-        FreezableArrayList<Field> fields = FreezableArrayList.get();
-        for (TypeVariable<? extends Constructor<?>> typeParameter : typeParameters) {
-            @Nonnull String name = typeParameter.getName();
-            Field field;
+    protected static @Frozen @Nonnull @NonNullableElements ReadOnlyList<Field> getConvertibleFields(@Nonnull Class<?> type) throws StructureException {
+        final @Nonnull TypeVariable<?>[] typesOfConvertibleFields = getTypesOfConvertibleFields(type);
+        final @Nonnull @NonNullableElements FreezableArrayList<Field> fields = FreezableArrayList.get();
+        for (TypeVariable<?> typeOfConvertibleField : typesOfConvertibleFields) {
+            final @Nonnull String name = typeOfConvertibleField.getName();
+            final @Nonnull Field field;
             // TODO: what if the constructor parameter name is not equal to the types field name?
             try {
-                field = clazz.getField(name);
+                field = type.getField(name);
             } catch (NoSuchFieldException e) {
                 throw StructureException.get("The class does not have a field '" + name + "'.");
             }
-            // TODO: discuss which annotations to use (e.g. @Ignore, @Helper or @RequiredForReconstruction)
-            if (field.isAnnotationPresent(IgnoreForConversion.class)) {
+            if (field.isAnnotationPresent(IgnoreForConversion.class) | field.isAnnotationPresent(RequiredForReconstruction.class)) {
                 continue;
             }
             fields.add(field);
         }
         return fields.freeze();
     }
-    
-    protected static @Nonnull Field getStorableField(@Nonnull Class<?> clazz) throws StructureException {
-        ReadOnlyList<Field> fields = getStorableFields(clazz);
-        assert fields.size() == 1 : "There is only one field in type '" + clazz + "'";
+
+    /**
+     * Returns a single convertible field of a given type.
+     * 
+     * @param type the type for which the field should be returned.
+     * 
+     * @return a single convertible field of a given type.
+     *
+     * @throws StructureException if a type parameter of a recovery method cannot be identified as a field.
+     */
+    protected static @Nonnull Field getConvertibleField(@Nonnull Class<?> type) throws StructureException {
+        final @Nonnull @NonNullableElements @Frozen ReadOnlyList<Field> fields = getConvertibleFields(type);
+        assert fields.size() == 1 : "There is only one field in type '" + type + "'";
         return fields.getNonNullable(0);
     }
     
-    // Cases:
-    // 1. no type parameters are present, thus the constructor does not hold any fields that can be stored. We throw an exception at that point.
-    // 2. one type parameter is present, thus the type of the object is or can be converted to a primitive or structural type. The parameter may not be marked as a 'helper'.
-    // 3. multiple type parameters are present, but only one of them is not marked as 'helper' type. The 'helper' (e.g. entity), is injected from outside, e.g. from the class that holds an object of this type. The type parameter that is not marked as a 'helper' is eventually converted into a primitive or structural type
-    // 4. multiple type parameters are present and more than one are not marked as 'helper' types. The types not marked as helpers form a tuple.
-    protected static Structure inferStructure(Class<?> clazz) throws StructureException {
-        @Nonnull @NonNullableElements ReadOnlyList<Field> fields = getStorableFields(clazz);
-        Structure structureType;
+    /**
+     * Infers the structure of the type by looking at it's recovery fields. The convertible fields are taken from the types of the recovery method, or, if no method with the annotation @Recovery was found, from the types of the constructor.
+     * If the recovery method or constructor only take one recoverable parameter, we return a SINGLE_TYPE structure. If it takes multiple recoverable parameters, we return a TUPLE structure.
+     * 
+     * @param type the type which structure should be inferred.
+     * 
+     * @return the structure of the type, which is either TUPLE or SINGLE_TYPE.
+     * 
+     * @throws StructureException thrown if the structure of the type cannot be inferred, e.g. because the recovery method or the constructor do not take any constructable parameters.
+     */
+    public static @Nonnull Structure inferStructure(@Nonnull Class<?> type) throws StructureException {
+        final @Nonnull @NonNullableElements ReadOnlyList<Field> fields = getConvertibleFields(type);
+        @Nonnull Structure structureType;
         if (fields.size() == 0) {
             throw StructureException.get("Cannot convert objects without values (empty constructor).");
         } else if (fields.size() == 1) {

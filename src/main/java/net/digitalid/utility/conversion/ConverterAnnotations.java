@@ -11,6 +11,7 @@ import net.digitalid.utility.collections.annotations.freezable.NonFrozen;
 import net.digitalid.utility.collections.freezable.FreezableHashMap;
 
 /**
+ * The annotations of convertible fields or types, which are used during the converting and recovering of an object.
  */
 public class ConverterAnnotations extends FreezableHashMap<Class<? extends Annotation>, Annotation> {
     
