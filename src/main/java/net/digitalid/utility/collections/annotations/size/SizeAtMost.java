@@ -14,6 +14,7 @@ import net.digitalid.utility.collections.freezable.FreezableCollection;
  * (In case of strings, we are talking about the number of contained characters, of course.)
  * 
  * @see Size
+ * @see SizeAtLeast
  */
 @Documented
 @Retention(RetentionPolicy.CLASS)
