@@ -1,4 +1,6 @@
 package net.digitalid.utility.conversion;
 
-public interface Convertible {
-}
+/**
+ * This interface is implemented by all classes whose objects are convertible.
+ */
+public interface Convertible {}

@@ -1,294 +1,60 @@
 package net.digitalid.utility.conversion;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
 import net.digitalid.utility.collections.freezable.FreezableArrayList;
+import net.digitalid.utility.collections.freezable.FreezableHashMap;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.conversion.annotations.Constructing;
-import net.digitalid.utility.conversion.annotations.ConvertToConvertibleType;
 import net.digitalid.utility.conversion.annotations.Ignore;
-import net.digitalid.utility.conversion.exceptions.ConverterException;
-import net.digitalid.utility.conversion.exceptions.FieldConverterException;
 import net.digitalid.utility.conversion.exceptions.RestoringException;
-import net.digitalid.utility.conversion.exceptions.StoringException;
 import net.digitalid.utility.conversion.exceptions.StructureException;
 
 /**
  * Abstract class for format converters. Defines abstract methods that must be implemented in every
  * converter, and helper methods that can be used to identify how to convert types.
- * 
- * @param <C> The specific format converter.
  */
-public abstract class Converter<C extends Converter<?>> {
+public abstract class Converter {
     
-    /* -------------------------------------------------- Type Converter -------------------------------------------------- */
-    
-    /**
-     * Maps types to converters. 
-     */
-    private final Map<Class<?>, C> converters = new HashMap<>();
-
-    /**
-     * Returns the converter which converts objects of type boolean or {@link Boolean} to and from the format.
-     * 
-     * @return the converter which converts objects of type boolean or {@link Boolean} to and from the format.
-     */
-    protected abstract C getBooleanConverter();
+    /* -------------------------------------------------- Access Annotations -------------------------------------------------- */
     
     /**
-     * Returns the converter which converts objects of type char or {@link Character} to and from the format.
+     * Returns a map of meta data which carries information such as generic types of a field.
      * 
-     * @return the converter which converts objects of type char or {@link Character} to and from the format.
-     */
-    protected abstract C getCharacterConverter();
-    
-    /**
-     * Returns the converter which converts objects of type {@link String} to and from the format.
-     * 
-     * @return the converter which converts objects of type {@link String} to and from the format.
-     */
-    protected abstract C getStringConverter();
-
-    /**
-     * Returns the converter which converts objects of type byte[] or {@link Byte[]} to and from the format.
-     * 
-     * @return the converter which converts objects of type byte[] or {@link Byte[]} to and from the format.
-     */
-    protected abstract C getBinaryConverter();
-
-    /**
-     * Returns the converter which converts objects of type {@link BigInteger} to and from the format.
-     * 
-     * @return the converter which converts objects of type {@link BigInteger} to and from the format.
-     */
-    protected abstract C getIntegerConverter();
-    
-    /**
-     * Returns the converter which converts objects of type {@link Byte} to and from the format.
-     * 
-     * @return the converter which converts objects of type {@link Byte} to and from the format.
-     */
-    protected abstract C getInteger08Converter();
-    
-    /**
-     * Returns the converter which converts objects of type {@link Short} to and from the format.
-     * 
-     * @return the converter which converts objects of type {@link Short} to and from the format.
-     */
-    protected abstract C getInteger16Converter();
-     
-    /**
-     * Returns the converter which converts objects of type {@link Integer} to and from the format.
-     * 
-     * @return the converter which converts objects of type {@link Integer} to and from the format.
-     */
-    protected abstract C getInteger32Converter();
-     
-    /**
-     * Returns the converter which converts objects of type {@link Long} to and from the format.
-     * 
-     * @return the converter which converts objects of type {@link Long} to and from the format.
-     */
-    protected abstract C getInteger64Converter();
-     
-    /**
-     * Returns the converter which converts objects of type {@link Convertible} to and from the format.
-     * 
-     * @return the converter which converts objects of type {@link Convertible} to and from the format.
-     */
-    protected abstract C getConvertibleConverter();
-     
-    /**
-     * Returns the converter which converts objects of type {@link Collection} to and from the format.
-     * 
-     * @return the converter which converts objects of type {@link Collection} to and from the format.
-     */
-    protected abstract C getCollectionConverter();
-    
-    /**
-     * Returns the converter which converts objects of type {@link Map} to and from the format.
-     * 
-     * @return the converter which converts objects of type {@link Map} to and from the format.
-     */    
-    protected abstract C getMapConverter();
-     
-    /**
-     * Returns the converter which converts objects of type {@link Object[} to and from the format.
-     * 
-     * @return the converter which converts objects of type {@link Object[]} to and from the format.
-     */
-    protected abstract C getArrayConverter();
-      
-    /**
-     * Returns the converter which maps objects of one type to another using the {@link TypeToTypeMapper} and then converts it to and from the format.
-     *
-     * @param typeToTypeMapper The type-to-type mapper maps the field type to a convertible type and vice versa.
-     *  
-     * @return the converter which maps objects of one type to another using the {@link TypeToTypeMapper} and then converts it to and from the format.
-     */
-    protected abstract C getTypeToTypeConverter(TypeToTypeMapper<?, ?> typeToTypeMapper);
-     
-    /**
-     * Registers a converter for a specific type.
-     * 
-     * @param type The type for which the specific converter should be registered.
-     * @param converter The converter which should be used when an object of the specific type must be converted.
-     */
-    protected void registerConverter(@Nonnull Class<?> type, @Nonnull C converter) {
-        converters.put(type, converter);
-    }
-
-    /**
-     * Returns the type converter for the specific type and throws a restoring exception in case the type converter was not found.
-     * 
-     * @param type The type for which a converter must be found.
+     * @param annotatedElement the field from which the meta data is extracted from.
      *              
-     * @return The converter for the given type.
-     * 
-     * @throws RestoringException If a type converter was not found for this type.
+     * @return a map of meta data which carries information such as generic types of a field.
      */
-    protected C getRestoringTypeConverter(@Nonnull Class<?> type) throws RestoringException {
-        try {
-            return getTypeConverter(type);
-        } catch (ConverterException e) {
-            throw RestoringException.get(type, "Failed to get appropriate type converter.", e);
+    public static @Nonnull Map<Class<? extends Annotation>, Annotation> getAnnotations(@Nonnull AnnotatedElement annotatedElement) {
+        Map<Class<? extends Annotation>, Annotation> fieldMetaData = FreezableHashMap.get();
+        for (Annotation annotation : annotatedElement.getDeclaredAnnotations()) {
+            Annotation annotationObject = annotatedElement.getAnnotation(annotation.annotationType());
+            fieldMetaData.put(annotation.annotationType(), annotationObject);
         }
+        return fieldMetaData;
     }
-    
-    /**
-     * Returns the type converter for the specific type and throws a storing exception in case the type converter was not found.
-     * 
-     * @param type The type for which a converter must be found.
-     *              
-     * @return The converter for the given type.
-     * 
-     * @throws StoringException If a type converter was not found for this type.
-     */
-    protected C getStoringTypeConverter(@Nonnull Class<?> type) throws StoringException {
-        try {
-            return getTypeConverter(type);
-        } catch (ConverterException e) {
-            throw StoringException.get(type, e);
-        }
-    }
-    
-    /**
-     * Returns the type converter for a specific type.
-     * 
-     * @param type The type which is used to find the correct converter.
-     *             
-     * @return The type converter for the specific type.
-     * 
-     * @throws ConverterException if no type converter was found for the specified type.
-     */
-    private @Nonnull C getTypeConverter(@Nonnull Class<?> type) throws ConverterException {
-        @Nonnull C typeConverter = converters.get(type);
-        
-        if (typeConverter == null) {
-            if (type.equals(Boolean.class) || type.equals(boolean.class)) {
-                typeConverter = getBooleanConverter();
-            } else if (type.equals(Character.class) || type.equals(char.class)) {
-                typeConverter = getCharacterConverter();
-            } else if (type.equals(String.class)) {
-                typeConverter = getStringConverter();
-            } else if (type.equals(Byte.class) || type.equals(byte.class)) {
-                typeConverter = getInteger08Converter();
-            } else if (type.equals(Short.class) || type.equals(short.class)) {
-                typeConverter = getInteger16Converter();
-            } else if (type.equals(Integer.class) || type.equals(int.class)) {
-                typeConverter = getInteger32Converter();
-            } else if (type.equals(Long.class) || type.equals(long.class)) {
-                typeConverter = getInteger64Converter();
-            } else if (type.equals(BigInteger.class)) {
-                typeConverter = getIntegerConverter();
-            } else if (type.equals(Byte[].class) || type.equals(byte[].class)) {
-                typeConverter = getBinaryConverter();
-            } else if (Convertible.class.isAssignableFrom(type)) {
-                typeConverter = getConvertibleConverter();
-            } else if (Collections.class.isAssignableFrom(type)) {
-                typeConverter = getCollectionConverter();
-            } else if (type.isArray()) {
-                typeConverter = getArrayConverter();
-            } else if (Map.class.isAssignableFrom(type)) {
-                typeConverter = getMapConverter();
-            } else if (TypeToTypeMapper.class.isAssignableFrom(type)) {
-                // TODO: check that TypeToTypeMapper is instantiable
-                try {
-                    TypeToTypeMapper typeToTypeMapperInstance = (TypeToTypeMapper) type.newInstance();
-                    typeConverter = getTypeToTypeConverter(typeToTypeMapperInstance);
-                } catch (InstantiationException | IllegalAccessException e) {
-                    throw ConverterException.get(type, e);
-                }
-            } 
-            if (typeConverter != null) {
-                converters.put(type, typeConverter);
-            }
-        }
-        if (typeConverter == null) {
-            throw ConverterException.get(type);
-        }
-        return typeConverter;
-    }
-    
-    /* -------------------------------------------------- Field Converter -------------------------------------------------- */
 
-    /**
-     * Returns a converter for a specific field. The decision, which converter to return, is 
-     * either made based on the annotation of the field or the type of the field.
-     * 
-     * @param field The field for which a converter is returned.
-     *              
-     * @return The type converter for the field.
-     * 
-     * @throws FieldConverterException 
-     */
-    @SuppressWarnings("unchecked")
-    protected C getFieldConverter(@Nonnull Field field) throws FieldConverterException {
-        boolean isConvertToConvertibleTypeAnnotationPresent = field.isAnnotationPresent(ConvertToConvertibleType.class);
-        C fieldConverter;
-        if (isConvertToConvertibleTypeAnnotationPresent) {
-            ConvertToConvertibleType convertedWith = field.getAnnotation(ConvertToConvertibleType.class);
-            Class<? extends TypeToTypeMapper> typeToTypeMapper = convertedWith.typeToTypeMapper();
-            
-            try {
-                fieldConverter = getTypeConverter(typeToTypeMapper);
-            } catch (ConverterException e) {
-                throw FieldConverterException.get(field.getName(), "The converter for the type mapper '" + typeToTypeMapper + "' of field '" + field.getName() + "', type '" + field.getType() + "' cannot be instantiated.", e);
-            }
-        } else {
-            Class<?> fieldType = field.getType();
-            try {
-                fieldConverter = getTypeConverter(fieldType);
-            } catch (ConverterException e) {
-                throw FieldConverterException.get(field.getName(), "The converter for field '" + field.getName() + "', type '" + field.getType() + "' cannot be instantiated.", e);
-            }
-        }
-        return fieldConverter;
-    }
-    
     /* -------------------------------------------------- Object Construction -------------------------------------------------- */
 
     /**
      * Constructs an object of a given type with the given values using the type constructor.
      * 
-     * @param type The type of the object that is constructed.
+     * @param type the type of the object that is constructed.
      *             
-     * @param values The values used to construct the object.
+     * @param values the values used to construct the object.
      *               
-     * @return The constructed object.
+     * @return the constructed object.
      * 
-     * @throws RestoringException Thrown if the object cannot be constructed.
+     * @throws RestoringException if the object cannot be constructed.
      */
     private static @Nonnull Object constructObjectWithConstructor(@Nonnull Class<?> type, @Nonnull Object values) throws RestoringException {
         Constructor constructor;
@@ -307,12 +73,12 @@ public abstract class Converter<C extends Converter<?>> {
     /**
      * Constructs an object with the given values using the type's static constructing method.
      * 
-     * @param constructorMethod The type's constructor method.
-     * @param values The values used to construct the object.
+     * @param constructorMethod the type's constructor method.
+     * @param values the values used to construct the object.
      *               
-     * @return The constructed object.
+     * @return the constructed object.
      * 
-     * @throws RestoringException Thrown if the object cannot be constructed.
+     * @throws RestoringException if the object cannot be constructed.
      */
     private static @Nullable Object constructObjectWithStaticMethod(@Nonnull Method constructorMethod, @Nonnull Object[] values) throws RestoringException {
         try {
@@ -325,7 +91,7 @@ public abstract class Converter<C extends Converter<?>> {
     /**
      * Returns the static constructor method for the given type.
      * 
-     * @param type The type for which the static constructor method should be returned.
+     * @param type the type for which the static constructor method should be returned.
      *             
      * @return the static constructor method for the given type.
      */
@@ -348,6 +114,7 @@ public abstract class Converter<C extends Converter<?>> {
             restoredObject = constructObjectWithStaticMethod(constructorMethod, values);
         }
         if (restoredObject == null) {
+            // TODO: Rather verify that the constructor method returns a non-nullable object.
             throw RestoringException.get(type, "Expected non-null object.");
         }
         return restoredObject;
@@ -370,6 +137,7 @@ public abstract class Converter<C extends Converter<?>> {
     }
     
     private static TypeVariable<? extends Constructor<?>>[] getTypeParameters(@Nonnull Class<?> clazz) throws StructureException {
+        // TODO: Shouldn't this also (or only) consider the static constructor method?
         Constructor<?> constructor = getConstructor(clazz);
         return constructor.getTypeParameters();
     }

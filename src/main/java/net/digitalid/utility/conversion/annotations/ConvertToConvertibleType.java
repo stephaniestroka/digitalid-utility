@@ -5,13 +5,21 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import net.digitalid.utility.conversion.TypeToTypeMapper;
+import javax.annotation.Nonnull;
+import net.digitalid.utility.conversion.TypeMapper;
 
 /**
- * Specifies a typeToTypeMapper which converts a fields type to another convertible type before converting it to a format.
+ * Specifies a type mapper which converts a field type to a convertible type before converting it to a format.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ConvertToConvertibleType {
-    Class<? extends TypeToTypeMapper> typeToTypeMapper();
+    
+    /**
+     * Returns the type mapper used to map the type.
+     * 
+     * @return the type mapper used to map the type.
+     */
+    @Nonnull Class<? extends TypeMapper<?, ?>> typeMapper();
+    
 }
