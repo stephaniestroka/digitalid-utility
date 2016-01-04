@@ -7,12 +7,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
-import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
 import net.digitalid.utility.collections.freezable.FreezableArrayList;
-import net.digitalid.utility.collections.freezable.FreezableHashMap;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.conversion.annotations.Constructing;
 import net.digitalid.utility.conversion.annotations.Ignore;
@@ -28,36 +26,35 @@ public abstract class Converter {
     /* -------------------------------------------------- Access Annotations -------------------------------------------------- */
     
     /**
-     * Returns a map of meta data which carries information such as generic types of a field.
+     * Returns a map of annotations which carries information such as generic types of a field.
      * 
      * @param annotatedElement the field from which the meta data is extracted from.
      *              
-     * @return a map of meta data which carries information such as generic types of a field.
+     * @return a map of annotations which carries information such as generic types of a field.
      */
-    public static @Nonnull Map<Class<? extends Annotation>, Annotation> getAnnotations(@Nonnull AnnotatedElement annotatedElement) {
-        Map<Class<? extends Annotation>, Annotation> fieldMetaData = FreezableHashMap.get();
-        for (Annotation annotation : annotatedElement.getDeclaredAnnotations()) {
-            Annotation annotationObject = annotatedElement.getAnnotation(annotation.annotationType());
+    public static @Nonnull ConverterAnnotations getAnnotations(@Nonnull AnnotatedElement annotatedElement) {
+        final @Nonnull @NonNullableElements ConverterAnnotations fieldMetaData = ConverterAnnotations.get();
+        for (@Nonnull Annotation annotation : annotatedElement.getDeclaredAnnotations()) {
+            final @Nonnull Annotation annotationObject = annotatedElement.getAnnotation(annotation.annotationType());
             fieldMetaData.put(annotation.annotationType(), annotationObject);
         }
         return fieldMetaData;
     }
-
+    
     /* -------------------------------------------------- Object Construction -------------------------------------------------- */
-
+    
     /**
      * Constructs an object of a given type with the given values using the type constructor.
      * 
      * @param type the type of the object that is constructed.
-     *             
      * @param values the values used to construct the object.
-     *               
+     *  
      * @return the constructed object.
      * 
      * @throws RestoringException if the object cannot be constructed.
      */
     private static @Nonnull Object constructObjectWithConstructor(@Nonnull Class<?> type, @Nonnull Object values) throws RestoringException {
-        Constructor constructor;
+        @Nonnull Constructor constructor;
         try {
             constructor = getConstructor(type);
         } catch (StructureException e) {
@@ -120,7 +117,7 @@ public abstract class Converter {
         return restoredObject;
     }
     
-    protected static Constructor<?> getConstructor(@Nonnull Class<?> clazz) throws StructureException {
+    protected static @Nonnull Constructor<?> getConstructor(@Nonnull Class<?> clazz) throws StructureException {
         Constructor<?>[] constructors = clazz.getDeclaredConstructors();
         if (constructors.length > 1) {
             throw StructureException.get("The class has multiple constructors.");
