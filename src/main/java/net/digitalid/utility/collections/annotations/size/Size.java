@@ -13,8 +13,8 @@ import net.digitalid.utility.collections.freezable.FreezableCollection;
  * This annotation indicates that a collection or array contains the given number of elements.
  * (In case of strings, we are talking about the number of contained characters, of course.)
  * 
- * @see SizeAtLeast
- * @see SizeAtMost
+ * @see MinSize
+ * @see MaxSize
  */
 @Documented
 @Retention(RetentionPolicy.CLASS)
