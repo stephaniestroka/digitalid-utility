@@ -20,12 +20,23 @@ public interface TypeMapper<F, T> {
      * @return 
      */
     @Pure
-    @Nonnull T mapTo(@Nonnull F from);
+    public @Nonnull T mapTo(@Nonnull F from);
     
+    /**
+     * 
+     * 
+     * @param to
+     * @return 
+     */
     @Pure
-    @Nonnull F mapFrom(@Nonnull T to);
+    public @Nonnull F mapFrom(@Nonnull T to);
     
+    /**
+     * 
+     * 
+     * @return 
+     */
     @Pure
-    @Nonnull Class<T> getMapType();
+    public @Nonnull Class<T> getMapType();
     
 }

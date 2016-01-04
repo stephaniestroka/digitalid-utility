@@ -15,7 +15,7 @@ import net.digitalid.utility.collections.freezable.FreezableArrayList;
 import net.digitalid.utility.collections.freezable.FreezableHashMap;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.conversion.annotations.Constructing;
-import net.digitalid.utility.conversion.annotations.Ignore;
+import net.digitalid.utility.conversion.annotations.IgnoreForConversion;
 import net.digitalid.utility.conversion.exceptions.RestoringException;
 import net.digitalid.utility.conversion.exceptions.StructureException;
 
@@ -156,7 +156,7 @@ public abstract class Converter {
                 throw StructureException.get("The class does not have a field '" + name + "'.");
             }
             // TODO: discuss which annotations to use (e.g. @Ignore, @Helper or @RequiredForReconstruction)
-            if (field.isAnnotationPresent(Ignore.class)) {
+            if (field.isAnnotationPresent(IgnoreForConversion.class)) {
                 continue;
             }
             fields.add(field);
