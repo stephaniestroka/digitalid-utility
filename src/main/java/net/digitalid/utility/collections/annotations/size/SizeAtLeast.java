@@ -10,16 +10,16 @@ import net.digitalid.utility.annotations.meta.TargetType;
 import net.digitalid.utility.collections.freezable.FreezableCollection;
 
 /**
- * This annotation indicates that a collection or array contains the given number of elements.
+ * This annotation indicates that a collection or array contains at least the given number of elements.
  * (In case of strings, we are talking about the number of contained characters, of course.)
  * 
- * @see SizeAtLeast
+ * @see Size
  * @see SizeAtMost
  */
 @Documented
 @Retention(RetentionPolicy.CLASS)
 @TargetType({Collection.class, FreezableCollection.class, Object[].class, String.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
-public @interface Size {
+public @interface SizeAtLeast {
     int value();
 }
