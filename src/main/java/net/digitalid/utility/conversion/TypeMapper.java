@@ -20,7 +20,7 @@ public interface TypeMapper<F, T> {
      * @return 
      */
     @Pure
-    public @Nonnull T mapTo(@Nonnull F from);
+    public @Nonnull T convert(@Nonnull F from);
     
     /**
      * 
@@ -29,7 +29,7 @@ public interface TypeMapper<F, T> {
      * @return 
      */
     @Pure
-    public @Nonnull F mapFrom(@Nonnull T to);
+    public @Nonnull F recover(@Nonnull T to);
     
     /**
      * 
