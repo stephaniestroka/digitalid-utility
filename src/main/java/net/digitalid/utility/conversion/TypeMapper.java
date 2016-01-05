@@ -16,25 +16,27 @@ public interface TypeMapper<F, T> {
     /**
      * Maps the object to the target type.
      * 
-     * @param from
-     * @return 
+     * @param object the object, which is converted to the target type T.
+     * 
+     * @return the converted object of type T. 
      */
     @Pure
-    public @Nonnull T convert(@Nonnull F from);
+    public @Nonnull T convert(@Nonnull F object);
     
     /**
+     * Recovers an object to its original type F. 
      * 
+     * @param object the object which has previously been mapped to T and is now recovered to its type F.
      * 
-     * @param to
-     * @return 
+     * @return the recovered object of type F.
      */
     @Pure
-    public @Nonnull F recover(@Nonnull T to);
+    public @Nonnull F recover(@Nonnull T object);
     
     /**
+     * Returns the type to which objects are converted.
      * 
-     * 
-     * @return 
+     * @return the type to which objects are converted.
      */
     @Pure
     public @Nonnull Class<T> getMapType();

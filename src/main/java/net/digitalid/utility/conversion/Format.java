@@ -3,6 +3,7 @@ package net.digitalid.utility.conversion;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.Collections;
+import java.util.Collections;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,7 +16,7 @@ import net.digitalid.utility.conversion.annotations.ConvertToConvertibleType;
 import net.digitalid.utility.conversion.exceptions.ConverterNotFoundException;
 
 /**
- * Description.
+ * The abstract format class defines all converters, which must be implemented by each format.
  * 
  * @param <C> the specific format converter.
  */
@@ -95,7 +96,7 @@ public abstract class Format<C extends Converter> {
      */
     @Pure
     protected abstract @Nonnull C getBinaryConverter();
-
+    
     /**
      * Returns the converter which converts objects of type {@link Convertible} to and from the format.
      * 
@@ -119,7 +120,7 @@ public abstract class Format<C extends Converter> {
      */
     @Pure
     protected abstract @Nonnull C getArrayConverter();
-      
+    
     /**
      * Returns the converter which converts objects of type {@link Map} to and from the format.
      * 
@@ -127,7 +128,7 @@ public abstract class Format<C extends Converter> {
      */    
     @Pure
     protected abstract @Nonnull C getMapConverter();
-     
+    
     /**
      * Returns the converter which maps objects of one type to another using the {@link TypeMapper} and then converts it to and from the format.
      *
@@ -213,7 +214,7 @@ public abstract class Format<C extends Converter> {
     }
     
     /* -------------------------------------------------- Field Converter -------------------------------------------------- */
-
+    
     /**
      * Returns a converter for a specific field. The decision, which converter to return, is 
      * either made based on the annotation of the field or the type of the field.
@@ -228,7 +229,7 @@ public abstract class Format<C extends Converter> {
         final boolean isConvertToConvertibleTypeAnnotationPresent = field.isAnnotationPresent(ConvertToConvertibleType.class);
         if (isConvertToConvertibleTypeAnnotationPresent) {
             final @Nonnull ConvertToConvertibleType convertedWith = field.getAnnotation(ConvertToConvertibleType.class);
-            return getConverter(convertedWith.typeMapper());
+            return getConverter(convertedWith.value());
         } else {
             return getConverter(field.getType());
         }

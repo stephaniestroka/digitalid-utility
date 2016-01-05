@@ -10,8 +10,6 @@ public class ConverterNotFoundException extends InternalException {
     
     /**
      * Creates a converter-not-found exception with a given type.
-     * 
-     * @param type the type for which no converter could be found.
      */
     protected ConverterNotFoundException(@Nonnull Class<?> type) {
         super("Failed to find serializer for type '" + type + "'");
@@ -19,9 +17,6 @@ public class ConverterNotFoundException extends InternalException {
     
     /**
      * Creates a converter-not-found exception with a given type and a given exception.
-     * 
-     * @param type the type for which no converter could be found.
-     * @param exception the exception which is the cause of the converter-not-found exception.
      */
     protected ConverterNotFoundException(@Nonnull Class<?> type, @Nonnull Exception exception) {
         super("Failed to find serializer for type '" + type + "'", exception);
@@ -29,9 +24,6 @@ public class ConverterNotFoundException extends InternalException {
 
     /**
      * Creates and returns a converter-not-found exception with a given type and a given exception.
-     *
-     * @param type the type for which no converter could be found.
-     * @param exception the exception which is the cause of the converter-not-found exception.
      */
     public static @Nonnull
     ConverterNotFoundException get(@Nonnull Class<?> type, @Nonnull Exception exception) {
@@ -40,8 +32,6 @@ public class ConverterNotFoundException extends InternalException {
 
     /**
      * Creates and returns a converter-not-found exception with a given type.
-     *
-     * @param type the type for which no converter could be found.
      */
     public static @Nonnull
     ConverterNotFoundException get(@Nonnull Class<?> type) {

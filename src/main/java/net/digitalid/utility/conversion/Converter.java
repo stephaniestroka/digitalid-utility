@@ -29,10 +29,6 @@ public abstract class Converter {
     
     /**
      * Returns a map of annotations which carries information such as generic types of a field.
-     * 
-     * @param annotatedElement the field from which the meta data is extracted from.
-     *              
-     * @return a map of annotations which carries information such as generic types of a field.
      */
     public static @Nonnull ConverterAnnotations getAnnotations(@Nonnull AnnotatedElement annotatedElement) {
         final @Nonnull @NonNullableElements ConverterAnnotations fieldMetaData = ConverterAnnotations.get();

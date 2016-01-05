@@ -24,7 +24,7 @@ public class ConverterAnnotations extends FreezableHashMap<Class<? extends Annot
     protected ConverterAnnotations(@NonNegative int initialCapacity, @Positive float loadFactor) {
         super(initialCapacity, loadFactor);
     }
-
+    
     /**
      * Creates and returns a converter annotations map.
      * 
@@ -36,7 +36,7 @@ public class ConverterAnnotations extends FreezableHashMap<Class<? extends Annot
     public static @Capturable @Nonnull @NonFrozen ConverterAnnotations get(@NonNegative int initialCapacity) {
         return new ConverterAnnotations(initialCapacity, 0.75f);
     }
-
+    
     /**
      * Creates and returns a converter annotations map.
      * 
