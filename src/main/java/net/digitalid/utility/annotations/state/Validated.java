@@ -12,6 +12,6 @@ import java.lang.annotation.Target;
  * @see NonValidated
  */
 @Documented
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface Validated {}

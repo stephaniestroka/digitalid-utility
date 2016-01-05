@@ -14,5 +14,5 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Target(ElementType.TYPE)
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Mutable {}

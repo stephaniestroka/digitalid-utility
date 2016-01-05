@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
  * This annotation indicates that a static method may only be called when its class has been initialized.
  */
 @Documented
-@Retention(RetentionPolicy.CLASS)
 @Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Initialized {}

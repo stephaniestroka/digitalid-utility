@@ -14,7 +14,7 @@ import net.digitalid.utility.annotations.meta.TargetType;
  * @see NonNegative
  */
 @Documented
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 @TargetType({long.class, int.class, short.class, byte.class, BigInteger.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface Negative {}

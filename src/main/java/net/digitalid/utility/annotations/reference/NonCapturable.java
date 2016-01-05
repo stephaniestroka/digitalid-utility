@@ -14,6 +14,6 @@ import java.lang.annotation.Target;
  * @see Captured
  */
 @Documented
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER, ElementType.METHOD})
 public @interface NonCapturable {}

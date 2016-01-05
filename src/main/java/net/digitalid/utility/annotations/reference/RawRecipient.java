@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Target(ElementType.METHOD)
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface RawRecipient {}

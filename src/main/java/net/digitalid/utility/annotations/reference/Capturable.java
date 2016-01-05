@@ -11,8 +11,9 @@ import java.lang.annotation.Target;
  * This requires that the returned object has been created locally and has not been leaked.
  * 
  * @see Captured
+ * @see NonCapturable
  */
 @Documented
 @Target(ElementType.METHOD)
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Capturable {}

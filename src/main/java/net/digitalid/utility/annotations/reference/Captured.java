@@ -11,8 +11,9 @@ import java.lang.annotation.Target;
  * should afterwards no longer be modified by the caller of the constructor or (setter) method.
  * 
  * @see Capturable
+ * @see NonCapturable
  */
 @Documented
 @Target(ElementType.PARAMETER)
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface Captured {}

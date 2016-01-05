@@ -13,6 +13,6 @@ import javax.annotation.Nonnull;
  * Please make sure that you only pass {@code this} in a constructor to methods that are aware of this situation.
  */
 @Documented
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER, ElementType.LOCAL_VARIABLE})
 public @interface Raw {}

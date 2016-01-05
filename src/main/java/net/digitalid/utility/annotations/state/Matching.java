@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
  * This annotation indicates that a value matches its surrounding object (often meaning that it belongs to the same entity).
  */
 @Documented
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface Matching {}

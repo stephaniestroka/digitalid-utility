@@ -14,5 +14,12 @@ import javax.annotation.Nonnull;
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface TargetType {
+    
+    /**
+     * Returns the types of values to which the annotated annotation can be applied.
+     * 
+     * @return the types of values to which the annotated annotation can be applied.
+     */
     @Nonnull Class<?>[] value();
+    
 }
