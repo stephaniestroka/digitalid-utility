@@ -7,13 +7,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collection;
 import net.digitalid.utility.annotations.meta.TargetType;
-import net.digitalid.utility.collections.freezable.FreezableCollection;
+import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
 
 /**
  * This annotation indicates that a method should only be invoked on {@link EmptyOrSingle empty or single} objects.
  */
 @Documented
 @Target(ElementType.METHOD)
-@Retention(RetentionPolicy.CLASS)
-@TargetType({Collection.class, FreezableCollection.class})
+@Retention(RetentionPolicy.RUNTIME)
+@TargetType({Collection.class, ReadOnlyCollection.class})
 public @interface EmptyOrSingleRecipient {}

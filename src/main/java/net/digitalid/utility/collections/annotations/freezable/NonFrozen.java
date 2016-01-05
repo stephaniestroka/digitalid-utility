@@ -17,6 +17,6 @@ import net.digitalid.utility.collections.readonly.ReadOnly;
  */
 @Documented
 @TargetType(ReadOnly.class)
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface NonFrozen {}

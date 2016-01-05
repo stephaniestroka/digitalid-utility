@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collection;
 import net.digitalid.utility.annotations.meta.TargetType;
-import net.digitalid.utility.collections.freezable.FreezableCollection;
+import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
 
 /**
  * This annotation indicates that a collection or array contains the given number of elements.
@@ -17,9 +17,16 @@ import net.digitalid.utility.collections.freezable.FreezableCollection;
  * @see MaxSize
  */
 @Documented
-@Retention(RetentionPolicy.CLASS)
-@TargetType({Collection.class, FreezableCollection.class, Object[].class, String.class})
+@Retention(RetentionPolicy.RUNTIME)
+@TargetType({Collection.class, ReadOnlyCollection.class, Object[].class, String.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface Size {
+    
+    /**
+     * Returns the number of elements that the annotated collection or array contains.
+     * 
+     * @return the number of elements that the annotated collection or array contains.
+     */
     int value();
+    
 }

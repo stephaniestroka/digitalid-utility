@@ -7,6 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collection;
 import javax.annotation.Nullable;
+import net.digitalid.utility.annotations.meta.TargetType;
+import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
 
 /**
  * This annotation indicates that the elements of a {@link Collection collection} are {@link Nullable nullable}.
@@ -15,6 +17,7 @@ import javax.annotation.Nullable;
  * @see NonNullableElements
  */
 @Documented
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
+@TargetType({Collection.class, ReadOnlyCollection.class, Object[].class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface NullableElements {}

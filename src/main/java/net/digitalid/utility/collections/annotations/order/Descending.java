@@ -1,19 +1,23 @@
-package net.digitalid.utility.collections.annotations.elements;
+package net.digitalid.utility.collections.annotations.order;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Collection;
+import java.util.List;
 import net.digitalid.utility.annotations.meta.TargetType;
-import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
+import net.digitalid.utility.collections.readonly.ReadOnlyList;
 
 /**
- * This annotation indicates that a {@link Collection collection} does not contain {@link ReadOnlyCollection#containsDuplicates() duplicates}.
+ * This annotation indicates that the elements of a {@link List list} are {@link ReadOnlyList#isDescending() descending}.
+ * 
+ * @see Ascending
+ * @see StrictlyAscending
+ * @see StrictlyDescending
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@TargetType({Collection.class, ReadOnlyCollection.class, Object[].class})
+@TargetType({List.class, ReadOnlyList.class, Object[].class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
-public @interface UniqueElements {}
+public @interface Descending {}

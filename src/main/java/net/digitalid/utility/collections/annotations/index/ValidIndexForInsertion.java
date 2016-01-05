@@ -14,6 +14,6 @@ import net.digitalid.utility.annotations.meta.TargetType;
  */
 @Documented
 @TargetType(int.class)
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface ValidIndexForInsertion {}

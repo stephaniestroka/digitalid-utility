@@ -16,5 +16,5 @@ import net.digitalid.utility.collections.freezable.Freezable;
 @Documented
 @Target(ElementType.METHOD)
 @TargetType(Freezable.class)
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface NonFrozenRecipient {}
