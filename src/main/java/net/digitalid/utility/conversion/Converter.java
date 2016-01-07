@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.digitalid.utility.annotations.state.Stateless;
 import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
 import net.digitalid.utility.collections.annotations.freezable.Frozen;
 import net.digitalid.utility.collections.freezable.FreezableArrayList;
@@ -23,6 +24,7 @@ import net.digitalid.utility.conversion.exceptions.StructureException;
  * Abstract class for format converters. Defines abstract methods that must be implemented in every
  * converter, and helper methods that can be used to identify how to convert types.
  */
+@Stateless
 public abstract class Converter {
     
     /* -------------------------------------------------- Access Annotations -------------------------------------------------- */
