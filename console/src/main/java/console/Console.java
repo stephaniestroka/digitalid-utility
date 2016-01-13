@@ -1,4 +1,4 @@
-package net.digitalid.utility.system.console;
+package console;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.state.Stateless;
-import net.digitalid.utility.system.console.exceptions.EscapeOptionException;
+import console.exceptions.EscapeOptionException;
 import net.digitalid.utility.system.errors.ShouldNeverHappenError;
 
 /**

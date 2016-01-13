@@ -1,4 +1,4 @@
-package net.digitalid.utility.system.directory.annotations;
+package directory.annotations;
 
 import java.io.File;
 import java.lang.annotation.Documented;

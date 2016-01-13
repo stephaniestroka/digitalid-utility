@@ -1,4 +1,4 @@
-package net.digitalid.utility.system.directory;
+package directory;
 
 import java.io.File;
 import javax.annotation.Nonnull;
@@ -6,8 +6,8 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.state.Initialized;
 import net.digitalid.utility.annotations.state.Pure;
 import net.digitalid.utility.annotations.state.Stateless;
-import net.digitalid.utility.system.directory.annotations.Existing;
-import net.digitalid.utility.system.directory.annotations.IsDirectory;
+import directory.annotations.Existing;
+import directory.annotations.IsDirectory;
 import net.digitalid.utility.system.errors.InitializationError;
 
 /**

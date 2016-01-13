@@ -10,7 +10,7 @@ import java.util.Date;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.state.Pure;
-import net.digitalid.utility.system.directory.Directory;
+import directory.Directory;
 import net.digitalid.utility.system.errors.InitializationError;
 
 /**

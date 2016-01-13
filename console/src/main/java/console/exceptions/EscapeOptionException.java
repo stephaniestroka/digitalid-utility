@@ -1,6 +1,6 @@
-package net.digitalid.utility.system.console.exceptions;
+package console.exceptions;
 
-import net.digitalid.utility.system.console.Option;
+import console.Option;
 
 /**
  * This exception is thrown when an {@link Option option} is escaped.

@@ -1,4 +1,4 @@
-package net.digitalid.utility.system.directory;
+package directory;
 
 import java.io.File;
 import java.io.FilenameFilter;

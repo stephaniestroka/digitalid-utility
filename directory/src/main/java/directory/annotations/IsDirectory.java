@@ -1,4 +1,4 @@
-package net.digitalid.utility.system.directory.annotations;
+package directory.annotations;
 
 import java.io.File;
 import java.lang.annotation.Documented;
@@ -9,10 +9,10 @@ import java.lang.annotation.Target;
 import net.digitalid.utility.annotations.meta.TargetType;
 
 /**
- * This annotation indicates that a {@link File file} is a {@link File#isFile() file}.
+ * This annotation indicates that a {@link File file} is a {@link File#isDirectory() directory}.
  */
 @Documented
 @TargetType(File.class)
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
-public @interface IsFile {}
+public @interface IsDirectory {}
