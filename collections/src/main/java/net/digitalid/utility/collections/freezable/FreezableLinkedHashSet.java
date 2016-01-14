@@ -5,16 +5,17 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.digitalid.utility.annotations.math.NonNegative;
-import net.digitalid.utility.annotations.math.Positive;
-import net.digitalid.utility.annotations.reference.Capturable;
-import net.digitalid.utility.annotations.state.Immutable;
-import net.digitalid.utility.annotations.state.Pure;
-import net.digitalid.utility.collections.annotations.freezable.Frozen;
-import net.digitalid.utility.collections.annotations.freezable.NonFrozen;
-import net.digitalid.utility.collections.annotations.freezable.NonFrozenRecipient;
-import net.digitalid.utility.collections.converter.Brackets;
-import net.digitalid.utility.collections.converter.IterableConverter;
+import net.digitalid.utility.validation.math.NonNegative;
+import net.digitalid.utility.validation.math.Positive;
+import net.digitalid.utility.validation.reference.Capturable;
+import net.digitalid.utility.validation.state.Immutable;
+import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
+import net.digitalid.utility.string.iterable.Brackets;
+import net.digitalid.utility.string.iterable.IterableConverter;
+import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.collections.readonly.ReadOnlySet;
 
 /**

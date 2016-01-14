@@ -1,14 +1,11 @@
 package net.digitalid.utility.exceptions;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import net.digitalid.utility.annotations.state.Immutable;
-import net.digitalid.utility.system.logger.Log;
+
+import net.digitalid.utility.logging.Log;
 
 /**
  * All custom exceptions extend this class.
  */
-@Immutable
 public abstract class DigitalIDException extends Exception {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
@@ -19,7 +16,7 @@ public abstract class DigitalIDException extends Exception {
      * @param message a string explaining the problem which has occurred.
      * @param cause the exception that caused this problem, if available.
      */
-    protected DigitalIDException(@Nonnull String message, @Nullable Exception cause) {
+    protected DigitalIDException(String message, Exception cause) {
         super(message, cause);
         
         Log.warning("A problem occurred.", this);
@@ -30,7 +27,7 @@ public abstract class DigitalIDException extends Exception {
      * 
      * @param message a string explaining the problem which has occurred.
      */
-    protected DigitalIDException(@Nonnull String message) {
+    protected DigitalIDException(String message) {
         this(message, null);
     }
     

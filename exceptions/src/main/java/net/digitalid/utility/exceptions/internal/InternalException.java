@@ -1,14 +1,10 @@
 package net.digitalid.utility.exceptions.internal;
 
-import javax.annotation.Nonnull;
-import net.digitalid.utility.annotations.state.Immutable;
-import net.digitalid.utility.annotations.state.Pure;
 import net.digitalid.utility.exceptions.DigitalIDException;
 
 /**
  * An internal exception indicates a wrong use of the library.
  */
-@Immutable
 public class InternalException extends DigitalIDException {
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
@@ -18,7 +14,7 @@ public class InternalException extends DigitalIDException {
      * 
      * @param message a string explaining the illegal operation.
      */
-    protected InternalException(@Nonnull String message) {
+    protected InternalException(String message) {
         super(message);
     }
 
@@ -28,7 +24,7 @@ public class InternalException extends DigitalIDException {
      * @param message a string explaining the illegal operation.
      * @param exception an exception which is the cause of this exception.
      */
-    protected InternalException(@Nonnull String message, @Nonnull Exception exception) {
+    protected InternalException(String message, Exception exception) {
         super(message, exception);
     }
 
@@ -39,8 +35,7 @@ public class InternalException extends DigitalIDException {
      *
      * @return a new internal exception with the given exception.
      */
-    @Pure
-    public static @Nonnull InternalException get(@Nonnull Exception exception) {
+    public static InternalException get(Exception exception) {
         return new InternalException(exception.getMessage(), exception);
     }
     
@@ -52,8 +47,7 @@ public class InternalException extends DigitalIDException {
      *
      * @return a new internal exception with the given message and the given exception.
      */
-    @Pure
-    public static @Nonnull InternalException get(@Nonnull String message, @Nonnull Exception exception) {
+    public static InternalException get(String message, Exception exception) {
         return new InternalException(message);
     }
     
@@ -64,8 +58,7 @@ public class InternalException extends DigitalIDException {
      * 
      * @return a new internal exception with the given message.
      */
-    @Pure
-    public static @Nonnull InternalException get(@Nonnull String message) {
+    public static InternalException get(String message) {
         return new InternalException(message);
     }
     

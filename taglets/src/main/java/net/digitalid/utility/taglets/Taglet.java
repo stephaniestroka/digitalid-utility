@@ -7,8 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.digitalid.utility.annotations.state.Pure;
-import net.digitalid.utility.annotations.state.Stateless;
+import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.state.Stateless;
 
 /**
  * This class serves as a template for custom block tags.

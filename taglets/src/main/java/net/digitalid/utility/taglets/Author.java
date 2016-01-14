@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
-import net.digitalid.utility.annotations.state.Pure;
-import net.digitalid.utility.annotations.state.Stateless;
+import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.state.Stateless;
 
 /**
  * This class defines a custom block tag for class authors.

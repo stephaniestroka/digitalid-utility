@@ -2,8 +2,8 @@ package net.digitalid.utility.taglets;
 
 import java.util.Map;
 import javax.annotation.Nonnull;
-import net.digitalid.utility.annotations.state.Pure;
-import net.digitalid.utility.annotations.state.Stateless;
+import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.state.Stateless;
 
 /**
  * This class defines a custom block tag for class (and field) invariants.

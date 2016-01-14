@@ -1,9 +1,5 @@
 package net.digitalid.utility.exceptions.external;
 
-import javax.annotation.Nonnull;
-import net.digitalid.utility.annotations.state.Pure;
-import net.digitalid.utility.system.auxiliary.StringUtility;
-
 /**
  * This exception allows to mask other exceptions as an invalid encoding exception.
  */
@@ -16,8 +12,8 @@ public class MaskingInvalidEncodingException extends InvalidEncodingException {
      * 
      * @param cause the cause to be masked as a masking invalid encoding exception.
      */
-    protected MaskingInvalidEncodingException(@Nonnull Exception cause) {
-        super(StringUtility.prependWithIndefiniteArticle(cause.getClass().getSimpleName(), true) + " is masked as an invalid encoding exception.", cause);
+    protected MaskingInvalidEncodingException(Exception cause) {
+        super(cause.getClass().getSimpleName() + " is masked as an invalid encoding exception.", cause);
     }
     
     /**
@@ -27,8 +23,7 @@ public class MaskingInvalidEncodingException extends InvalidEncodingException {
      * 
      * @return a new masking invalid encoding exception that masks the given cause.
      */
-    @Pure
-    public static @Nonnull MaskingInvalidEncodingException get(@Nonnull Exception cause) {
+    public static MaskingInvalidEncodingException get(Exception cause) {
         return new MaskingInvalidEncodingException(cause);
     }
     

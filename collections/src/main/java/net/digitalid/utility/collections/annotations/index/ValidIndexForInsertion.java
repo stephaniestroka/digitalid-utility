@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collection;
-import net.digitalid.utility.annotations.meta.TargetType;
+import net.digitalid.utility.validation.meta.TargetType;
 
 /**
  * This annotation indicates that an index is valid for inserting an element in a {@link Collection collection}.

@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collection;
 import javax.annotation.Nonnull;
-import net.digitalid.utility.annotations.meta.TargetType;
+import net.digitalid.utility.validation.meta.TargetType;
 import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
 
 /**

@@ -3,11 +3,11 @@ package net.digitalid.utility.conversion;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import javax.annotation.Nonnull;
-import net.digitalid.utility.annotations.math.NonNegative;
-import net.digitalid.utility.annotations.math.Positive;
-import net.digitalid.utility.annotations.reference.Capturable;
-import net.digitalid.utility.annotations.state.Pure;
-import net.digitalid.utility.collections.annotations.freezable.NonFrozen;
+import net.digitalid.utility.validation.math.NonNegative;
+import net.digitalid.utility.validation.math.Positive;
+import net.digitalid.utility.validation.reference.Capturable;
+import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.collections.freezable.FreezableHashMap;
 
 /**

@@ -1,13 +1,8 @@
 package net.digitalid.utility.exceptions.external;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import net.digitalid.utility.annotations.state.Immutable;
-
 /**
  * This exception is thrown when a block has an invalid encoding.
  */
-@Immutable
 public abstract class InvalidEncodingException extends ExternalException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
@@ -18,7 +13,7 @@ public abstract class InvalidEncodingException extends ExternalException {
      * @param message a string explaining the problem which has occurred.
      * @param cause the exception that caused this problem, if available.
      */
-    protected InvalidEncodingException(@Nonnull String message, @Nullable Exception cause) {
+    protected InvalidEncodingException(String message, Exception cause) {
         super(message, cause);
     }
     
@@ -27,7 +22,7 @@ public abstract class InvalidEncodingException extends ExternalException {
      * 
      * @param message a string explaining the problem which has occurred.
      */
-    protected InvalidEncodingException(@Nonnull String message) {
+    protected InvalidEncodingException(String message) {
         super(message);
     }
     

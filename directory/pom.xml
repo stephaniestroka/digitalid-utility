@@ -2,66 +2,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.digitalid</groupId>
-    <artifactId>digitalid-utility-console</artifactId>
-    <version>${digitalid.utility.version}</version>
+    <artifactId>digitalid-utility-directory</artifactId>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
     <parent>
         <groupId>net.digitalid</groupId>
-        <artifactId>digitalid-utility-parent</artifactId>
-        <version>${digitalid.utility.version}</version>
+        <artifactId>digitalid-utility</artifactId>
+        <version>1.0.0</version>
     </parent>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.3</version>
-                <configuration>
-                    <quiet>true</quiet>
-                    <linksource>false</linksource>
-                    <doctitle>Digital ID System</doctitle>
-                    <additionalparam>-Xdoclint:none</additionalparam>
-                    <links>
-                        <link>https://docs.digitalid.net/utility/annotations/${digitalid.utility.version}/</link>
-                        <link>http://docs.oracle.com/javase/7/docs/api/</link>
-                    </links>
-                    <tagletArtifacts>
-                        <tagletArtifact>
-                            <groupId>net.digitalid</groupId>
-                            <artifactId>digitalid-utility-taglets</artifactId>
-                            <version>${digitalid.utility.version}</version>
-                        </tagletArtifact>
-                    </tagletArtifacts>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
     <dependencies>
         <dependency>
             <groupId>net.digitalid</groupId>
-            <artifactId>digitalid-utility-annotations</artifactId>
-            <version>${digitalid.utility.version}</version>
+            <artifactId>digitalid-utility-validation</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.digitalid</groupId>
+            <artifactId>digitalid-utility-initialization</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

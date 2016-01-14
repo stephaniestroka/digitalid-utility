@@ -1,8 +1,5 @@
 package net.digitalid.utility.exceptions.external;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import net.digitalid.utility.annotations.state.Immutable;
 import net.digitalid.utility.exceptions.DigitalIDException;
 
 /**
@@ -10,7 +7,6 @@ import net.digitalid.utility.exceptions.DigitalIDException;
  * 
  * @see InvalidEncodingException
  */
-@Immutable
 public abstract class ExternalException extends DigitalIDException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
@@ -21,7 +17,7 @@ public abstract class ExternalException extends DigitalIDException {
      * @param message a string explaining the problem which has occurred.
      * @param cause the exception that caused this problem, if available.
      */
-    protected ExternalException(@Nonnull String message, @Nullable Exception cause) {
+    protected ExternalException(String message, Exception cause) {
         super(message, cause);
     }
     
@@ -30,7 +26,7 @@ public abstract class ExternalException extends DigitalIDException {
      * 
      * @param message a string explaining the problem which has occurred.
      */
-    protected ExternalException(@Nonnull String message) {
+    protected ExternalException(String message) {
         super(message);
     }
     

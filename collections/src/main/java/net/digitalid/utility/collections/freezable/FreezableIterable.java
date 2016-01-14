@@ -1,9 +1,10 @@
 package net.digitalid.utility.collections.freezable;
 
 import javax.annotation.Nonnull;
-import net.digitalid.utility.annotations.state.Immutable;
-import net.digitalid.utility.annotations.state.Pure;
-import net.digitalid.utility.collections.annotations.freezable.Frozen;
+import net.digitalid.utility.validation.state.Immutable;
+import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.collections.readonly.ReadOnlyIterable;
 
 /**
