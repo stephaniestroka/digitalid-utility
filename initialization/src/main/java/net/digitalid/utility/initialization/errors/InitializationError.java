@@ -1,4 +1,6 @@
-package net.digitalid.utility.errors;
+package net.digitalid.utility.initialization.errors;
+
+import net.digitalid.utility.errors.FatalError;
 
 /**
  * This error is thrown when an error occurs during initialization.

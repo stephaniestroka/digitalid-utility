@@ -21,7 +21,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import net.digitalid.utility.collections.annotations.size.NonEmpty;
-import net.digitalid.utility.errors.InitializationError;
+import net.digitalid.utility.initialization.errors.InitializationError;
 import net.digitalid.utility.errors.ShouldNeverHappenError;
 import net.digitalid.utility.exceptions.external.InvalidEncodingException;
 import net.digitalid.utility.exceptions.external.MaskingInvalidEncodingException;

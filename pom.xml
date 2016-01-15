@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+    
     <groupId>net.digitalid</groupId>
     <artifactId>digitalid-utility</artifactId>
     <version>1.0.0</version>
@@ -13,7 +13,7 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
-
+    
     <modules>
         <module>taglets</module>
         <module>logging</module>
@@ -38,7 +38,7 @@
         <module>tuples</module>
         <module>cryptography</module>
     </modules>
-
+    
     <distributionManagement>
         <repository>
             <id>digitalid-deployment</id>
@@ -63,7 +63,7 @@
             <url>https://repo.digitalid.net/content/repositories/snapshots/</url>
         </repository>
     </repositories>
-
+    
     <build>
         <plugins>
             <plugin>
@@ -123,4 +123,14 @@
             </plugins>
         </pluginManagement>
     </build>
+    
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
 </project>
