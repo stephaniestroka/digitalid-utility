@@ -2,6 +2,8 @@ package net.digitalid.utility.property.extensible;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import net.digitalid.utility.property.ValueValidator;
 import net.digitalid.utility.validation.state.Pure;
 import net.digitalid.utility.validation.state.Validated;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
@@ -55,14 +57,34 @@ public class VolatileExtensibleProperty<V, R extends ReadOnlySet<V>, F extends F
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
-     * Creates a new volatile extensible property with the given set.
+     * Creates a new volatile extensible property with the given value validator and set.
      *  
+     * @param valueValidator the validator that validates the values of the set.
      * @param set the set that holds the values.
+     *
+     * @require valuesValid(valueValidator, set) : "The values of the set are valid.";
      */
-    private VolatileExtensibleProperty(@Nonnull @Validated F set) {
+    private VolatileExtensibleProperty(@Nonnull ValueValidator<? super V> valueValidator, @Nonnull @Validated F set) {
+        super(valueValidator);
+
+        assert valuesValid(valueValidator, set) : "The values of the set are valid.";
+
         this.set = set;
     }
     
+    /**
+     * Creates a new volatile extensible property with the given set and the given value validator.
+     *
+     * @param valueValidator the validator used to validate the values of this property
+     * @param set the set that stores the values of the property.
+     *
+     * @return a new volatile indexed property object.
+     */
+    @Pure
+    public static @Nullable <V, R extends ReadOnlySet<V>, F extends FreezableSet<V>> VolatileExtensibleProperty<V, R, F> get(@Nonnull ValueValidator<? super V> valueValidator, @Nonnull @Validated F set) {
+        return new VolatileExtensibleProperty<>(valueValidator, set);
+    }
+
     /**
      * Creates a new volatile extensible property with the given set.
      * 
@@ -72,7 +94,26 @@ public class VolatileExtensibleProperty<V, R extends ReadOnlySet<V>, F extends F
      */
     @Pure
     public static @Nullable <V, R extends ReadOnlySet<V>, F extends FreezableSet<V>> VolatileExtensibleProperty<V, R, F> get(@Nonnull @Validated F set) {
-        return new VolatileExtensibleProperty<>(set);
+        return get(ValueValidator.DEFAULT, set);
+    }
+
+    /* -------------------------------------------------- Validator Checks -------------------------------------------------- */
+
+    /**
+     * Validates that the contents of the map are valid by checking whether the keys and values can be validated with the given
+     * key- and value validators.
+     *
+     * @param keyValidator the validator used to validate the key of this property.
+     * @param valueValidator the validator used to validate the value of this property
+     * @param map the map that stores the indexed value of the property.
+     *
+     * @return true if the keys and values are valid; false otherwise.
+     */
+    private boolean valuesValid(@Nonnull ValueValidator<? super V> valueValidator, @Nonnull @Validated F set) { // TODO: Make it static? @NonNullableElements?
+        for (final @Nonnull V value : set) {
+            if (!valueValidator.isValid(value)) { return false; }
+        }
+        return true;
     }
 
 }

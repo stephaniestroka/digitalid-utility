@@ -1,5 +1,6 @@
 package net.digitalid.utility.property.nonnullable;
 
+import net.digitalid.utility.property.ValueValidator;
 import net.digitalid.utility.validation.state.Validated;
 
 import javax.annotation.Nonnull;
@@ -14,10 +15,12 @@ public abstract class WritableNonNullableProperty<V> extends ReadOnlyNonNullable
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
-     * Creates a new non-nullable replaceable property.
+     * Creates a new non-nullable replaceable property with the given validator.
+     *
+     * @param validator the validator used to validate the value of this property.
      */
-    protected WritableNonNullableProperty() {
-        super();
+    protected WritableNonNullableProperty(@Nonnull ValueValidator<? super V> validator) {
+        super(validator);
     }
     
     /* -------------------------------------------------- Setter -------------------------------------------------- */
@@ -26,6 +29,8 @@ public abstract class WritableNonNullableProperty<V> extends ReadOnlyNonNullable
      * Sets the value of this property to the given new value.
      * 
      * @param newValue the new value to replace the old one with.
+     *
+     * @require getValidator().isValid(newValue) : "The new value is valid.";
      */
     public abstract void set(@Nonnull @Validated V newValue);
     
@@ -36,6 +41,8 @@ public abstract class WritableNonNullableProperty<V> extends ReadOnlyNonNullable
      * 
      * @param oldValue the old value of this property that got replaced.
      * @param newValue the new value of this property that replaced the old one.
+     *
+     * @require !oldValue.equals(newValue) : "The old and the new value are not the same.";
      */
     protected final void notify(@Nonnull @Validated V oldValue, @Nonnull @Validated V newValue) {
         assert !oldValue.equals(newValue) : "The old and the new value are not the same.";

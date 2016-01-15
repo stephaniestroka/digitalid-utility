@@ -4,11 +4,13 @@ import net.digitalid.utility.collections.freezable.FreezableMap;
 import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
 import net.digitalid.utility.collections.readonly.ReadOnlyMap;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.property.ValueValidator;
 import net.digitalid.utility.validation.state.Pure;
 import net.digitalid.utility.validation.state.Validated;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Map;
 
 /**
  * The property stores indexed values in volatile memory.
@@ -78,13 +80,34 @@ public class VolatileIndexedProperty<K, V, R extends ReadOnlyMap<K, V>, F extend
     /**
      * Creates a new volatile indexed property object, which is used to store indexed property values in the given map.
      * 
+     * @param keyValidator the validator used to validate the key of this property.
+     * @param valueValidator the validator used to validate the value of this property
      * @param map the map that stores the indexed value of the property.
      * 
+     * @require keysAndValuesValid(keyValidator, valueValidator, map) : "The keys and values are valid.";
      */
-    private VolatileIndexedProperty(@Nonnull @Validated F map) {
+    private VolatileIndexedProperty(@Nonnull ValueValidator<? super K> keyValidator, @Nonnull ValueValidator<? super V> valueValidator, @Nonnull @Validated F map) {
+        super(keyValidator, valueValidator);
+
+        assert keysAndValuesValid(keyValidator, valueValidator, map) : "The keys and values are valid.";
+
         this.map = map;
     }
     
+    /**
+     * Creates a new volatile indexed property with the given map and the given key- and value validators.
+     *
+     * @param keyValidator the validator used to validate the key of this property.
+     * @param valueValidator the validator used to validate the value of this property
+     * @param map the map that stores the indexed value of the property.
+     *
+     * @return a new volatile indexed property object.
+     */
+    @Pure
+    public static @Nullable <K, V, R extends ReadOnlyMap<K, V>, F extends FreezableMap<K, V>> VolatileIndexedProperty<K, V, R, F> get(@Nonnull ValueValidator<? super K> keyValidator, @Nonnull ValueValidator<? super V> valueValidator, @Nonnull @Validated F map) {
+        return new VolatileIndexedProperty<K, V, R, F>(keyValidator, valueValidator, map);
+    }
+
     /**
      * Creates a new volatile indexed property with the given map.
      * 
@@ -94,7 +117,27 @@ public class VolatileIndexedProperty<K, V, R extends ReadOnlyMap<K, V>, F extend
      */
     @Pure
     public static @Nullable <K, V, R extends ReadOnlyMap<K, V>, F extends FreezableMap<K, V>> VolatileIndexedProperty<K, V, R, F> get(@Nonnull @Validated F map) {
-        return new VolatileIndexedProperty<K, V, R, F>(map);
+        return get(ValueValidator.DEFAULT, ValueValidator.DEFAULT, map);
+    }
+
+    /* -------------------------------------------------- Validator Checks -------------------------------------------------- */
+
+    /**
+     * Validates that the contents of the map are valid by checking whether the keys and values can be validated with the given
+     * key- and value validators.
+     *
+     * @param keyValidator the validator used to validate the key of this property.
+     * @param valueValidator the validator used to validate the value of this property
+     * @param map the map that stores the indexed value of the property.
+     *
+     * @return true if the keys and values are valid; false otherwise.
+     */
+    private boolean keysAndValuesValid(@Nonnull ValueValidator<? super K> keyValidator, @Nonnull ValueValidator<? super V> valueValidator, @Nonnull @Validated F map) { // TODO: Make it static? @NonNullableElements?
+        for (final @Nonnull Map.Entry<K, V> entry : map.entrySet()) {
+            if (!keyValidator.isValid(entry.getKey())) { return false; }
+            if (!valueValidator.isValid(entry.getValue())) { return false; }
+        }
+        return true;
     }
 
 }

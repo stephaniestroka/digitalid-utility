@@ -23,6 +23,34 @@ import net.digitalid.utility.logging.Log;
  */
 public abstract class ReadOnlyProperty<V, O extends PropertyObserver> {
     
+    /* -------------------------------------------------- Validator -------------------------------------------------- */
+
+    /**
+     * Stores the value validator used to validate the value(s) of this property.
+     */
+    private final @Nonnull ValueValidator<? super V> valueValidator;
+
+    /**
+     * Returns the value validator used to validate the value(s) of this property.
+     *
+     * @return the value validator used to validate the value(s) of this property.
+     */
+    @Pure
+    public final @Nonnull ValueValidator<? super V> getValueValidator() {
+        return valueValidator;
+    }
+
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
+
+    /**
+     * Creates a new read-only property with the given value validator.
+     *
+     * @param valueValidator the value validator used to validate the value(s) of this property.
+     */
+    protected ReadOnlyProperty(@Nonnull ValueValidator<? super V> valueValidator) {
+        this.valueValidator = valueValidator;
+    }
+
     /* -------------------------------------------------- Observers -------------------------------------------------- */
     
     /**

@@ -1,14 +1,10 @@
 package net.digitalid.utility.taglets;
 
 import java.util.Map;
-import javax.annotation.Nonnull;
-import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.validation.state.Stateless;
 
 /**
  * This class defines a custom block tag for constructor and method post-conditions.
  */
-@Stateless
 public final class Ensure extends Taglet {
     
     /* -------------------------------------------------- Registration -------------------------------------------------- */
@@ -18,33 +14,29 @@ public final class Ensure extends Taglet {
      * 
      * @param map the map at which this taglet is registered.
      */
-    public static void register(@Nonnull Map<String, Taglet> map) {
+    public static void register(Map<String, Taglet> map) {
         Taglet.register(map, new Ensure());
     }
     
     /* -------------------------------------------------- Overrides -------------------------------------------------- */
     
-    @Pure
     @Override
     public boolean inConstructor() {
         return true;
     }
     
-    @Pure
     @Override
     public boolean inMethod() {
         return true;
     }
     
-    @Pure
     @Override
-    public @Nonnull String getName() {
+    public String getName() {
         return "ensure";
     }
     
-    @Pure
     @Override
-    public @Nonnull String getTitle() {
+    public String getTitle() {
         return "Ensures";
     }
     

@@ -3,14 +3,10 @@ package net.digitalid.utility.taglets;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.validation.state.Stateless;
 
 /**
  * This class defines a custom block tag for class authors.
  */
-@Stateless
 public final class Author extends Taglet {
     
     /* -------------------------------------------------- Registration -------------------------------------------------- */
@@ -20,39 +16,34 @@ public final class Author extends Taglet {
      * 
      * @param map the map at which this taglet is registered.
      */
-    public static void register(@Nonnull Map<String, Taglet> map) {
+    public static void register(Map<String, Taglet> map) {
         Taglet.register(map, new Author());
     }
     
     /* -------------------------------------------------- Overrides -------------------------------------------------- */
     
-    @Pure
     @Override
     public boolean inOverview() {
         return true;
     }
     
-    @Pure
     @Override
     public boolean inPackage() {
         return true;
     }
     
-    @Pure
     @Override
     public boolean inType() {
         return true;
     }
     
-    @Pure
     @Override
-    public @Nonnull String getName() {
+    public String getName() {
         return "author";
     }
     
-    @Pure
     @Override
-    public @Nonnull String getTitle() {
+    public String getTitle() {
         return "Author";
     }
     
@@ -61,7 +52,7 @@ public final class Author extends Taglet {
     /**
      * Stores the pattern that a text needs to match in order to be displayed as an email address.
      */
-    private static final @Nonnull Pattern pattern = Pattern.compile("(.+) \\((.+)\\)");
+    private static final Pattern pattern = Pattern.compile("(.+) \\((.+)\\)");
     
     /**
      * Rotates the given string by 13 characters.
@@ -70,9 +61,8 @@ public final class Author extends Taglet {
      * 
      * @return the given string rotated by 13 characters.
      */
-    @Pure
-    private static @Nonnull String rot13(@Nonnull String input) {
-        final @Nonnull StringBuilder output = new StringBuilder();
+    private static String rot13(String input) {
+        final StringBuilder output = new StringBuilder();
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
             if      (c >= 'a' && c <= 'm' || c >= 'A' && c <= 'M') { c += 13; }
@@ -82,10 +72,9 @@ public final class Author extends Taglet {
         return output.toString();
     }
     
-    @Pure
     @Override
-    protected @Nonnull String getText(@Nonnull String text) {
-        final @Nonnull Matcher matcher = pattern.matcher(text);
+    protected String getText(String text) {
+        final Matcher matcher = pattern.matcher(text);
         if (matcher.matches()) {
             final boolean obfuscated = true;
             if (obfuscated) {

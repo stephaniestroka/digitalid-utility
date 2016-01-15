@@ -1,14 +1,10 @@
 package net.digitalid.utility.taglets;
 
 import java.util.Map;
-import javax.annotation.Nonnull;
-import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.validation.state.Stateless;
 
 /**
  * This class defines a custom block tag for class (and field) invariants.
  */
-@Stateless
 public final class Invariant extends Taglet {
     
     /* -------------------------------------------------- Registration -------------------------------------------------- */
@@ -18,33 +14,29 @@ public final class Invariant extends Taglet {
      * 
      * @param map the map at which this taglet is registered.
      */
-    public static void register(@Nonnull Map<String, Taglet> map) {
+    public static void register(Map<String, Taglet> map) {
         Taglet.register(map, new Invariant());
     }
     
     /* -------------------------------------------------- Overrides -------------------------------------------------- */
     
-    @Pure
     @Override
     public boolean inField() {
         return true;
     }
     
-    @Pure
     @Override
     public boolean inType() {
         return true;
     }
     
-    @Pure
     @Override
-    public @Nonnull String getName() {
+    public String getName() {
         return "invariant";
     }
     
-    @Pure
     @Override
-    public @Nonnull String getTitle() {
+    public String getTitle() {
         return "Invariant";
     }
     

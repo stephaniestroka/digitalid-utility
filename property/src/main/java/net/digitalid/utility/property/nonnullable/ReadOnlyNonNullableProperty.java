@@ -1,6 +1,7 @@
 package net.digitalid.utility.property.nonnullable;
 
 import net.digitalid.utility.property.ReadOnlyProperty;
+import net.digitalid.utility.property.ValueValidator;
 import net.digitalid.utility.validation.state.Pure;
 import net.digitalid.utility.validation.state.Validated;
 
@@ -14,10 +15,12 @@ public abstract class ReadOnlyNonNullableProperty<V> extends ReadOnlyProperty<V,
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
-     * Creates a new read-only non-nullable replaceable property.
+     * Creates a new read-only non-nullable replaceable property with the given validator.
+     *
+     * @param validator the validator used to validate the value of this property.
      */
-    protected ReadOnlyNonNullableProperty() {
-        super();
+    protected ReadOnlyNonNullableProperty(@Nonnull ValueValidator<? super V> validator) {
+        super(validator);
     }
     
     /* -------------------------------------------------- Getter -------------------------------------------------- */
@@ -26,6 +29,8 @@ public abstract class ReadOnlyNonNullableProperty<V> extends ReadOnlyProperty<V,
      * Returns the value of this replaceable property.
      * 
      * @return the value of this replaceable property.
+     *
+     * @ensure getValidator().isValid(return) : "The returned value is valid.";
      */
     @Pure
     public abstract @Nonnull @Validated V get();

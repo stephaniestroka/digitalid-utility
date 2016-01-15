@@ -2,6 +2,8 @@ package net.digitalid.utility.property.nullable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import net.digitalid.utility.property.ValueValidator;
 import net.digitalid.utility.validation.state.Validated;
 
 /**
@@ -14,10 +16,12 @@ public abstract class WritableNullableProperty<V> extends ReadOnlyNullableProper
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
-     * Creates a new nullable replaceable property.
+     * Creates a new nullable replaceable property with the given validator.
+     *
+     * @param validator the validator used to validate the value of this property.
      */
-    protected WritableNullableProperty() {
-        super();
+    protected WritableNullableProperty(@Nonnull ValueValidator<? super V> validator) {
+        super(validator);
     }
     
     /* -------------------------------------------------- Setter -------------------------------------------------- */
@@ -26,6 +30,8 @@ public abstract class WritableNullableProperty<V> extends ReadOnlyNullableProper
      * Sets the value of this property to the given new value.
      * 
      * @param newValue the new value to replace the old one with.
+     *
+     * @require getValidator().isValid(newValue) : "The new value is valid.";
      */
     public abstract void set(@Nullable @Validated V newValue);
     
@@ -39,8 +45,8 @@ public abstract class WritableNullableProperty<V> extends ReadOnlyNullableProper
      * 
      * @require !oldValue.equals(newValue) : "The old and the new value are not the same.";
      */
-    protected final void notify(@Nullable @Validated V oldValue, @Nullable @Validated V newValue) {
-        assert oldValue != null && !oldValue.equals(newValue) || newValue != null && !newValue.equals(oldValue): "The old and the new value are not the same.";
+    protected final void notify(@Nonnull @Validated V oldValue, @Nonnull @Validated V newValue) {
+        assert !oldValue.equals(newValue) : "The old and the new value are not the same.";
         
         if (hasObservers()) {
             for (final @Nonnull NullablePropertyObserver<V> observer : getObservers()) {

@@ -1,9 +1,11 @@
 package net.digitalid.utility.property.indexed;
 
-import javax.annotation.Nonnull;
-import net.digitalid.utility.validation.state.Validated;
 import net.digitalid.utility.collections.freezable.FreezableMap;
 import net.digitalid.utility.collections.readonly.ReadOnlyMap;
+import net.digitalid.utility.property.ValueValidator;
+import net.digitalid.utility.validation.state.Validated;
+
+import javax.annotation.Nonnull;
 
 /**
  * This is the writable abstract class for properties that stores an indexed value.
@@ -20,11 +22,13 @@ public abstract class WritableIndexedProperty<K, V, R extends ReadOnlyMap<K, V>,
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
-     * Creates a new writable indexed property.
+     * Creates a new writable indexed property with the given validators.
      * 
+     * @param keyValidator the validator used to validate the key of this property.
+     * @param valueValidator the validator used to validate the value of this property.
      */
-    protected WritableIndexedProperty() {
-        super();
+    protected WritableIndexedProperty(@Nonnull ValueValidator<? super K> keyValidator, @Nonnull ValueValidator<? super V> valueValidator) {
+        super(keyValidator, valueValidator);
     }
     
     /* -------------------------------------------------- Modifiers -------------------------------------------------- */

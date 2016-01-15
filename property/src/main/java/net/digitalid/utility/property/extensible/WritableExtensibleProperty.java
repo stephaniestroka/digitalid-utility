@@ -1,6 +1,8 @@
 package net.digitalid.utility.property.extensible;
 
 import javax.annotation.Nonnull;
+
+import net.digitalid.utility.property.ValueValidator;
 import net.digitalid.utility.validation.state.Validated;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.collections.freezable.FreezableSet;
@@ -18,15 +20,30 @@ import net.digitalid.utility.collections.readonly.ReadOnlySet;
  */
 public abstract class WritableExtensibleProperty<V, R extends ReadOnlySet<V>, F extends FreezableSet<V>> extends ReadOnlyExtensibleProperty<V, R> {
     
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
+
+    /**
+     * Creates a new writable extensible property with the given validators.
+     *
+     * @param valueValidator the validator used to validate the value of this property.
+     */
+    protected WritableExtensibleProperty(@Nonnull ValueValidator<? super V> valueValidator) {
+        super(valueValidator);
+    }
+
     /* -------------------------------------------------- Modifiers -------------------------------------------------- */
     
     /**
      * Adds a new value to the set.
+     *
+     * @param element the value of this property that got added.
      */
     public abstract void add(@Nonnull @Frozen V value);
     
     /**
      * Removes a value from the set.
+     *
+     * @param element the value of this property that got removed.
      */
     public abstract void remove(@Nonnull @Frozen V value);
     
