@@ -22,4 +22,20 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+    <build>
+    <plugins>
+        <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>2.5</version>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <!-- disable processing because the definition in META-INF/services breaks javac -->
+                <compilerArgument>-proc:none</compilerArgument>
+            </configuration>
+          </plugin>
+        </plugins>
+    </build>
 </project>

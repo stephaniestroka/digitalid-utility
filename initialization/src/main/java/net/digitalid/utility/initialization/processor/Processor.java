@@ -44,10 +44,9 @@ public class Processor extends AbstractProcessor {
                     final @Nonnull TypeElement typeElement = (TypeElement) enclosingElement;
                     final @Nonnull Name className = typeElement.getQualifiedName();
                     try {
-                        final @Nonnull JavaFileObject f = processingEnv.getFiler().createSourceFile("Initializer");
+                        final @Nonnull JavaFileObject f = processingEnv.getFiler().createSourceFile("net.digitalid.utility.initialization.initializer.Initializer", typeElement.getEnclosingElement());
                         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Creating " + f.toUri());
-                        final @Nonnull Writer w = f.openWriter();
-                        try {
+                        try (final @Nonnull Writer w = f.openWriter()) {
                             final @Nonnull PrintWriter pw = new PrintWriter(w);
                             pw.println("package net.digitalid.utility.initialization.initializer;");
                             pw.println("/** The initializer initializes the library. */");
@@ -63,8 +62,6 @@ public class Processor extends AbstractProcessor {
 //                            pw.println("    }");
                             pw.println("}");
                             pw.flush();
-                        } finally {
-                            w.close();
                         }
                     } catch (IOException x) {
                         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, x.toString());
