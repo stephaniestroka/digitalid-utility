@@ -1,5 +1,25 @@
 package net.digitalid.utility.cryptography;
 
+import java.io.File;
+import java.lang.reflect.Field;
+import java.math.BigInteger;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.Permission;
+import java.security.PermissionCollection;
+import java.security.SecureRandom;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+
 import net.digitalid.utility.collections.annotations.size.NonEmpty;
 import net.digitalid.utility.errors.InitializationError;
 import net.digitalid.utility.errors.ShouldNeverHappenError;
@@ -11,19 +31,6 @@ import net.digitalid.utility.validation.math.Positive;
 import net.digitalid.utility.validation.reference.Capturable;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.File;
-import java.lang.reflect.Field;
-import java.math.BigInteger;
-import java.security.*;
-import java.util.Map;
 
 /**
  * Symmetric keys are used to encrypt and decrypt byte arrays with the Advanced Encryption Standard (AES).

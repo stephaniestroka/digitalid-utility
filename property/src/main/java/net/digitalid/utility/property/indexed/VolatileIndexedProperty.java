@@ -1,5 +1,10 @@
 package net.digitalid.utility.property.indexed;
 
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.digitalid.utility.collections.freezable.FreezableMap;
 import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
 import net.digitalid.utility.collections.readonly.ReadOnlyMap;
@@ -7,10 +12,6 @@ import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.property.ValueValidator;
 import net.digitalid.utility.validation.state.Pure;
 import net.digitalid.utility.validation.state.Validated;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Map;
 
 /**
  * The property stores indexed values in volatile memory.

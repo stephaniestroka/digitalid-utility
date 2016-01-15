@@ -3,13 +3,13 @@ package net.digitalid.utility.math;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Random;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import net.digitalid.utility.validation.math.Positive;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.exceptions.external.InvalidEncodingException;
-import net.digitalid.utility.exceptions.internal.InternalException;
 
 /**
  * This class models a multiplicative group.

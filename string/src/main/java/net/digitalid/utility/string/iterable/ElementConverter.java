@@ -2,6 +2,7 @@ package net.digitalid.utility.string.iterable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import net.digitalid.utility.validation.state.Pure;
 
 /**

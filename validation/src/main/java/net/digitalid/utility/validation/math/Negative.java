@@ -6,6 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.math.BigInteger;
+
 import net.digitalid.utility.validation.meta.TargetType;
 
 /**

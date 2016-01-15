@@ -1,20 +1,16 @@
 package net.digitalid.utility.cryptography;
 
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
+
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.errors.ShouldNeverHappenError;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
 import net.digitalid.utility.math.GroupWithKnownOrder;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.collections.freezable.FreezableArray;
 
 /**
  * This class generates new key pairs.

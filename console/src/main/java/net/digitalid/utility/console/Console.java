@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.digitalid.utility.validation.state.Stateless;
+
 import net.digitalid.utility.console.exceptions.EscapeOptionException;
 import net.digitalid.utility.errors.ShouldNeverHappenError;
+import net.digitalid.utility.validation.state.Stateless;
 
 /**
  * This class helps to read from standard input and write to standard output.

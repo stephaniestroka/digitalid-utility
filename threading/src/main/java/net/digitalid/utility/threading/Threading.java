@@ -1,6 +1,7 @@
 package net.digitalid.utility.threading;
 
 import javax.annotation.Nonnull;
+
 import net.digitalid.utility.validation.state.Pure;
 import net.digitalid.utility.validation.state.Stateless;
 

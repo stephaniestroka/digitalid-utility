@@ -5,18 +5,20 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+
+import net.digitalid.utility.collections.annotations.index.ValidIndex;
+import net.digitalid.utility.collections.annotations.index.ValidIndexForInsertion;
+import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
-import net.digitalid.utility.collections.annotations.index.ValidIndex;
-import net.digitalid.utility.collections.annotations.index.ValidIndexForInsertion;
-import net.digitalid.utility.collections.readonly.ReadOnlyList;
+import net.digitalid.utility.validation.reference.Capturable;
+import net.digitalid.utility.validation.state.Immutable;
+import net.digitalid.utility.validation.state.Pure;
 
 /**
  * This class extends the {@link LinkedList} and makes it {@link Freezable}.

@@ -1,13 +1,15 @@
 package net.digitalid.utility.collections.freezable;
 
 import java.util.Map;
+
 import javax.annotation.Nonnull;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+
+import net.digitalid.utility.collections.readonly.ReadOnlyMap;
+import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
-import net.digitalid.utility.freezable.Freezable;
-import net.digitalid.utility.collections.readonly.ReadOnlyMap;
+import net.digitalid.utility.validation.state.Immutable;
+import net.digitalid.utility.validation.state.Pure;
 
 /**
  * This interface models a {@link Map map} that can be {@link Freezable frozen}.

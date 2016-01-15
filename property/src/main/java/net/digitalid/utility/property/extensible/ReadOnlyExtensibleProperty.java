@@ -2,8 +2,8 @@ package net.digitalid.utility.property.extensible;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.collections.readonly.ReadOnlySet;
+import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.property.ReadOnlyProperty;
 import net.digitalid.utility.property.ValueValidator;
 

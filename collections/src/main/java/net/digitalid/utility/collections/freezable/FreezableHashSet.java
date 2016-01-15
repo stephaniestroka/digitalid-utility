@@ -3,21 +3,22 @@ package net.digitalid.utility.collections.freezable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.digitalid.utility.validation.math.NonNegative;
-import net.digitalid.utility.validation.math.Positive;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+
+import net.digitalid.utility.collections.readonly.ReadOnlySet;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.string.iterable.Brackets;
 import net.digitalid.utility.string.iterable.IterableConverter;
-import net.digitalid.utility.string.iterable.ElementConverter;
-import net.digitalid.utility.collections.readonly.ReadOnlySet;
+import net.digitalid.utility.validation.math.NonNegative;
+import net.digitalid.utility.validation.math.Positive;
+import net.digitalid.utility.validation.reference.Capturable;
+import net.digitalid.utility.validation.state.Immutable;
+import net.digitalid.utility.validation.state.Pure;
 
 /**
  * This class extends the {@link HashSet} and makes it {@link Freezable}.

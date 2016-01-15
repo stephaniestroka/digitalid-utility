@@ -1,5 +1,11 @@
 package net.digitalid.utility.conversion;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.*;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.conversion.exceptions.RecoveryException;
@@ -7,11 +13,6 @@ import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.reflection.ReflectonUtility;
 import net.digitalid.utility.reflection.exceptions.StructureException;
 import net.digitalid.utility.validation.state.Stateless;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
 
 /**
  * Abstract class for format converters. Defines abstract methods that must be implemented in every

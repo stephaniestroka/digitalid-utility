@@ -2,6 +2,7 @@ package net.digitalid.utility.system.writer;
 
 import java.io.IOException;
 import java.io.Writer;
+
 import javax.annotation.Nonnull;
 
 /**

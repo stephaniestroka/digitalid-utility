@@ -2,10 +2,11 @@ package net.digitalid.utility.tuples;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.state.Pure;
+
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.readonly.ReadOnly;
+import net.digitalid.utility.validation.reference.Capturable;
+import net.digitalid.utility.validation.state.Pure;
 
 /**
  * This interface models a {@link ReadOnly read-only} pair.

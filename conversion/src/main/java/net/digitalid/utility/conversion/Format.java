@@ -4,15 +4,17 @@ import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Map;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.freezable.annotations.NonFrozen;
+
 import net.digitalid.utility.collections.freezable.FreezableHashMap;
 import net.digitalid.utility.collections.freezable.FreezableMap;
 import net.digitalid.utility.conversion.annotations.ConvertToConvertibleType;
 import net.digitalid.utility.conversion.exceptions.ConverterNotFoundException;
+import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.validation.state.Immutable;
+import net.digitalid.utility.validation.state.Pure;
 
 /**
  * The abstract format class defines all converters, which must be implemented by each format.

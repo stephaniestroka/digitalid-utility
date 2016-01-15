@@ -1,13 +1,14 @@
 package net.digitalid.utility.collections.readonly;
 
 import javax.annotation.Nonnull;
+
+import net.digitalid.utility.collections.freezable.FreezableIterable;
+import net.digitalid.utility.freezable.Freezable;
+import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.readonly.ReadOnly;
 import net.digitalid.utility.validation.reference.Capturable;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.freezable.Freezable;
-import net.digitalid.utility.readonly.ReadOnly;
-import net.digitalid.utility.collections.freezable.FreezableIterable;
 
 /**
  * This interface provides read-only access to {@link Iterable iterables} and should not be lost by assigning its objects to a supertype.

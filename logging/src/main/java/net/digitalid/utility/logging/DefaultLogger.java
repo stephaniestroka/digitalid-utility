@@ -1,11 +1,14 @@
 package net.digitalid.utility.logging;
 
-import net.digitalid.utility.logging.directory.Directory;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import net.digitalid.utility.logging.directory.Directory;
 
 /**
  * This class implements a logger that logs the messages to a file.

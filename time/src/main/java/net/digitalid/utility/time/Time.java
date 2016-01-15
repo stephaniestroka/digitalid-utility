@@ -1,12 +1,13 @@
 package net.digitalid.utility.time;
 
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import java.text.DateFormat;
+import java.util.Date;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.text.DateFormat;
-import java.util.Date;
+
+import net.digitalid.utility.validation.state.Immutable;
+import net.digitalid.utility.validation.state.Pure;
 
 /**
  * This class models time in milliseconds for both dates and intervals.

@@ -1,11 +1,12 @@
 package net.digitalid.utility.math;
 
+import java.math.BigInteger;
+
+import javax.annotation.Nonnull;
+
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Matching;
 import net.digitalid.utility.validation.state.Pure;
-
-import javax.annotation.Nonnull;
-import java.math.BigInteger;
 
 /**
  * An element is a number in a certain group.

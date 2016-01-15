@@ -1,10 +1,11 @@
 package net.digitalid.utility.readonly;
 
 import javax.annotation.Nonnull;
+
+import net.digitalid.utility.freezable.Freezable;
+import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.validation.reference.Capturable;
 import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.freezable.Freezable;
 
 /**
  * Interfaces that extend this interface provide read-only access to their objects.

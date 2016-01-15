@@ -1,12 +1,13 @@
 package net.digitalid.utility.cryptography;
 
-import net.digitalid.utility.errors.ShouldNeverHappenError;
-import net.digitalid.utility.math.Element;
-
-import javax.annotation.Nonnull;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import javax.annotation.Nonnull;
+
+import net.digitalid.utility.errors.ShouldNeverHappenError;
+import net.digitalid.utility.math.Element;
 
 /**
  */

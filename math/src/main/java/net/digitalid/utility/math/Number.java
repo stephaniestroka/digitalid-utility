@@ -1,11 +1,12 @@
 package net.digitalid.utility.math;
 
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.math.BigInteger;
+
+import net.digitalid.utility.validation.state.Immutable;
+import net.digitalid.utility.validation.state.Pure;
 
 /**
  * A number has a value.

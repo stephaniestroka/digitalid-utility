@@ -2,7 +2,9 @@ package net.digitalid.utility.directory;
 
 import java.io.File;
 import java.io.FilenameFilter;
+
 import javax.annotation.Nonnull;
+
 import net.digitalid.utility.validation.state.Pure;
 import net.digitalid.utility.validation.state.Stateless;
 

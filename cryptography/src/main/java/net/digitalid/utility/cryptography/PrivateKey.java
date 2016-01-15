@@ -1,17 +1,17 @@
 package net.digitalid.utility.cryptography;
 
+import java.math.BigInteger;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.digitalid.utility.conversion.Convertible;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
 import net.digitalid.utility.math.GroupWithKnownOrder;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Matching;
 import net.digitalid.utility.validation.state.Pure;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.math.BigInteger;
-
-import net.digitalid.utility.conversion.Convertible;
 
 /**
  * This class stores the groups and exponents of a host's private key.

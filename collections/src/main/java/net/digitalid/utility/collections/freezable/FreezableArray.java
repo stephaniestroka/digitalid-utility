@@ -2,22 +2,24 @@ package net.digitalid.utility.collections.freezable;
 
 import java.util.Arrays;
 import java.util.HashSet;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import net.digitalid.utility.collections.annotations.index.ValidIndex;
+import net.digitalid.utility.collections.readonly.ReadOnlyArray;
+import net.digitalid.utility.freezable.Freezable;
+import net.digitalid.utility.freezable.FreezableObject;
+import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
+import net.digitalid.utility.string.iterable.Brackets;
+import net.digitalid.utility.string.iterable.IterableConverter;
 import net.digitalid.utility.validation.math.NonNegative;
 import net.digitalid.utility.validation.reference.Capturable;
 import net.digitalid.utility.validation.reference.Captured;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
-import net.digitalid.utility.collections.annotations.index.ValidIndex;
-import net.digitalid.utility.string.iterable.Brackets;
-import net.digitalid.utility.string.iterable.IterableConverter;
-import net.digitalid.utility.freezable.FreezableObject;
-import net.digitalid.utility.freezable.Freezable;
-import net.digitalid.utility.collections.readonly.ReadOnlyArray;
 
 /**
  * This class models {@link Freezable freezable} arrays.
