@@ -7,12 +7,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.digitalid.utility.validation.state.Stateless;
+
 import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
-import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.collections.freezable.FreezableArrayList;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.conversion.annotations.Constructing;
@@ -20,6 +19,8 @@ import net.digitalid.utility.conversion.annotations.IgnoreForConversion;
 import net.digitalid.utility.conversion.annotations.RequiredForReconstruction;
 import net.digitalid.utility.conversion.exceptions.RecoveryException;
 import net.digitalid.utility.conversion.exceptions.StructureException;
+import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.validation.state.Stateless;
 
 /**
  * Abstract class for format converters. Defines abstract methods that must be implemented in every

@@ -1,16 +1,18 @@
 package net.digitalid.utility.collections.readonly;
 
 import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import net.digitalid.utility.collections.annotations.index.ValidIndex;
+import net.digitalid.utility.collections.annotations.index.ValidIndexForInsertion;
+import net.digitalid.utility.collections.freezable.FreezableList;
+import net.digitalid.utility.freezable.Freezable;
+import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.validation.reference.Capturable;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.collections.annotations.index.ValidIndex;
-import net.digitalid.utility.collections.annotations.index.ValidIndexForInsertion;
-import net.digitalid.utility.freezable.Freezable;
-import net.digitalid.utility.collections.freezable.FreezableList;
 
 /**
  * This interface provides read-only access to {@link List lists} and should <em>never</em> be cast away (unless external code requires it).

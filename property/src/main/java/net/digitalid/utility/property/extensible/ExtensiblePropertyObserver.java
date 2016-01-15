@@ -2,8 +2,8 @@ package net.digitalid.utility.property.extensible;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.collections.readonly.ReadOnlySet;
+import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.property.PropertyObserver;
 import net.digitalid.utility.property.ReadOnlyProperty;
 

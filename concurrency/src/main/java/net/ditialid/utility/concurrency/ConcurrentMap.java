@@ -1,6 +1,7 @@
 package net.ditialid.utility.concurrency;
 
 import javax.annotation.Nonnull;
+
 import net.digitalid.utility.validation.reference.Capturable;
 import net.digitalid.utility.validation.state.Pure;
 

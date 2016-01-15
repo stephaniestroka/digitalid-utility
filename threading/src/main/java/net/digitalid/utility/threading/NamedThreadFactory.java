@@ -2,7 +2,9 @@ package net.digitalid.utility.threading;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.annotation.Nonnull;
+
 import net.digitalid.utility.validation.state.Pure;
 
 /**

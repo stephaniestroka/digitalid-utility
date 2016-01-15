@@ -4,14 +4,16 @@ import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import net.digitalid.utility.string.iterable.Brackets;
+import net.digitalid.utility.string.iterable.IterableConverter;
 import net.digitalid.utility.validation.math.NonNegative;
 import net.digitalid.utility.validation.math.Positive;
 import net.digitalid.utility.validation.reference.Capturable;
 import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.string.iterable.Brackets;
-import net.digitalid.utility.string.iterable.IterableConverter;
 
 /**
  * Implements a concurrent hash set based on {@link ConcurrentHashMap}.

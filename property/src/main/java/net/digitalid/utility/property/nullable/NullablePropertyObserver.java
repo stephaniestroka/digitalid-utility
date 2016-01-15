@@ -1,10 +1,10 @@
 package net.digitalid.utility.property.nullable;
 
-import net.digitalid.utility.property.PropertyObserver;
-import net.digitalid.utility.property.ReadOnlyProperty;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import net.digitalid.utility.property.PropertyObserver;
+import net.digitalid.utility.property.ReadOnlyProperty;
 
 /**
  * Objects that implement this interface can be used to observe {@link ReadOnlyNullableProperty nullable properties}.

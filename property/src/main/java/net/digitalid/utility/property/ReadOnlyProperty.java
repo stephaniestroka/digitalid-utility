@@ -2,16 +2,16 @@ package net.digitalid.utility.property;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import net.digitalid.utility.collections.freezable.FreezableLinkedList;
+import net.digitalid.utility.collections.freezable.FreezableList;
+import net.digitalid.utility.collections.readonly.ReadOnlyList;
+import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.property.extensible.ReadOnlyExtensibleProperty;
 import net.digitalid.utility.property.indexed.ReadOnlyIndexedProperty;
 import net.digitalid.utility.property.nonnullable.ReadOnlyNonNullableProperty;
 import net.digitalid.utility.property.nullable.ReadOnlyNullableProperty;
 import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.collections.freezable.FreezableLinkedList;
-import net.digitalid.utility.collections.freezable.FreezableList;
-import net.digitalid.utility.collections.readonly.ReadOnlyList;
-import net.digitalid.utility.logging.Log;
 
 /**
  * A property is an object that can be {@link PropertyObserver observed}.

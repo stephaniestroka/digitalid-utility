@@ -6,8 +6,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collection;
-import net.digitalid.utility.validation.meta.TargetType;
+
 import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
+import net.digitalid.utility.validation.meta.TargetType;
 
 /**
  * This annotation indicates that a collection or array contains at least the given number of elements.

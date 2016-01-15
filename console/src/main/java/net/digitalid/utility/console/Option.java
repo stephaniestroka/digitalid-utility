@@ -1,9 +1,10 @@
 package net.digitalid.utility.console;
 
 import javax.annotation.Nonnull;
+
+import net.digitalid.utility.console.exceptions.EscapeOptionException;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.console.exceptions.EscapeOptionException;
 
 /**
  * Every option in the {@link Console console} has to extend this class.

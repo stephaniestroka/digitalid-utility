@@ -1,11 +1,11 @@
 package net.digitalid.utility.property.indexed;
 
+import javax.annotation.Nonnull;
+
 import net.digitalid.utility.collections.freezable.FreezableMap;
 import net.digitalid.utility.collections.readonly.ReadOnlyMap;
 import net.digitalid.utility.property.ValueValidator;
 import net.digitalid.utility.validation.state.Validated;
-
-import javax.annotation.Nonnull;
 
 /**
  * This is the writable abstract class for properties that stores an indexed value.

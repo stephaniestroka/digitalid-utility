@@ -1,6 +1,7 @@
 package net.digitalid.utility.property;
 
 import javax.annotation.Nonnull;
+
 import net.digitalid.utility.validation.state.Pure;
 
 /**

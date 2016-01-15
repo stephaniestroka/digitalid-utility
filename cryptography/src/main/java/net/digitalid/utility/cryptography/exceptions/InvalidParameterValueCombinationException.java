@@ -1,9 +1,10 @@
 package net.digitalid.utility.cryptography.exceptions;
 
 import javax.annotation.Nonnull;
+
+import net.digitalid.utility.exceptions.external.InvalidEncodingException;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.exceptions.external.InvalidEncodingException;
 
 /**
  * This exception is thrown when a combination of parameter values is invalid.

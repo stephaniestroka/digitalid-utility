@@ -1,9 +1,10 @@
 package net.digitalid.utility.freezable;
 
 import javax.annotation.Nonnull;
-import net.digitalid.utility.validation.state.Immutable;
+
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.readonly.ReadOnly;
+import net.digitalid.utility.validation.state.Immutable;
 
 /**
  * Classes that implement this interface allow their objects to transition from a mutable into an {@link Immutable immutable} state.

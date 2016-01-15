@@ -1,13 +1,15 @@
 package net.digitalid.utility.collections.freezable;
 
 import java.util.List;
+
 import javax.annotation.Nonnull;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.freezable.annotations.Frozen;
+
 import net.digitalid.utility.collections.annotations.index.ValidIndex;
 import net.digitalid.utility.collections.annotations.index.ValidIndexForInsertion;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
+import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.validation.state.Immutable;
+import net.digitalid.utility.validation.state.Pure;
 
 /**
  * This interface models a {@link List list} that can be {@link Freezable frozen}.

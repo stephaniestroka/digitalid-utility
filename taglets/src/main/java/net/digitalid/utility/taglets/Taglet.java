@@ -1,10 +1,11 @@
 package net.digitalid.utility.taglets;
 
-import com.sun.javadoc.Tag;
 import java.beans.Introspector;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.sun.javadoc.Tag;
 
 /**
  * This class serves as a template for custom block tags.

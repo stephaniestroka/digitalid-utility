@@ -6,8 +6,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.List;
-import net.digitalid.utility.validation.meta.TargetType;
+
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
+import net.digitalid.utility.validation.meta.TargetType;
 
 /**
  * This annotation indicates that the elements of a {@link List list} are {@link ReadOnlyList#isAscending() ascending}.

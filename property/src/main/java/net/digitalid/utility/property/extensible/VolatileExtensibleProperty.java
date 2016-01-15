@@ -3,12 +3,12 @@ package net.digitalid.utility.property.extensible;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.collections.freezable.FreezableSet;
+import net.digitalid.utility.collections.readonly.ReadOnlySet;
+import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.property.ValueValidator;
 import net.digitalid.utility.validation.state.Pure;
 import net.digitalid.utility.validation.state.Validated;
-import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.collections.freezable.FreezableSet;
-import net.digitalid.utility.collections.readonly.ReadOnlySet;
 
 /**
  * The property stores values in volatile memory.

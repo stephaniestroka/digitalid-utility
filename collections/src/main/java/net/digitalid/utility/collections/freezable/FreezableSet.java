@@ -1,10 +1,12 @@
 package net.digitalid.utility.collections.freezable;
 
 import java.util.Set;
+
 import javax.annotation.Nonnull;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.freezable.annotations.Frozen;
+
 import net.digitalid.utility.collections.readonly.ReadOnlySet;
+import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.validation.state.Immutable;
 
 /**
  * This interface models a {@link Set set} that can be {@link Freezable frozen}.

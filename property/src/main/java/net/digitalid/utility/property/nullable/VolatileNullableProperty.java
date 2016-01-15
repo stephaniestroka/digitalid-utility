@@ -1,11 +1,11 @@
 package net.digitalid.utility.property.nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.digitalid.utility.property.ValueValidator;
 import net.digitalid.utility.validation.state.Pure;
 import net.digitalid.utility.validation.state.Validated;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * This property stores a replaceable value that can be null.

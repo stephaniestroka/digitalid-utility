@@ -1,11 +1,12 @@
 package net.digitalid.utility.freezable;
 
 import javax.annotation.Nonnull;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.state.Pure;
+
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.readonly.ReadOnly;
+import net.digitalid.utility.validation.reference.Capturable;
+import net.digitalid.utility.validation.state.Pure;
 
 /**
  * This class implements the freezing mechanism which can be reused with inheritance.
