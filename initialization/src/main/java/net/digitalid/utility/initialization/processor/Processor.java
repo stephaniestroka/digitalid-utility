@@ -34,6 +34,7 @@ public class Processor extends AbstractProcessor {
     
     @Override
     public boolean process(@Nonnull Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
+
         for (final @Nonnull Element annotatedElement : roundEnvironment.getElementsAnnotatedWith(Initialize.class)) {
 //            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Help! (This is the encapsulated annotation processor.)", annotatedElement);
             
@@ -44,7 +45,7 @@ public class Processor extends AbstractProcessor {
                     final @Nonnull TypeElement typeElement = (TypeElement) enclosingElement;
                     final @Nonnull Name className = typeElement.getQualifiedName();
                     try {
-                        final @Nonnull JavaFileObject f = processingEnv.getFiler().createSourceFile("net.digitalid.utility.initialization.initializer.Initializer", typeElement.getEnclosingElement());
+                        final @Nonnull JavaFileObject f = processingEnv.getFiler().createSourceFile("net.digitalid.utility.initialization.initializer.Initializer");
                         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Creating " + f.toUri());
                         try (final @Nonnull Writer w = f.openWriter()) {
                             final @Nonnull PrintWriter pw = new PrintWriter(w);
