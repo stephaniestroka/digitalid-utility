@@ -1,4 +1,4 @@
-package net.digitalid.utility.conversion.exceptions;
+package net.digitalid.utility.reflection.exceptions;
 
 import javax.annotation.Nonnull;
 

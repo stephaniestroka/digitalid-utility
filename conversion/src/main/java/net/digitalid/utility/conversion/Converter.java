@@ -1,25 +1,17 @@
 package net.digitalid.utility.conversion;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.TypeVariable;
+import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
+import net.digitalid.utility.collections.readonly.ReadOnlyList;
+import net.digitalid.utility.conversion.exceptions.RecoveryException;
+import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.reflection.ReflectonUtility;
+import net.digitalid.utility.reflection.exceptions.StructureException;
+import net.digitalid.utility.validation.state.Stateless;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.digitalid.utility.validation.state.Stateless;
-import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
-import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.collections.freezable.FreezableArrayList;
-import net.digitalid.utility.collections.readonly.ReadOnlyList;
-import net.digitalid.utility.conversion.annotations.Constructing;
-import net.digitalid.utility.conversion.annotations.IgnoreForConversion;
-import net.digitalid.utility.conversion.annotations.RequiredForReconstruction;
-import net.digitalid.utility.conversion.exceptions.RecoveryException;
-import net.digitalid.utility.conversion.exceptions.StructureException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.*;
 
 /**
  * Abstract class for format converters. Defines abstract methods that must be implemented in every
@@ -45,25 +37,6 @@ public abstract class Converter {
     /* -------------------------------------------------- Object Recovery -------------------------------------------------- */
     
     /**
-     * Returns a constructor for a given type.
-     * 
-     * @param type the type for which the constructor should be returned.
-     * 
-     * @return a constructor for a given type.
-     * 
-     * @throws StructureException if the type has multiple of no declared constructors.
-     */
-    protected static @Nonnull Constructor<?> getConstructor(@Nonnull Class<?> type) throws StructureException {
-        final @Nonnull Constructor<?>[] constructors = type.getDeclaredConstructors();
-        if (constructors.length > 1) {
-            throw StructureException.get("The type has multiple constructors.");
-        } else if (constructors.length == 0) {
-            throw StructureException.get("The type does not have any declared constructors.");
-        }
-        return constructors[0];
-    }
-    
-    /**
      * Recovers an object of a given type with the given values using the type constructor.
      * 
      * @param type the type of the object that is recovered.
@@ -76,7 +49,7 @@ public abstract class Converter {
     private static @Nonnull Object recoverObjectWithConstructor(@Nonnull Class<?> type, @Nullable Object... values) throws RecoveryException {
         final @Nonnull Constructor constructor;
         try {
-            constructor = getConstructor(type);
+            constructor = ReflectonUtility.getConstructor(type);
         } catch (StructureException e) {
             throw RecoveryException.get(type, "Failed to restore object with the constructor.", e);
         }
@@ -105,22 +78,6 @@ public abstract class Converter {
         }
     }
 
-    /**
-     * Returns the static recovery method for the given type.
-     * 
-     * @param type the type for which the static recovery method should be returned.
-     *             
-     * @return the static recovery method for the given type.
-     */
-    private static @Nullable Method getStaticRecoveryMethod(@Nonnull Class<?> type) {
-        final @Nonnull @NonNullableElements Method[] methods = type.getDeclaredMethods();
-        for (Method method : methods) {
-            if (method.isAnnotationPresent(Constructing.class)) {
-                return method;
-            }
-        }
-        return null;
-    }
 
     /**
      * Recovers an object of a given type using the given values.
@@ -133,7 +90,7 @@ public abstract class Converter {
      * @throws RecoveryException if the recovery method unexpectedly returns null.
      */
     protected static @Nonnull Object recoverNonNullableObject(@Nonnull Class<?> type, @Nullable Object... values) throws RecoveryException {
-        final @Nullable Method constructorMethod = getStaticRecoveryMethod(type);
+        final @Nullable Method constructorMethod = ReflectonUtility.getStaticRecoveryMethod(type);
         final @Nullable Object restoredObject;
         if (constructorMethod == null) {
             restoredObject = recoverObjectWithConstructor(type, values);
@@ -158,57 +115,7 @@ public abstract class Converter {
         TUPLE, SINGLE_TYPE
     }
 
-    /**
-     * Returns the type parameters of a recovery method or constructor of a given type.
-     * 
-     * @param type the type for which the type parameters of a recovery method or constructor are returned.
-     * 
-     * @return the type parameters of a recovery method or constructor of a given type.
-     * 
-     * @throws StructureException
-     */
-    private static @Nonnull @NonNullableElements TypeVariable<?>[] getTypesOfConvertibleFields(@Nonnull Class<?> type) throws StructureException {
-        final @Nullable Method constructorMethod = getStaticRecoveryMethod(type);
-        if (constructorMethod == null) {
-            final @Nonnull Constructor<?> constructor = getConstructor(type);
-            return constructor.getTypeParameters();
-        } else {
-            return constructorMethod.getTypeParameters();
-        }
-    }
-
-    /**
-     * Returns all convertible fields of a given type. 
-     * A field is considered convertible if it is passed to the recovery method or constructor of the type.
-     * 
-     * @param type the type for which the convertible fields should be returned.
-     * 
-     * @return all convertible fields of a given type.
-     * 
-     * @throws StructureException if a type parameter of a recovery method cannot be identified as a field.
-     */
-    // TODO: optimize with a cache
-    protected static @Frozen @Nonnull @NonNullableElements ReadOnlyList<Field> getConvertibleFields(@Nonnull Class<?> type) throws StructureException {
-        final @Nonnull TypeVariable<?>[] typesOfConvertibleFields = getTypesOfConvertibleFields(type);
-        final @Nonnull @NonNullableElements FreezableArrayList<Field> fields = FreezableArrayList.get();
-        for (TypeVariable<?> typeOfConvertibleField : typesOfConvertibleFields) {
-            final @Nonnull String name = typeOfConvertibleField.getName();
-            final @Nonnull Field field;
-            // TODO: what if the constructor parameter name is not equal to the types field name?
-            try {
-                field = type.getField(name);
-            } catch (NoSuchFieldException e) {
-                throw StructureException.get("The class does not have a field '" + name + "'.");
-            }
-            if (field.isAnnotationPresent(IgnoreForConversion.class) | field.isAnnotationPresent(RequiredForReconstruction.class)) {
-                continue;
-            }
-            fields.add(field);
-        }
-        return fields.freeze();
-    }
-
-    /**
+   /**
      * Returns a single convertible field of a given type.
      * 
      * @param type the type for which the field should be returned.
@@ -218,7 +125,7 @@ public abstract class Converter {
      * @throws StructureException if a type parameter of a recovery method cannot be identified as a field.
      */
     protected static @Nonnull Field getConvertibleField(@Nonnull Class<?> type) throws StructureException {
-        final @Nonnull @NonNullableElements @Frozen ReadOnlyList<Field> fields = getConvertibleFields(type);
+        final @Nonnull @NonNullableElements @Frozen ReadOnlyList<Field> fields = ReflectonUtility.getReconstructionFields(type);
         assert fields.size() == 1 : "There is only one field in type '" + type + "'";
         return fields.getNonNullable(0);
     }
@@ -234,7 +141,7 @@ public abstract class Converter {
      * @throws StructureException thrown if the structure of the type cannot be inferred, e.g. because the recovery method or the constructor do not take any constructable parameters.
      */
     public static @Nonnull Structure inferStructure(@Nonnull Class<?> type) throws StructureException {
-        final @Nonnull @NonNullableElements ReadOnlyList<Field> fields = getConvertibleFields(type);
+        final @Nonnull @NonNullableElements ReadOnlyList<Field> fields = ReflectonUtility.getReconstructionFields(type);
         @Nonnull Structure structureType;
         if (fields.size() == 0) {
             throw StructureException.get("Cannot convert objects without values (empty constructor).");

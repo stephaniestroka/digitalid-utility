@@ -5,12 +5,69 @@ import net.digitalid.utility.validation.math.NonNegative;
 import net.digitalid.utility.validation.state.Pure;
 import net.digitalid.utility.validation.state.Stateless;
 
+import java.lang.reflect.Field;
+
 /**
  * This class provides useful operations on strings.
  */
 @Stateless
 public final class StringUtility {
-    
+
+    /**
+     * A set of styles which can be used for the string representation.
+     */
+    public static enum RepresentationStyle {
+        DEFAULT
+    }
+
+    /**
+     * Returns the field value or a &lt;failed to access&gt; error message if the field cannot be accessed.
+     */
+    private static @Nonnull Object getFieldValueOrErrorMessage(@Nonnull Field field, @Nonnull Object object) {
+        field.setAccessible(true);
+        try {
+            return field.get(object);
+        } catch (IllegalAccessException e) {
+            return "<failed to access>";
+        }
+    }
+
+    /**
+     * Returns a doubly-quoted string if the field value is a string, otherwise, toString() is called on the object.
+     */
+    private static @Nonnull String transformFieldValue(@Nonnull Object fieldValue) {
+        if (String.class.isInstance(fieldValue)) {
+            return "\"" + fieldValue + "\"";
+        } else {
+            return fieldValue.toString();
+        }
+    }
+
+    /**
+     * Stores a representation of the given object in the given {@link RepresentationStyle style} into the given string builder.
+     */
+    public static void toString(@Nonnull Object object, @Nonnull RepresentationStyle style, @Nonnull StringBuilder string) {
+        final @Nonnull Class<?> type = object.getClass();
+        final @Nonnull String typeName = type.getSimpleName();
+        final @Nonnull Field[] fields = type.getDeclaredFields();
+        final int numberOfFields = fields.length;
+        switch (style) {
+            case DEFAULT:
+                string.append(typeName).append("(");
+                if (numberOfFields > 0) {
+                    for (int i = 0; i < numberOfFields - 1; i++) {
+                        final @Nonnull Field field = fields[i];
+                        string.append(field.getName()).append(": \"").append(transformFieldValue(getFieldValueOrErrorMessage(field, object))).append("\"");
+                        string.append(fields[i]).append(", ");
+                    }
+                    Field lastField = fields[numberOfFields - 1];
+                    string.append(lastField.getName()).append(": \"").append(transformFieldValue(getFieldValueOrErrorMessage(lastField, object))).append("\"");
+                }
+                string.append(")");
+            break;
+        }
+    }
+
     /* -------------------------------------------------- Pluralization -------------------------------------------------- */
     
     /**
