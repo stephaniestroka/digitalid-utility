@@ -21,6 +21,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import net.digitalid.utility.collections.annotations.size.NonEmpty;
+import net.digitalid.utility.conversion.Convertible;
 import net.digitalid.utility.initialization.errors.InitializationError;
 import net.digitalid.utility.errors.ShouldNeverHappenError;
 import net.digitalid.utility.exceptions.external.InvalidEncodingException;
@@ -32,11 +33,13 @@ import net.digitalid.utility.validation.reference.Capturable;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
 
+import net.digitalid.net.root.RootClass;
+
 /**
  * Symmetric keys are used to encrypt and decrypt byte arrays with the Advanced Encryption Standard (AES).
  */
 @Immutable
-public final class SymmetricKey {
+public final class SymmetricKey extends RootClass implements Convertible {
     
     /* -------------------------------------------------- Circumvent Cryptographic Restrictions -------------------------------------------------- */
     
@@ -211,23 +214,6 @@ public final class SymmetricKey {
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException exception) {
             throw MaskingInvalidEncodingException.get(exception);
         }
-    }
-    
-    /* -------------------------------------------------- Object -------------------------------------------------- */
-    
-    @Pure
-    @Override
-    public final boolean equals(@Nullable Object object) {
-        if (object == this) { return true; }
-        if (object == null || !(object instanceof SymmetricKey)) { return false; }
-        @Nonnull SymmetricKey other = (SymmetricKey) object;
-        return this.value.equals(other.value);
-    }
-    
-    @Pure
-    @Override
-    public final int hashCode() {
-        return this.value.hashCode();
     }
     
 }

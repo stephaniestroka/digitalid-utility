@@ -6,6 +6,7 @@ import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.reflection.ReflectonUtility;
 import net.digitalid.utility.reflection.exceptions.StructureException;
 import net.digitalid.utility.string.StringUtility;
+import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
 
 import javax.annotation.Nonnull;
@@ -18,20 +19,22 @@ import java.lang.reflect.Field;
  * it overrides equals() using a more useful comparison method than java.lang.Object and
  * it implements object validation.
  */
+@Immutable
 public abstract class RootClass {
-
+    
     /* -------------------------------------------------- Fields Cache -------------------------------------------------- */
-
+    
     protected @Nonnull @NonNullableElements ReadOnlyList<Field> classFields;
-
+    
     protected RootClass() {
         try {
             classFields = ReflectonUtility.getReconstructionFields(this.getClass());
         } catch (StructureException e) {
+            // TODO: This is actually bad style. We should check beforehand if the structure is as expected. Then we can also set classFields to final.
             classFields = FreezableArrayList.get(this.getClass().getDeclaredFields());
         }
     }
-
+    
     /**
      * Returns a general representation of this object using the default style, containing the type name, the fields of the object and it's field values.
      * Example: Person(name: "Stephanie Stroka", age: "28")
@@ -44,11 +47,12 @@ public abstract class RootClass {
 
         return string.toString();
     }
-
+    
     /**
      * Returns false if the given object is not equal to the current object, using the heuristics that fields of a class,
      * which are handed to the class via the recovery method or the constructor, must be equal to each other so that the objects are considered equal.
      */
+    @Pure
     @Override
     public boolean equals(@Nullable Object other) {
         if (other == null || !other.getClass().equals(this.getClass())) {
@@ -72,10 +76,11 @@ public abstract class RootClass {
             return super.equals(other);
         }
     }
-
+    
     /**
      * Computes and returns the hash code of this object, using the fields of the class which are handed to the class via the recovery method or the constructor.
      */
+    @Pure
     @Override
     public int hashCode() {
         try {
@@ -95,5 +100,5 @@ public abstract class RootClass {
             return super.hashCode();
         }
     }
-
+    
 }

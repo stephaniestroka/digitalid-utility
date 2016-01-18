@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.collections.freezable.FreezableLinkedList;
 import net.digitalid.utility.collections.freezable.FreezableList;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
+import net.digitalid.utility.conversion.Convertible;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.property.extensible.ReadOnlyExtensibleProperty;
 import net.digitalid.utility.property.indexed.ReadOnlyIndexedProperty;
@@ -21,7 +22,7 @@ import net.digitalid.utility.validation.state.Pure;
  * @see ReadOnlyExtensibleProperty
  * @see ReadOnlyIndexedProperty
  */
-public abstract class ReadOnlyProperty<V, O extends PropertyObserver> {
+public abstract class ReadOnlyProperty<V, O extends PropertyObserver> implements Convertible {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
 

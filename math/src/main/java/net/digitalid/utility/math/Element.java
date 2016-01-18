@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.conversion.Convertible;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Matching;
 import net.digitalid.utility.validation.state.Pure;
@@ -14,7 +15,7 @@ import net.digitalid.utility.validation.state.Pure;
  * @invariant getValue().compareTo(BigInteger.ZERO) >= 0 && getValue().compareTo(getGroup().getModulus()) == -1 : "The value is non-negative and smaller than the group modulus.";
  */
 @Immutable
-public final class Element extends Number<Element, Group<?>> {
+public final class Element extends Number<Element, Group<?>> implements Convertible {
     
     /* -------------------------------------------------- Group -------------------------------------------------- */
     

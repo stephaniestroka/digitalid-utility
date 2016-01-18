@@ -6,6 +6,7 @@ import java.util.Random;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.conversion.Convertible;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
 import net.digitalid.utility.math.GroupWithKnownOrder;
@@ -16,7 +17,7 @@ import net.digitalid.utility.validation.state.Pure;
  * This class generates new key pairs.
  */
 @Immutable
-public final class KeyPair {
+public final class KeyPair implements Convertible {
     
     /* -------------------------------------------------- Private Key -------------------------------------------------- */
     
