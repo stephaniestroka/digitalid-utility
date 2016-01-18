@@ -3,6 +3,7 @@ package net.digitalid.utility.property.nullable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.conversion.Convertible;
 import net.digitalid.utility.property.ReadOnlyProperty;
 import net.digitalid.utility.property.ValueValidator;
 import net.digitalid.utility.validation.state.Pure;

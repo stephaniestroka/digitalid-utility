@@ -7,6 +7,7 @@ import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.conversion.Convertible;
 import net.digitalid.utility.validation.math.Positive;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
@@ -18,8 +19,8 @@ import net.digitalid.utility.validation.state.Pure;
  * @see GroupWithUnknownOrder
  */
 @Immutable
-public abstract class Group<G extends Group<G>> {
-    
+public abstract class Group<G extends Group<G>> implements Convertible {
+
     /* -------------------------------------------------- Modulus -------------------------------------------------- */
     
     /**

@@ -65,7 +65,7 @@ public final class PrivateKeyChain extends KeyChain<PrivateKeyChain, PrivateKey>
         items.add(FreezablePair.get(time, key).freeze());
         return new PrivateKeyChain(items.freeze());
     }
-
+    
     @Override
     protected KeyChainCreator<PrivateKeyChain, PrivateKey> getKeyChainCreator() {
         return new KeyChainCreator<PrivateKeyChain, PrivateKey>() {
@@ -77,5 +77,5 @@ public final class PrivateKeyChain extends KeyChain<PrivateKeyChain, PrivateKey>
 
         };
     }
-
+    
 }

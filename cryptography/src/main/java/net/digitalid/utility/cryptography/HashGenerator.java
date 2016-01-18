@@ -8,11 +8,17 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.errors.ShouldNeverHappenError;
 import net.digitalid.utility.math.Element;
+import net.digitalid.utility.validation.state.Pure;
 
 /**
+ * Generates cryptographic hashes.
  */
 public class HashGenerator {
 
+    /**
+     * Generates and returns a cryptographic hash using the SHA-256 hash algorithm on the values of the given elements.
+     */
+    @Pure
     public static @Nonnull BigInteger generateHash(@Nonnull Element... elements) {
         try {
             final @Nonnull MessageDigest instance = MessageDigest.getInstance("SHA-256");

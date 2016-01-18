@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.conversion.Convertible;
 import net.digitalid.utility.validation.math.Positive;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
@@ -12,7 +13,7 @@ import net.digitalid.utility.validation.state.Pure;
  * This class models a multiplicative group with known order.
  */
 @Immutable
-public final class GroupWithKnownOrder extends Group<GroupWithKnownOrder> {
+public final class GroupWithKnownOrder extends Group<GroupWithKnownOrder> implements Convertible {
     
     /* -------------------------------------------------- Order -------------------------------------------------- */
     

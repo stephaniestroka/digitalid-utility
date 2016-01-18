@@ -6,15 +6,18 @@ import java.util.Date;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.conversion.Convertible;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
+
+import net.digitalid.net.root.RootComparable;
 
 /**
  * This class models time in milliseconds for both dates and intervals.
  * Dates are calculated as milliseconds since 1 January 1970, 00:00:00 GMT.
  */
 @Immutable
-public final class Time implements Comparable<Time> {
+public final class Time extends RootComparable<Time> implements Convertible {
     
     /* -------------------------------------------------- Constants -------------------------------------------------- */
     

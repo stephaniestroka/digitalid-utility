@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>net.digitalid</groupId>
-            <artifactId>digitalid-utility-errors</artifactId>
+            <artifactId>digitalid-utility-initialization</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

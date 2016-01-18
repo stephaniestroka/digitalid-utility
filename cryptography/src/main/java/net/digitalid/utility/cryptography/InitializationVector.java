@@ -5,6 +5,7 @@ import java.security.SecureRandom;
 import javax.annotation.Nonnull;
 import javax.crypto.spec.IvParameterSpec;
 
+import net.digitalid.utility.conversion.Convertible;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
 import net.digitalid.utility.validation.state.Validated;
@@ -13,7 +14,7 @@ import net.digitalid.utility.validation.state.Validated;
  * The random initialization vector ensures that the cipher-texts of the same content are different.
  */
 @Immutable
-public final class InitializationVector extends IvParameterSpec {
+public final class InitializationVector extends IvParameterSpec implements Convertible {
     
     /* -------------------------------------------------- Generator -------------------------------------------------- */
     

@@ -373,54 +373,7 @@ public final class PublicKey implements Convertible {
     }*/
 
     /* -------------------------------------------------- Object -------------------------------------------------- */
-    
-    @Pure
-    @Override
-    public boolean equals(@Nullable Object object) {
-        if (object == this) { return true; }
-        if (object == null || !(object instanceof PublicKey)) { return false; }
-        final @Nonnull PublicKey other = (PublicKey) object;
-        return this.compositeGroup.equals(other.compositeGroup)
-                && this.e.equals(other.e)
-                && this.ab.equals(other.ab)
-                && this.au.equals(other.au)
-                && this.ai.equals(other.ai)
-                && this.av.equals(other.av)
-                && this.ao.equals(other.ao)
-                && this.t.equals(other.t)
-                && this.su.equals(other.su)
-                && this.si.equals(other.si)
-                && this.sv.equals(other.sv)
-                && this.so.equals(other.so)
-                && this.squareGroup.equals(other.squareGroup)
-                && this.g.equals(other.g)
-                && this.y.equals(other.y)
-                && this.zPlus1.equals(other.zPlus1);
-    }
-    
-    @Pure
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 13 * hash + compositeGroup.hashCode();
-        hash = 13 * hash + e.hashCode();
-        hash = 13 * hash + ab.hashCode();
-        hash = 13 * hash + au.hashCode();
-        hash = 13 * hash + ai.hashCode();
-        hash = 13 * hash + av.hashCode();
-        hash = 13 * hash + ao.hashCode();
-        hash = 13 * hash + t.hashCode();
-        hash = 13 * hash + su.hashCode();
-        hash = 13 * hash + si.hashCode();
-        hash = 13 * hash + sv.hashCode();
-        hash = 13 * hash + so.hashCode();
-        hash = 13 * hash + squareGroup.hashCode();
-        hash = 13 * hash + g.hashCode();
-        hash = 13 * hash + y.hashCode();
-        hash = 13 * hash + zPlus1.hashCode();
-        return hash;
-    }
-    
+
     @Pure
     @Override
     public @Nonnull String toString() {
