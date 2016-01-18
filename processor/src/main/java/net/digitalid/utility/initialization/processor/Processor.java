@@ -38,8 +38,6 @@ public class Processor extends AbstractProcessor {
     @Override
     public boolean process(@Nonnull Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
         
-        // TODO: Clean up!
-        
         Map<String, String> options = processingEnv.getOptions();
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Number of options: " + options.keySet().size());
         for (String option : options.keySet()) {

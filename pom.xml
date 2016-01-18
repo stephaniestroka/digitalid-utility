@@ -4,10 +4,28 @@
                              http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <groupId>net.digitalid</groupId>
-    <artifactId>digitalid-utility</artifactId>
+    <groupId>net.digitalid.utility</groupId>
+    <artifactId>utility</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
+    
+    <name>Digital ID Utility</name>
+    <description>This project provides utility classes for the Digital ID library.</description>
+    <url>https://code.digitalid.net/digitalid/utility</url>
+    
+    <organization>
+        <name>Synacts GmbH</name>
+        <url>https://www.synacts.com</url>
+    </organization>
+    
+    <licenses>
+        <license>
+            <name>To be determined</name>
+            <url>https://www.synacts.com/company/#become-partner</url>
+            <comments>Until the license is determined, all rights are reserved by Synacts GmbH.</comments>
+        </license>
+    </licenses>
+    
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.7</maven.compiler.source>
@@ -17,40 +35,38 @@
     <modules>
         <module>taglets</module>
         <module>logging</module>
+        <module>processor</module>
         <module>exceptions</module>
-        <module>errors</module>
-        <module>console</module>
         <module>validation</module>
+        <module>string</module>
+        <module>errors</module>
         <module>initialization</module>
         <module>directory</module>
         <module>system</module>
         <module>casting</module>
-        <module>string</module>
-        <module>concurrency</module>
         <module>freezable</module>
+        <module>concurrency</module>
         <module>collections</module>
         <module>conversion</module>
         <module>rootclass</module>
         <module>threading</module>
         <module>property</module>
-        <module>time</module>
-        <module>math</module>
+        <module>console</module>
         <module>tuples</module>
+        <module>math</module>
+        <module>time</module>
         <module>cryptography</module>
     </modules>
     
-    <distributionManagement>
-        <repository>
-            <id>digitalid-deployment</id>
-            <name>Final Releases</name>
-            <url>https://repo.digitalid.net/content/repositories/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>digitalid-deployment</id>
-            <name>Snapshot Releases</name>
-            <url>https://repo.digitalid.net/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
     <repositories>
         <repository>
             <id>digitalid-releases</id>
@@ -64,37 +80,28 @@
         </repository>
     </repositories>
     
+    <distributionManagement>
+        <repository>
+            <id>digitalid-deployment</id>
+            <name>Final Releases</name>
+            <url>https://repo.digitalid.net/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>digitalid-deployment</id>
+            <name>Snapshot Releases</name>
+            <url>https://repo.digitalid.net/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+    
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.3</version>
+                <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <quiet>true</quiet>
-                    <linksource>false</linksource>
-                    <doctitle>Digital ID System</doctitle>
-                    <additionalparam>-Xdoclint:none</additionalparam>
-                    <links>
-                        <link>https://docs.digitalid.net/utility/annotations/${project.version}/</link>
-                        <link>http://docs.oracle.com/javase/7/docs/api/</link>
-                    </links>
-                    <tagletArtifacts>
-                        <tagletArtifact>
-                            <groupId>net.digitalid</groupId>
-                            <artifactId>digitalid-utility-taglets</artifactId>
-                            <version>${project.version}</version>
-                        </tagletArtifact>
-                    </tagletArtifacts>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -109,28 +116,38 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
+                <configuration>
+                    <quiet>true</quiet>
+                    <linksource>false</linksource>
+                    <doctitle>Digital ID Utility</doctitle>
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                    <links>
+                        <!-- TODO: Include all utility Javadocs here! -->
+                        <link>https://docs.digitalid.net/utility/annotations/${project.version}/</link>
+                        <link>http://docs.oracle.com/javase/7/docs/api/</link>
+                    </links>
+                    <tagletArtifacts>
+                        <tagletArtifact>
+                            <groupId>net.digitalid.utility</groupId>
+                            <artifactId>utility-taglets</artifactId>
+                            <version>${project.version}</version>
+                        </tagletArtifact>
+                    </tagletArtifacts>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
-    
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
     
 </project>

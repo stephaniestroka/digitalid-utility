@@ -1,41 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>net.digitalid</groupId>
-    <artifactId>digitalid-utility-initialization</artifactId>
+    
+    <groupId>net.digitalid.utility</groupId>
+    <artifactId>utility-initialization</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
+    
     <parent>
-        <groupId>net.digitalid</groupId>
-        <artifactId>digitalid-utility</artifactId>
+        <groupId>net.digitalid.utility</groupId>
+        <artifactId>utility</artifactId>
         <version>1.0.0</version>
     </parent>
+    
     <dependencies>
         <dependency>
-            <groupId>net.digitalid</groupId>
-            <artifactId>digitalid-utility-validation</artifactId>
+            <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-string</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.digitalid</groupId>
-            <artifactId>digitalid-utility-errors</artifactId>
+            <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-errors</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-processor</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
-    <build>
-    <plugins>
-        <plugin>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>2.5</version>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-                <!-- disable processing because the definition in META-INF/services breaks javac -->
-                <compilerArgument>-proc:none</compilerArgument>
-            </configuration>
-          </plugin>
-        </plugins>
-    </build>
+    
 </project>
