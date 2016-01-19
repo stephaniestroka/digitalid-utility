@@ -3,10 +3,11 @@ package net.digitalid.utility.processor;
 /**
  * Description.
  */
-/*
-@SupportedOptions({"dependency"})
+
+//@SupportedOptions({"dependency"})
+public class Processor {
+/*    
 public class Processor extends AbstractProcessor {
-    
 //    @Override
 //    public synchronized void init(ProcessingEnvironment env) {
 //        
@@ -88,5 +89,5 @@ public class Processor extends AbstractProcessor {
         return SourceVersion.latestSupported();
     }
     
-}
 */
+}

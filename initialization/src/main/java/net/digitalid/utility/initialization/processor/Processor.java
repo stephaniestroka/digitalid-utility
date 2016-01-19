@@ -40,7 +40,7 @@ public class Processor extends AbstractProcessor {
         
         // TODO: Clean up!
         
-        Map<String, String> options = processingEnv.getOptions();
+        /*Map<String, String> options = processingEnv.getOptions();
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Number of options: " + options.keySet().size());
         for (String option : options.keySet()) {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, option + ": " + options.get(option));
@@ -51,7 +51,7 @@ public class Processor extends AbstractProcessor {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Class found: " + logger.getCanonicalName());
         } catch (ClassNotFoundException ex) {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Class not found: " + ex);
-        }
+        }*/
         
         for (final @Nonnull Element annotatedElement : roundEnvironment.getElementsAnnotatedWith(Initialize.class)) {
 //            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Help! (This is the encapsulated annotation processor.)", annotatedElement);
