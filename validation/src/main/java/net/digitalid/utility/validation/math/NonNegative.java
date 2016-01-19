@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 import java.math.BigInteger;
 
 import net.digitalid.utility.validation.meta.TargetType;
+import net.digitalid.utility.validation.validator.annotation.ValidateWith;
+import net.digitalid.utility.validation.validator.math.NonNegativeValidator;
 
 /**
  * This annotation indicates that a numeric value is not negative.
@@ -18,4 +20,5 @@ import net.digitalid.utility.validation.meta.TargetType;
 @Retention(RetentionPolicy.RUNTIME)
 @TargetType({long.class, int.class, short.class, byte.class, BigInteger.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
+@ValidateWith(NonNegativeValidator.class)
 public @interface NonNegative {}

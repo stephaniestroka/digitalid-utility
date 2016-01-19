@@ -28,6 +28,12 @@ public abstract class Validator<A extends Annotation> {
      */
     private static @Nonnull Map<Class<? extends Annotation>, Validator<?>> validators = new HashMap<>();
     
+    protected void assertTrue(boolean expression, @Nonnull String message) throws ValidationFailedException {
+        if (!expression) {
+            throw ValidationFailedException.get(message);
+        }
+    }
+    
     /**
      * Checks a fieldValue against a given validation annotation.
      */

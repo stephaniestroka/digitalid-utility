@@ -66,7 +66,7 @@ public class MultipleOfLongFieldTest extends TestBase {
     }
     
     @Test
-    public void isNullMultipleOf() throws Exception {
+    public void isNullIgnored() throws Exception {
         TestClassPositiveLongBoxedField testClass = new TestClassPositiveLongBoxedField(null);
         Validator.validate(testClass);
     }
