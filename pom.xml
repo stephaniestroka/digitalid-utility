@@ -65,6 +65,12 @@
             <version>0.9.8</version>
         </dependency>
         <dependency>
+            <groupId>net.digitalid.testing</groupId>
+            <artifactId>testing-base</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
