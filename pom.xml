@@ -60,6 +60,17 @@
     
     <dependencies>
         <dependency>
+            <groupId>com.google.j2objc</groupId>
+            <artifactId>j2objc-annotations</artifactId>
+            <version>0.9.8</version>
+        </dependency>
+        <dependency>
+            <groupId>net.digitalid.testing</groupId>
+            <artifactId>testing-base</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
@@ -121,7 +132,7 @@
                     <additionalparam>-Xdoclint:none</additionalparam>
                     <links>
                         <!-- TODO: Include all utility Javadocs here! -->
-                        <link>https://docs.digitalid.net/utility/annotations/${project.version}/</link>
+                        <link>https://docs.digitalid.net/utility/logging/${project.version}/</link>
                         <link>http://docs.oracle.com/javase/7/docs/api/</link>
                     </links>
                     <tagletArtifacts>
@@ -179,18 +190,6 @@
                 </executions>
             </plugin> 
         </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
-   
+    
 </project>
