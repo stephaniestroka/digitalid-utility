@@ -43,10 +43,10 @@ public abstract class Validator<A extends Annotation> {
     @Pure
     public abstract void validate(@Nullable Object fieldValue, @Nonnull A annotation) throws ValidationFailedException;
     
-    public static @Nonnull Validator<? extends Annotation> getOrCreateValidator(Class<? extends Annotation> annotationClass) throws ValidationFailedException {
+    public static @Nonnull Validator<? extends Annotation> getOrCreateValidator(@Nonnull Class<? extends Annotation> annotationClass) throws ValidationFailedException {
         @Nullable Validator<? extends Annotation> validator = validators.get(annotationClass);
         if (validator == null) {
-            synchronized (validator) {
+            synchronized (annotationClass) {
                 validator = validators.get(annotationClass);
                 if (validator == null) {
                     final @Nonnull ValidateWith validateWith = annotationClass.getAnnotation(ValidateWith.class);
@@ -68,6 +68,13 @@ public abstract class Validator<A extends Annotation> {
     }
     
     /**
+     * Checks whether the given annotation can be validated.
+     */
+    private static boolean canBeValidated(Class<? extends Annotation> annotationClass) {
+        return annotationClass.isAnnotationPresent(ValidateWith.class);
+    }
+    
+    /**
      * Checks whether the field values of the given object comply with the given validation annotation(s).
      */
     @Pure
@@ -77,15 +84,17 @@ public abstract class Validator<A extends Annotation> {
             final @Nonnull Annotation[] annotations = field.getAnnotations();
             for (@Nonnull Annotation annotation : annotations) {
                 final @Nonnull Class<? extends Annotation> annotationClass = annotation.annotationType();
-                final @Nonnull Validator<? extends Annotation> validator = getOrCreateValidator(annotationClass);
-                @Nullable Object fieldValue;
-                try {
-                    field.setAccessible(true);
-                    fieldValue = field.get(object);
-                } catch (IllegalAccessException e) {
-                    fieldValue = null;
+                if (canBeValidated(annotationClass)) {
+                    final @Nonnull Validator<? extends Annotation> validator = getOrCreateValidator(annotationClass);
+                    @Nullable Object fieldValue;
+                    try {
+                        field.setAccessible(true);
+                        fieldValue = field.get(object);
+                    } catch (IllegalAccessException e) {
+                        fieldValue = null;
+                    }
+                    validator.validateAnnotation(fieldValue, field.getAnnotation(annotationClass));
                 }
-                validator.validateAnnotation(fieldValue, field.getAnnotation(annotationClass));
             }
         }
     }
@@ -99,7 +108,7 @@ public abstract class Validator<A extends Annotation> {
             try {
                 method.invoke(object);
             } catch (InvocationTargetException | IllegalAccessException e) {
-                throw ValidationFailedException.get("Failed to validate class invariant for type '" + object.getClass() + "'.", e);
+                throw ValidationFailedException.get("Failed to validate class invariant for type '" + object.getClass().getSimpleName() + "'.", e);
             }
         } catch (NoSuchMethodException e) {
             // No classInvariant declared.

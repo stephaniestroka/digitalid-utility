@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 import java.math.BigInteger;
 
 import net.digitalid.utility.validation.meta.TargetType;
+import net.digitalid.utility.validation.validator.annotation.ValidateWith;
+import net.digitalid.utility.validation.validator.math.MultipleOfValidator;
 
 /**
  * This annotation indicates that a numeric value is a multiple of the given value.
@@ -16,6 +18,7 @@ import net.digitalid.utility.validation.meta.TargetType;
 @Retention(RetentionPolicy.RUNTIME)
 @TargetType({long.class, int.class, short.class, byte.class, BigInteger.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
+@ValidateWith(MultipleOfValidator.class)
 public @interface MultipleOf {
     
     /**

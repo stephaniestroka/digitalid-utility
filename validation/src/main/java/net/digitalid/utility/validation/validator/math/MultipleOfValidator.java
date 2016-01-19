@@ -1,10 +1,8 @@
 package net.digitalid.utility.validation.validator.math;
 
-import java.lang.annotation.Annotation;
 import java.math.BigInteger;
-
 import javax.annotation.Nonnull;
-
+import javax.annotation.Nullable;
 import net.digitalid.utility.validation.math.MultipleOf;
 import net.digitalid.utility.validation.validator.Validator;
 import net.digitalid.utility.validation.validator.exceptions.ValidationFailedException;
@@ -14,32 +12,45 @@ import net.digitalid.utility.validation.validator.exceptions.ValidationFailedExc
  */
 public class MultipleOfValidator extends Validator<MultipleOf> {
     
-    public final static @Nonnull Class<? extends Annotation> ANNOTATION = MultipleOf.class;
-    
     private MultipleOfValidator() {
     }
     
-    private void convertAndAssertModuloRemainderIsZero(Object object, long value) throws ValidationFailedException {
-        if (Byte.class.isInstance(object) || Short.class.isInstance(object) || Integer.class.isInstance(object) || Long.class.isInstance(object)) {
-            Long multipleOfValue = (Long) object;
-            if (multipleOfValue % value != 0) {
-                throw ValidationFailedException.get(multipleOfValue + " is not a multiple of " + value);
-            }
-        } else if (BigInteger.class.isInstance(object)) {
-            BigInteger multipleOfValue = (BigInteger) object;
-            if (multipleOfValue.mod(BigInteger.valueOf(value )) != BigInteger.ZERO) {
-                throw ValidationFailedException.get(multipleOfValue + " is not a multiple of " + value);
-            }
+    private void verifyNoRemainder(Number remainder, Number multipleOfValue, long value) throws ValidationFailedException {
+        if (remainder.longValue() != 0) {
+            throw ValidationFailedException.get(multipleOfValue + " is not a multiple of " + value + ".");
         }
     }
-
+    
+    private void convertAndAssertModuloRemainderIsZero(@Nonnull Object object, long value) throws ValidationFailedException {
+        if (Long.class.isInstance(object)) {
+            @Nonnull Long multipleOfValue = (Long) object;
+            verifyNoRemainder(multipleOfValue % value, multipleOfValue, value); 
+        } else if (Byte.class.isInstance(object)) {
+            @Nonnull Byte multipleOfValue = (Byte) object;
+            verifyNoRemainder(multipleOfValue % value, multipleOfValue, value); 
+        } else if (Short.class.isInstance(object)) {
+            @Nonnull Short multipleOfValue = (Short) object;
+            verifyNoRemainder(multipleOfValue % value, multipleOfValue, value); 
+        } else if (Integer.class.isInstance(object)) {
+            @Nonnull Integer multipleOfValue = (Integer) object;
+            verifyNoRemainder(multipleOfValue % value, multipleOfValue, value); 
+        } else if (BigInteger.class.isInstance(object)) {
+            @Nonnull BigInteger multipleOfValue = (BigInteger) object;
+            if (multipleOfValue.mod(BigInteger.valueOf(value )) != BigInteger.ZERO) {
+                throw ValidationFailedException.get(multipleOfValue + " is not a multiple of " + value + ".");
+            }
+        } else {
+            throw ValidationFailedException.get(object.getClass().getSimpleName() + " is not a supported type.");
+        }
+    }
+    
     /**
      * Checks whether the value of a given field is a multiple of a number specified in the annotation {@link MultipleOf}. 
      */
     @Override
-    public void validate(@Nonnull Object fieldValue, @Nonnull MultipleOf multipleOf) throws ValidationFailedException {
+    public void validate(@Nullable Object fieldValue, @Nonnull MultipleOf multipleOf) throws ValidationFailedException {
         if (fieldValue == null) {
-            throw ValidationFailedException.get("NULL is not a number.");
+            return;
         }
         convertAndAssertModuloRemainderIsZero(fieldValue, multipleOf.value());
     }
