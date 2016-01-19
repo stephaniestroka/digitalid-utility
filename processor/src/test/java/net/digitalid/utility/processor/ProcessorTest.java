@@ -1,6 +1,4 @@
-package net.digitalid.utility.initialization.processor;
-
-import net.digitalid.utility.initialization.annotations.Initialize;
+package net.digitalid.utility.processor;
 
 import org.junit.Test;
 
@@ -17,7 +15,6 @@ public class ProcessorTest {
     /**
      * Initialization.
      */
-    @Initialize
     public static void initialize() {
         System.out.println("Successful initialization!");
     }
