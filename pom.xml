@@ -76,12 +76,6 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>net.digitalid.testing</groupId>
-            <artifactId>testing-base</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
     
     <repositories>
@@ -112,6 +106,7 @@
     
     <build>
         <plugins>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -121,6 +116,7 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -152,6 +148,7 @@
                     </execution>
                 </executions>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -165,14 +162,15 @@
                     </execution>
                 </executions>
             </plugin>
+            
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.7.5.201505241946</version>
-               <configuration>
-                   <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
-                   <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
-               </configuration>
+                <configuration>
+                    <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+                    <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
+                </configuration>
                 <executions>
                     <execution>
                         <id>jacoco-initialize</id>
@@ -189,6 +187,7 @@
                     </execution>
                 </executions>
             </plugin> 
+            
         </plugins>
     </build>
     
