@@ -15,12 +15,6 @@ public class MultipleOfValidator extends Validator<MultipleOf> {
     private MultipleOfValidator() {
     }
     
-    private void verifyNoRemainder(Number remainder, Number multipleOfValue, long value) throws ValidationFailedException {
-        if (remainder.longValue() != 0) {
-            throw ValidationFailedException.get(multipleOfValue + " is not a multiple of " + value + ".");
-        }
-    }
-    
     private void convertAndAssertModuloRemainderIsZero(@Nonnull Object object, long value) throws ValidationFailedException {
         if (Long.class.isInstance(object)) {
             @Nonnull Long multipleOfValue = (Long) object;
@@ -36,9 +30,9 @@ public class MultipleOfValidator extends Validator<MultipleOf> {
             assertTrue(multipleOfValue % value == 0, multipleOfValue + " is not a multiple of " + value + ".");
         } else if (BigInteger.class.isInstance(object)) {
             @Nonnull BigInteger multipleOfValue = (BigInteger) object;
-            assertTrue(multipleOfValue.mod(BigInteger.valueOf(value )) != BigInteger.ZERO, multipleOfValue + " is not a multiple of " + value + ".");
+            assertTrue(multipleOfValue.mod(BigInteger.valueOf(value )).equals(BigInteger.ZERO), multipleOfValue + " is not a multiple of " + value + ".");
         } else {
-            throw ValidationFailedException.get(object.getClass().getSimpleName() + " is not a supported type.");
+            throw ValidationFailedException.get(object.getClass().getSimpleName() + " is not a supported type for @MultipleOf validation.");
         }
     }
     

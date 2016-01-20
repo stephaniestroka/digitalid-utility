@@ -18,7 +18,7 @@ import net.digitalid.utility.validation.validator.math.PositiveValidator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
+@ValidateWith(PositiveValidator.class)
 @TargetType({long.class, int.class, short.class, byte.class, BigInteger.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
-@ValidateWith(PositiveValidator.class)
 public @interface Positive {}

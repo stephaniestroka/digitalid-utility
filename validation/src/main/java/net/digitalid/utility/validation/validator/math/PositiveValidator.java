@@ -34,7 +34,7 @@ public class PositiveValidator extends Validator<Positive> {
             @Nonnull BigInteger value = (BigInteger) object;
             assertTrue(value.compareTo(BigInteger.ZERO) > 0, value + " is not positive.");
         } else {
-            throw ValidationFailedException.get(object.getClass().getSimpleName() + " is not a supported type.");
+            throw ValidationFailedException.get(object.getClass().getSimpleName() + " is not a supported type for @Positive validation.");
         }
     }
     

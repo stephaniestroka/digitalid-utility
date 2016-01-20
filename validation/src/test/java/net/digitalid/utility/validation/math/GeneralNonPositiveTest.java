@@ -10,18 +10,18 @@ import org.junit.rules.ExpectedException;
 /**
  *
  */
-public class GeneralMultipleOfTest extends TestBase {
+public class GeneralNonPositiveTest extends TestBase {
     
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
     
     private static class TestClassIncorrectFieldType {
         
-        @MultipleOf(7)
-        public final String multipleOfSeven;
+        @NonPositive
+        public final String nonPositive;
         
-        public TestClassIncorrectFieldType(String multipleOfSeven) {
-            this.multipleOfSeven = multipleOfSeven;
+        public TestClassIncorrectFieldType(String nonPositive) {
+            this.nonPositive = nonPositive;
         }
         
     }
@@ -29,8 +29,8 @@ public class GeneralMultipleOfTest extends TestBase {
     @Test
     public void isUnsupportedType() throws Exception {
         expectedException.expect(ValidationFailedException.class);
-        expectedException.expectMessage("String is not a supported type for @MultipleOf validation.");
-        TestClassIncorrectFieldType testClassIncorrectFieldType = new TestClassIncorrectFieldType("10");
+        expectedException.expectMessage("String is not a supported type for @NonPositive validation.");
+        TestClassIncorrectFieldType testClassIncorrectFieldType = new TestClassIncorrectFieldType("1");
         Validator.validate(testClassIncorrectFieldType);
     }
     

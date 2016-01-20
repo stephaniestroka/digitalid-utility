@@ -26,7 +26,7 @@ public class ValidatorTest extends TestBase {
     private static class ClassWithNonValidatableAnnotation {
         
         @Validated
-        private final int field = 1;
+        public final int field = 1;
         
     }
     

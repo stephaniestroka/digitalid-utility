@@ -52,14 +52,11 @@ public abstract class Validator<A extends Annotation> {
     public static @Nonnull Validator<? extends Annotation> getOrCreateValidator(@Nonnull Class<? extends Annotation> annotationClass) throws ValidationFailedException {
         @Nullable Validator<? extends Annotation> validator = validators.get(annotationClass);
         if (validator == null) {
-            synchronized (annotationClass) {
+            synchronized (Validator.class) {
                 validator = validators.get(annotationClass);
                 if (validator == null) {
                     final @Nonnull ValidateWith validateWith = annotationClass.getAnnotation(ValidateWith.class);
-                    final @Nullable Class<? extends Validator<? extends Annotation>> validatorClass = validateWith.value();
-                    if (validatorClass == null) {
-                        throw ValidationFailedException.get("Failed to retrieve validator for '@" + annotationClass.getSimpleName() + "'");
-                    }
+                    final @Nonnull Class<? extends Validator<? extends Annotation>> validatorClass = validateWith.value();
                     try {
                         final @Nonnull Method validatorGetter = validatorClass.getMethod("get");
                         validator = (Validator<? extends Annotation>) validatorGetter.invoke(null);

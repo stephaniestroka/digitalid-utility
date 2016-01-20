@@ -16,9 +16,9 @@ import net.digitalid.utility.validation.validator.math.MultipleOfValidator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
+@ValidateWith(MultipleOfValidator.class)
 @TargetType({long.class, int.class, short.class, byte.class, BigInteger.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
-@ValidateWith(MultipleOfValidator.class)
 public @interface MultipleOf {
     
     /**

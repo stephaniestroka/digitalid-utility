@@ -18,7 +18,7 @@ import net.digitalid.utility.validation.validator.math.NonNegativeValidator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
+@ValidateWith(NonNegativeValidator.class)
 @TargetType({long.class, int.class, short.class, byte.class, BigInteger.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
-@ValidateWith(NonNegativeValidator.class)
 public @interface NonNegative {}
