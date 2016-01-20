@@ -6,9 +6,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.digitalid.utility.exceptions.internal.InternalException;
+
 import net.digitalid.utility.validation.state.Pure;
 import net.digitalid.utility.validation.validator.annotation.ValidateWith;
 import net.digitalid.utility.validation.validator.exceptions.ValidationFailedException;
@@ -19,20 +20,11 @@ import net.digitalid.utility.validation.validator.exceptions.ValidationFailedExc
  * holds a value that complies with the statement of the annotation.
  * Additionally, a class might also want to ensure a class invariant. Therefore, the validator checks whether a 'classInvariant' method is
  * available for the checked type. If so, the method is invoked.
- * Upon unsuccessful validation, a {@link ValidationFailedException} is thrown.
+ * Upon unsuccessful validation, a {@link ValidationFailedException} is thrown, otherwise the validation completes without errors.
  */
 public abstract class Validator<A extends Annotation> {
     
-    /**
-     * The map of validators registered for validator annotations.
-     */
-    private static @Nonnull Map<Class<? extends Annotation>, Validator<?>> validators = new HashMap<>();
-    
-    protected void assertTrue(boolean expression, @Nonnull String message) throws ValidationFailedException {
-        if (!expression) {
-            throw ValidationFailedException.get(message);
-        }
-    }
+    /* -------------------------------------------------- Annotation validation -------------------------------------------------- */
     
     /**
      * Checks a fieldValue against a given validation annotation.
@@ -48,6 +40,24 @@ public abstract class Validator<A extends Annotation> {
      */
     @Pure
     public abstract void validate(@Nullable Object fieldValue, @Nonnull A annotation) throws ValidationFailedException;
+    
+    /* -------------------------------------------------- Helper methods -------------------------------------------------- */
+    
+    /**
+     * Helper method that throws a validation-failed exception if the given expression is false.
+     */
+    protected void assertTrue(boolean expression, @Nonnull String message) throws ValidationFailedException {
+        if (!expression) {
+            throw ValidationFailedException.get(message);
+        }
+    }
+    
+    /* -------------------------------------------------- Validator lookup -------------------------------------------------- */
+    
+    /**
+     * The map of validators registered for validator annotations.
+     */
+    private static @Nonnull Map<Class<? extends Annotation>, Validator<?>> validators = new HashMap<>();
     
     public static @Nonnull Validator<? extends Annotation> getOrCreateValidator(@Nonnull Class<? extends Annotation> annotationClass) throws ValidationFailedException {
         @Nullable Validator<? extends Annotation> validator = validators.get(annotationClass);
@@ -77,6 +87,8 @@ public abstract class Validator<A extends Annotation> {
         return annotationClass.isAnnotationPresent(ValidateWith.class);
     }
     
+    /* -------------------------------------------------- Field value validation -------------------------------------------------- */
+    
     /**
      * Checks whether the field values of the given object comply with the given validation annotation(s).
      */
@@ -102,6 +114,8 @@ public abstract class Validator<A extends Annotation> {
         }
     }
     
+    /* -------------------------------------------------- Class invariant validation -------------------------------------------------- */
+    
     /**
      * Validates the class invariant by invoking the method 'classInvariant' of the given object.
      */
@@ -117,6 +131,8 @@ public abstract class Validator<A extends Annotation> {
             // No classInvariant declared.
         }
     }
+    
+    /* -------------------------------------------------- Public API -------------------------------------------------- */
     
     /**
      * Validates a given object by checking whether the field values comply with the field annotations and whether the class invariant holds.

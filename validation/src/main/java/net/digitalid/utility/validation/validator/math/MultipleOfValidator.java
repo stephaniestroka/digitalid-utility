@@ -12,9 +12,12 @@ import net.digitalid.utility.validation.validator.exceptions.ValidationFailedExc
  */
 public class MultipleOfValidator extends Validator<MultipleOf> {
     
-    private MultipleOfValidator() {
-    }
+    /* -------------------------------------------------- Validation -------------------------------------------------- */
     
+    /**
+     * Casts the given object to the type of the field and asserts that the modulo of the field value with the value of the 
+     * {@link MultipleOf @MultipleOf} annotation evaluates to 0. A validation-failed exception is throws if this is not the case.
+     */
     private void convertAndAssertModuloRemainderIsZero(@Nonnull Object object, long value) throws ValidationFailedException {
         if (Long.class.isInstance(object)) {
             @Nonnull Long multipleOfValue = (Long) object;
@@ -37,7 +40,9 @@ public class MultipleOfValidator extends Validator<MultipleOf> {
     }
     
     /**
-     * Checks whether the value of a given field is a multiple of a number specified in the annotation {@link MultipleOf}. 
+     * Checks whether the value of a given field is a multiple of a number specified in the annotation {@link MultipleOf @MultipleOf}. 
+     * Throws a validation-failed exception if the field value is not a multiple of the value specified in the {@link MultipleOf @MultipleOf} annotation.
+     * Null values are ignored.
      */
     @Override
     public void validate(@Nullable Object fieldValue, @Nonnull MultipleOf multipleOf) throws ValidationFailedException {
@@ -47,6 +52,16 @@ public class MultipleOfValidator extends Validator<MultipleOf> {
         convertAndAssertModuloRemainderIsZero(fieldValue, multipleOf.value());
     }
     
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
+    
+    /**
+     * Constructs the {@link MultipleOf @MultipleOf} validator.
+     */
+    private MultipleOfValidator() {}
+    
+    /**
+     * Returns a {@link MultipleOf @MultipleOf} validator.
+     */
     public static @Nonnull MultipleOfValidator get() {
         return new MultipleOfValidator();
     }

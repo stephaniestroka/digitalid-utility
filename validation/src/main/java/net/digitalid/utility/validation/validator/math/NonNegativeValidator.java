@@ -1,18 +1,25 @@
 package net.digitalid.utility.validation.validator.math;
 
 import java.math.BigInteger;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.digitalid.utility.validation.math.Negative;
+
 import net.digitalid.utility.validation.math.NonNegative;
 import net.digitalid.utility.validation.validator.Validator;
 import net.digitalid.utility.validation.validator.exceptions.ValidationFailedException;
 
 /**
- *
+ * Validates the {@link NonNegative @NonNegative} annotation by checking that the field value is a non-negative number of type byte, short, int, long or BigInteger.
  */
 public class NonNegativeValidator extends Validator<NonNegative> {
     
+    /* -------------------------------------------------- Validation -------------------------------------------------- */
+    
+    /**
+     * Throws a validation-failed exception for {@link NonNegative @NonNegative} annotated fields if the field value is not non-negative or has an unsupported type.
+     * Null values are ignored.
+     */
     @Override
     public void validate(@Nullable Object object, @Nonnull NonNegative annotation) throws ValidationFailedException {
         if (object == null) {
@@ -38,6 +45,16 @@ public class NonNegativeValidator extends Validator<NonNegative> {
         }
     }
     
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
+    
+    /**
+     * Constructs the {@link NonNegative @NonNegative} validator.
+     */
+    private NonNegativeValidator() {}
+    
+    /**
+     * Returns a {@link NonNegative @NonNegative} validator.
+     */
     public static @Nonnull
     NonNegativeValidator get() {
         return new NonNegativeValidator();
