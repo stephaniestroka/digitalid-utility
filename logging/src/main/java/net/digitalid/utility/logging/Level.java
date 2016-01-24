@@ -1,9 +1,11 @@
 package net.digitalid.utility.logging;
 
+import net.digitalid.utility.configuration.Configuration;
+
 /**
- * This class enumerates the various level of log messages.
+ * This class enumerates the various levels of log messages.
  * 
- * @see Logger
+ * @see Log
  */
 public enum Level {
     
@@ -48,8 +50,6 @@ public enum Level {
     
     /**
      * Returns the byte representation of this level.
-     * 
-     * @return the byte representation of this level.
      */
     public byte getValue() {
         return value;
@@ -58,9 +58,7 @@ public enum Level {
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
-     * Creates a new level with the given value.
-     * 
-     * @param value the value encoding the level.
+     * Creates a level with the given value.
      */
     private Level(int value) {
         this.value = (byte) value;
@@ -73,5 +71,12 @@ public enum Level {
         final String string = name().toLowerCase();
         return string.substring(0, 1).toUpperCase() + string.substring(1);
     }
+    
+    /* -------------------------------------------------- Configuration -------------------------------------------------- */
+    
+    /**
+     * Stores the level above which the messages are logged.
+     */
+    public static final Configuration<Level> configuration = Configuration.of(INFORMATION);
     
 }

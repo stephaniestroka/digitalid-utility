@@ -1,120 +1,90 @@
 package net.digitalid.utility.logging;
 
+import net.digitalid.utility.logging.logger.Logger;
+
 /**
- * This class makes it easier to {@link Logger log} messages.
+ * This class makes it easier to {@link Logger#log(net.digitalid.utility.logging.Level, java.lang.String, java.lang.Throwable) log} messages.
  */
 public final class Log {
     
-    /**
-     * Stores the index of the caller in the stack trace, which is different on Android.
-     */
-    private static final int INDEX = System.getProperty("java.vendor").equals("The Android Project") ? 4 : 3;
-    
-    /**
-     * Returns the caller of the logging method.
-     * 
-     * @return the caller of the logging method.
-     */
-    private static String getCaller() {
-        final StackTraceElement element = Thread.currentThread().getStackTrace()[INDEX];
-        final String className = element.getClassName();
-        final int lineNumber = element.getLineNumber();
-        return className.substring(className.lastIndexOf('.') + 1) + "." + element.getMethodName() + (lineNumber > 0 ? ":" + lineNumber : "");
-    }
+    /* -------------------------------------------------- Error -------------------------------------------------- */
     
     /**
      * Logs the given message and throwable as an error.
-     * 
-     * @param message the message to be logged.
-     * @param throwable the throwable to log.
      */
     public static void error(String message, Throwable throwable) {
-        Logger.log(Level.ERROR, getCaller(), message, throwable);
+        Logger.log(Level.ERROR, message, throwable);
     }
     
     /**
      * Logs the given message as an error.
-     * 
-     * @param message the message to be logged.
      */
     public static void error(String message) {
-        Logger.log(Level.ERROR, getCaller(), message);
+        Logger.log(Level.ERROR, message, null);
     }
+    
+    /* -------------------------------------------------- Warning -------------------------------------------------- */
     
     /**
      * Logs the given message and throwable as a warning.
-     * 
-     * @param message the message to be logged.
-     * @param throwable the throwable to log.
      */
     public static void warning(String message, Throwable throwable) {
-        Logger.log(Level.WARNING, getCaller(), message, throwable);
+        Logger.log(Level.WARNING, message, throwable);
     }
     
     /**
      * Logs the given message as a warning.
-     * 
-     * @param message the message to be logged.
      */
     public static void warning(String message) {
-        Logger.log(Level.WARNING, getCaller(), message);
+        Logger.log(Level.WARNING, message, null);
     }
+    
+    /* -------------------------------------------------- Information -------------------------------------------------- */
     
     /**
      * Logs the given message and throwable as an information.
-     * 
-     * @param message the message to be logged.
-     * @param throwable the throwable to log.
      */
     public static void information(String message, Throwable throwable) {
-        Logger.log(Level.INFORMATION, getCaller(), message, throwable);
+        Logger.log(Level.INFORMATION, message, throwable);
     }
     
     /**
      * Logs the given message as an information.
-     * 
-     * @param message the message to be logged.
      */
     public static void information(String message) {
-        Logger.log(Level.INFORMATION, getCaller(), message);
+        Logger.log(Level.INFORMATION, message, null);
     }
+    
+    /* -------------------------------------------------- Debugging -------------------------------------------------- */
     
     /**
      * Logs the given message and throwable for debugging.
-     * 
-     * @param message the message to be logged.
-     * @param throwable the throwable to log.
      */
     public static void debugging(String message, Throwable throwable) {
-        Logger.log(Level.DEBUGGING, getCaller(), message, throwable);
+        Logger.log(Level.DEBUGGING, message, throwable);
     }
     
     /**
      * Logs the given message for debugging.
-     * 
-     * @param message the message to be logged.
      */
     public static void debugging(String message) {
-        Logger.log(Level.DEBUGGING, getCaller(), message);
+        Logger.log(Level.DEBUGGING, message, null);
     }
+    
+    /* -------------------------------------------------- Verbose -------------------------------------------------- */
     
     /**
      * Logs the given message and throwable only in verbose mode.
-     * 
-     * @param message the message to be logged.
-     * @param throwable the throwable to log.
      */
     public static void verbose(String message, Throwable throwable) {
-        Logger.log(Level.VERBOSE, getCaller(), message, throwable);
+        Logger.log(Level.VERBOSE, message, throwable);
     }
     
     /**
      * Logs the given message only in verbose mode.
-     * 
-     * @param message the message to be logged.
      */
     public static void verbose(String message) {
-        Logger.log(Level.VERBOSE, getCaller(), message);
+        Logger.log(Level.VERBOSE, message, null);
     }
     
 }
