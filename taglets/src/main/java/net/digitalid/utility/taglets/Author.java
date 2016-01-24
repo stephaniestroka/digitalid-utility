@@ -4,23 +4,23 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.sun.tools.doclets.Taglet;
+
 /**
  * This class defines a custom block tag for class authors.
  */
-public final class Author extends Taglet {
+public final class Author extends CustomTaglet {
     
     /* -------------------------------------------------- Registration -------------------------------------------------- */
     
     /**
-     * Registers this taglet at the given map.
-     * 
-     * @param map the map at which this taglet is registered.
+     * Registers this taglet at the given non-nullable map of registered taglets.
      */
-    public static void register(Map<String, Taglet> map) {
-        Taglet.register(map, new Author());
+    public static void register(Map<String, Taglet> registeredTaglets) {
+        CustomTaglet.register(registeredTaglets, new Author());
     }
     
-    /* -------------------------------------------------- Overrides -------------------------------------------------- */
+    /* -------------------------------------------------- Configuration -------------------------------------------------- */
     
     @Override
     public boolean inOverview() {
@@ -36,6 +36,8 @@ public final class Author extends Taglet {
     public boolean inType() {
         return true;
     }
+    
+    /* -------------------------------------------------- Content -------------------------------------------------- */
     
     @Override
     public String getName() {
@@ -55,11 +57,7 @@ public final class Author extends Taglet {
     private static final Pattern pattern = Pattern.compile("(.+) \\((.+)\\)");
     
     /**
-     * Rotates the given string by 13 characters.
-     * 
-     * @param input the string to be rotated.
-     * 
-     * @return the given string rotated by 13 characters.
+     * Returns the given non-nullable string rotated by 13 characters.
      */
     private static String rot13(String input) {
         final StringBuilder output = new StringBuilder();
@@ -82,8 +80,9 @@ public final class Author extends Taglet {
             } else {
                 return "<a href=\"mailto:" + matcher.group(2) + "\">" + matcher.group(1) + "</a>";
             }
+        } else {
+            return text;
         }
-        else { return text; }
     }
     
 }

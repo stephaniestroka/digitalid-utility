@@ -6,35 +6,29 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.sun.javadoc.Tag;
+import com.sun.tools.doclets.Taglet;
 
 /**
- * This class serves as a template for custom block tags.
+ * This class is the parent of all custom taglets.
  */
-public abstract class Taglet implements com.sun.tools.doclets.Taglet {
+public abstract class CustomTaglet implements Taglet {
     
     /* -------------------------------------------------- Registration -------------------------------------------------- */
     
     /**
-     * Registers the given taglet at the given map.
-     * 
-     * @param map the map at which the taglet is registered.
-     * @param taglet the taglet to be registered at the map.
+     * Registers the given non-nullable custom taglet at the given non-nullable map.
      */
-    static void register(Map<String, Taglet> map, Taglet taglet) {
-        // System.out.println("Registering: " + taglet.getName());
-        try {
-            final String name = taglet.getName();
-            final Object other = map.get(name);
-            if (other != null) { map.remove(name); }
-            map.put(name, taglet);
-        } catch (Throwable throwable) {
-            System.err.println("Failed to register taglet '" + taglet.getName() + "':");
-            throwable.printStackTrace();
-            throw throwable;
-        }
+    static void register(Map<String, Taglet> registeredTaglets, CustomTaglet customTaglet) {
+        assert registeredTaglets != null;
+        assert customTaglet != null;
+        
+        final String name = customTaglet.getName();
+        final Taglet existingTaglet = registeredTaglets.get(name);
+        if (existingTaglet != null) { registeredTaglets.remove(name); }
+        registeredTaglets.put(name, customTaglet);
     }
     
-    /* -------------------------------------------------- Default Methods -------------------------------------------------- */
+    /* -------------------------------------------------- Configuration -------------------------------------------------- */
     
     @Override
     public boolean inField() {
@@ -71,24 +65,15 @@ public abstract class Taglet implements com.sun.tools.doclets.Taglet {
         return false;
     }
     
-    /* -------------------------------------------------- Name -------------------------------------------------- */
-    
-    @Override
-    public abstract String getName();
-    
     /* -------------------------------------------------- Title -------------------------------------------------- */
     
     /**
-     * Returns the title of this taglet.
-     * 
-     * @return the title of this taglet.
+     * Returns the non-nullable title of this taglet.
      */
     protected abstract String getTitle();
     
     /**
-     * Returns the title of this taglet with HTML formatting.
-     * 
-     * @return the title of this taglet with HTML formatting.
+     * Returns the non-nullable title of this taglet with HTML formatting.
      */
     private String getTitleWithHTML() {
         return "<dt><span class=\"strong\">" + getTitle() + ":</span></dt>\n";
@@ -102,11 +87,7 @@ public abstract class Taglet implements com.sun.tools.doclets.Taglet {
     private static final Pattern pattern = Pattern.compile("(.+) : \"(.+)\";");
     
     /**
-     * Formats the given text.
-     * 
-     * @param text the text to format.
-     * 
-     * @return the formatted text.
+     * Returns the given non-nullable text formatted as code if it matches the above pattern.
      */
     protected String getText(String text) {
         final Matcher matcher = pattern.matcher(text);
@@ -115,11 +96,7 @@ public abstract class Taglet implements com.sun.tools.doclets.Taglet {
     }
     
     /**
-     * Formats the given text with HTML.
-     * 
-     * @param text the text to format.
-     * 
-     * @return the formatted text with HTML.
+     * Returns the given non-nullable text with HTML formatting.
      */
     private String getTextWithHTML(String text) {
         return "<dd>" + getText(text) + "</dd>\n";
@@ -128,23 +105,15 @@ public abstract class Taglet implements com.sun.tools.doclets.Taglet {
     /* -------------------------------------------------- Output -------------------------------------------------- */
     
     /**
-     * Returns the string representation of the given tag, which is output to the generated page.
-     * 
-     * @param tag the tag to be formatted as a string.
-     * 
-     * @return the string representation of the given tag, which is output to the generated page.
+     * Returns the string representation of the given non-nullable tag, which is output to the generated page.
      */
     @Override
     public String toString(Tag tag) {
-        return getTitleWithHTML()+ getTextWithHTML(tag.text());
+        return getTitleWithHTML() + getTextWithHTML(tag.text());
     }
     
     /**
-     * Returns the string representation of the given tags, which is output to the generated page.
-     * 
-     * @param tags the tags to be formatted as a string.
-     * 
-     * @return the string representation of the given tags, which is output to the generated page.
+     * Returns the string representation of the given non-nullable tags, which are output to the generated page.
      */
     @Override
     public String toString(Tag[] tags) {

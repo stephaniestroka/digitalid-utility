@@ -2,23 +2,23 @@ package net.digitalid.utility.taglets;
 
 import java.util.Map;
 
+import com.sun.tools.doclets.Taglet;
+
 /**
  * This class defines a custom block tag for constructor and method preconditions.
  */
-public final class Require extends Taglet {
+public final class Require extends CustomTaglet {
     
     /* -------------------------------------------------- Registration -------------------------------------------------- */
     
     /**
-     * Registers this taglet at the given map.
-     * 
-     * @param map the map at which this taglet is registered.
+     * Registers this taglet at the given non-nullable map of registered taglets.
      */
-    public static void register(Map<String, Taglet> map) {
-        Taglet.register(map, new Require());
+    public static void register(Map<String, Taglet> registeredTaglets) {
+        CustomTaglet.register(registeredTaglets, new Require());
     }
     
-    /* -------------------------------------------------- Overrides -------------------------------------------------- */
+    /* -------------------------------------------------- Configuration -------------------------------------------------- */
     
     @Override
     public boolean inConstructor() {
@@ -29,6 +29,8 @@ public final class Require extends Taglet {
     public boolean inMethod() {
         return true;
     }
+    
+    /* -------------------------------------------------- Content -------------------------------------------------- */
     
     @Override
     public String getName() {

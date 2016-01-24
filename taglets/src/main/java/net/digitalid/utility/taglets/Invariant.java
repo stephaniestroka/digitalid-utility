@@ -2,23 +2,23 @@ package net.digitalid.utility.taglets;
 
 import java.util.Map;
 
+import com.sun.tools.doclets.Taglet;
+
 /**
- * This class defines a custom block tag for class (and field) invariants.
+ * This class defines a custom block tag for class and field invariants.
  */
-public final class Invariant extends Taglet {
+public class Invariant extends CustomTaglet {
     
     /* -------------------------------------------------- Registration -------------------------------------------------- */
     
     /**
-     * Registers this taglet at the given map.
-     * 
-     * @param map the map at which this taglet is registered.
+     * Registers this taglet at the given non-nullable map of registered taglets.
      */
-    public static void register(Map<String, Taglet> map) {
-        Taglet.register(map, new Invariant());
+    public static void register(Map<String, Taglet> registeredTaglets) {
+        CustomTaglet.register(registeredTaglets, new Invariant());
     }
     
-    /* -------------------------------------------------- Overrides -------------------------------------------------- */
+    /* -------------------------------------------------- Configuration -------------------------------------------------- */
     
     @Override
     public boolean inField() {
@@ -29,6 +29,8 @@ public final class Invariant extends Taglet {
     public boolean inType() {
         return true;
     }
+    
+    /* -------------------------------------------------- Content -------------------------------------------------- */
     
     @Override
     public String getName() {
