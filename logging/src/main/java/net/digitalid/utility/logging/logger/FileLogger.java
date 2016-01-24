@@ -22,7 +22,7 @@ public class FileLogger extends PrintStreamLogger {
      * @require file != null : "The given file is not null.";
      */
     protected FileLogger(File file) throws FileNotFoundException {
-        super(new PrintStream(new FileOutputStream(file)));
+        super(new PrintStream(new FileOutputStream(file, true)));
     }
     
     /**
@@ -36,6 +36,21 @@ public class FileLogger extends PrintStreamLogger {
         assert file != null : "The given file is not null.";
         
         return new FileLogger(file);
+    }
+    
+    /* -------------------------------------------------- File -------------------------------------------------- */
+    
+    /**
+     * Sets the non-nullable file to which the messages are logged.
+     * 
+     * @throws FileNotFoundException if the given file cannot be opened or created.
+     * 
+     * @require file != null : "The given file is not null.";
+     */
+    protected void setFile(File file) throws FileNotFoundException {
+        assert file != null : "The given file is not null.";
+        
+        setPrintStream(new PrintStream(new FileOutputStream(file, true)));
     }
     
 }

@@ -2,7 +2,7 @@ package net.digitalid.utility.cryptography.exceptions;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.exceptions.external.InvalidEncodingException;
+import net.digitalid.utility.exceptions.InternalException;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
 
@@ -10,7 +10,8 @@ import net.digitalid.utility.validation.state.Pure;
  * This exception is thrown when a combination of parameter values is invalid.
  */
 @Immutable
-public class InvalidParameterValueCombinationException extends InvalidEncodingException {
+// TODO: This exception should almost certainly not be in this project and not extend internal exception.
+public class InvalidParameterValueCombinationException extends InternalException {
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     

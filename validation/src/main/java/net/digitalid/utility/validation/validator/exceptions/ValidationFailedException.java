@@ -2,7 +2,7 @@ package net.digitalid.utility.validation.validator.exceptions;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.exceptions.external.ExternalException;
+import net.digitalid.utility.exceptions.ExternalException;
 
 /**
  *

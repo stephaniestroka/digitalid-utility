@@ -2,7 +2,7 @@ package net.digitalid.utility.castable.exceptions;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.exceptions.external.InvalidEncodingException;
+import net.digitalid.utility.exceptions.CustomException;
 import net.digitalid.utility.validation.state.Immutable;
 import net.digitalid.utility.validation.state.Pure;
 
@@ -10,7 +10,7 @@ import net.digitalid.utility.validation.state.Pure;
  * This exception is thrown when an object cannot be cast to the desired class.
  */
 @Immutable
-public class InvalidClassCastException extends InvalidEncodingException {
+public class InvalidClassCastException extends CustomException { // TODO: Rather extend a ValidationException.
     
     /* -------------------------------------------------- Object -------------------------------------------------- */
     

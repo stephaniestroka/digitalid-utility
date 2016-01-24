@@ -24,9 +24,9 @@ public class HashGenerator {
             final @Nonnull MessageDigest instance = MessageDigest.getInstance("SHA-256");
             int offset = 0;
             for (@Nonnull Element element : elements) {
-                final @Nonnull BigInteger bigInteger = element.getValue();
-                final @Nonnull byte[] bytes = bigInteger.toByteArray();
-                instance.update(bytes, offset, bytes.length);
+                final @Nonnull BigInteger value = element.getValue();
+                final @Nonnull byte[] bytes = value.toByteArray();
+                instance.update(bytes); // TODO: Verify that this works!
                 offset += bytes.length;
             }
             return new BigInteger(1, instance.digest());

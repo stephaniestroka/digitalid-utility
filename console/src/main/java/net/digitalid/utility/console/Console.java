@@ -19,6 +19,7 @@ import net.digitalid.utility.validation.state.Stateless;
  * @see Option
  */
 @Stateless
+@SuppressWarnings("UseOfSystemOutOrSystemErr")
 public final class Console {
     
     /* -------------------------------------------------- Reading -------------------------------------------------- */
@@ -39,7 +40,7 @@ public final class Console {
             if (input == null) { throw new IOException("The end of the standard input has been reached."); }
             return input;
         } catch (@Nonnull IOException exception) {
-            throw ShouldNeverHappenError.get("Could not read from the standard input.", exception);
+            throw ShouldNeverHappenError.of("Could not read from the standard input.", exception);
         }
     }
     

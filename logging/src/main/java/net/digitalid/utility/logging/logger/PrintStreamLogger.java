@@ -10,10 +10,13 @@ import net.digitalid.utility.logging.Version;
 
 /**
  * This class implements a logger that logs the messages to a print stream.
+ * 
+ * @see StandardOutputLogger
+ * @see FileLogger
  */
 public abstract class PrintStreamLogger extends Logger {
     
-    /* -------------------------------------------------- Date Format -------------------------------------------------- */
+    /* -------------------------------------------------- Time Format -------------------------------------------------- */
     
     /**
      * Stores the date format of the message time.

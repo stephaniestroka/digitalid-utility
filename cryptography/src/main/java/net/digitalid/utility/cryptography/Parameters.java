@@ -8,10 +8,12 @@ import net.digitalid.utility.validation.state.Stateless;
 @Stateless
 public final class Parameters {
     
+    // TODO: Make the parameters configurable so that we can choose smaller bit-lengths for unit testing.
+    
     /**
      * The bit-length of the prime factors.
      */
-    public static final int FACTOR = 768; // TODO: 1024;
+    public static final int FACTOR = 128; // TODO: 1024;
     
     /**
      * The bit-length of the hash function and certain random values.
@@ -41,12 +43,12 @@ public final class Parameters {
     /**
      * The bit-length of the random blinding exponent.
      */
-    public static final int RANDOM_BLINDING_EXPONENT = 1024;
+    public static final int RANDOM_BLINDING_EXPONENT = 1_024;
     
     /**
      * The bit-length of the verifiable encryption modulus divided by 2.
      */
-    public static final int VERIFIABLE_ENCRYPTION = 768; // TODO: 1024;
+    public static final int VERIFIABLE_ENCRYPTION = 128; // TODO: 1024;
     
     /**
      * The bit-length of the symmetric encryption key.

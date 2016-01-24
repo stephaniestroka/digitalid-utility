@@ -2,7 +2,7 @@ package net.digitalid.utility.conversion.exceptions;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.exceptions.internal.InternalException;
+import net.digitalid.utility.exceptions.InternalException;
 
 /**
  * The converter-not-found exception is thrown when a converter for a specific format is not found for a specific type. It is characterized as an internal exception, since the cause of the exception is a missing type converter, which indicates a wrong use of the library.
