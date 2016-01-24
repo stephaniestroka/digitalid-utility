@@ -3,14 +3,14 @@ package net.digitalid.utility.directory;
 import java.io.File;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
+import net.digitalid.utility.configuration.Configuration;
+import net.digitalid.utility.configuration.InitializationError;
 import net.digitalid.utility.directory.annotations.Existing;
 import net.digitalid.utility.directory.annotations.IsDirectory;
-import net.digitalid.utility.configuration.InitializationError;
-import net.digitalid.utility.validation.state.Initialized;
 import net.digitalid.utility.validation.state.Pure;
 import net.digitalid.utility.validation.state.Stateless;
+
 
 /**
  * This class provides references to all directories that are used by this implementation.
@@ -18,38 +18,19 @@ import net.digitalid.utility.validation.state.Stateless;
 @Stateless
 public final class Directory {
     
-    /* -------------------------------------------------- Default -------------------------------------------------- */
+    /* -------------------------------------------------- Root Directory -------------------------------------------------- */
     
     /**
-     * References the default directory to store all other directories.
+     * Stores the default directory in the user home directory.
      */
-    public static final @Nonnull @IsDirectory File DEFAULT = new File(System.getProperty("user.home") + File.separator + ".DigitalID");
+    public static final @Nonnull @IsDirectory File DEFAULT = new File(System.getProperty("user.home") + File.separator + ".digitalid");
     
-    /* -------------------------------------------------- Root -------------------------------------------------- */
-    
-    /**
-     * Stores the directory that contains all other directories.
-     */
-    private static @Nullable @IsDirectory File root;
+    /* -------------------------------------------------- Configuration -------------------------------------------------- */
     
     /**
-     * Initializes this class with the given root directory.
-     * 
-     * @param root the directory that contains all other directories.
+     * Stores the root directory that contains all other directories.
      */
-    public static void initialize(@Nonnull @IsDirectory File root) {
-        Directory.root = root;
-    }
-    
-    /**
-     * Returns whether this class is initialized.
-     * 
-     * @return whether this class is initialized.
-     */
-    @Pure
-    public static boolean isInitialized() {
-        return root != null;
-    }
+    public static final @Nonnull Configuration<File> configuration = Configuration.of(DEFAULT);
     
     /* -------------------------------------------------- Directories -------------------------------------------------- */
     
@@ -60,12 +41,9 @@ public final class Directory {
      * 
      * @return the newly created directory with the given name.
      */
-    @Initialized
     private static @Nonnull @Existing @IsDirectory File createDirectory(@Nonnull String name) {
-        assert root != null : "This class is initialized.";
-        
-        final @Nonnull File directory = new File(root.getPath() + File.separator + name);
-        if (!directory.exists() && !directory.mkdirs()) { throw InitializationError.get("Could not create the directory '" + directory.getPath() + "'."); }
+        final @Nonnull File directory = new File(configuration.get().getPath() + File.separator + name);
+        if (!directory.exists() && !directory.mkdirs()) { throw InitializationError.of("Could not create the directory '" + directory.getPath() + "'."); }
         return directory;
     }
     
@@ -74,9 +52,8 @@ public final class Directory {
      * 
      * @return the directory that contains the log files.
      */
-    @Initialized
     public static @Nonnull @Existing @IsDirectory File getLogsDirectory() {
-        return createDirectory("Logs");
+        return createDirectory("logs");
     }
     
     /**
@@ -84,9 +61,8 @@ public final class Directory {
      * 
      * @return the directory that contains the configuration or the data of the database.
      */
-    @Initialized
     public static @Nonnull @Existing @IsDirectory File getDataDirectory() {
-        return createDirectory("Data");
+        return createDirectory("data");
     }
     
     /**
@@ -94,9 +70,8 @@ public final class Directory {
      * 
      * @return the directory that contains the secret key of each local client.
      */
-    @Initialized
     public static @Nonnull @Existing @IsDirectory File getClientsDirectory() {
-        return createDirectory("Clients");
+        return createDirectory("clients");
     }
     
     /**
@@ -104,9 +79,8 @@ public final class Directory {
      * 
      * @return the directory that contains the key pairs of each local host.
      */
-    @Initialized
     public static @Nonnull @Existing @IsDirectory File getHostsDirectory() {
-        return createDirectory("Hosts");
+        return createDirectory("hosts");
     }
     
     /**
@@ -114,9 +88,8 @@ public final class Directory {
      * 
      * @return the directory that contains the code of all installed services.
      */
-    @Initialized
     public static @Nonnull @Existing @IsDirectory File getServicesDirectory() {
-        return createDirectory("Services");
+        return createDirectory("services");
     }
     
     /* -------------------------------------------------- Listing -------------------------------------------------- */
