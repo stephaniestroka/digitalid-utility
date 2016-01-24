@@ -23,7 +23,10 @@ public abstract class CustomTaglet implements Taglet {
         assert customTaglet != null;
         
         final String name = customTaglet.getName();
-        final Taglet existingTaglet = registeredTaglets.get(name);
+        // com.sun.tools.doclets.internal.toolkit.taglets.SimpleTaglet implements com.sun.tools.doclets.internal.toolkit.taglets.Taglet
+        // and cannot be cast to com.sun.tools.doclets.Taglet. Thus, we can only expect to get a java.lang.Object from the given map.
+        // (And no, removing the following two lines does not help either as this results in another java.lang.ClassCastException.)
+        final Object existingTaglet = registeredTaglets.get(name);
         if (existingTaglet != null) { registeredTaglets.remove(name); }
         registeredTaglets.put(name, customTaglet);
     }
