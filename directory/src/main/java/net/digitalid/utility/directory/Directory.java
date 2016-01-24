@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.directory.annotations.Existing;
 import net.digitalid.utility.directory.annotations.IsDirectory;
-import net.digitalid.utility.initialization.errors.InitializationError;
+import net.digitalid.utility.configuration.InitializationError;
 import net.digitalid.utility.validation.state.Initialized;
 import net.digitalid.utility.validation.state.Pure;
 import net.digitalid.utility.validation.state.Stateless;

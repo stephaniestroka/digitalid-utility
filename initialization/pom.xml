@@ -18,19 +18,8 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-string</artifactId>
+            <artifactId>utility-validation</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-errors</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-processor</artifactId>
-            <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
     </dependencies>
  

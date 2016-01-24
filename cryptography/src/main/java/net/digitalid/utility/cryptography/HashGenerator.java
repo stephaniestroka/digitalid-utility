@@ -31,7 +31,7 @@ public class HashGenerator {
             }
             return new BigInteger(1, instance.digest());
         } catch (@Nonnull NoSuchAlgorithmException exception) {
-            throw ShouldNeverHappenError.get("The hashing algorithm 'SHA-256' is not supported on this platform.", exception);
+            throw ShouldNeverHappenError.of("The hashing algorithm 'SHA-256' is not supported on this platform.", exception);
         }
     }
 

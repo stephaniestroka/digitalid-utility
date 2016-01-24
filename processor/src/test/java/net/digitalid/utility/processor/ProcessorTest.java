@@ -12,9 +12,6 @@ public class ProcessorTest {
 //        Initializer.initialize();
     }
     
-    /**
-     * Initialization.
-     */
     public static void initialize() {
         System.out.println("Successful initialization!");
     }

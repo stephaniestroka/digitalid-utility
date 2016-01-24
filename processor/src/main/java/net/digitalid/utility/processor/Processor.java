@@ -2,6 +2,39 @@ package net.digitalid.utility.processor;
 
 /**
  * Description.
+ * 
+ * Is it worth to generate subclasses with annotation processors?
+ * 
+ * Useful aspects to intercept method calls:
+ * - log with timing and parameters
+ * - commit database transactions
+ * - run method on the GUI thread (or just asynchronously)
+ * - cleanup/closing of used resources
+ * - validate parameters and return value
+ * - ensure method is called from host or client (or recipient is configured)
+ * 
+ * Useful methods generated from fields:
+ * - equals()
+ * - hashCode()
+ * - toString()
+ * - validate() [would be declared in the RootClass and then overridden]
+ * - compareTo()
+ * 
+ * Useful helper classes:
+ * - object builder with default values
+ * - argument builder with default values
+ * 
+ * If only the getters instead of the final fields are declared, the constructor (including a static method) could also be generated.
+ * Setters on immutable objects could return a new object with the changed value.
+ * Setters could/should be made chainable by returning this.
+ * Delegate all interface methods to an instance (e.g. stored in a field).
+ * 
+ * @Initialize can take a target class (e.g. IdentityResolver.class or SQLDialect.class), which is initialized, or depend on the initialization of a certain class. (The target defaults to null, which is considered as initializing the surrounding class itself.)
+ * @Initialize(target = Directory.class, dependencies = {Logger.class})
+ * 
+ * @Configurable for classes that have static configure(...) and isConfigured() methods, the latter of which is/can be checked as a precondition for methods annotated with @Configured. What about default configurations (e.g. in the case of the logger or the directory)?
+ * @Configurable(required = false) [defaults to true] – or no such parameter, simply check whether an isConfigured() method exists. Add 'dependencies' as a potential parameter?
+ * Introduce a Configuration interface [or rather abstract class] for a service loader with methods void add(Initializer), [void addDependency(Configuration, Initializer), boolean hasDependency(Configuration), Class<?> getSource()], boolean isConfigured(), void configure() [runs all associated initializers after ensuring that all dependencies are configured].
  */
 
 //@SupportedOptions({"dependency"})

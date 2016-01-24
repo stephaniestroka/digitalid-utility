@@ -21,6 +21,11 @@
             <artifactId>utility-exceptions</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-processor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     
 </project>

@@ -22,7 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import net.digitalid.utility.collections.annotations.size.NonEmpty;
 import net.digitalid.utility.conversion.Convertible;
-import net.digitalid.utility.initialization.errors.InitializationError;
+import net.digitalid.utility.configuration.InitializationError;
 import net.digitalid.utility.errors.ShouldNeverHappenError;
 import net.digitalid.utility.exceptions.external.InvalidEncodingException;
 import net.digitalid.utility.exceptions.external.MaskingInvalidEncodingException;
@@ -185,7 +185,7 @@ public final class SymmetricKey extends RootClass implements Convertible {
             cipher.init(Cipher.ENCRYPT_MODE, key, initializationVector);
             return cipher.doFinal(bytes, offset, length);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException exception) {
-            throw ShouldNeverHappenError.get("Could not encrypt the given bytes.", exception);
+            throw ShouldNeverHappenError.of("Could not encrypt the given bytes.", exception);
         }
     }
     

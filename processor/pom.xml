@@ -18,7 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-taglets</artifactId>
+            <artifactId>utility-logging</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

@@ -1,5 +1,7 @@
 package net.digitalid.utility.logging;
 
+import net.digitalid.utility.configuration.Configuration;
+
 /**
  * The logger logs messages of various {@link Level levels}.
  * 
@@ -8,6 +10,9 @@ package net.digitalid.utility.logging;
 public abstract class Logger {
     
     /* -------------------------------------------------- Logger -------------------------------------------------- */
+    
+    // TODO: Rename DefaultLogger to StandardOutputLogger.
+    public static final Configuration<Logger> configuration = Configuration.of(DefaultLogger.g);
     
     /**
      * Stores the actual logger.
@@ -22,10 +27,11 @@ public abstract class Logger {
     public static void initialize(Logger logger) {
         Logger.logger = logger;
         
+        // TODO: Move this initialization to the FileLogger.
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread thread, Throwable throwable) {
-                Log.error("The following exception caused this thread to terminate.", throwable);
+                Log.error("The following issue caused this thread to terminate.", throwable);
             }
         });
     }

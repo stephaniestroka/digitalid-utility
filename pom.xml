@@ -34,15 +34,16 @@
     
     <modules>
         <module>taglets</module>
+        <module>errors</module>
+        <module>configuration</module>
         <module>logging</module>
         <module>processor</module>
         <module>exceptions</module>
         <module>validation</module>
-        <module>string</module>
-        <module>errors</module>
         <module>initialization</module>
         <module>directory</module>
         <module>system</module>
+        <module>string</module>
         <module>casting</module>
         <module>freezable</module>
         <module>concurrency</module>
@@ -128,7 +129,7 @@
                     <additionalparam>-Xdoclint:none</additionalparam>
                     <links>
                         <!-- TODO: Include all utility Javadocs here! -->
-                        <link>https://docs.digitalid.net/utility/logging/${project.version}/</link>
+                        <!--<link>https://docs.digitalid.net/utility/logging/${project.version}/</link>-->
                         <link>http://docs.oracle.com/javase/7/docs/api/</link>
                     </links>
                     <tagletArtifacts>
