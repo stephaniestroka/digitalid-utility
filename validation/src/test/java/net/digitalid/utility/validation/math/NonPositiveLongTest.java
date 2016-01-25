@@ -1,8 +1,9 @@
 package net.digitalid.utility.validation.math;
 
-import net.digitalid.testing.base.TestBase;
+import net.digitalid.utility.testing.LoggerSetup;
 import net.digitalid.utility.validation.validator.Validator;
 import net.digitalid.utility.validation.validator.exceptions.ValidationFailedException;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -10,7 +11,7 @@ import org.junit.rules.ExpectedException;
 /**
  *
  */
-public class NonPositiveLongTest extends TestBase {
+public class NonPositiveLongTest extends LoggerSetup {
     
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

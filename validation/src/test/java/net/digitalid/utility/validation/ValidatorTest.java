@@ -4,13 +4,16 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.digitalid.testing.base.TestBase;
+
+import net.digitalid.utility.testing.LoggerSetup;
 import net.digitalid.utility.validation.state.Validated;
 import net.digitalid.utility.validation.validator.Validator;
 import net.digitalid.utility.validation.validator.annotation.ValidateWith;
 import net.digitalid.utility.validation.validator.exceptions.ValidationFailedException;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -18,7 +21,7 @@ import org.junit.rules.ExpectedException;
 /**
  *
  */
-public class ValidatorTest extends TestBase {
+public class ValidatorTest extends LoggerSetup {
     
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

@@ -37,6 +37,7 @@
         <module>errors</module>
         <module>configuration</module>
         <module>logging</module>
+        <module>testing</module>
         <module>processor</module>
         <module>exceptions</module>
         <module>validation</module>
@@ -49,6 +50,7 @@
         <module>concurrency</module>
         <module>collections</module>
         <module>conversion</module>
+        <module>examples</module>
         <module>rootclass</module>
         <module>threading</module>
         <module>property</module>
@@ -64,18 +66,6 @@
             <groupId>com.google.j2objc</groupId>
             <artifactId>j2objc-annotations</artifactId>
             <version>0.9.8</version>
-        </dependency>
-        <dependency>
-            <groupId>net.digitalid.testing</groupId>
-            <artifactId>testing-base</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
     

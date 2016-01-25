@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     
     <groupId>net.digitalid.utility</groupId>
-    <artifactId>utility-validation</artifactId>
+    <artifactId>utility-testing</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
     
@@ -18,19 +18,13 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-exceptions</artifactId>
+            <artifactId>utility-logging</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-processor</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-testing</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
         </dependency>
     </dependencies>
     

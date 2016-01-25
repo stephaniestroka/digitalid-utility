@@ -2,7 +2,9 @@ package net.digitalid.utility.cryptography;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.math.Element;
+import net.digitalid.utility.testing.LoggerSetup;
 import net.digitalid.utility.time.Time;
 
 import org.junit.Assert;
@@ -11,7 +13,7 @@ import org.junit.Test;
 /**
  * Unit testing of the class {@link KeyPair}.
  */
-public final class KeyPairTest {
+public class KeyPairTest extends LoggerSetup {
     
     @Test
     public void testKeyPair() {
@@ -19,21 +21,22 @@ public final class KeyPairTest {
         final @Nonnull KeyPair keyPair = KeyPair.getRandom();
         final @Nonnull PrivateKey privateKey = keyPair.getPrivateKey();
         final @Nonnull PublicKey publicKey = keyPair.getPublicKey();
-        System.out.println("\nKey Pair Generation: " + time.ago().getValue() + " ms\n");
+        Log.information("Key Pair Generation: " + time.ago().getValue() + " ms");
         
         Assert.assertTrue(publicKey.verifySubgroupProof());
         
         for (int i = 0; i < 10; i++) {
+            Log.information("Starting with another round:");
             final @Nonnull Element m = publicKey.getCompositeGroup().getRandomElement();
             time = Time.getCurrent();
             final @Nonnull Element c = m.pow(publicKey.getE());
-            System.out.println("Encryption (only algorithm): " + time.ago().getValue() + " ms");
+            Log.information("Encryption (only algorithm): " + time.ago().getValue() + " ms");
             time = Time.getCurrent();
             Assert.assertEquals(c.pow(privateKey.getD()), m);
-            System.out.println("Decryption (slow algorithm): " + time.ago().getValue() + " ms");
+            Log.information("Decryption (slow algorithm): " + time.ago().getValue() + " ms");
             time = Time.getCurrent();
             Assert.assertEquals(privateKey.powD(c), m);
-            System.out.println("Decryption (fast algorithm): " + time.ago().getValue() + " ms\n");
+            Log.information("Decryption (fast algorithm): " + time.ago().getValue() + " ms");
         }
     }
     
