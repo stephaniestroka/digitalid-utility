@@ -1,7 +1,7 @@
 package net.digitalid.utility.directory;
 
+import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.initialization.annotations.Initialize;
-import net.digitalid.utility.initialization.initializer.Initializer;
 
 /**
  * Description.
@@ -9,7 +9,7 @@ import net.digitalid.utility.initialization.initializer.Initializer;
 public class ProcessorTesting {
     
     public static void main(String[] args) {
-        Initializer.initialize();
+        Configuration.initializeAllConfigurations();
     }
     
     /**

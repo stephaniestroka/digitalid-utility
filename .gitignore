@@ -4,3 +4,4 @@ utility.iml
 digitalid-utility.iml
 */target
 .idea/
+/target/

@@ -12,7 +12,6 @@ import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.ConfigurationObserver;
 import net.digitalid.utility.directory.Directory;
 import net.digitalid.utility.logging.Level;
-import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
 import net.digitalid.utility.validation.state.Pure;
@@ -112,17 +111,10 @@ public class RotatingFileLogger extends FileLogger {
     /* -------------------------------------------------- Initialization -------------------------------------------------- */
     
     /**
-     * Initializes the logger and registers for modifications of the directory configuration.
+     * Initializes the logger with a rotating file logger.
      */
     // @Initialize(Logger.class, dependencies = {Directory.class})
     public static void initialize() throws FileNotFoundException {
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(@Nonnull Thread thread, @Nonnull Throwable throwable) {
-                Log.error("The following issue caused this thread to terminate.", throwable);
-            }
-        });
-        
         Logger.configuration.set(RotatingFileLogger.of());
     }
     

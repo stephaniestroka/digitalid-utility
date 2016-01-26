@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import net.digitalid.utility.configuration.InitializationError;
+
 /**
  * This class implements a logger that logs the messages to a file.
  * <p>
@@ -36,6 +38,27 @@ public class FileLogger extends PrintStreamLogger {
         assert file != null : "The given file is not null.";
         
         return new FileLogger(file);
+    }
+    
+    /**
+     * Returns a file logger that logs the messages to a file at the given non-nullable path.
+     * This method creates missing parent directories and the file, if necessary.
+     * 
+     * @require path != null : "The given path is not null.";
+     */
+    public static FileLogger of(String path) {
+        assert path != null : "The given path is not null.";
+        
+        final File file = new File(path);
+        final File directory = file.getParentFile();
+        if (directory != null && !directory.exists() && !directory.mkdirs()) {
+            throw InitializationError.of("Could not create the directory '" + directory.getPath() + "'.");
+        }
+        try {
+            return new FileLogger(file);
+        } catch (FileNotFoundException exception) {
+            throw InitializationError.of("The file '" + file.getPath() + "' could not be opened or created.", exception);
+        }
     }
     
     /* -------------------------------------------------- File -------------------------------------------------- */

@@ -1,7 +1,9 @@
 package net.digitalid.utility.logging.logger;
 
 import net.digitalid.utility.configuration.Configuration;
+import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
+import net.digitalid.utility.logging.Log;
 
 /**
  * The logger logs messages of various {@link Level levels}.
@@ -10,29 +12,23 @@ import net.digitalid.utility.logging.Level;
  */
 public abstract class Logger {
     
+    /* -------------------------------------------------- Initialization -------------------------------------------------- */
+    
+    static {
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread thread, Throwable throwable) {
+                Log.error("The following issue caused this thread to terminate.", throwable);
+            }
+        });
+    }
+    
     /* -------------------------------------------------- Configuration -------------------------------------------------- */
     
     /**
      * Stores the logger which is used for logging.
      */
     public static final Configuration<Logger> configuration = Configuration.<Logger>of(StandardOutputLogger.of());
-    
-    /* -------------------------------------------------- Caller -------------------------------------------------- */
-    
-    /**
-     * Stores the index of the caller in the stack trace, which is different on Android.
-     */
-    private static final int INDEX = System.getProperty("java.vendor").equals("The Android Project") ? 5 : 4;
-    
-    /**
-     * Returns the caller of the logging method.
-     */
-    private static String getCaller() {
-        final StackTraceElement element = Thread.currentThread().getStackTrace()[INDEX];
-        final String className = element.getClassName();
-        final int lineNumber = element.getLineNumber();
-        return className.substring(className.lastIndexOf('.') + 1) + "." + element.getMethodName() + (lineNumber > 0 ? ":" + lineNumber : "");
-    }
     
     /* -------------------------------------------------- Logging -------------------------------------------------- */
     
@@ -50,7 +46,7 @@ public abstract class Logger {
         assert level != null : "The given level is not null.";
         
         if (level.getValue() >= Level.configuration.get().getValue()) {
-            configuration.get().log(level, getCaller(), message, throwable);
+            configuration.get().log(level, Caller.get(), message, throwable);
         }
     }
     

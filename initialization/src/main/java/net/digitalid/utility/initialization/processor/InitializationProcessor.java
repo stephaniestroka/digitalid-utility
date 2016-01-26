@@ -1,33 +1,31 @@
-package net.digitalid.utility.processor;
+package net.digitalid.utility.initialization.processor;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.annotation.Nonnull;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedOptions;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.Name;
+import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
+
+import net.digitalid.utility.initialization.annotations.EnsureInitialization;
+import net.digitalid.utility.initialization.annotations.Initialize;
+import net.digitalid.utility.processor.AnnotationProcessor;
+import net.digitalid.utility.validation.state.Pure;
 
 /**
  * Description.
- * 
- * Is it worth to generate subclasses with annotation processors?
- * 
- * Useful aspects to intercept method calls:
- * - log with timing and parameters
- * - commit database transactions
- * - run method on the GUI thread (or just asynchronously)
- * - cleanup/closing of used resources
- * - validate parameters and return value
- * - ensure method is called from host or client (or recipient is configured)
- * 
- * Useful methods generated from fields:
- * - equals()
- * - hashCode()
- * - toString()
- * - validate() [would be declared in the RootClass and then overridden]
- * - compareTo()
- * 
- * Useful helper classes:
- * - object builder with default values
- * - argument builder with default values
- * 
- * If only the getters instead of the final fields are declared, the constructor (including a static method) could also be generated.
- * Setters on immutable objects could return a new object with the changed value.
- * Setters could/should be made chainable by returning this.
- * Delegate all interface methods to an instance (e.g. stored in a field).
  * 
  * @Initialize can take a target class (e.g. IdentityResolver.class or SQLDialect.class), which is initialized, or depend on the initialization of a certain class. (The target defaults to null, which is considered as initializing the surrounding class itself.)
  * @Initialize(target = Directory.class, dependencies = {Logger.class})
@@ -36,11 +34,10 @@ package net.digitalid.utility.processor;
  * @Configurable(required = false) [defaults to true] – or no such parameter, simply check whether an isConfigured() method exists. Add 'dependencies' as a potential parameter?
  * Introduce a Configuration interface [or rather abstract class] for a service loader with methods void add(Initializer), [void addDependency(Configuration, Initializer), boolean hasDependency(Configuration), Class<?> getSource()], boolean isConfigured(), void configure() [runs all associated initializers after ensuring that all dependencies are configured].
  */
-
-//@SupportedOptions({"dependency"})
-public class Processor {
-/*    
-public class Processor extends AbstractProcessor {
+@AnnotationProcessor
+@SupportedOptions({"dependency"})
+public class InitializationProcessor extends AbstractProcessor {
+    
 //    @Override
 //    public synchronized void init(ProcessingEnvironment env) {
 //        
@@ -49,7 +46,9 @@ public class Processor extends AbstractProcessor {
     @Override
     public boolean process(@Nonnull Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
         
-        Map<String, String> options = processingEnv.getOptions();
+        // TODO: Clean up!
+        
+        /*Map<String, String> options = processingEnv.getOptions();
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Number of options: " + options.keySet().size());
         for (String option : options.keySet()) {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, option + ": " + options.get(option));
@@ -60,7 +59,7 @@ public class Processor extends AbstractProcessor {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Class found: " + logger.getCanonicalName());
         } catch (ClassNotFoundException ex) {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Class not found: " + ex);
-        }
+        }*/
         
         for (final @Nonnull Element annotatedElement : roundEnvironment.getElementsAnnotatedWith(Initialize.class)) {
 //            processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Help! (This is the encapsulated annotation processor.)", annotatedElement);
@@ -77,14 +76,14 @@ public class Processor extends AbstractProcessor {
                         try (final @Nonnull Writer w = f.openWriter()) {
                             final @Nonnull PrintWriter pw = new PrintWriter(w);
                             pw.println("package net.digitalid.utility.initialization.initializer;");
-                            pw.println("/** The initializer initializes the library. *"); // TODO: Add trailing slash.
+                            pw.println("/** The initializer initializes the library. */");
                             pw.println("public final class Initializer {");
-                            pw.println("    /** Initializes the library. *"); // TODO: Add trailing slash.
+                            pw.println("    /** Initializes the library. */");
                             pw.println("    public static void initialize() {");
                             pw.println("        " + className + "." + methodName + "();");
                             pw.println("    }");
 //                            TypeMirror type = e.asType();
-//                            pw.println("    /** Handle something. *"); // TODO: Add trailing slash.
+//                            pw.println("    /** Handle something. */");
 //                            pw.println("    protected final void handle" + name  + "(" + type + " value) {");
 //                            pw.println("        System.out.println(value);");
 //                            pw.println("    }");
@@ -122,5 +121,4 @@ public class Processor extends AbstractProcessor {
         return SourceVersion.latestSupported();
     }
     
-*/
 }

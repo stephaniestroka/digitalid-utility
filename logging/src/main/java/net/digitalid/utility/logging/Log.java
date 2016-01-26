@@ -42,14 +42,14 @@ public final class Log {
     /* -------------------------------------------------- Information -------------------------------------------------- */
     
     /**
-     * Logs the given message and throwable as an information.
+     * Logs the given message and throwable as information.
      */
     public static void information(String message, Throwable throwable) {
         Logger.log(Level.INFORMATION, message, throwable);
     }
     
     /**
-     * Logs the given message as an information.
+     * Logs the given message as information.
      */
     public static void information(String message) {
         Logger.log(Level.INFORMATION, message, null);
