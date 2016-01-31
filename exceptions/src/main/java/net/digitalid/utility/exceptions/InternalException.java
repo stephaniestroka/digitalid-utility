@@ -1,9 +1,17 @@
 package net.digitalid.utility.exceptions;
 
+import net.digitalid.utility.exceptions.internal.InitializationException;
+import net.digitalid.utility.exceptions.internal.UncoveredCaseException;
+import net.digitalid.utility.logging.Log;
+
 /**
  * An internal exception indicates a wrong use of the library.
+ * All custom runtime exceptions extend this class.
+ * 
+ * @see InitializationException
+ * @see UncoveredCaseException
  */
-public class InternalException extends CustomException {
+public class InternalException extends RuntimeException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
@@ -12,34 +20,15 @@ public class InternalException extends CustomException {
      */
     protected InternalException(String message, Exception cause) {
         super(message, cause);
+        
+        Log.error("An internal exception occurred.", this);
     }
     
     /**
      * Creates an internal exception with the given message.
      */
     protected InternalException(String message) {
-        super(message);
-    }
-    
-    /**
-     * Returns an internal exception with the given message and cause.
-     */
-    public static InternalException of(String message, Exception cause) {
-        return new InternalException(message, cause);
-    }
-    
-    /**
-     * Returns an internal exception with the given message.
-     */
-    public static InternalException of(String message) {
-        return new InternalException(message);
-    }
-    
-    /**
-     * Returns an internal exception with the given cause.
-     */
-    public static InternalException of(Exception cause) {
-        return new InternalException(cause.getMessage(), cause);
+        this(message, null);
     }
     
 }

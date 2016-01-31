@@ -14,11 +14,11 @@ import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.string.iterable.Brackets;
 import net.digitalid.utility.string.iterable.IterableConverter;
-import net.digitalid.utility.validation.math.NonNegative;
-import net.digitalid.utility.validation.math.Positive;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.math.Positive;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class extends the {@link HashSet} and makes it {@link Freezable}.

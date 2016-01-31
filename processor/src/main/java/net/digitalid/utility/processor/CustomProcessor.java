@@ -1,11 +1,10 @@
 package net.digitalid.utility.processor;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
 import javax.annotation.processing.Completion;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
@@ -18,183 +17,81 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
 
-import net.digitalid.utility.configuration.InitializationError;
-import net.digitalid.utility.logging.Caller;
-import net.digitalid.utility.logging.Level;
-import net.digitalid.utility.logging.Version;
-import net.digitalid.utility.logging.logger.FileLogger;
-import net.digitalid.utility.logging.logger.Logger;
+import net.digitalid.utility.logging.processing.AnnotationLog;
+import net.digitalid.utility.logging.processing.AnnotationProcessor;
 
 /**
  * This class is the parent of all custom annotation processors.
  */
 public abstract class CustomProcessor implements Processor {
     
-    /* -------------------------------------------------- Environment -------------------------------------------------- */
+    /* -------------------------------------------------- Utility -------------------------------------------------- */
     
     /**
-     * Stores the processing environment of this processor.
+     * Returns the name of this annotation processor.
      */
-    private ProcessingEnvironment processingEnvironment;
+    protected @Nonnull String getName() {
+        return getClass().getSimpleName();
+    }
     
     /**
-     * Returns the non-nullable processing environment of this processor.
-     * 
-     * @throws InitializationError if the processing environment was not set.
+     * Logs the root elements of the given round environment.
      */
-    protected ProcessingEnvironment getProcessingEnvironment() throws InitializationError {
-        if (processingEnvironment == null) {
-            throw InitializationError.of("The processing environment was not set.");
+    protected void logRootElements(@Nonnull RoundEnvironment roundEnvironment) {
+        for (final Element rootElement : roundEnvironment.getRootElements()) {
+            AnnotationLog.information(rootElement.asType().toString() + " of kind " + rootElement.getKind());
         }
-        return processingEnvironment;
-    }
-    
-    /* -------------------------------------------------- Logging -------------------------------------------------- */
-    
-    /**
-     * Sets the output file of the logger.
-     */
-    private static void setUpLogging() {
-        Logger.configuration.set(FileLogger.of("target/processor-logs/processor.log"));
-        Level.configuration.set(Level.VERBOSE);
-        Version.configuration.set("1.0.0");
-        Caller.configuration.set(6);
-    }
-    
-    static { setUpLogging(); }
-    
-    /**
-     * Stores a mapping from this library's logging levels to the corresponding diagnostic kind.
-     */
-    private static final Map<Level, Diagnostic.Kind> levelToKind = new HashMap<>(5);
-    
-    static {
-        levelToKind.put(Level.VERBOSE, Diagnostic.Kind.OTHER);
-        levelToKind.put(Level.DEBUGGING, Diagnostic.Kind.OTHER);
-        levelToKind.put(Level.INFORMATION, Diagnostic.Kind.NOTE);
-        levelToKind.put(Level.WARNING, Diagnostic.Kind.WARNING);
-        levelToKind.put(Level.ERROR, Diagnostic.Kind.ERROR);
-    }
-    
-    /**
-     * Logs the given non-nullable message with the given nullable position at the given non-nullable level.
-     */
-    private void log(Level level, CharSequence message, SourcePosition position) {
-        assert level != null : "The given level is not null.";
-        assert message != null : "The given message is not null.";
-        
-        Logger.log(level, getClass().getSimpleName() + ": " + message.toString() + (position != null ? " " + position : ""), null);
-        if (level.getValue() >= Level.INFORMATION.getValue() && processingEnvironment != null) {
-            if (position == null) {
-                processingEnvironment.getMessager().printMessage(levelToKind.get(level), message);
-            } else if (position.getAnnotationValue() != null) {
-                processingEnvironment.getMessager().printMessage(levelToKind.get(level), message, position.getElement(), position.getAnnotationMirror(), position.getAnnotationValue());
-            } else if (position.getAnnotationMirror() != null) {
-                processingEnvironment.getMessager().printMessage(levelToKind.get(level), message, position.getElement(), position.getAnnotationMirror());
-            } else {
-                processingEnvironment.getMessager().printMessage(levelToKind.get(level), message, position.getElement());
-            }
-        }
-    }
-    
-    /**
-     * Logs the given non-nullable message with the given nullable position as an error.
-     */
-    protected void error(CharSequence message, SourcePosition position) {
-        log(Level.ERROR, message, position);
-    }
-    
-    /**
-     * Logs the given non-nullable message as an error.
-     */
-    protected void error(CharSequence message) {
-        log(Level.ERROR, message, null);
-    }
-    
-    /**
-     * Logs the given non-nullable message with the given nullable position as a warning.
-     */
-    protected void warning(CharSequence message, SourcePosition position) {
-        log(Level.WARNING, message, position);
-    }
-    
-    /**
-     * Logs the given non-nullable message as a warning.
-     */
-    protected void warning(CharSequence message) {
-        log(Level.WARNING, message, null);
-    }
-    
-    /**
-     * Logs the given non-nullable message with the given nullable position as information.
-     */
-    protected void information(CharSequence message, SourcePosition position) {
-        log(Level.INFORMATION, message, position);
-    }
-    
-    /**
-     * Logs the given non-nullable message as information.
-     */
-    protected void information(CharSequence message) {
-        log(Level.INFORMATION, message, null);
-    }
-    
-    /**
-     * Logs the given non-nullable message with the given nullable position for debugging.
-     */
-    protected void debugging(CharSequence message, SourcePosition position) {
-        log(Level.DEBUGGING, message, position);
-    }
-    
-    /**
-     * Logs the given non-nullable message for debugging.
-     */
-    protected void debugging(CharSequence message) {
-        log(Level.DEBUGGING, message, null);
-    }
-    
-    /**
-     * Logs the given non-nullable message with the given nullable position only in verbose mode.
-     */
-    protected void verbose(CharSequence message, SourcePosition position) {
-        log(Level.VERBOSE, message, position);
-    }
-    
-    /**
-     * Logs the given non-nullable message only in verbose mode.
-     */
-    protected void verbose(CharSequence message) {
-        log(Level.VERBOSE, message, null);
     }
     
     /* -------------------------------------------------- Initialization -------------------------------------------------- */
     
     @Override
-    public void init(ProcessingEnvironment processingEnvironment) throws IllegalStateException {
+    public void init(@Nonnull ProcessingEnvironment processingEnvironment) throws IllegalStateException {
         assert processingEnvironment != null : "The given processing environment is not null.";
         
-        if (this.processingEnvironment != null) {
+        if (AnnotationProcessor.environment.isSet()) {
             throw new IllegalStateException("Cannot call init more than once.");
         }
-        this.processingEnvironment = processingEnvironment;
+        AnnotationProcessor.environment.set(processingEnvironment);
         
-        verbose("The annotation processor is initialized.");
+        AnnotationLog.verbose(getName() + " is initialized.");
     }
     
     /* -------------------------------------------------- Processing -------------------------------------------------- */
     
     /**
+     * Processes the given annotations in the first round and returns whether these annotation are claimed by this processor.
+     * 
      * @see #process(java.util.Set, javax.annotation.processing.RoundEnvironment)
      */
-    protected abstract boolean processAll(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment);
+    protected boolean processFirstRound(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
+        logRootElements(roundEnvironment);
+        return false;
+    }
+    
+    /**
+     * Processes the given annotations in the given round and returns whether these annotation are claimed by this processor.
+     * 
+     * @param round the round of annotation processing, starting with zero in the first round.
+     * 
+     * @see #process(java.util.Set, javax.annotation.processing.RoundEnvironment)
+     */
+    protected boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment, int round) {
+        if (round == 0) { return processFirstRound(annotations, roundEnvironment); } else { return false; }
+    }
+    
+    /**
+     * Stores the round of processing, starting with zero in the first round.
+     */
+    private int round = 0;
     
     @Override
     public final boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
-        verbose("The annotation processing is started for " + annotations + ".");
-        final boolean result = processAll(annotations, roundEnvironment);
-        verbose("The annotation processing is finished " + (result ? "with" : "without") + " claiming the annotations.");
+        AnnotationLog.verbose(getName() + " starts processing " + annotations + " in the " + round + " round.");
+        final boolean result = process(annotations, roundEnvironment, round);
+        AnnotationLog.verbose(getName() + " finishes " + (result ? "with" : "without") + " claiming the annotations.");
+        this.round += 1;
         return result;
     }
     
@@ -230,7 +127,7 @@ public abstract class CustomProcessor implements Processor {
         if  (supportedAnnotationTypes != null) {
             return convertArrayToUnmodifiableSet(supportedAnnotationTypes.value());
         } else {
-            error("No SupportedAnnotationTypes annotation found on " + getClass().getName() + ".");
+            AnnotationLog.error("No SupportedAnnotationTypes annotation found on " + getClass().getName() + ".");
             return Collections.emptySet();
         }
     }
@@ -249,7 +146,5 @@ public abstract class CustomProcessor implements Processor {
     public Iterable<? extends Completion> getCompletions(Element element, AnnotationMirror annotation, ExecutableElement member, String userText) {
         return Collections.emptyList();
     }
-    
-    /* -------------------------------------------------- Utility -------------------------------------------------- */
     
 }

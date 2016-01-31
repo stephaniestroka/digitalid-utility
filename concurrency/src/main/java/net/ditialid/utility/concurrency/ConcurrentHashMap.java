@@ -8,10 +8,10 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.string.iterable.Brackets;
 import net.digitalid.utility.string.iterable.ElementConverter;
 import net.digitalid.utility.string.iterable.IterableConverter;
-import net.digitalid.utility.validation.math.NonNegative;
-import net.digitalid.utility.validation.math.Positive;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.math.Positive;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * Extends Java's {@link java.util.concurrent.ConcurrentHashMap ConcurrentHashMap} implementation with more useful methods.
@@ -89,7 +89,7 @@ public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHash
     
     @Override
     public @Nonnull V putIfAbsentElseReturnPresent(@Nonnull K key, @Nonnull V value) {
-        @Nullable V previous = putIfAbsent(key, value);
+        final @Nullable V previous = putIfAbsent(key, value);
         if (previous == null) { return value; }
         else { return previous; }
     }

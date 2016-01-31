@@ -3,8 +3,8 @@ package net.digitalid.utility.cryptography.exceptions;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.exceptions.InternalException;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This exception is thrown when a combination of parameter values is invalid.

@@ -3,12 +3,12 @@ package net.digitalid.utility.cryptography;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.conversion.Convertible;
+import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
 import net.digitalid.utility.math.GroupWithUnknownOrder;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class stores the groups, elements and exponents of a host's public key.

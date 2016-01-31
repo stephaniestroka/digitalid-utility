@@ -9,9 +9,9 @@ import net.digitalid.utility.collections.freezable.FreezableMap;
 import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
 import net.digitalid.utility.collections.readonly.ReadOnlyMap;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
-import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.validation.state.Validated;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * The property stores indexed values in volatile memory.

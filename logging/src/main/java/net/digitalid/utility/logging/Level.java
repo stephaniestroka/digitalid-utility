@@ -75,8 +75,8 @@ public enum Level {
     /* -------------------------------------------------- Configuration -------------------------------------------------- */
     
     /**
-     * Stores the level above which the messages are logged.
+     * Stores the level above (and including) which the messages are logged.
      */
-    public static final Configuration<Level> configuration = Configuration.of(INFORMATION);
+    public static final Configuration<Level> threshold = Configuration.with(INFORMATION);
     
 }

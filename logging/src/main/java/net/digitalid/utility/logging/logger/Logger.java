@@ -4,6 +4,7 @@ import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Log;
+import net.digitalid.utility.logging.Version;
 
 /**
  * The logger logs messages of various {@link Level levels}.
@@ -28,7 +29,7 @@ public abstract class Logger {
     /**
      * Stores the logger which is used for logging.
      */
-    public static final Configuration<Logger> configuration = Configuration.<Logger>of(StandardOutputLogger.of());
+    public static final Configuration<Logger> logger = Configuration.<Logger>with(StandardOutputLogger.withNoArguments()).addDependency(Level.threshold).addDependency(Caller.index).addDependency(Version.string);
     
     /* -------------------------------------------------- Logging -------------------------------------------------- */
     
@@ -45,8 +46,8 @@ public abstract class Logger {
     public static void log(Level level, String message, Throwable throwable) {
         assert level != null : "The given level is not null.";
         
-        if (level.getValue() >= Level.configuration.get().getValue()) {
-            configuration.get().log(level, Caller.get(), message, throwable);
+        if (level.getValue() >= Level.threshold.get().getValue()) {
+            logger.get().log(level, Caller.get(), message, throwable);
         }
     }
     

@@ -13,8 +13,9 @@ import net.digitalid.utility.collections.freezable.FreezableMap;
 import net.digitalid.utility.conversion.annotations.ConvertToConvertibleType;
 import net.digitalid.utility.conversion.exceptions.ConverterNotFoundException;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.generator.conversion.Convertible;
+import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * The abstract format class defines all converters, which must be implemented by each format.

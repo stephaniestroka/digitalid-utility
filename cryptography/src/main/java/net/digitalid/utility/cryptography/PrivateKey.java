@@ -5,13 +5,12 @@ import java.math.BigInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.conversion.Convertible;
+import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
 import net.digitalid.utility.math.GroupWithKnownOrder;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Matching;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class stores the groups and exponents of a host's private key.
@@ -105,7 +104,7 @@ public final class PrivateKey implements Convertible {
      * @require c.getGroup().equals(compositeGroup) : "The element belongs to the composite group.";
      */
     @Pure
-    public @Nonnull @Matching Element powD(@Nonnull @Matching Element c) {
+    public @Nonnull Element powD(@Nonnull Element c) {
         assert c.getGroup().equals(compositeGroup) : "The element belongs to the composite group.";
         
         return powD(c.getValue());

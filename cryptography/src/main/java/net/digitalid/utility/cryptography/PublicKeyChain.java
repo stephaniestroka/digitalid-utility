@@ -2,16 +2,16 @@ package net.digitalid.utility.cryptography;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
-import net.digitalid.utility.collections.annotations.size.NonEmpty;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.collections.freezable.FreezableLinkedList;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.time.Time;
 import net.digitalid.utility.tuples.FreezablePair;
 import net.digitalid.utility.tuples.ReadOnlyPair;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class models a {@link KeyChain key chain} of {@link PublicKey public keys}.

@@ -38,27 +38,29 @@
         <module>configuration</module>
         <module>logging</module>
         <module>testing</module>
-        <module>processor</module>
         <module>exceptions</module>
         <module>validation</module>
+        <module>system</module>
+        <module>threading</module>
+        <module>freezable</module>
+        <module>casting</module>
+        <module>rootclass</module>
+        <module>string</module>
+        <module>concurrency</module>
+        <module>processor</module>
         <module>initialization</module>
         <module>directory</module>
-        <module>system</module>
-        <module>string</module>
-        <module>casting</module>
-        <module>freezable</module>
-        <module>concurrency</module>
+        <module>generator</module>
+        <module>testcases</module>
         <module>collections</module>
-        <module>conversion</module>
-        <module>examples</module>
-        <module>rootclass</module>
-        <module>threading</module>
-        <module>property</module>
-        <module>console</module>
         <module>tuples</module>
         <module>math</module>
         <module>time</module>
         <module>cryptography</module>
+        <module>property</module>
+        <module>console</module>
+        <module>examples</module>
+        <module>conversion</module>
     </modules>
     
     <dependencies>
@@ -133,6 +135,7 @@
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
+                        <phase>none</phase> <!-- TODO: Remove this line again! -->
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -147,6 +150,7 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
+                        <phase>none</phase> <!-- TODO: Remove this line again! -->
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -165,13 +169,14 @@
                 <executions>
                     <execution>
                         <id>jacoco-initialize</id>
+                        <phase>none</phase> <!-- TODO: Remove this line again! -->
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>jacoco-unit-test</id>
-                        <phase>test</phase>
+                        <phase>none</phase> <!-- TODO: Change back to 'test'! -->
                         <goals>
                             <goal>report</goal>
                         </goals>

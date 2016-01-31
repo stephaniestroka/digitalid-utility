@@ -18,7 +18,7 @@ public class StandardOutputLogger extends PrintStreamLogger {
     /**
      * Returns a standard output logger that logs the messages to the standard output.
      */
-    public static StandardOutputLogger of() {
+    public static StandardOutputLogger withNoArguments() {
         return new StandardOutputLogger();
     }
     

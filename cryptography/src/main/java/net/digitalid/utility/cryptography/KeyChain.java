@@ -2,19 +2,19 @@ package net.digitalid.utility.cryptography;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
-import net.digitalid.utility.collections.annotations.size.NonEmpty;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.collections.freezable.FreezableIterator;
 import net.digitalid.utility.collections.freezable.FreezableList;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
-import net.digitalid.utility.conversion.Convertible;
+import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.cryptography.exceptions.InvalidParameterValueCombinationException;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.time.Time;
 import net.digitalid.utility.tuples.FreezablePair;
 import net.digitalid.utility.tuples.ReadOnlyPair;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * A key chain contains several items to support the rotation of host keys.

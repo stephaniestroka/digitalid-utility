@@ -62,7 +62,7 @@ public abstract class PrintStreamLogger extends Logger {
     
     @Override
     protected synchronized void log(Level level, String tag, String message, Throwable throwable) {
-        printStream.println(timeFormat.get().format(new Date()) + " in " + Version.configuration.get() + " [" + Thread.currentThread().getName() + "] (" + level + ") <" + tag + ">: " + message);
+        printStream.println(timeFormat.get().format(new Date()) + " in " + Version.string.get() + " [" + Thread.currentThread().getName() + "] (" + level + ") <" + tag + ">: " + message);
         if (throwable != null) {
             printStream.println();
             throwable.printStackTrace(printStream);

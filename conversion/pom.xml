@@ -4,9 +4,7 @@
                              http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <groupId>net.digitalid.utility</groupId>
     <artifactId>utility-conversion</artifactId>
-    <version>1.0.0</version>
     <packaging>jar</packaging>
     
     <parent>
@@ -18,14 +16,16 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-casting</artifactId>
+            <artifactId>utility-property</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--TODO: Ideally, this project can use the examples during testing, which requires that the examples do not depend on this project.-->
+<!--        <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-collections</artifactId>
+            <artifactId>utility-examples</artifactId>
             <version>${project.version}</version>
-        </dependency>
+            <scope>test</scope>
+        </dependency>-->
     </dependencies>
     
 </project>

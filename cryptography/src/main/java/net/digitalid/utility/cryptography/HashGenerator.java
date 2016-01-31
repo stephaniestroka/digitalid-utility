@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.errors.ShouldNeverHappenError;
 import net.digitalid.utility.math.Element;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * Generates cryptographic hashes.
@@ -31,7 +31,7 @@ public class HashGenerator {
             }
             return new BigInteger(1, instance.digest());
         } catch (@Nonnull NoSuchAlgorithmException exception) {
-            throw ShouldNeverHappenError.of("The hashing algorithm 'SHA-256' is not supported on this platform.", exception);
+            throw ShouldNeverHappenError.with("The hashing algorithm 'SHA-256' is not supported on this platform.", exception);
         }
     }
 

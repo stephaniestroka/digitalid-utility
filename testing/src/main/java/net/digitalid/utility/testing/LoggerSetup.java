@@ -16,8 +16,8 @@ public class LoggerSetup extends TestingBase {
      */
     @BeforeClass
     public static void setUpLogging() {
-        Logger.configuration.set(FileLogger.of("target/test-logs/test.log"));
-        Level.configuration.set(Level.VERBOSE);
+        Logger.logger.set(FileLogger.with("target/test-logs/test.log"));
+        Level.threshold.set(Level.VERBOSE);
     }
     
 }

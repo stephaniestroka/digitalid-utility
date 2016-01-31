@@ -14,7 +14,7 @@ import net.digitalid.utility.directory.Directory;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class implements a logger that logs the messages to a rotating file.
@@ -94,7 +94,7 @@ public class RotatingFileLogger extends FileLogger {
      * @throws FileNotFoundException if the current file cannot be opened or created.
      */
     @Pure
-    public static @Nonnull RotatingFileLogger of() throws FileNotFoundException {
+    public static @Nonnull RotatingFileLogger withDefaultDirectory() throws FileNotFoundException {
         return new RotatingFileLogger(getCurrentFile());
     }
     
@@ -113,9 +113,9 @@ public class RotatingFileLogger extends FileLogger {
     /**
      * Initializes the logger with a rotating file logger.
      */
-    // @Initialize(Logger.class, dependencies = {Directory.class})
+    // @Initialize(Logger.class, dependencies = {Directory.class}) // TODO: Remove the comment!
     public static void initialize() throws FileNotFoundException {
-        Logger.configuration.set(RotatingFileLogger.of());
+        Logger.logger.set(RotatingFileLogger.withDefaultDirectory());
     }
     
 }

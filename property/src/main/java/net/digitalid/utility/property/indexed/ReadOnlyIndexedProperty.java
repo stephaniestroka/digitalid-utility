@@ -5,8 +5,8 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
 import net.digitalid.utility.collections.readonly.ReadOnlyMap;
 import net.digitalid.utility.property.ReadOnlyProperty;
+import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
-import net.digitalid.utility.validation.state.Validated;
 
 /**
  * This is the read-only abstract class for properties that stores an indexed value.

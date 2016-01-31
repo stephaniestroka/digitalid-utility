@@ -2,9 +2,9 @@ package net.digitalid.utility.string;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.validation.math.NonNegative;
-import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.validation.state.Stateless;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Stateless;
 
 import java.lang.reflect.Field;
 

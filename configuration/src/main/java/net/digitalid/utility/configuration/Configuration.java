@@ -65,11 +65,11 @@ public class Configuration<P> {
      * 
      * @ensure result != null : "The returned provider is not null";
      * 
-     * @throws InitializationError if no provider was set for this configuration
+     * @throws InitializationError if no provider was set for this configuration.
      */
     public P get() {
         if (provider == null) {
-            throw InitializationError.of("No provider was set for this configuration.");
+            throw InitializationError.with("No provider was set for this configuration.");
         }
         return provider;
     }
@@ -88,6 +88,13 @@ public class Configuration<P> {
             }
             this.provider = provider;
         }
+    }
+    
+    /**
+     * Returns whether the provider of this configuration is set.
+     */
+    public boolean isSet() {
+        return provider != null;
     }
     
     /* -------------------------------------------------- Configurations -------------------------------------------------- */
@@ -110,8 +117,8 @@ public class Configuration<P> {
             for (Configuration<?> configuration : configurations) {
                 configuration.initialize();
             }
-        } catch (Throwable throwable) {
-            throw InitializationError.of("A problem occurred during the initialization of the library.", throwable);
+        } catch (Exception exception) {
+            throw InitializationError.with("A problem occurred during the initialization of the library.", exception);
         }
     }
     
@@ -130,7 +137,7 @@ public class Configuration<P> {
      * 
      * @require provider != null : "The given provider is not null.";
      */
-    public static <P> Configuration<P> of(P provider) {
+    public static <P> Configuration<P> with(P provider) {
         assert provider != null : "The given provider is not null.";
         
         return new Configuration<>(provider);
@@ -139,7 +146,7 @@ public class Configuration<P> {
     /**
      * Returns a configuration whose provider still needs to be set.
      */
-    public static <P> Configuration<P> ofUnknownProvider() {
+    public static <P> Configuration<P> withUnknownProvider() {
         return new Configuration<>(null);
     }
     
@@ -157,11 +164,11 @@ public class Configuration<P> {
      * 
      * @require initializer != null : "The given initializer is not null.";
      */
-    protected void add(Initializer initializer) {
+    protected void addInitializer(Initializer initializer) {
         assert initializer != null : "The given initializer is not null.";
         
         if (isInitialized) {
-            throw InitializationError.of("This configuration is already initialized.");
+            throw InitializationError.with("This configuration is already initialized.");
         }
         
         initializers.add(initializer);
@@ -177,7 +184,7 @@ public class Configuration<P> {
     /**
      * Returns whether this configuration depends on the given non-nullable configuration (directly or indirectly).
      */
-    protected boolean dependsOn(Configuration<?> configuration) {
+    public boolean dependsOn(Configuration<?> configuration) {
         if (configuration.equals(this)) { return true; }
         for (Configuration<?> dependency : dependencies) {
             if (dependency.dependsOn(configuration)) { return true; }
@@ -186,25 +193,26 @@ public class Configuration<P> {
     }
     
     /**
-     * Adds the given non-nullable dependency to the set of dependencies for this configuration.
+     * Adds the given non-nullable dependency to the set of dependencies and returns this configuration.
      * 
      * @throws InitializationError if the given dependency depends on this configuration.
      * @throws InitializationError if this configuration is already initialized.
      * 
      * @require dependency != null : "The given dependency is not null.";
      */
-    protected void add(Configuration<?> dependency) {
+    public Configuration<P> addDependency(Configuration<?> dependency) {
         assert dependency != null : "The given dependency is not null.";
         
         if (isInitialized) {
-            throw InitializationError.of("This configuration is already initialized.");
+            throw InitializationError.with("This configuration is already initialized.");
         }
         
         if (dependency.dependsOn(this)) {
-            throw InitializationError.of("The given dependency depends on this configuration.");
+            throw InitializationError.with("The given dependency depends on this configuration.");
         }
         
         dependencies.add(dependency);
+        return this;
     }
     
     /* -------------------------------------------------- Initialization -------------------------------------------------- */
@@ -217,9 +225,9 @@ public class Configuration<P> {
     /**
      * Initializes all dependencies and executes all initializers of this configuration.
      * 
-     * @throws Throwable if any problems occur.
+     * @throws Exception if any problems occur.
      */
-    protected void initialize() throws Throwable {
+    protected void initialize() throws Exception {
         if (!isInitialized) {
             for (Configuration<?> dependency : dependencies) {
                 dependency.initialize();

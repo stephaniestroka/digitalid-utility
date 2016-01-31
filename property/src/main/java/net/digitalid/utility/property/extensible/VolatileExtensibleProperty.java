@@ -6,9 +6,9 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.collections.freezable.FreezableSet;
 import net.digitalid.utility.collections.readonly.ReadOnlySet;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
-import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.validation.state.Validated;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * The property stores values in volatile memory.
