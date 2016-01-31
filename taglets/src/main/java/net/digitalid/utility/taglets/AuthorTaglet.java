@@ -9,7 +9,7 @@ import com.sun.tools.doclets.Taglet;
 /**
  * This class defines a custom block tag for class authors.
  */
-public final class Author extends CustomTaglet {
+public final class AuthorTaglet extends CustomTaglet {
     
     /* -------------------------------------------------- Registration -------------------------------------------------- */
     
@@ -17,7 +17,7 @@ public final class Author extends CustomTaglet {
      * Registers this taglet at the given non-nullable map of registered taglets.
      */
     public static void register(Map<String, Taglet> registeredTaglets) {
-        CustomTaglet.register(registeredTaglets, new Author());
+        CustomTaglet.register(registeredTaglets, new AuthorTaglet());
     }
     
     /* -------------------------------------------------- Configuration -------------------------------------------------- */

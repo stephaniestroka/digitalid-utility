@@ -5,9 +5,9 @@ import java.util.Map;
 import com.sun.tools.doclets.Taglet;
 
 /**
- * This class defines a custom block tag for constructor and method postconditions.
+ * This class defines a custom block tag for constructor and method preconditions.
  */
-public final class Ensure extends CustomTaglet {
+public final class RequireTaglet extends CustomTaglet {
     
     /* -------------------------------------------------- Registration -------------------------------------------------- */
     
@@ -15,7 +15,7 @@ public final class Ensure extends CustomTaglet {
      * Registers this taglet at the given non-nullable map of registered taglets.
      */
     public static void register(Map<String, Taglet> registeredTaglets) {
-        CustomTaglet.register(registeredTaglets, new Ensure());
+        CustomTaglet.register(registeredTaglets, new RequireTaglet());
     }
     
     /* -------------------------------------------------- Configuration -------------------------------------------------- */
@@ -34,12 +34,12 @@ public final class Ensure extends CustomTaglet {
     
     @Override
     public String getName() {
-        return "ensure";
+        return "require";
     }
     
     @Override
     public String getTitle() {
-        return "Ensures";
+        return "Requires";
     }
     
 }

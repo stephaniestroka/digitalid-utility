@@ -5,9 +5,9 @@ import java.util.Map;
 import com.sun.tools.doclets.Taglet;
 
 /**
- * This class defines a custom block tag for constructor and method preconditions.
+ * This class defines a custom block tag for class and field invariants.
  */
-public final class Require extends CustomTaglet {
+public class InvariantTaglet extends CustomTaglet {
     
     /* -------------------------------------------------- Registration -------------------------------------------------- */
     
@@ -15,18 +15,18 @@ public final class Require extends CustomTaglet {
      * Registers this taglet at the given non-nullable map of registered taglets.
      */
     public static void register(Map<String, Taglet> registeredTaglets) {
-        CustomTaglet.register(registeredTaglets, new Require());
+        CustomTaglet.register(registeredTaglets, new InvariantTaglet());
     }
     
     /* -------------------------------------------------- Configuration -------------------------------------------------- */
     
     @Override
-    public boolean inConstructor() {
+    public boolean inField() {
         return true;
     }
     
     @Override
-    public boolean inMethod() {
+    public boolean inType() {
         return true;
     }
     
@@ -34,12 +34,12 @@ public final class Require extends CustomTaglet {
     
     @Override
     public String getName() {
-        return "require";
+        return "invariant";
     }
     
     @Override
     public String getTitle() {
-        return "Requires";
+        return "Invariant";
     }
     
 }
