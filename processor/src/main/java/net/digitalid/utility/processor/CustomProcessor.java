@@ -55,6 +55,7 @@ public abstract class CustomProcessor implements Processor {
         }
         AnnotationProcessor.environment.set(processingEnvironment);
         
+        AnnotationLog.setUp();
         AnnotationLog.verbose(getName() + " is initialized.");
     }
     

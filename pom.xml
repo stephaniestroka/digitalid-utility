@@ -30,6 +30,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
+        <skipTests>true</skipTests> <!-- To re-enable tests, run 'mvn install -DskipTests=false'. -->
     </properties>
     
     <modules>
@@ -59,8 +60,9 @@
         <module>cryptography</module>
         <module>property</module>
         <module>console</module>
-        <module>examples</module>
         <module>conversion</module>
+        <module>examples</module>
+        <!-- TODO: conversion and examples should be reversed. -->
     </modules>
     
     <dependencies>
@@ -107,6 +109,15 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
+                <configuration>
+                    <skipTests>${skipTests}</skipTests>
                 </configuration>
             </plugin>
             

@@ -1,5 +1,7 @@
 package net.digitalid.utility.generator.processor;
 
+import javax.annotation.processing.SupportedAnnotationTypes;
+
 /**
  * Description.
  * 
@@ -30,6 +32,7 @@ package net.digitalid.utility.generator.processor;
  * Setters could/should be made chainable by returning this.
  * Delegate all interface methods to an instance (e.g. stored in a field).
  */
+@SupportedAnnotationTypes("*")
 public class GeneratorProcessor {
     
     /* -------------------------------------------------- Validator lookup -------------------------------------------------- */

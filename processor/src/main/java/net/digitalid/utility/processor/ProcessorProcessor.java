@@ -62,7 +62,7 @@ public class ProcessorProcessor extends CustomProcessor {
         for (final Element annotatedElement : roundEnvironment.getElementsAnnotatedWith(SupportedAnnotationTypes.class)) {
             AnnotationLog.warning("The processor processor was triggered for:" , SourcePosition.of(annotatedElement));
         }
-        return true;
+        return false;
     }
     
 }
