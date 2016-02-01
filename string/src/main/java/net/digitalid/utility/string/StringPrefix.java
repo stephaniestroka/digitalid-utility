@@ -20,12 +20,13 @@ public class StringPrefix {
     public static @Nonnull String longestCommonPrefix(@Nonnull String... strings) {
         if (strings.length == 0) { return ""; }
         @Nonnull String prefix = strings[0];
-        for (int s = 1; s < strings.length; s++) {
+        string: for (int s = 1; s < strings.length; s++) {
             final @Nonnull String string = strings[s];
             final int minLength = Math.min(prefix.length(), string.length());
-            for (int c = 0; c < minLength; c++) {
+            character: for (int c = 0; c < minLength; c++) {
                 if (prefix.charAt(c) != string.charAt(c)) {
                     prefix = prefix.substring(0, c);
+                    continue string;
                 }
             }
             prefix = prefix.substring(0, minLength);

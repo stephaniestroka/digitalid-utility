@@ -3,11 +3,12 @@ package net.digitalid.utility.logging.processing;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
 
 import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
-import net.digitalid.utility.logging.Version;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
 
@@ -19,12 +20,11 @@ public class AnnotationLog {
     /* -------------------------------------------------- Setup -------------------------------------------------- */
     
     /**
-     * Sets the output file of the logger.
+     * Sets the output file of the logger to the given name.
      */
-    public static void setUp() {
-        Logger.logger.set(FileLogger.with("target/processor-logs/processor.log"));
+    public static void setUp(String name) {
+        Logger.logger.set(FileLogger.with("target/processor-logs/" + name + ".log"));
         Level.threshold.set(Level.VERBOSE);
-        Version.string.set("1.0.0");
         Caller.index.set(6);
     }
     
@@ -144,6 +144,17 @@ public class AnnotationLog {
      */
     public static void verbose(CharSequence message) {
         log(Level.VERBOSE, message, null);
+    }
+    
+    /* -------------------------------------------------- Utility -------------------------------------------------- */
+    
+    /**
+     * Logs the root elements of the given non-nullable round environment.
+     */
+    public static void rootElements(RoundEnvironment roundEnvironment) {
+        for (Element rootElement : roundEnvironment.getRootElements()) {
+            AnnotationLog.information(rootElement.asType().toString() + " of kind " + rootElement.getKind());
+        }
     }
     
 }

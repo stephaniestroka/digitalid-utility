@@ -12,6 +12,6 @@ public class Version {
     /**
      * Stores the non-nullable version of this library.
      */
-    public static final Configuration<String> string = Configuration.with("0.0.0");
+    public static final Configuration<String> string = Configuration.with("");
     
 }

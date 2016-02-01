@@ -20,43 +20,27 @@ import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessor;
+import net.digitalid.utility.string.NumberToString;
+import net.digitalid.utility.string.StringPrefix;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This class is the parent of all custom annotation processors.
  */
+@Mutable
 public abstract class CustomProcessor implements Processor {
-    
-    /* -------------------------------------------------- Utility -------------------------------------------------- */
-    
-    /**
-     * Returns the name of this annotation processor.
-     */
-    protected @Nonnull String getName() {
-        return getClass().getSimpleName();
-    }
-    
-    /**
-     * Logs the root elements of the given round environment.
-     */
-    protected void logRootElements(@Nonnull RoundEnvironment roundEnvironment) {
-        for (final Element rootElement : roundEnvironment.getRootElements()) {
-            AnnotationLog.information(rootElement.asType().toString() + " of kind " + rootElement.getKind());
-        }
-    }
     
     /* -------------------------------------------------- Initialization -------------------------------------------------- */
     
     @Override
     public void init(@Nonnull ProcessingEnvironment processingEnvironment) throws IllegalStateException {
-        assert processingEnvironment != null : "The given processing environment is not null.";
-        
         if (AnnotationProcessor.environment.isSet()) {
             throw new IllegalStateException("Cannot call init more than once.");
         }
         AnnotationProcessor.environment.set(processingEnvironment);
-        
-        AnnotationLog.setUp();
-        AnnotationLog.verbose(getName() + " is initialized.");
+        AnnotationLog.setUp(getClass().getSimpleName());
     }
     
     /* -------------------------------------------------- Processing -------------------------------------------------- */
@@ -66,8 +50,8 @@ public abstract class CustomProcessor implements Processor {
      * 
      * @see #process(java.util.Set, javax.annotation.processing.RoundEnvironment)
      */
-    protected boolean processFirstRound(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
-        logRootElements(roundEnvironment);
+    protected boolean processFirstRound(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
+        AnnotationLog.rootElements(roundEnvironment);
         return false;
     }
     
@@ -78,7 +62,7 @@ public abstract class CustomProcessor implements Processor {
      * 
      * @see #process(java.util.Set, javax.annotation.processing.RoundEnvironment)
      */
-    protected boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment, int round) {
+    protected boolean process(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment, @NonNegative int round) {
         if (round == 0) { return processFirstRound(annotations, roundEnvironment); } else { return false; }
     }
     
@@ -88,10 +72,22 @@ public abstract class CustomProcessor implements Processor {
     private int round = 0;
     
     @Override
-    public final boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
-        AnnotationLog.verbose(getName() + " starts processing " + annotations + " in the " + round + " round.");
+    public final boolean process(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
+        if (round == 0) { 
+            final @Nonnull Set<? extends Element> rootElements = roundEnvironment.getRootElements();
+            final @Nonnull String[] names = new String[rootElements.size()];
+            int i = 0;
+            for (@Nonnull Element rootElement : rootElements) {
+                names[i++] = rootElement.asType().toString();
+            }
+            final @Nonnull String nameWithDot = StringPrefix.longestCommonPrefix(names);
+            final @Nonnull String name = nameWithDot.endsWith(".") ? nameWithDot.substring(0, nameWithDot.length() - 1) : nameWithDot;
+            AnnotationLog.information(getClass().getSimpleName() + " invoked " + (name.isEmpty() ? "" : " for project " + name) + ":\n");
+        }
+        
+        AnnotationLog.information("Process " + annotations + " in the " + NumberToString.getOrdinal(round + 1) + " round.");
         final boolean result = process(annotations, roundEnvironment, round);
-        AnnotationLog.verbose(getName() + " finishes " + (result ? "with" : "without") + " claiming the annotations.");
+        AnnotationLog.information("Finish " + (result ? "with" : "without") + " claiming the annotations.\n" + (roundEnvironment.processingOver() ? "\n" : ""));
         this.round += 1;
         return result;
     }
