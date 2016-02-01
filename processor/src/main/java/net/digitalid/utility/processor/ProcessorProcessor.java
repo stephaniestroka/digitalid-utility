@@ -36,24 +36,24 @@ public class ProcessorProcessor extends CustomProcessor {
         
         // Collect all processors:
         final @Nonnull List<String> processors = new LinkedList<>();
-        for (@Nonnull Element annotatedElement : roundEnvironment.getElementsAnnotatedWith(SupportedAnnotationTypes.class)) {
-            if (annotatedElement.getKind() != ElementKind.CLASS) {
-                AnnotationLog.error("Only a class can process annotations.", SourcePosition.of(annotatedElement));
+        for (@Nonnull Element element : roundEnvironment.getElementsAnnotatedWith(SupportedAnnotationTypes.class)) {
+            if (element.getKind() != ElementKind.CLASS) {
+                AnnotationLog.error("Only a class can process annotations.", SourcePosition.of(element));
                 return false;
             }
             
-            if (annotatedElement.getEnclosingElement().getKind() != ElementKind.PACKAGE) {
-                AnnotationLog.error("Generating the services entry is only supported for non-nested processors.", SourcePosition.of(annotatedElement));
+            if (element.getEnclosingElement().getKind() != ElementKind.PACKAGE) {
+                AnnotationLog.error("Generating the services entry is only supported for non-nested processors.", SourcePosition.of(element));
                 return false;
             }
             
-            if (!processingEnvironment.getTypeUtils().isSubtype(annotatedElement.asType(), processorMirror)) {
-                AnnotationLog.error("The annotated class does not implement the processor interface.", SourcePosition.of(annotatedElement));
+            if (!processingEnvironment.getTypeUtils().isSubtype(element.asType(), processorMirror)) {
+                AnnotationLog.error("The annotated class does not implement the processor interface.", SourcePosition.of(element));
                 return false;
             }
             
-            final @Nonnull TypeElement classElement = (TypeElement) annotatedElement;
-            final @Nonnull String qualifiedName = classElement.getQualifiedName().toString();
+            final @Nonnull TypeElement typeElement = (TypeElement) element;
+            final @Nonnull String qualifiedName = typeElement.getQualifiedName().toString();
             AnnotationLog.debugging("Found the annotation processor '" + qualifiedName + "'.");
             processors.add(qualifiedName);
         }

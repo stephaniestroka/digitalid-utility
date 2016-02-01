@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.processing.Completion;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
@@ -27,6 +28,7 @@ import net.digitalid.utility.string.NumberToString;
 import net.digitalid.utility.string.StringPrefix;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
@@ -50,9 +52,18 @@ public abstract class CustomProcessor implements Processor {
      * @see #process(java.util.Set, javax.annotation.processing.RoundEnvironment)
      */
     protected boolean processFirstRound(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
-        AnnotationLog.rootElements(roundEnvironment);
+        for (@Nonnull TypeElement annotation : annotations) {
+            for (@Nonnull Element element : roundEnvironment.getElementsAnnotatedWith(annotation)) {
+                AnnotationLog.debugging("Found '@" + annotation.getSimpleName() + "' on '" + element.getEnclosingElement().getSimpleName() + "#" + element + "'.");
+            }
+        }
         return false;
     }
+    
+    /**
+     * Stores whether this annotation processor is only interested in the first processing round.
+     */
+    private boolean onlyInterestedInFirstRound = false;
     
     /**
      * Processes the given annotations in the given round and returns whether these annotation are claimed by this processor.
@@ -62,6 +73,7 @@ public abstract class CustomProcessor implements Processor {
      * @see #process(java.util.Set, javax.annotation.processing.RoundEnvironment)
      */
     protected boolean process(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment, @NonNegative int round) {
+        this.onlyInterestedInFirstRound = true;
         if (round == 0) { return processFirstRound(annotations, roundEnvironment); } else { return false; }
     }
     
@@ -87,9 +99,11 @@ public abstract class CustomProcessor implements Processor {
             AnnotationLog.information(getClass().getSimpleName() + " invoked " + (name.isEmpty() ? "" : " for project '" + name + "'") + ":\n");
         }
         
+        if (onlyInterestedInFirstRound && round > 0) { return false; }
+        
         AnnotationLog.information("Process " + annotations + " in the " + NumberToString.getOrdinal(round + 1) + " round.");
         final boolean result = process(annotations, roundEnvironment, round);
-        AnnotationLog.information("Finish " + (result ? "with" : "without") + " claiming the annotations.\n" + (roundEnvironment.processingOver() ? "\n" : ""));
+        AnnotationLog.information("Finish " + (result ? "with" : "without") + " claiming the annotations.\n" + (roundEnvironment.processingOver() || onlyInterestedInFirstRound ? "\n" : ""));
         this.round += 1;
         return result;
     }
@@ -98,31 +112,29 @@ public abstract class CustomProcessor implements Processor {
     
     /**
      * Converts the given non-nullable array to an unmodifiable set.
-     * 
-     * @require array != null : "The given array is not null.";
-     * @ensure return != null : "The returned set is not null.";
      */
-    protected static <T> Set<T> convertArrayToUnmodifiableSet(T[] array) {
-        assert array != null : "The given array is not null.";
-        
-        final Set<T> set = new HashSet<>(array.length);
-        for (final T s : array) { set.add(s); }
+    @Pure
+    protected static @Nonnull <T> Set<T> convertArrayToUnmodifiableSet(@Nonnull T[] array) {
+        final @Nonnull Set<T> set = new HashSet<>(array.length);
+        for (@Nullable T s : array) { set.add(s); }
         return Collections.unmodifiableSet(set);
     }
     
+    @Pure
     @Override
-    public Set<String> getSupportedOptions() {
-        final SupportedOptions supportedOptions = getClass().getAnnotation(SupportedOptions.class);
-        if (supportedOptions == null) {
-            return Collections.emptySet();
-        } else {
+    public @Nonnull Set<String> getSupportedOptions() {
+        final @Nullable SupportedOptions supportedOptions = getClass().getAnnotation(SupportedOptions.class);
+        if (supportedOptions != null) {
             return convertArrayToUnmodifiableSet(supportedOptions.value());
+        } else {
+            return Collections.emptySet();
         }
     }
     
+    @Pure
     @Override
-    public Set<String> getSupportedAnnotationTypes() {
-        final SupportedAnnotationTypes supportedAnnotationTypes = getClass().getAnnotation(SupportedAnnotationTypes.class);
+    public @Nonnull Set<String> getSupportedAnnotationTypes() {
+        final @Nullable SupportedAnnotationTypes supportedAnnotationTypes = getClass().getAnnotation(SupportedAnnotationTypes.class);
         if  (supportedAnnotationTypes != null) {
             return convertArrayToUnmodifiableSet(supportedAnnotationTypes.value());
         } else {
@@ -131,9 +143,10 @@ public abstract class CustomProcessor implements Processor {
         }
     }
     
+    @Pure
     @Override
     public SourceVersion getSupportedSourceVersion() {
-        final SupportedSourceVersion supportedSourceVersion = getClass().getAnnotation(SupportedSourceVersion.class);
+        final @Nullable SupportedSourceVersion supportedSourceVersion = getClass().getAnnotation(SupportedSourceVersion.class);
         if (supportedSourceVersion != null) {
             return supportedSourceVersion.value();
         } else {
@@ -141,8 +154,9 @@ public abstract class CustomProcessor implements Processor {
         }
     }
     
+    @Pure
     @Override
-    public Iterable<? extends Completion> getCompletions(Element element, AnnotationMirror annotation, ExecutableElement member, String userText) {
+    public @Nonnull Iterable<? extends Completion> getCompletions(@Nonnull Element element, @Nonnull AnnotationMirror annotation, @Nonnull ExecutableElement member, @Nonnull String userText) {
         return Collections.emptyList();
     }
     
