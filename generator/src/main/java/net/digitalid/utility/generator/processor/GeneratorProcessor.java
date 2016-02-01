@@ -2,6 +2,8 @@ package net.digitalid.utility.generator.processor;
 
 import javax.annotation.processing.SupportedAnnotationTypes;
 
+import net.digitalid.utility.processor.CustomProcessor;
+
 /**
  * Description.
  * 
@@ -33,7 +35,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
  * Delegate all interface methods to an instance (e.g. stored in a field).
  */
 @SupportedAnnotationTypes("*")
-public class GeneratorProcessor {
+public class GeneratorProcessor extends CustomProcessor {
     
     /* -------------------------------------------------- Validator lookup -------------------------------------------------- */
     

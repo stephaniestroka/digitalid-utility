@@ -1,6 +1,9 @@
 package net.digitalid.utility.initialization.processor;
 
+import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
+
+import net.digitalid.utility.processor.CustomProcessor;
 
 /**
  * Description.
@@ -13,7 +16,8 @@ import javax.annotation.processing.SupportedOptions;
  * Introduce a Configuration interface [or rather abstract class] for a service loader with methods void add(Initializer), [void addDependency(Configuration, Initializer), boolean hasDependency(Configuration), Class<?> getSource()], boolean isConfigured(), void configure() [runs all associated initializers after ensuring that all dependencies are configured].
  */
 @SupportedOptions({"dependency"})
-public class InitializationProcessor {
+@SupportedAnnotationTypes("net.digitalid.utility.initialization.annotations.Initialize")
+public class InitializationProcessor extends CustomProcessor {
     
 //    @Override
 //    public synchronized void init(ProcessingEnvironment env) {

@@ -53,15 +53,15 @@ public class AnnotationLog {
         assert message != null : "The given message is not null.";
         
         Logger.log(level, message.toString() + (position != null ? " " + position : ""), null);
-        if (level.getValue() >= Level.INFORMATION.getValue() && AnnotationProcessor.environment.isSet()) {
+        if (level.getValue() >= Level.INFORMATION.getValue() && AnnotationProcessing.environment.isSet()) {
             if (position == null) {
-                AnnotationProcessor.environment.get().getMessager().printMessage(levelToKind.get(level), message);
+                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), message);
             } else if (position.getAnnotationValue() != null) {
-                AnnotationProcessor.environment.get().getMessager().printMessage(levelToKind.get(level), message, position.getElement(), position.getAnnotationMirror(), position.getAnnotationValue());
+                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), message, position.getElement(), position.getAnnotationMirror(), position.getAnnotationValue());
             } else if (position.getAnnotationMirror() != null) {
-                AnnotationProcessor.environment.get().getMessager().printMessage(levelToKind.get(level), message, position.getElement(), position.getAnnotationMirror());
+                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), message, position.getElement(), position.getAnnotationMirror());
             } else {
-                AnnotationProcessor.environment.get().getMessager().printMessage(levelToKind.get(level), message, position.getElement());
+                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), message, position.getElement());
             }
         }
     }

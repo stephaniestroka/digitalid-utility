@@ -1,7 +1,9 @@
 package net.digitalid.utility.processor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -16,10 +18,11 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessor;
+import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.string.NumberToString;
 import net.digitalid.utility.string.StringPrefix;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -36,11 +39,7 @@ public abstract class CustomProcessor implements Processor {
     
     @Override
     public void init(@Nonnull ProcessingEnvironment processingEnvironment) throws IllegalStateException {
-        if (AnnotationProcessor.environment.isSet()) {
-            throw new IllegalStateException("Cannot call init more than once.");
-        }
-        AnnotationProcessor.environment.set(processingEnvironment);
-        AnnotationLog.setUp(getClass().getSimpleName());
+        AnnotationProcessing.environment.set(processingEnvironment);
     }
     
     /* -------------------------------------------------- Processing -------------------------------------------------- */
@@ -73,16 +72,19 @@ public abstract class CustomProcessor implements Processor {
     
     @Override
     public final boolean process(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
+        AnnotationLog.setUp(getClass().getSimpleName());
+        
         if (round == 0) { 
             final @Nonnull Set<? extends Element> rootElements = roundEnvironment.getRootElements();
-            final @Nonnull String[] names = new String[rootElements.size()];
-            int i = 0;
+            final @Nonnull List<String> names = new ArrayList<>(rootElements.size());
             for (@Nonnull Element rootElement : rootElements) {
-                names[i++] = rootElement.asType().toString();
+                if (rootElement.getKind().isClass() || rootElement.getKind().isInterface()) {
+                    names.add(((QualifiedNameable) rootElement).getQualifiedName().toString());
+                }
             }
-            final @Nonnull String nameWithDot = StringPrefix.longestCommonPrefix(names);
+            final @Nonnull String nameWithDot = StringPrefix.longestCommonPrefix(names.toArray(new String[names.size()]));
             final @Nonnull String name = nameWithDot.endsWith(".") ? nameWithDot.substring(0, nameWithDot.length() - 1) : nameWithDot;
-            AnnotationLog.information(getClass().getSimpleName() + " invoked " + (name.isEmpty() ? "" : " for project " + name) + ":\n");
+            AnnotationLog.information(getClass().getSimpleName() + " invoked " + (name.isEmpty() ? "" : " for project '" + name + "'") + ":\n");
         }
         
         AnnotationLog.information("Process " + annotations + " in the " + NumberToString.getOrdinal(round + 1) + " round.");

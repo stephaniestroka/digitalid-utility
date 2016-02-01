@@ -1,20 +1,28 @@
 package net.digitalid.utility.processor;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
 
 import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessor;
+import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
 
 /**
- * Description.
+ * This annotation processor generates the "META-INF.services" entry for other annotation processors.
  */
 @SupportedAnnotationTypes("javax.annotation.processing.SupportedAnnotationTypes")
 public class ProcessorProcessor extends CustomProcessor {
@@ -23,45 +31,46 @@ public class ProcessorProcessor extends CustomProcessor {
     
     @Override
     public boolean processFirstRound(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
-        for (final Element rootElement : roundEnvironment.getRootElements()) {
-            AnnotationLog.information("Root element: " + rootElement.getKind(), SourcePosition.of(rootElement));
-            if (rootElement.getKind() == ElementKind.CLASS) {
-                AnnotationLog.information("Subtype of " + ((TypeElement) rootElement).getSuperclass().toString());
-                final List<? extends Element> members = AnnotationProcessor.environment.get().getElementUtils().getAllMembers((TypeElement) rootElement);
-                for (final Element member : members) {
-                    AnnotationLog.debugging("Member element: " + member.getModifiers() + " " + member.getKind(), SourcePosition.of(member));
-                }
-                if (rootElement.getSimpleName().toString().equals("TestClass")) {
-                    AnnotationLog.verbose("TestClass found!");
-//                    TestAnnotation annotation = rootElement.getAnnotation(TestAnnotation.class);
-//                    try {
-//                        Class<?> value = annotation.value();
-//                        try {
-//                            value.newInstance();
-//                        } catch (InstantiationException | IllegalAccessException ex) {
-//                            Log.error("Problem!", ex);
-//                        }
-//                    } catch (MirroredTypeException exception) {
-//                        DeclaredType declaredType = (DeclaredType) exception.getTypeMirror();
-//                        TypeElement typeElement = (TypeElement) declaredType.asElement();
-//                        AnnotationLog.information(typeElement.getQualifiedName());
-//                        try {
-//                            Class.forName(typeElement.getQualifiedName().toString()).newInstance();
-//                        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-//                            Log.error("Problem!", ex);
-//                        }
-//                    }
-//                    
-//                    List<? extends AnnotationMirror> annotationMirrors = rootElement.getAnnotationMirrors();
-//                    AnnotationLog.verbose("Annotation mirrors: " + annotationMirrors);
-//                    AnnotationMirror mirror = annotationMirrors.get(0);
-//                    AnnotationLog.verbose("Values of the first annotation mirror: " + mirror.getElementValues());
+        final @Nonnull ProcessingEnvironment processingEnvironment = AnnotationProcessing.environment.get();
+        final @Nonnull TypeMirror processorMirror = processingEnvironment.getElementUtils().getTypeElement("javax.annotation.processing.Processor").asType();
+        
+        // Collect all processors:
+        final @Nonnull List<String> processors = new LinkedList<>();
+        for (@Nonnull Element annotatedElement : roundEnvironment.getElementsAnnotatedWith(SupportedAnnotationTypes.class)) {
+            if (annotatedElement.getKind() != ElementKind.CLASS) {
+                AnnotationLog.error("Only a class can process annotations.", SourcePosition.of(annotatedElement));
+                return false;
+            }
+            
+            if (annotatedElement.getEnclosingElement().getKind() != ElementKind.PACKAGE) {
+                AnnotationLog.error("Generating the services entry is only supported for non-nested processors.", SourcePosition.of(annotatedElement));
+                return false;
+            }
+            
+            if (!processingEnvironment.getTypeUtils().isSubtype(annotatedElement.asType(), processorMirror)) {
+                AnnotationLog.error("The annotated class does not implement the processor interface.", SourcePosition.of(annotatedElement));
+                return false;
+            }
+            
+            final @Nonnull TypeElement classElement = (TypeElement) annotatedElement;
+            final @Nonnull String qualifiedName = classElement.getQualifiedName().toString();
+            AnnotationLog.debugging("Found the annotation processor '" + qualifiedName + "'.");
+            processors.add(qualifiedName);
+        }
+        
+        // Generate the file:
+        try {
+            final @Nonnull FileObject fileObject = processingEnvironment.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", "META-INF/services/javax.annotation.processing.Processor");
+            try (@Nonnull Writer writer = fileObject.openWriter()) {
+                for (@Nonnull String processor : processors) {
+                    writer.write(processor + "\n");
                 }
             }
+            AnnotationLog.debugging("Wrote the found annotation processors to '" + fileObject.toUri() + "'.");
+        } catch (@Nonnull IOException exception) {
+            AnnotationLog.error("An IOException occurred while writing the services file: " + exception);
         }
-        for (final Element annotatedElement : roundEnvironment.getElementsAnnotatedWith(SupportedAnnotationTypes.class)) {
-            AnnotationLog.warning("The processor processor was triggered for:" , SourcePosition.of(annotatedElement));
-        }
+        
         return false;
     }
     
