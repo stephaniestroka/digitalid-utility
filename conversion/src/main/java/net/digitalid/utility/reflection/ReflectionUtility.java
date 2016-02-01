@@ -16,7 +16,7 @@ import java.lang.reflect.TypeVariable;
 
 /**
  */
-public class ReflectonUtility {
+public class ReflectionUtility {
 
     /**
      * Returns a constructor for a given type.

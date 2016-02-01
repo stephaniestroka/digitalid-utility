@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -144,4 +145,18 @@ public abstract class Validator<A extends Annotation> {
         validateClassInvariant(object);
     }
     
+    /**
+     * Validates that the type of a given field is either in the array of accepted types or is a subtype of the types in the accepted types array.
+     * A validation-failed-exception is thrown in case the field type is not an accepted type.
+     */
+    @Pure
+    public static void checkType(@Nonnull Field field, @Nonnull Class<?> acceptedTypes[]) throws AssertionError {
+        final @Nonnull Class<?> actualType = field.getType();
+        for (@Nonnull Class<?> acceptedType : acceptedTypes) {
+            if (acceptedType.isAssignableFrom(actualType)) {
+                return;
+            }
+        }
+        throw new AssertionError("The type '" + actualType + "' of the given field is not in the list of accepted types: " + Arrays.toString(acceptedTypes));
+    }
 }

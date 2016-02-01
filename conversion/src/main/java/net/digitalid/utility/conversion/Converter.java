@@ -10,7 +10,7 @@ import net.digitalid.utility.collections.annotations.elements.NonNullableElement
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.conversion.exceptions.RecoveryException;
 import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.reflection.ReflectonUtility;
+import net.digitalid.utility.reflection.ReflectionUtility;
 import net.digitalid.utility.reflection.exceptions.StructureException;
 import net.digitalid.utility.validation.state.Stateless;
 
@@ -50,7 +50,7 @@ public abstract class Converter {
     private static @Nonnull Object recoverObjectWithConstructor(@Nonnull Class<?> type, @Nullable Object... values) throws RecoveryException {
         final @Nonnull Constructor constructor;
         try {
-            constructor = ReflectonUtility.getConstructor(type);
+            constructor = ReflectionUtility.getConstructor(type);
         } catch (StructureException e) {
             throw RecoveryException.get(type, "Failed to restore object with the constructor.", e);
         }
@@ -91,7 +91,7 @@ public abstract class Converter {
      * @throws RecoveryException if the recovery method unexpectedly returns null.
      */
     protected static @Nonnull Object recoverNonNullableObject(@Nonnull Class<?> type, @Nullable Object... values) throws RecoveryException {
-        final @Nullable Method constructorMethod = ReflectonUtility.getStaticRecoveryMethod(type);
+        final @Nullable Method constructorMethod = ReflectionUtility.getStaticRecoveryMethod(type);
         final @Nullable Object restoredObject;
         if (constructorMethod == null) {
             restoredObject = recoverObjectWithConstructor(type, values);
@@ -126,7 +126,7 @@ public abstract class Converter {
      * @throws StructureException if a type parameter of a recovery method cannot be identified as a field.
      */
     protected static @Nonnull Field getConvertibleField(@Nonnull Class<?> type) throws StructureException {
-        final @Nonnull @NonNullableElements @Frozen ReadOnlyList<Field> fields = ReflectonUtility.getReconstructionFields(type);
+        final @Nonnull @NonNullableElements @Frozen ReadOnlyList<Field> fields = ReflectionUtility.getReconstructionFields(type);
         assert fields.size() == 1 : "There is only one field in type '" + type + "'";
         return fields.getNonNullable(0);
     }
@@ -142,7 +142,7 @@ public abstract class Converter {
      * @throws StructureException thrown if the structure of the type cannot be inferred, e.g. because the recovery method or the constructor do not take any constructable parameters.
      */
     public static @Nonnull Structure inferStructure(@Nonnull Class<?> type) throws StructureException {
-        final @Nonnull @NonNullableElements ReadOnlyList<Field> fields = ReflectonUtility.getReconstructionFields(type);
+        final @Nonnull @NonNullableElements ReadOnlyList<Field> fields = ReflectionUtility.getReconstructionFields(type);
         @Nonnull Structure structureType;
         if (fields.size() == 0) {
             throw StructureException.get("Cannot convert objects without values (empty constructor).");

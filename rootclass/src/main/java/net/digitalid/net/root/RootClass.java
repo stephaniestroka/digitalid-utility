@@ -3,7 +3,7 @@ package net.digitalid.net.root;
 import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
 import net.digitalid.utility.collections.freezable.FreezableArrayList;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
-import net.digitalid.utility.reflection.ReflectonUtility;
+import net.digitalid.utility.reflection.ReflectionUtility;
 import net.digitalid.utility.reflection.exceptions.StructureException;
 import net.digitalid.utility.string.StringUtility;
 import net.digitalid.utility.validation.state.Immutable;
@@ -28,7 +28,7 @@ public abstract class RootClass {
     
     protected RootClass() {
         try {
-            classFields = ReflectonUtility.getReconstructionFields(this.getClass());
+            classFields = ReflectionUtility.getReconstructionFields(this.getClass());
         } catch (StructureException e) {
             // TODO: This is actually bad style. We should check beforehand if the structure is as expected. Then we can also set classFields to final.
             classFields = FreezableArrayList.get(this.getClass().getDeclaredFields());

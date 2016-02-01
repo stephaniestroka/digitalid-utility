@@ -12,7 +12,7 @@ import net.digitalid.utility.validation.state.Pure;
  * 
  * @see IterableConverter
  */
-public interface ElementConverter<E> {
+public interface ElementConverter<E> extends NonNullableElementConverter<E> {
     
     /**
      * Stores the default element converter that just uses the {@link Object#toString()} method.
