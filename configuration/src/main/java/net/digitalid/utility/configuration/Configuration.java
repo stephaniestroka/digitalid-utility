@@ -12,19 +12,39 @@ import java.util.Set;
  */
 public class Configuration<P> {
     
+    /* -------------------------------------------------- Interface -------------------------------------------------- */
+    
+    /**
+     * Objects that implement this interface can be used to observe a {@link Configuration configuration}.
+     */
+    public static interface Observer<P> {
+        
+        /**
+         * This method is called on {@link Configuration#register(net.digitalid.utility.configuration.Configuration.Observer) registered} observers when the provider of the given configuration has been replaced.
+         * 
+         * @param configuration the non-nullable configuration whose provider has been replaced.
+         * @param oldProvider the nullable old provider of the given configuration.
+         * @param newProvider the non-nullable new provider of the given configuration.
+         * 
+         * @require !newProvider.equals(oldProvider) : "The new provider is not the same as the old provider.";
+         */
+        public void replaced(Configuration<P> configuration, P oldProvider, P newProvider);
+        
+    }
+    
     /* -------------------------------------------------- Observers -------------------------------------------------- */
     
     /**
      * Stores the non-nullable set of registered observers of this configuration.
      */
-    private final Set<ConfigurationObserver<P>> observers = new LinkedHashSet<>();
+    private final Set<Observer<P>> observers = new LinkedHashSet<>();
     
     /**
      * Registers the given non-nullable observer for this configuration.
      * 
      * @require observer != null : "The given observer is not null.";
      */
-    public void register(ConfigurationObserver<P> observer) {
+    public void register(Observer<P> observer) {
         assert observer != null : "The given observer is not null.";
         
         observers.add(observer);
@@ -35,7 +55,7 @@ public class Configuration<P> {
      * 
      * @require observer != null : "The given observer is not null.";
      */
-    public void deregister(ConfigurationObserver<P> observer) {
+    public void deregister(Observer<P> observer) {
         assert observer != null : "The given observer is not null.";
         
         observers.remove(observer);
@@ -46,7 +66,7 @@ public class Configuration<P> {
      * 
      * @require observer != null : "The given observer is not null.";
      */
-    public boolean isRegistered(ConfigurationObserver<P> observer) {
+    public boolean isRegistered(Observer<P> observer) {
         assert observer != null : "The given observer is not null.";
         
         return observers.contains(observer);
@@ -83,7 +103,7 @@ public class Configuration<P> {
         assert provider != null : "The provider is not null.";
         
         if (!provider.equals(this.provider)) {
-            for (ConfigurationObserver<P> observer : observers) {
+            for (Observer<P> observer : observers) {
                 observer.replaced(this, this.provider, provider);
             }
             this.provider = provider;
