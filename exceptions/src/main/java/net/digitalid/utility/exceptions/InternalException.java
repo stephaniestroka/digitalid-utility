@@ -11,7 +11,7 @@ import net.digitalid.utility.logging.Log;
  * @see InitializationException
  * @see UncoveredCaseException
  */
-public class InternalException extends RuntimeException {
+public abstract class InternalException extends RuntimeException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
