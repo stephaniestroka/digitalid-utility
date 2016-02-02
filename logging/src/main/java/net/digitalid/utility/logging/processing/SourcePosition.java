@@ -108,7 +108,7 @@ public class SourcePosition {
     
     @Override
     public String toString() {
-        return "(" + element.getSimpleName() + (annotationMirror != null ? ", " + annotationMirror.getAnnotationType().asElement().getSimpleName() : "") + (annotationValue != null ? ", " + annotationValue.toString() : "") + ")";
+        return "[" + element.getEnclosingElement().getSimpleName() + "#" + element + (annotationMirror != null ? ", " + annotationMirror.getAnnotationType().asElement().getSimpleName() : "") + (annotationValue != null ? ", " + annotationValue.toString() : "") + "]";
     }
     
 }

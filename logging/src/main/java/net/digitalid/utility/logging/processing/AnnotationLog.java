@@ -2,9 +2,11 @@ package net.digitalid.utility.logging.processing;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
 import net.digitalid.utility.logging.Caller;
@@ -149,11 +151,22 @@ public class AnnotationLog {
     /* -------------------------------------------------- Utility -------------------------------------------------- */
     
     /**
+     * Logs the elements which are annotated with one of the given annotations of the given non-nullable round environment.
+     */
+    public static void annotatedElements(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
+        for (TypeElement annotation : annotations) {
+            for (Element element : roundEnvironment.getElementsAnnotatedWith(annotation)) {
+                AnnotationLog.information("Found '@" + annotation.getSimpleName() + "' on '" + element.getEnclosingElement().getSimpleName() + "#" + element + "'.");
+            }
+        }
+    }
+    
+    /**
      * Logs the root elements of the given non-nullable round environment.
      */
     public static void rootElements(RoundEnvironment roundEnvironment) {
         for (Element rootElement : roundEnvironment.getRootElements()) {
-            AnnotationLog.information(rootElement.asType().toString() + " of kind " + rootElement.getKind());
+            AnnotationLog.information("Found the " + rootElement.getKind().toString().toLowerCase() + " '" + rootElement.asType().toString() + "'.");
         }
     }
     

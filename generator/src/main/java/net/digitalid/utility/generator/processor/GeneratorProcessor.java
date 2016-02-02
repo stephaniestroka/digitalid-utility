@@ -1,6 +1,7 @@
 package net.digitalid.utility.generator.processor;
 
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedOptions;
 
 import net.digitalid.utility.processor.CustomProcessor;
 
@@ -34,6 +35,7 @@ import net.digitalid.utility.processor.CustomProcessor;
  * Setters could/should be made chainable by returning this.
  * Delegate all interface methods to an instance (e.g. stored in a field).
  */
+@SupportedOptions({"release"})
 @SupportedAnnotationTypes("*")
 public class GeneratorProcessor extends CustomProcessor {
     
