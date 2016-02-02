@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.property.PropertyObserver;
 import net.digitalid.utility.property.ReadOnlyProperty;
-import net.digitalid.utility.validation.state.Validated;
+import net.digitalid.utility.property.Validated;
 
 /**
  * Objects that implement this interface can be used to observe {@link ReadOnlyNonNullableProperty non-nullable properties}.

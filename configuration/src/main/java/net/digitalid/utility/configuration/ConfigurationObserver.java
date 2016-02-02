@@ -8,9 +8,9 @@ public interface ConfigurationObserver<P> {
     /**
      * This method is called on {@link Configuration#register(ConfigurationObserver) registered} observers when the provider of the given configuration has been replaced.
      * 
-     * @param configuration the configuration whose provider has been replaced.
-     * @param oldProvider the old provider of the given configuration.
-     * @param newProvider the new provider of the given configuration.
+     * @param configuration the non-nullable configuration whose provider has been replaced.
+     * @param oldProvider the nullable old provider of the given configuration.
+     * @param newProvider the non-nullable new provider of the given configuration.
      * 
      * @require !newProvider.equals(oldProvider) : "The new provider is not the same as the old provider.";
      */

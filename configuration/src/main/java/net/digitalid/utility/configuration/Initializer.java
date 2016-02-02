@@ -12,9 +12,9 @@ public abstract class Initializer {
      * Creates and registers an initializer with the given non-nullable target and non-nullable dependencies.
      */
     protected Initializer(Configuration<?> target, Configuration<?>... dependencies) {
-        target.add(this);
+        target.addInitializer(this);
         for (Configuration<?> dependency : dependencies) {
-            target.add(dependency);
+            target.addDependency(dependency);
         }
     }
     
@@ -24,8 +24,8 @@ public abstract class Initializer {
      * Executes this initializer.
      * This method is only executed once.
      * 
-     * @throws Throwable if any problems occur.
+     * @throws Exception if any problems occur.
      */
-    protected abstract void execute() throws Throwable;
+    protected abstract void execute() throws Exception;
     
 }

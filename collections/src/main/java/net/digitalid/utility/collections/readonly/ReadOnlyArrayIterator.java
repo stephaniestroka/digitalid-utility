@@ -8,9 +8,9 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.collections.freezable.FreezableArrayIterator;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This interface provides read-only access to {@link FreezableArrayIterator array iterators} and should not be lost by assigning its objects to a supertype.

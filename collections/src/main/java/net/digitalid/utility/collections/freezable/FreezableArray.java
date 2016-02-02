@@ -6,7 +6,7 @@ import java.util.HashSet;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.collections.annotations.index.ValidIndex;
+import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.collections.readonly.ReadOnlyArray;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.FreezableObject;
@@ -15,11 +15,11 @@ import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.string.iterable.Brackets;
 import net.digitalid.utility.string.iterable.IterableConverter;
-import net.digitalid.utility.validation.math.NonNegative;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.reference.Captured;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.validation.annotations.reference.Captured;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class models {@link Freezable freezable} arrays.
@@ -146,7 +146,7 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
     
     @Pure
     @Override
-    public @Nullable E getNullable(@ValidIndex int index) {
+    public @Nullable E getNullable(@Index int index) {
         assert index >= 0 && index < size() : "The index is valid.";
         
         return array[index];
@@ -154,13 +154,13 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
     
     @Pure
     @Override
-    public boolean isNull(@ValidIndex int index) {
+    public boolean isNull(@Index int index) {
         return getNullable(index) == null;
     }
     
     @Pure
     @Override
-    public @Nonnull E getNonNullable(@ValidIndex int index) {
+    public @Nonnull E getNonNullable(@Index int index) {
         @Nullable E element = getNullable(index);
         assert element != null : "The element at the given index is not null.";
         
@@ -182,7 +182,7 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
      * @param element the new value to replace the element with.
      */
     @NonFrozenRecipient
-    public void set(@ValidIndex int index, @Nullable E element) {
+    public void set(@Index int index, @Nullable E element) {
         assert !isFrozen() : "This object is not frozen.";
         assert index >= 0 && index < size() : "The index is valid.";
         

@@ -8,30 +8,30 @@ public final class ShouldNeverHappenError extends CustomError {
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
-     * Creates a new error which should never happen with the given nullable message and nullable cause.
+     * Creates an error which should never happen with the given nullable message and nullable cause.
      */
-    protected ShouldNeverHappenError(String message, Throwable cause) {
+    protected ShouldNeverHappenError(String message, Exception cause) {
         super(message, cause);
     }
     
     /**
-     * Returns a new error which should never happen with the given nullable message and nullable cause.
+     * Returns an error which should never happen with the given nullable message and nullable cause.
      */
-    public static ShouldNeverHappenError of(String message, Throwable cause) {
+    public static ShouldNeverHappenError with(String message, Exception cause) {
         return new ShouldNeverHappenError(message, cause);
     }
     
     /**
-     * Returns a new error which should never happen with the given nullable message.
+     * Returns an error which should never happen with the given nullable message.
      */
-    public static ShouldNeverHappenError of(String message) {
+    public static ShouldNeverHappenError with(String message) {
         return new ShouldNeverHappenError(message, null);
     }
     
     /**
-     * Returns a new error which should never happen with the given nullable cause.
+     * Returns an error which should never happen with the given nullable cause.
      */
-    public static ShouldNeverHappenError of(Throwable cause) {
+    public static ShouldNeverHappenError with(Exception cause) {
         return new ShouldNeverHappenError(null, cause);
     }
     

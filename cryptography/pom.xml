@@ -4,9 +4,7 @@
                              http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <groupId>net.digitalid.utility</groupId>
     <artifactId>utility-cryptography</artifactId>
-    <version>1.0.0</version>
     <packaging>jar</packaging>
     
     <parent>
@@ -18,7 +16,12 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-time</artifactId>
+            <artifactId>utility-collections</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-tuples</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -28,7 +31,7 @@
         </dependency>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-tuples</artifactId>
+            <artifactId>utility-time</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

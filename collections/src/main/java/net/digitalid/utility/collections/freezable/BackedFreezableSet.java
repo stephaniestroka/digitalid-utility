@@ -10,9 +10,9 @@ import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.string.iterable.Brackets;
 import net.digitalid.utility.string.iterable.IterableConverter;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class implements a {@link Set set} that can be {@link Freezable frozen}.

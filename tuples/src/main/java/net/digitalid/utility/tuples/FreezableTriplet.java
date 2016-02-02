@@ -5,13 +5,13 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.collections.annotations.elements.NullableElements;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class models a {@link Freezable freezable} triplet.

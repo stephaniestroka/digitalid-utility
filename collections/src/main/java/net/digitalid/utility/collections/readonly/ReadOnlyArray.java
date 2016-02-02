@@ -3,14 +3,14 @@ package net.digitalid.utility.collections.readonly;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.collections.annotations.index.ValidIndex;
+import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.collections.freezable.FreezableArray;
 import net.digitalid.utility.collections.freezable.FreezableList;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This interface provides read-only access to arrays and should <em>never</em> be cast away.
@@ -40,7 +40,7 @@ public interface ReadOnlyArray<E> extends ReadOnlyIterable<E> {
      * @return the element at the given index.
      */
     @Pure
-    public @Nullable E getNullable(@ValidIndex int index);
+    public @Nullable E getNullable(@Index int index);
     
     /**
      * Returns whether the element at the given index is null.
@@ -50,7 +50,7 @@ public interface ReadOnlyArray<E> extends ReadOnlyIterable<E> {
      * @return whether the element at the given index is null.
      */
     @Pure
-    public boolean isNull(@ValidIndex int index);
+    public boolean isNull(@Index int index);
     
     /**
      * Returns the element at the given index.
@@ -62,7 +62,7 @@ public interface ReadOnlyArray<E> extends ReadOnlyIterable<E> {
      * @require !isNull(index) : "The element at the given index is not null.";
      */
     @Pure
-    public @Nonnull E getNonNullable(@ValidIndex int index);
+    public @Nonnull E getNonNullable(@Index int index);
     
     @Pure
     @Override

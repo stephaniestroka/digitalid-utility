@@ -1,7 +1,8 @@
 package net.digitalid.utility.string.iterable;
 
 import javax.annotation.Nonnull;
-import net.digitalid.utility.validation.state.Pure;
+
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  *

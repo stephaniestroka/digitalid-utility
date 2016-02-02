@@ -7,13 +7,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.digitalid.utility.validation.meta.TargetType;
+import net.digitalid.utility.validation.annotations.meta.TargetTypes;
 
 /**
  * This annotation indicates that a {@link File file} is a {@link File#isDirectory() directory}.
  */
 @Documented
-@TargetType(File.class)
+@TargetTypes(File.class)
 @Retention(RetentionPolicy.CLASS)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface IsDirectory {}

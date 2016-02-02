@@ -10,10 +10,10 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.string.iterable.Brackets;
 import net.digitalid.utility.string.iterable.IterableConverter;
-import net.digitalid.utility.validation.math.NonNegative;
-import net.digitalid.utility.validation.math.Positive;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.math.Positive;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * Implements a concurrent hash set based on {@link ConcurrentHashMap}.

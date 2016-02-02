@@ -4,12 +4,12 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.collections.annotations.index.ValidIndex;
-import net.digitalid.utility.collections.annotations.index.ValidIndexForInsertion;
+import net.digitalid.utility.validation.annotations.index.Index;
+import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This interface models a {@link List list} that can be {@link Freezable frozen}.
@@ -37,10 +37,10 @@ public interface FreezableList<E> extends ReadOnlyList<E>, List<E>, FreezableCol
     
     @Pure
     @Override
-    public @Nonnull FreezableListIterator<E> listIterator(@ValidIndexForInsertion int index);
+    public @Nonnull FreezableListIterator<E> listIterator(@IndexForInsertion int index);
     
     @Pure
     @Override
-    public @Nonnull FreezableList<E> subList(@ValidIndex int fromIndex, @ValidIndexForInsertion int toIndex);
+    public @Nonnull FreezableList<E> subList(@Index int fromIndex, @IndexForInsertion int toIndex);
     
 }

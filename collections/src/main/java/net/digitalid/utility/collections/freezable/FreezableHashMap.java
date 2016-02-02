@@ -6,8 +6,8 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
-import net.digitalid.utility.collections.annotations.elements.NullableElements;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.collections.readonly.ReadOnlyMap;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
@@ -16,11 +16,11 @@ import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.string.iterable.Brackets;
 import net.digitalid.utility.string.iterable.ElementConverter;
 import net.digitalid.utility.string.iterable.IterableConverter;
-import net.digitalid.utility.validation.math.NonNegative;
-import net.digitalid.utility.validation.math.Positive;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.math.Positive;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class extends the {@link HashMap} and makes it {@link Freezable}.

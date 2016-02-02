@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.validation.state.Stateless;
+import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
  * This class makes it easier to execute commands.

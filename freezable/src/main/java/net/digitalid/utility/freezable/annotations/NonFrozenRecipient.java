@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import net.digitalid.utility.freezable.Freezable;
-import net.digitalid.utility.validation.meta.TargetType;
+import net.digitalid.utility.validation.annotations.meta.TargetTypes;
 
 /**
  * This annotation indicates that a method should only be invoked on {@link NonFrozen non-frozen} objects.
@@ -16,6 +16,6 @@ import net.digitalid.utility.validation.meta.TargetType;
  */
 @Documented
 @Target(ElementType.METHOD)
-@TargetType(Freezable.class)
+@TargetTypes(Freezable.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NonFrozenRecipient {}

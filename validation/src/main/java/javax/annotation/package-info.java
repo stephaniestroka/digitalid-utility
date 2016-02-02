@@ -1,4 +1,4 @@
 /**
- * Provides types to annotate references with nullness information.
+ * Provides annotations for the nullability of references.
  */
 package javax.annotation;

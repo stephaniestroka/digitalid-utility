@@ -4,9 +4,7 @@
                              http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <groupId>net.digitalid.utility</groupId>
     <artifactId>utility-directory</artifactId>
-    <version>1.0.0</version>
     <packaging>jar</packaging>
     
     <parent>
@@ -22,19 +20,5 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
-                <configuration>
-                    <!-- TODO: Please remove this section after testing the initialization annotation processor! -->
-                    <compilerArgument>-Adependency=digitalid-utility-validation digitalid-utility-initialization</compilerArgument>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     
 </project>

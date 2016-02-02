@@ -6,8 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.digitalid.utility.validation.validator.annotation.ValidateWith;
-import net.digitalid.utility.validation.validator.nonnull.NonNullValidator;
+import net.digitalid.utility.validation.annotations.meta.ValidateWith;
+import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
  * This annotation indicates that the annotated reference is not null.
@@ -19,6 +19,17 @@ import net.digitalid.utility.validation.validator.nonnull.NonNullValidator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@ValidateWith(NonNullValidator.class)
+@ValidateWith(Nonnull.Validator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
-public @interface Nonnull {}
+public @interface Nonnull {
+    
+    /* -------------------------------------------------- Validator -------------------------------------------------- */
+    
+    /**
+     * This class checks the use of and generates the contract for the surrounding annotation.
+     */
+    public static class Validator extends AnnotationValidator {
+        // TODO: Generate the contract.
+    }
+    
+}

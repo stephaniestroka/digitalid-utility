@@ -2,9 +2,9 @@ package net.digitalid.testing.conversion;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
-import net.digitalid.utility.collections.annotations.size.MaxSize;
-import net.digitalid.utility.collections.annotations.size.MinSize;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.size.MaxSize;
+import net.digitalid.utility.validation.annotations.size.MinSize;
 import net.digitalid.utility.collections.freezable.FreezableList;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.conversion.annotations.Constructing;
@@ -13,11 +13,11 @@ import net.digitalid.utility.conversion.annotations.GenericTypes;
 import net.digitalid.utility.conversion.annotations.IgnoreForConversion;
 import net.digitalid.utility.conversion.annotations.Invariant;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.validation.math.NonNegative;
-import net.digitalid.utility.validation.math.Positive;
-import net.digitalid.utility.validation.reference.Captured;
-import net.digitalid.utility.validation.state.Mutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.math.Positive;
+import net.digitalid.utility.validation.annotations.reference.Captured;
+import net.digitalid.utility.validation.annotations.type.Mutable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 import com.google.j2objc.annotations.Property;
 

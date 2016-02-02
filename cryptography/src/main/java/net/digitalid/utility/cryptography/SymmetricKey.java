@@ -19,16 +19,16 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-import net.digitalid.utility.collections.annotations.size.NonEmpty;
 import net.digitalid.utility.configuration.InitializationError;
-import net.digitalid.utility.conversion.Convertible;
+import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.errors.ShouldNeverHappenError;
-import net.digitalid.utility.exceptions.InternalException;
-import net.digitalid.utility.validation.math.NonNegative;
-import net.digitalid.utility.validation.math.Positive;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.exceptions.internal.InitializationException;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.math.Positive;
+import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.validation.annotations.size.NonEmpty;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 import net.digitalid.net.root.RootClass;
 
@@ -73,14 +73,14 @@ public final class SymmetricKey extends RootClass implements Convertible {
                         instanceField.setAccessible(true);
                         defaultPolicy.add((Permission) instanceField.get(null));
                     } catch (@Nonnull ClassNotFoundException | NoSuchFieldException | IllegalArgumentException | SecurityException | IllegalAccessException exception) {
-                        throw InitializationError.of("Your system allows only a maximal key length of " + length + " bits for symmetric encryption but a length of " + Parameters.ENCRYPTION_KEY + " bits is required for security reasons."
+                        throw InitializationError.with("Your system allows only a maximal key length of " + length + " bits for symmetric encryption but a length of " + Parameters.ENCRYPTION_KEY + " bits is required for security reasons."
                                 + "Please install the Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files from http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html for Java 7."
                                 + "(All you have to do is to download the files and replace with them 'local_policy.jar' and 'US_export_policy.jar' in '" + System.getProperty("java.home") + File.separator + "lib" + File.separator + "security" + File.separator + "'.)", exception);
                     }
                 }
             }
         } catch (@Nonnull NoSuchAlgorithmException exception) {
-            throw InitializationError.of("Your system does not support the Advanced Encryption Standard (AES). Unfortunately, you are not able to use Digital ID for now.", exception);
+            throw InitializationError.with("Your system does not support the Advanced Encryption Standard (AES). Unfortunately, you are not able to use Digital ID for now.", exception);
         }
     }
     
@@ -182,7 +182,7 @@ public final class SymmetricKey extends RootClass implements Convertible {
             cipher.init(Cipher.ENCRYPT_MODE, key, initializationVector);
             return cipher.doFinal(bytes, offset, length);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException exception) {
-            throw ShouldNeverHappenError.of("Could not encrypt the given bytes.", exception);
+            throw ShouldNeverHappenError.with("Could not encrypt the given bytes.", exception);
         }
     }
     
@@ -199,7 +199,7 @@ public final class SymmetricKey extends RootClass implements Convertible {
      * @require offset + length <= bytes.length : "The indicated section may not exceed the given byte array.";
      */
     @Pure
-    public final @Capturable @Nonnull @NonEmpty byte[] decrypt(@Nonnull InitializationVector initializationVector, @Nonnull byte[] bytes, @NonNegative int offset, @Positive int length) throws InternalException {
+    public final @Capturable @Nonnull @NonEmpty byte[] decrypt(@Nonnull InitializationVector initializationVector, @Nonnull byte[] bytes, @NonNegative int offset, @Positive int length) {
         assert offset >= 0 : "The offset is not negative.";
         assert length > 0 : "The length is positive.";
         assert offset + length <= bytes.length : "The indicated section may not exceed the given byte array.";
@@ -209,7 +209,7 @@ public final class SymmetricKey extends RootClass implements Convertible {
             cipher.init(Cipher.DECRYPT_MODE, key, initializationVector);
             return cipher.doFinal(bytes, offset, length);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException exception) {
-            throw InternalException.of(exception); // TODO: Maybe throw rather an exception to indicate a failed conversion.
+            throw InitializationException.with(exception); // TODO: Maybe throw rather an exception to indicate a failed conversion.
         }
     }
     

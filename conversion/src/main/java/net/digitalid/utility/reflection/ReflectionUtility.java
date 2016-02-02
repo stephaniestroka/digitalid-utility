@@ -1,6 +1,6 @@
 package net.digitalid.utility.reflection;
 
-import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.collections.freezable.FreezableArrayList;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.conversion.annotations.Constructing;
@@ -9,6 +9,7 @@ import net.digitalid.utility.reflection.exceptions.StructureException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

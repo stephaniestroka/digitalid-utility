@@ -9,10 +9,10 @@ import net.digitalid.utility.collections.readonly.ReadOnlyListIterator;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.reference.Captured;
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.validation.annotations.reference.Captured;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This interface models a {@link ListIterator list iterator} that can be {@link Freezable frozen}.

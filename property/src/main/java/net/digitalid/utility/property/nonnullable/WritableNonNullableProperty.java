@@ -2,8 +2,8 @@ package net.digitalid.utility.property.nonnullable;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
-import net.digitalid.utility.validation.state.Validated;
 
 /**
  * This is the writable abstract class for properties that stores a non-null replaceable value.

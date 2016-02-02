@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.console.exceptions.EscapeOptionException;
 import net.digitalid.utility.errors.ShouldNeverHappenError;
-import net.digitalid.utility.validation.state.Stateless;
+import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
  * This class helps to read from standard input and write to standard output.
@@ -40,7 +40,7 @@ public final class Console {
             if (input == null) { throw new IOException("The end of the standard input has been reached."); }
             return input;
         } catch (@Nonnull IOException exception) {
-            throw ShouldNeverHappenError.of("Could not read from the standard input.", exception);
+            throw ShouldNeverHappenError.with("Could not read from the standard input.", exception);
         }
     }
     

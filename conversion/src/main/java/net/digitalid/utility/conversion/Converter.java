@@ -6,13 +6,13 @@ import java.lang.reflect.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.collections.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.conversion.exceptions.RecoveryException;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.reflection.ReflectionUtility;
 import net.digitalid.utility.reflection.exceptions.StructureException;
-import net.digitalid.utility.validation.state.Stateless;
+import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
  * Abstract class for format converters. Defines abstract methods that must be implemented in every

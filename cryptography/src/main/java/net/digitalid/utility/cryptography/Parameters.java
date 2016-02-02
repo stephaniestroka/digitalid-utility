@@ -1,6 +1,6 @@
 package net.digitalid.utility.cryptography;
 
-import net.digitalid.utility.validation.state.Stateless;
+import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
  * This class specifies the cryptographic parameters.

@@ -7,10 +7,10 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.collections.freezable.FreezableHashMap;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.validation.math.NonNegative;
-import net.digitalid.utility.validation.math.Positive;
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.math.Positive;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * The annotations of convertible fields or types, which are used during the converting and recovering of an object.

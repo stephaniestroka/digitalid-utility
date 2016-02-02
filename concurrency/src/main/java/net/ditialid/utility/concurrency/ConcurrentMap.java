@@ -2,8 +2,8 @@ package net.ditialid.utility.concurrency;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.validation.reference.Capturable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * Extends Java's {@link java.util.concurrent.ConcurrentMap ConcurrentMap} interface with more useful methods.

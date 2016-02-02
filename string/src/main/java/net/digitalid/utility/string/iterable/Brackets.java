@@ -1,7 +1,7 @@
 package net.digitalid.utility.string.iterable;
 
-import net.digitalid.utility.validation.state.Immutable;
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class enumerates the various brackets that can be used.

@@ -3,7 +3,9 @@ package net.digitalid.utility.exceptions;
 import net.digitalid.utility.logging.Log;
 
 /**
- * All custom exceptions extend this class.
+ * All custom exceptions extend this class except {@link InternalException}, which extends {@link RuntimeException}.
+ * 
+ * @see ExternalException
  */
 public abstract class CustomException extends Exception {
     

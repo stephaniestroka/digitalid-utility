@@ -3,8 +3,8 @@ package net.digitalid.testing.conversion;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.conversion.TypeMapper;
-import net.digitalid.utility.validation.state.Pure;
-import net.digitalid.utility.validation.state.Stateless;
+import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
  * This class maps ints to longs and vice versa.

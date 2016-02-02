@@ -10,9 +10,9 @@ public abstract class CustomError extends Error {
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
-     * Creates a new custom error with the given nullable message and nullable cause.
+     * Creates a custom error with the given nullable message and nullable cause.
      */
-    protected CustomError(String message, Throwable cause) {
+    protected CustomError(String message, Exception cause) {
         super(message == null ? "An error occurred." : message, cause);
     }
     

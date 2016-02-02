@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.collections.readonly.ReadOnlyIterator;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.validation.state.Immutable;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This interface models an {@link Iterator iterator} that can be {@link Freezable frozen}.

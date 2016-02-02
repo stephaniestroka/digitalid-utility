@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.validation.state.Pure;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class allows the created threads to be named.

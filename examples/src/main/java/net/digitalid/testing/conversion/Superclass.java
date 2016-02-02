@@ -2,10 +2,10 @@ package net.digitalid.testing.conversion;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.collections.annotations.size.MaxSize;
-import net.digitalid.utility.collections.annotations.size.MinSize;
+import net.digitalid.utility.validation.annotations.size.MaxSize;
+import net.digitalid.utility.validation.annotations.size.MinSize;
 import net.digitalid.utility.conversion.annotations.IgnoreForConversion;
-import net.digitalid.utility.validation.state.Mutable;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 import com.google.j2objc.annotations.Property;
 

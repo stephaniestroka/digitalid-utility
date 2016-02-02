@@ -34,7 +34,7 @@ public class FileLogger extends PrintStreamLogger {
      * 
      * @require file != null : "The given file is not null.";
      */
-    public static FileLogger of(File file) throws FileNotFoundException {
+    public static FileLogger with(File file) throws FileNotFoundException {
         assert file != null : "The given file is not null.";
         
         return new FileLogger(file);
@@ -46,18 +46,18 @@ public class FileLogger extends PrintStreamLogger {
      * 
      * @require path != null : "The given path is not null.";
      */
-    public static FileLogger of(String path) {
+    public static FileLogger with(String path) {
         assert path != null : "The given path is not null.";
         
         final File file = new File(path);
         final File directory = file.getParentFile();
         if (directory != null && !directory.exists() && !directory.mkdirs()) {
-            throw InitializationError.of("Could not create the directory '" + directory.getPath() + "'.");
+            throw InitializationError.with("Could not create the directory '" + directory.getPath() + "'.");
         }
         try {
             return new FileLogger(file);
         } catch (FileNotFoundException exception) {
-            throw InitializationError.of("The file '" + file.getPath() + "' could not be opened or created.", exception);
+            throw InitializationError.with("The file '" + file.getPath() + "' could not be opened or created.", exception);
         }
     }
     

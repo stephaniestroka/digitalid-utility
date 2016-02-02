@@ -12,7 +12,7 @@ public class Caller {
     /**
      * Stores the index of the caller of the logging method in the stack trace.
      */
-    public static final Configuration<Integer> configuration = Configuration.of(5);
+    public static final Configuration<Integer> index = Configuration.with(5);
     
     /* -------------------------------------------------- Retrieval -------------------------------------------------- */
     
@@ -30,7 +30,7 @@ public class Caller {
      * Returns the caller of the logging method.
      */
     public static String get() {
-        return get(configuration.get());
+        return get(index.get());
     }
     
 }

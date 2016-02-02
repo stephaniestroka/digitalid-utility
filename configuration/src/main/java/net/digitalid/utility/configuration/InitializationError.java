@@ -7,33 +7,33 @@ import net.digitalid.utility.errors.CustomError;
  */
 public class InitializationError extends CustomError {
     
-    /* -------------------------------------------------- Constructor -------------------------------------------------- */
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
-     * Creates a new initialization error with the given nullable message and nullable cause.
+     * Creates an initialization error with the given nullable message and nullable cause.
      */
-    protected InitializationError(String message, Throwable cause) {
+    protected InitializationError(String message, Exception cause) {
         super(message, cause);
     }
     
     /**
-     * Returns a new initialization error with the given nullable message and nullable cause.
+     * Returns an initialization error with the given nullable message and nullable cause.
      */
-    public static InitializationError of(String message, Throwable cause) {
+    public static InitializationError with(String message, Exception cause) {
         return new InitializationError(message, cause);
     }
     
     /**
-     * Returns a new initialization error with the given nullable message.
+     * Returns an initialization error with the given nullable message.
      */
-    public static InitializationError of(String message) {
+    public static InitializationError with(String message) {
         return new InitializationError(message, null);
     }
     
     /**
-     * Returns a new initialization error with the given nullable cause.
+     * Returns an initialization error with the given nullable cause.
      */
-    public static InitializationError of(Throwable cause) {
+    public static InitializationError with(Exception cause) {
         return new InitializationError(null, cause);
     }
     
