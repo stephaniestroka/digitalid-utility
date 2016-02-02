@@ -24,8 +24,9 @@ import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
-import net.digitalid.utility.string.NumberToString;
-import net.digitalid.utility.string.StringPrefix;
+import net.digitalid.utility.string.NumberString;
+import net.digitalid.utility.string.PrefixString;
+import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -58,7 +59,7 @@ public abstract class CustomProcessor implements Processor {
                 qualifiedTypeNames.add(((QualifiedNameable) rootElement).getQualifiedName().toString());
             }
         }
-        final @Nonnull String longestCommonPrefixWithDot = StringPrefix.longestCommonPrefix(qualifiedTypeNames.toArray(new String[qualifiedTypeNames.size()]));
+        final @Nonnull String longestCommonPrefixWithDot = PrefixString.longestCommonPrefix(qualifiedTypeNames.toArray(new String[qualifiedTypeNames.size()]));
         return longestCommonPrefixWithDot.endsWith(".") ? longestCommonPrefixWithDot.substring(0, longestCommonPrefixWithDot.length() - 1) : longestCommonPrefixWithDot;
     }
     
@@ -109,11 +110,11 @@ public abstract class CustomProcessor implements Processor {
         
         if (round == 0) {
             final @Nonnull String projectName = getProjectName(roundEnvironment);
-            AnnotationLog.information(getClass().getSimpleName() + " invoked" + (projectName.isEmpty() ? "" : " for project '" + projectName + "'") + ":\n");
+            AnnotationLog.information(getClass().getSimpleName() + " invoked" + (projectName.isEmpty() ? "" : " for project " + QuoteString.inSingle(projectName)) + ":\n");
         }
         
         if (round == 0 || !onlyInterestedInFirstRound) {
-            AnnotationLog.information("Process " + annotations + " in the " + NumberToString.getOrdinal(round + 1) + " round.");
+            AnnotationLog.information("Process " + annotations + " in the " + NumberString.getOrdinal(round + 1) + " round.");
             process(annotations, roundEnvironment, round++);
             AnnotationLog.information("Finish " + (consumeAnnotations(annotations, roundEnvironment) ? "with" : "without") + " claiming the annotations.\n" + (roundEnvironment.processingOver() || onlyInterestedInFirstRound ? "\n" : ""));
         }
@@ -151,7 +152,7 @@ public abstract class CustomProcessor implements Processor {
         if  (supportedAnnotationTypes != null) {
             return convertArrayToUnmodifiableSet(supportedAnnotationTypes.value());
         } else {
-            AnnotationLog.error("No SupportedAnnotationTypes annotation found on " + getClass().getName() + ".");
+            AnnotationLog.error("No '@SupportedAnnotationTypes' annotation found on " + QuoteString.inSingle(getClass().getName()));
             return Collections.emptySet();
         }
     }

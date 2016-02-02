@@ -13,7 +13,7 @@ import net.digitalid.utility.validation.annotations.type.Utiliy;
  * This class provides useful operations to transform objects into strings through reflection.
  */
 @Utiliy
-public class ObjectToString {
+public class ObjectString {
     
     /**
      * An enumeration of styles which can be used for the string representation.

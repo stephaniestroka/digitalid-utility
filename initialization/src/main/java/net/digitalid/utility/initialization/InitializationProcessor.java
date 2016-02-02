@@ -1,9 +1,8 @@
-package net.digitalid.utility.initialization.processor;
+package net.digitalid.utility.initialization;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.lang.reflect.Modifier;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -11,16 +10,17 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 
-import net.digitalid.utility.initialization.annotations.Initialize;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * Description.
@@ -32,7 +32,7 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
  * @Configurable(required = false) [defaults to true] – or no such parameter, simply check whether an isConfigured() method exists. Add 'dependencies' as a potential parameter?
  * Introduce a Configuration interface [or rather abstract class] for a service loader with methods void add(Initializer), [void addDependency(Configuration, Initializer), boolean hasDependency(Configuration), Class<?> getSource()], boolean isConfigured(), void configure() [runs all associated initializers after ensuring that all dependencies are configured].
  */
-@SupportedAnnotationTypes("net.digitalid.utility.initialization.annotations.Initialize")
+@SupportedAnnotationTypes("net.digitalid.utility.initialization.Initialize")
 public class InitializationProcessor extends CustomProcessor {
     
     /* -------------------------------------------------- Processing -------------------------------------------------- */
@@ -48,12 +48,12 @@ public class InitializationProcessor extends CustomProcessor {
                     final @Nonnull TypeElement typeElement = (TypeElement) enclosingElement;
                     final @Nonnull Name className = typeElement.getQualifiedName();
                     try {
-                        final @Nonnull JavaFileObject f = AnnotationProcessing.environment.get().getFiler().createSourceFile("net.digitalid.utility.initialization.initializer.Initializer");
+                        final @Nonnull JavaFileObject f = AnnotationProcessing.environment.get().getFiler().createSourceFile("net.digitalid.utility.initialization.Initializer");
                         AnnotationLog.information("Creating " + f.toUri());
                         try (final @Nonnull Writer w = f.openWriter()) {
                             final @Nonnull PrintWriter pw = new PrintWriter(w);
-                            pw.println("package net.digitalid.utility.initialization.initializer;");
-                            pw.println("/** The initializer initializes the library. */");
+                            pw.println("package net.digitalid.utility.initialization;");
+                            pw.println("/** The initializer initializes the library. (This mechanism will be replaced.) */");
                             pw.println("public final class Initializer {");
                             pw.println("    /** Initializes the library. */");
                             pw.println("    public static void initialize() {");
@@ -73,12 +73,18 @@ public class InitializationProcessor extends CustomProcessor {
 //                    processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Call " + className + "." + methodName + "() in the initializer.", annotatedElement);
                     
                 } else {
-                    AnnotationLog.information("The annotation @Initialize can only be used on static methods in non-nested classes.", SourcePosition.of(annotatedElement));
+                    AnnotationLog.error("The annotation @Initialize can only be used on static methods in non-nested classes.", SourcePosition.of(annotatedElement));
                 }
             } else {
-                AnnotationLog.information("The annotation @Initialize can only be used on static methods.", SourcePosition.of(annotatedElement));
+                AnnotationLog.error("The annotation @Initialize can only be used on static methods.", SourcePosition.of(annotatedElement));
             }
         }
+    }
+    
+    @Pure
+    @Override
+    protected boolean consumeAnnotations(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
+        return true;
     }
     
 }

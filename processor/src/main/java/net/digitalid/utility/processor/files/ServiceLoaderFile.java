@@ -11,6 +11,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.FileObject;
@@ -19,6 +20,7 @@ import javax.tools.StandardLocation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
+import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -57,6 +59,7 @@ public class ServiceLoaderFile {
     protected ServiceLoaderFile(@Nonnull Class<?> service) {
         this.service = service;
         this.serviceMirror = AnnotationProcessing.getElementUtils().getTypeElement(service.getCanonicalName()).asType();
+        AnnotationLog.verbose("Created for the service " + QuoteString.inSingle(service.getName()));
     }
     
     /**
@@ -86,10 +89,10 @@ public class ServiceLoaderFile {
      */
     public void addProvider(@Nonnull String qualifiedProviderName) {
         if (written) {
-            AnnotationLog.error("The file '" + getJarRelativeFilePath() + "' has already been written and the provider '" + qualifiedProviderName + "' cannot be added anymore.");
+            AnnotationLog.error("The file " + QuoteString.inSingle(getJarRelativeFilePath()) + " has already been written and the provider " + QuoteString.inSingle(qualifiedProviderName) + " cannot be added anymore.");
         } else {
             qualifiedProviderNames.add(qualifiedProviderName);
-            AnnotationLog.information("Added the provider '" + qualifiedProviderName + "' for the service '" + service.getName() + "'.");
+            AnnotationLog.information("Added the provider " + QuoteString.inSingle(qualifiedProviderName) + " for the service " + QuoteString.inSingle(service.getName()));
         }
     }
     
@@ -97,11 +100,11 @@ public class ServiceLoaderFile {
      * Adds the given element as a provider for the specified service after performing numerous checks.
      */
     public void addProvider(@Nonnull Element providerElement) {
-        // TODO: Also check that the class is not abstract and has a default constructor!
         @Nullable String errorMessage = null;
-        if (providerElement.getKind() != ElementKind.CLASS) { errorMessage = "Only a class can implement a service."; }
-        else if (providerElement.getEnclosingElement().getKind() != ElementKind.PACKAGE) { errorMessage = "Generating the services entry is only supported for non-nested processors."; }
-        else if (!AnnotationProcessing.getTypeUtils().isSubtype(providerElement.asType(), serviceMirror)) { errorMessage = "The annotated class does not implement the processor interface."; }
+        if (providerElement.getKind() != ElementKind.CLASS) { errorMessage = "Only a class can implement a service:"; }
+        else if (providerElement.getModifiers().contains(Modifier.ABSTRACT)) { errorMessage = "Only a non-abstract class can implement a service:"; }
+        else if (!AnnotationProcessing.hasPublicDefaultConstructor(providerElement)) { errorMessage = "The annotated class does not have a public default constructor:"; }
+        else if (!AnnotationProcessing.getTypeUtils().isSubtype(providerElement.asType(), serviceMirror)) { errorMessage = "The annotated class does not implement the specified service:"; }
         
         if (errorMessage != null) {
             AnnotationLog.error(errorMessage, SourcePosition.of(providerElement));
@@ -117,7 +120,7 @@ public class ServiceLoaderFile {
      */
     public void write() {
         if (written) {
-            AnnotationLog.error("The file '" + getJarRelativeFilePath() + "' has already been written and can only be written once.");
+            AnnotationLog.error("The file " + QuoteString.inSingle(getJarRelativeFilePath()) + " has already been written and can only be written once.");
         } else {
             written = true;
             Collections.sort(qualifiedProviderNames);
@@ -128,9 +131,9 @@ public class ServiceLoaderFile {
                         writer.write(qualifiedProviderName + "\n");
                     }
                 }
-                AnnotationLog.information("Wrote the service providers to the file '" + getJarRelativeFilePath() + "'.");
+                AnnotationLog.information("Wrote the service providers to the file " + QuoteString.inSingle(getJarRelativeFilePath()));
             } catch (@Nonnull IOException exception) {
-                AnnotationLog.error("An exception occurred while writing the service providers to the file '" + getJarRelativeFilePath() + "': " + exception);
+                AnnotationLog.error("An exception occurred while writing the service providers to the file " + QuoteString.inSingle(getJarRelativeFilePath()) + ": " + exception);
             }
         }
     }

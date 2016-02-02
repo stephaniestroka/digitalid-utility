@@ -156,7 +156,7 @@ public class AnnotationLog {
     public static void annotatedElements(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
         for (TypeElement annotation : annotations) {
             for (Element element : roundEnvironment.getElementsAnnotatedWith(annotation)) {
-                AnnotationLog.information("Found '@" + annotation.getSimpleName() + "' on '" + element.getEnclosingElement().getSimpleName() + "#" + element + "'.");
+                AnnotationLog.information("Found '@" + annotation.getSimpleName() + "' on", SourcePosition.of(element));
             }
         }
     }

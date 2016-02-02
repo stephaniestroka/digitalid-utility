@@ -9,7 +9,7 @@ import net.digitalid.utility.validation.annotations.type.Utiliy;
  * This class provides useful operations to transform numbers into strings.
  */
 @Utiliy
-public class StringPrefix {
+public class PrefixString {
     
     /* -------------------------------------------------- Common Methods -------------------------------------------------- */
     
@@ -51,7 +51,7 @@ public class StringPrefix {
      * Prepends the given word with the appropriate indefinite article in upper or lower case based on a simple heuristic.
      */
     @Pure
-    public static @Nonnull String prependWithIndefiniteArticle(@Nonnull String word, boolean uppercase) {
+    public static @Nonnull String withIndefiniteArticle(@Nonnull String word, boolean uppercase) {
         final @Nonnull String a = (uppercase ? "A" : "a") + " " + word, an = (uppercase ? "An" : "an") + " " + word;
         final @Nonnull String lowercaseWord = word.toLowerCase();
         
@@ -69,8 +69,8 @@ public class StringPrefix {
      * Prepends the given word with the appropriate indefinite article written all lowercase.
      */
     @Pure
-    public static @Nonnull String prependWithIndefiniteArticle(@Nonnull String word) {
-        return prependWithIndefiniteArticle(word, false);
+    public static @Nonnull String withIndefiniteArticle(@Nonnull String word) {
+        return withIndefiniteArticle(word, false);
     }
     
 }

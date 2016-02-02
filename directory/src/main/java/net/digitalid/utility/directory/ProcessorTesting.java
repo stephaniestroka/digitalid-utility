@@ -1,7 +1,7 @@
 package net.digitalid.utility.directory;
 
 import net.digitalid.utility.configuration.Configuration;
-import net.digitalid.utility.initialization.annotations.Initialize;
+import net.digitalid.utility.initialization.Initialize;
 
 /**
  * Description.
