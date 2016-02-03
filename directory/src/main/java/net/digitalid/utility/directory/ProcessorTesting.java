@@ -2,6 +2,9 @@ package net.digitalid.utility.directory;
 
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.initialization.Initialize;
+import net.digitalid.utility.logging.Level;
+import net.digitalid.utility.logging.Version;
+import net.digitalid.utility.logging.logger.Logger;
 
 /**
  * Description.
@@ -15,9 +18,14 @@ public class ProcessorTesting {
     /**
      * Initialization.
      */
-    @Initialize
+    @Initialize(target = Logger.class, dependencies = {Level.class, Version.class})
     public static void initialize() {
-        System.out.println("Successful initialization!");
+        System.out.println("Successful initialization of logger!");
+    }
+    
+    @Initialize(target = Level.class)
+    public static void otherInitialize() {
+        System.out.println("Successful initialization of level!");
     }
     
 }

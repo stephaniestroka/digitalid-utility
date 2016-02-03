@@ -11,6 +11,8 @@ import net.digitalid.utility.validation.annotations.type.Utiliy;
 @Utiliy
 public class QuoteString {
     
+    /* -------------------------------------------------- Single Quotes -------------------------------------------------- */
+    
     /**
      * Returns the given string in single quotes.
      */
@@ -20,11 +22,29 @@ public class QuoteString {
     }
     
     /**
+     * Returns the given object in single quotes.
+     */
+    @Pure
+    public static @Nonnull String inSingle(@Nonnull Object object) {
+        return inSingle(object.toString());
+    }
+    
+    /* -------------------------------------------------- Double Quotes -------------------------------------------------- */
+    
+    /**
      * Returns the given string in double quotes.
      */
     @Pure
     public static @Nonnull String inDouble(@Nonnull String string) {
         return "\"" + string + "\"";
+    }
+    
+    /**
+     * Returns the given object in double quotes.
+     */
+    @Pure
+    public static @Nonnull String inDouble(@Nonnull Object object) {
+        return inDouble(object.toString());
     }
     
 }

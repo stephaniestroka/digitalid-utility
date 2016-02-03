@@ -130,10 +130,10 @@ public class Configuration<P> {
      * @throws InitializationError if an issue occurs.
      */
     public static void initializeAllConfigurations() {
+        for (Initializer initializer : ServiceLoader.load(Initializer.class)) {
+            System.out.println(initializer.getClass() + " was loaded."); // TODO: Remove the output.
+        }
         try {
-            for (Initializer initializer : ServiceLoader.load(Initializer.class)) {
-                System.out.println(initializer.getClass() + " was loaded."); // TODO: Remove the output.
-            }
             for (Configuration<?> configuration : configurations) {
                 configuration.initialize();
             }

@@ -60,7 +60,7 @@ public abstract class CustomProcessor implements Processor {
             }
         }
         final @Nonnull String longestCommonPrefixWithDot = PrefixString.longestCommonPrefix(qualifiedTypeNames.toArray(new String[qualifiedTypeNames.size()]));
-        return longestCommonPrefixWithDot.endsWith(".") ? longestCommonPrefixWithDot.substring(0, longestCommonPrefixWithDot.length() - 1) : longestCommonPrefixWithDot;
+        return longestCommonPrefixWithDot.contains(".") ? longestCommonPrefixWithDot.substring(0, longestCommonPrefixWithDot.lastIndexOf('.')) : longestCommonPrefixWithDot;
     }
     
     /* -------------------------------------------------- Processing -------------------------------------------------- */
@@ -105,6 +105,7 @@ public abstract class CustomProcessor implements Processor {
     private int round = 0;
     
     @Override
+    @SuppressWarnings("CallToPrintStackTrace")
     public final boolean process(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
         AnnotationLog.setUp(getClass().getSimpleName());
         
@@ -115,7 +116,12 @@ public abstract class CustomProcessor implements Processor {
         
         if (round == 0 || !onlyInterestedInFirstRound) {
             AnnotationLog.information("Process " + annotations + " in the " + NumberString.getOrdinal(round + 1) + " round.");
-            process(annotations, roundEnvironment, round++);
+            try {
+                process(annotations, roundEnvironment, round++);
+            } catch (@Nonnull Throwable throwable) {
+                throwable.printStackTrace();
+                throw throwable;
+            }
             AnnotationLog.information("Finish " + (consumeAnnotations(annotations, roundEnvironment) ? "with" : "without") + " claiming the annotations.\n" + (roundEnvironment.processingOver() || onlyInterestedInFirstRound ? "\n" : ""));
         }
         

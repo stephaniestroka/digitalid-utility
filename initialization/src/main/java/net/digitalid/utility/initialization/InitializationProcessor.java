@@ -3,27 +3,45 @@ package net.digitalid.utility.initialization;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.Name;
+import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.tools.JavaFileObject;
 
+import net.digitalid.utility.configuration.Configuration;
+import net.digitalid.utility.configuration.Initializer;
+import net.digitalid.utility.errors.ShouldNeverHappenError;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.processor.CustomProcessor;
+import net.digitalid.utility.processor.files.ServiceLoaderFile;
+import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
- * Description.
+ * This annotation processor generates a subclass of {@link Initializer} for each static method annotated with {@link Initialize} and registers it in a {@link ServiceLoaderFile}.
  * 
  * @Initialize can take a target class (e.g. IdentityResolver.class or SQLDialect.class), which is initialized, or depend on the initialization of a certain class. (The target defaults to null, which is considered as initializing the surrounding class itself.)
  * @Initialize(target = Directory.class, dependencies = {Logger.class})
@@ -39,46 +57,96 @@ public class InitializationProcessor extends CustomProcessor {
     
     @Override
     public void processFirstRound(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
-        for (@Nonnull Element annotatedElement : roundEnvironment.getElementsAnnotatedWith(Initialize.class)) {
-            AnnotationLog.debugging("Kind: " + annotatedElement.getKind() + ", Modifiers: " + annotatedElement.getModifiers(), SourcePosition.of(annotatedElement));
-            if (annotatedElement.getKind() == ElementKind.METHOD && annotatedElement.getModifiers().contains(Modifier.STATIC)) {
-                final @Nonnull Name methodName = annotatedElement.getSimpleName();
-                final @Nonnull Element enclosingElement = annotatedElement.getEnclosingElement();
-                if (enclosingElement.getKind() == ElementKind.CLASS) {
-                    final @Nonnull TypeElement typeElement = (TypeElement) enclosingElement;
-                    final @Nonnull Name className = typeElement.getQualifiedName();
-                    try {
-                        final @Nonnull JavaFileObject f = AnnotationProcessing.environment.get().getFiler().createSourceFile("net.digitalid.utility.initialization.Initializer");
-                        AnnotationLog.information("Creating " + f.toUri());
-                        try (final @Nonnull Writer w = f.openWriter()) {
-                            final @Nonnull PrintWriter pw = new PrintWriter(w);
-                            pw.println("package net.digitalid.utility.initialization;");
-                            pw.println("/** The initializer initializes the library. (This mechanism will be replaced.) */");
-                            pw.println("public final class Initializer {");
-                            pw.println("    /** Initializes the library. */");
-                            pw.println("    public static void initialize() {");
-                            pw.println("        " + className + "." + methodName + "();");
-                            pw.println("    }");
-//                            TypeMirror type = e.asType();
-//                            pw.println("    /** Handle something. */");
-//                            pw.println("    protected final void handle" + name  + "(" + type + " value) {");
-//                            pw.println("        System.out.println(value);");
-//                            pw.println("    }");
-                            pw.println("}");
-                            pw.flush();
-                        }
-                    } catch (IOException x) {
-                        AnnotationLog.error(x.toString());
+        final @Nonnull ServiceLoaderFile serviceLoaderFile = ServiceLoaderFile.forService(Initializer.class);
+        annotatedElement: for (@Nonnull Element annotatedElement : roundEnvironment.getElementsAnnotatedWith(Initialize.class)) {
+            // Enforced by the compiler due to the '@Target' meta-annotation:
+            final @Nonnull ExecutableElement annotatedMethod = (ExecutableElement) annotatedElement;
+            
+            @Nullable String errorMessage = null;
+            if (!annotatedMethod.getModifiers().contains(Modifier.STATIC)) { errorMessage = "The annotated method has to be static:"; }
+            else if (!annotatedMethod.getParameters().isEmpty()) { errorMessage = "The annotated method may not have parameters:"; }
+            else if (annotatedMethod.getReturnType().getKind() != TypeKind.VOID) { errorMessage = "The annotated method may not have a return type:"; }
+            else if (annotatedMethod.getEnclosingElement().getEnclosingElement().getKind() != ElementKind.PACKAGE) { errorMessage = "The annotated method has to be in a top-level class:"; }
+            if (errorMessage != null) { AnnotationLog.error(errorMessage, SourcePosition.of(annotatedMethod)); continue; }
+            
+            final @Nullable AnnotationMirror annotationMirror = AnnotationProcessing.getAnnotationMirror(annotatedMethod, Initialize.class);
+            if (annotationMirror == null) { continue; }
+            
+            @Nullable VariableElement targetFieldElement = null;
+            @Nullable @NonNullableElements List<VariableElement> dependencyFieldElements = null;
+            final @Nonnull Map<? extends ExecutableElement, ? extends AnnotationValue> annotationValues = annotationMirror.getElementValues();
+            for (@Nonnull Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationValues.entrySet()) {
+                if (entry.getKey().getSimpleName().contentEquals("target")) {
+                    final @Nonnull AnnotationValue targetClassValue = entry.getValue();
+                    final @Nonnull DeclaredType targetClassMirror = (DeclaredType) targetClassValue.getValue();
+                    AnnotationLog.debugging("The type mirror of the target class is " + QuoteString.inSingle(targetClassMirror));
+                    final @Nonnull TypeElement targetClassElement = (TypeElement) targetClassMirror.asElement();
+                    targetFieldElement = AnnotationProcessing.getUniquePublicStaticFieldOfType(targetClassElement, Configuration.class);
+                    if (targetFieldElement == null) {
+                        AnnotationLog.error("The referenced class does not have a unique, public and static configuration field:", SourcePosition.of(annotatedMethod, annotationMirror, targetClassValue));
+                        continue annotatedElement;
                     }
-//                    processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Call " + className + "." + methodName + "() in the initializer.", annotatedElement);
-                    
-                } else {
-                    AnnotationLog.error("The annotation @Initialize can only be used on static methods in non-nested classes.", SourcePosition.of(annotatedElement));
+                } else if (entry.getKey().getSimpleName().contentEquals("dependencies")) {
+                    @SuppressWarnings("unchecked") final @Nonnull List<? extends AnnotationValue> dependencyClassValues = (List<? extends AnnotationValue>) entry.getValue().getValue();
+                    dependencyFieldElements = new ArrayList<>(dependencyClassValues.size());
+                    for (@Nonnull AnnotationValue dependencyClassValue : dependencyClassValues) {
+                        final @Nonnull DeclaredType dependencyClassMirror = (DeclaredType) dependencyClassValue.getValue();
+                        AnnotationLog.debugging("The type mirror of the dependency class is " + QuoteString.inSingle(dependencyClassMirror));
+                        final @Nonnull TypeElement dependencyClassElement = (TypeElement) dependencyClassMirror.asElement();
+                        final @Nullable VariableElement dependencyFieldElement = AnnotationProcessing.getUniquePublicStaticFieldOfType(dependencyClassElement, Configuration.class);
+                        if (dependencyFieldElement == null) {
+                            AnnotationLog.error("The referenced class does not have a unique, public and static configuration field:", SourcePosition.of(annotatedMethod, annotationMirror, dependencyClassValue));
+                        } else {
+                            dependencyFieldElements.add(dependencyFieldElement);
+                        }
+                    }
                 }
-            } else {
-                AnnotationLog.error("The annotation @Initialize can only be used on static methods.", SourcePosition.of(annotatedElement));
             }
+            
+            if (targetFieldElement == null) { throw ShouldNeverHappenError.with("The target field element should never be null because specifying the target class of the '@Initialize' annotation is mandatory and this code is skipped due to the continue statement if no unique, public and static configuration field is found in the target class."); }
+            if (dependencyFieldElements == null) { dependencyFieldElements = new LinkedList<>(); }
+            
+            final @Nonnull String qualifiedSourceClassName = ((QualifiedNameable) annotatedMethod.getEnclosingElement()).getQualifiedName().toString();
+            final @Nonnull String qualifiedGeneratedClassName = qualifiedSourceClassName + "$" + annotatedMethod.getSimpleName();
+            final @Nonnull String sourceClassName = annotatedMethod.getEnclosingElement().getSimpleName().toString();
+            final @Nonnull String generatedClassName = sourceClassName + "$" + annotatedMethod.getSimpleName();
+            AnnotationLog.debugging("Generating the class " + QuoteString.inSingle(qualifiedGeneratedClassName));
+            try {
+                final @Nonnull JavaFileObject javaFileObject = AnnotationProcessing.environment.get().getFiler().createSourceFile(qualifiedGeneratedClassName);
+                try (@Nonnull Writer writer = javaFileObject.openWriter(); @Nonnull PrintWriter printWriter = new PrintWriter(writer)) {
+                    printWriter.println("package " + AnnotationProcessing.getElementUtils().getPackageOf(annotatedElement).getQualifiedName() + ";");
+                    printWriter.println();
+                    printWriter.println("import javax.annotation.Generated;");
+                    printWriter.println();
+                    printWriter.println("import net.digitalid.utility.configuration.Initializer;");
+                    printWriter.println();
+                    printWriter.println("@Generated(value = {" + QuoteString.inDouble(getClass().getCanonicalName()) + "}, date = " + QuoteString.inDouble(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date())) + ")");
+                    printWriter.println("public class " + generatedClassName + " extends Initializer {");
+                    printWriter.println("    ");
+                    printWriter.println("    public " + generatedClassName + "() {");
+                    printWriter.print("        super(" + ((QualifiedNameable) targetFieldElement.getEnclosingElement()).getQualifiedName() + "." + targetFieldElement);
+                    if (!dependencyFieldElements.isEmpty()) {
+                        for (@Nonnull VariableElement dependencyFieldElement : dependencyFieldElements) {
+                            printWriter.print(", " + ((QualifiedNameable) dependencyFieldElement.getEnclosingElement()).getQualifiedName() + "." + dependencyFieldElement);
+                        }
+                    }
+                    printWriter.println(");");
+                    printWriter.println("    }");
+                    printWriter.println("    ");
+                    printWriter.println("    protected void execute() throws Exception {");
+                    printWriter.println("        " + sourceClassName + "." + annotatedMethod + ";");
+                    printWriter.println("    }");
+                    printWriter.println("    ");
+                    printWriter.println("}");
+                    printWriter.flush();
+                }
+            } catch (@Nonnull IOException exception) {
+                AnnotationLog.error("An exception occurred while generating the class " + QuoteString.inSingle(qualifiedGeneratedClassName) + ": " + exception);
+            }
+            
+            serviceLoaderFile.addProvider(qualifiedGeneratedClassName);
         }
+        serviceLoaderFile.write();
     }
     
     @Pure

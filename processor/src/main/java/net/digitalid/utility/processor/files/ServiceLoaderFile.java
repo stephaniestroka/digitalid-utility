@@ -109,7 +109,7 @@ public class ServiceLoaderFile {
         if (errorMessage != null) {
             AnnotationLog.error(errorMessage, SourcePosition.of(providerElement));
         } else {
-            addProvider(AnnotationProcessing.getBinaryName((TypeElement) providerElement));
+            addProvider(AnnotationProcessing.getElementUtils().getBinaryName((TypeElement) providerElement).toString());
         }
     }
     
