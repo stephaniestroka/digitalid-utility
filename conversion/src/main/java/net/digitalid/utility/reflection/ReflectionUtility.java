@@ -1,19 +1,20 @@
 package net.digitalid.utility.reflection;
 
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.collections.freezable.FreezableArrayList;
-import net.digitalid.utility.collections.readonly.ReadOnlyList;
-import net.digitalid.utility.conversion.annotations.Constructing;
-import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.reflection.exceptions.StructureException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.TypeVariable;
+import net.digitalid.utility.collections.freezable.FreezableArrayList;
+import net.digitalid.utility.collections.readonly.ReadOnlyList;
+import net.digitalid.utility.conversion.annotations.Constructing;
+import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.property.ReadOnlyProperty;
+import net.digitalid.utility.reflection.exceptions.StructureException;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 
 /**
  */
@@ -64,16 +65,27 @@ public class ReflectionUtility {
      *
      * @throws StructureException
      */
-    public static @Nonnull @NonNullableElements TypeVariable<?>[] getTypesOfFields(@Nonnull Class<?> type) throws StructureException {
+    // TODO: instead of expecting the -parameters compiler flag, we should generate a data structure containing information about the parameter names, types and order using annotation processing.
+    public static @Nonnull @NonNullableElements Parameter[] getTypesOfFields(@Nonnull Class<?> type) throws StructureException {
         final @Nullable Method constructorMethod = getStaticRecoveryMethod(type);
         if (constructorMethod == null) {
             final @Nonnull Constructor<?> constructor = getConstructor(type);
-            return constructor.getTypeParameters();
+            return constructor.getParameters();
         } else {
-            return constructorMethod.getTypeParameters();
+            return constructorMethod.getParameters();
         }
     }
-
+    
+    private static @Nonnull @NonNullableElements @Frozen ReadOnlyList<Field> getPropertyFields(@Nonnull Class<?> type) {
+        @Nonnull @NonNullableElements FreezableArrayList propertyFields = FreezableArrayList.get();
+        for (@Nonnull Field field : type.getFields()) {
+            if (ReadOnlyProperty.class.isAssignableFrom(field.getType())) {
+                propertyFields.add(field);
+            }
+        }
+        return propertyFields.freeze();
+    }
+    
     /**
      * Returns all convertible fields of a given type.
      * A field is considered convertible if it is passed to the recovery method or constructor of the type.
@@ -86,9 +98,9 @@ public class ReflectionUtility {
      */
     // TODO: optimize with a cache
     public static @Frozen @Nonnull @NonNullableElements ReadOnlyList<Field> getReconstructionFields(@Nonnull Class<?> type) throws StructureException {
-        final @Nonnull TypeVariable<?>[] typesOfConvertibleFields = getTypesOfFields(type);
+        final @Nonnull Parameter[] typesOfConvertibleFields = getTypesOfFields(type);
         final @Nonnull @NonNullableElements FreezableArrayList<Field> fields = FreezableArrayList.get();
-        for (TypeVariable<?> typeOfConvertibleField : typesOfConvertibleFields) {
+        for (Parameter typeOfConvertibleField : typesOfConvertibleFields) {
             final @Nonnull String name = typeOfConvertibleField.getName();
             final @Nonnull Field field;
             // TODO: what if the constructor parameter name is not equal to the types field name?
@@ -98,6 +110,10 @@ public class ReflectionUtility {
                 throw StructureException.get("The class does not have a field '" + name + "'.");
             }
             fields.add(field);
+        }
+        final @Nonnull @NonNullableElements ReadOnlyList<Field> propertyFields = getPropertyFields(type);
+        for (@Nonnull Field propertyField : propertyFields) {
+            fields.add(propertyField);
         }
         return fields.freeze();
     }

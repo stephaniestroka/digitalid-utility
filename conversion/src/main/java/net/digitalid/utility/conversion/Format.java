@@ -16,6 +16,7 @@ import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.property.ReadOnlyProperty;
 
 /**
  * The abstract format class defines all converters, which must be implemented by each format.
@@ -106,7 +107,14 @@ public abstract class Format<C extends Converter> {
      */
     @Pure
     protected abstract @Nonnull C getConvertibleConverter();
-     
+    
+    /**
+     * Returns the converter which converts objects of type {@link ReadOnlyProperty} to and from the format.
+     */
+    @Pure
+    protected abstract @Nonnull C getPropertyConverter();
+    
+    
     /**
      * Returns the converter which converts objects of type {@link Collection} to and from the format.
      * 
@@ -193,6 +201,8 @@ public abstract class Format<C extends Converter> {
                 converter = getBinaryConverter();
             } else if (Convertible.class.isAssignableFrom(type)) {
                 converter = getConvertibleConverter();
+            } else if (ReadOnlyProperty.class.isAssignableFrom(type)) {
+                converter = getPropertyConverter();
             } else if (Collections.class.isAssignableFrom(type)) {
                 converter = getCollectionConverter();
             } else if (type.isArray()) {
