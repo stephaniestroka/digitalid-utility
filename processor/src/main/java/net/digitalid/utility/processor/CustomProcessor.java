@@ -24,8 +24,9 @@ import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
-import net.digitalid.utility.string.NumberToString;
-import net.digitalid.utility.string.StringPrefix;
+import net.digitalid.utility.string.NumberString;
+import net.digitalid.utility.string.PrefixString;
+import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -44,20 +45,33 @@ public abstract class CustomProcessor implements Processor {
         AnnotationProcessing.environment.set(processingEnvironment);
     }
     
+    /* -------------------------------------------------- Utility -------------------------------------------------- */
+    
+    /**
+     * Returns the project name based on the common prefix of the packages in the given round environment.
+     */
+    @Pure
+    protected @Nonnull String getProjectName(@Nonnull RoundEnvironment roundEnvironment) {
+        final @Nonnull Set<? extends Element> rootElements = roundEnvironment.getRootElements();
+        final @Nonnull List<String> qualifiedTypeNames = new ArrayList<>(rootElements.size());
+        for (@Nonnull Element rootElement : rootElements) {
+            if (rootElement.getKind().isClass() || rootElement.getKind().isInterface()) {
+                qualifiedTypeNames.add(((QualifiedNameable) rootElement).getQualifiedName().toString());
+            }
+        }
+        final @Nonnull String longestCommonPrefixWithDot = PrefixString.longestCommonPrefix(qualifiedTypeNames.toArray(new String[qualifiedTypeNames.size()]));
+        return longestCommonPrefixWithDot.contains(".") ? longestCommonPrefixWithDot.substring(0, longestCommonPrefixWithDot.lastIndexOf('.')) : longestCommonPrefixWithDot;
+    }
+    
     /* -------------------------------------------------- Processing -------------------------------------------------- */
     
     /**
-     * Processes the given annotations in the first round and returns whether these annotation are claimed by this processor.
+     * Processes the given annotations in the first round.
      * 
      * @see #process(java.util.Set, javax.annotation.processing.RoundEnvironment)
      */
-    protected boolean processFirstRound(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
-        for (@Nonnull TypeElement annotation : annotations) {
-            for (@Nonnull Element element : roundEnvironment.getElementsAnnotatedWith(annotation)) {
-                AnnotationLog.debugging("Found '@" + annotation.getSimpleName() + "' on '" + element.getEnclosingElement().getSimpleName() + "#" + element + "'.");
-            }
-        }
-        return false;
+    protected void processFirstRound(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
+        AnnotationLog.annotatedElements(annotations, roundEnvironment);
     }
     
     /**
@@ -66,15 +80,23 @@ public abstract class CustomProcessor implements Processor {
     private boolean onlyInterestedInFirstRound = false;
     
     /**
-     * Processes the given annotations in the given round and returns whether these annotation are claimed by this processor.
+     * Processes the given annotations in the given round.
      * 
      * @param round the round of annotation processing, starting with zero in the first round.
      * 
      * @see #process(java.util.Set, javax.annotation.processing.RoundEnvironment)
      */
-    protected boolean process(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment, @NonNegative int round) {
+    protected void process(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment, @NonNegative int round) {
+        if (round == 0) { processFirstRound(annotations, roundEnvironment); }
         this.onlyInterestedInFirstRound = true;
-        if (round == 0) { return processFirstRound(annotations, roundEnvironment); } else { return false; }
+    }
+    
+    /**
+     * Returns whether the given annotations are claimed by this annotation processor with the given round environment.
+     */
+    @Pure
+    protected boolean consumeAnnotations(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
+        return false;
     }
     
     /**
@@ -83,29 +105,27 @@ public abstract class CustomProcessor implements Processor {
     private int round = 0;
     
     @Override
+    @SuppressWarnings("CallToPrintStackTrace")
     public final boolean process(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
         AnnotationLog.setUp(getClass().getSimpleName());
         
-        if (round == 0) { 
-            final @Nonnull Set<? extends Element> rootElements = roundEnvironment.getRootElements();
-            final @Nonnull List<String> names = new ArrayList<>(rootElements.size());
-            for (@Nonnull Element rootElement : rootElements) {
-                if (rootElement.getKind().isClass() || rootElement.getKind().isInterface()) {
-                    names.add(((QualifiedNameable) rootElement).getQualifiedName().toString());
-                }
-            }
-            final @Nonnull String nameWithDot = StringPrefix.longestCommonPrefix(names.toArray(new String[names.size()]));
-            final @Nonnull String name = nameWithDot.endsWith(".") ? nameWithDot.substring(0, nameWithDot.length() - 1) : nameWithDot;
-            AnnotationLog.information(getClass().getSimpleName() + " invoked " + (name.isEmpty() ? "" : " for project '" + name + "'") + ":\n");
+        if (round == 0) {
+            final @Nonnull String projectName = getProjectName(roundEnvironment);
+            AnnotationLog.information(getClass().getSimpleName() + " invoked" + (projectName.isEmpty() ? "" : " for project " + QuoteString.inSingle(projectName)) + ":\n");
         }
         
-        if (onlyInterestedInFirstRound && round > 0) { return false; }
+        if (round == 0 || !onlyInterestedInFirstRound) {
+            AnnotationLog.information("Process " + annotations + " in the " + NumberString.getOrdinal(round + 1) + " round.");
+            try {
+                process(annotations, roundEnvironment, round++);
+            } catch (@Nonnull Throwable throwable) {
+                throwable.printStackTrace();
+                throw throwable;
+            }
+            AnnotationLog.information("Finish " + (consumeAnnotations(annotations, roundEnvironment) ? "with" : "without") + " claiming the annotations.\n" + (roundEnvironment.processingOver() || onlyInterestedInFirstRound ? "\n" : ""));
+        }
         
-        AnnotationLog.information("Process " + annotations + " in the " + NumberToString.getOrdinal(round + 1) + " round.");
-        final boolean result = process(annotations, roundEnvironment, round);
-        AnnotationLog.information("Finish " + (result ? "with" : "without") + " claiming the annotations.\n" + (roundEnvironment.processingOver() || onlyInterestedInFirstRound ? "\n" : ""));
-        this.round += 1;
-        return result;
+        return consumeAnnotations(annotations, roundEnvironment);
     }
     
     /* -------------------------------------------------- Annotations -------------------------------------------------- */
@@ -114,7 +134,7 @@ public abstract class CustomProcessor implements Processor {
      * Converts the given non-nullable array to an unmodifiable set.
      */
     @Pure
-    protected static @Nonnull <T> Set<T> convertArrayToUnmodifiableSet(@Nonnull T[] array) {
+    protected @Nonnull <T> Set<T> convertArrayToUnmodifiableSet(@Nonnull T[] array) {
         final @Nonnull Set<T> set = new HashSet<>(array.length);
         for (@Nullable T s : array) { set.add(s); }
         return Collections.unmodifiableSet(set);
@@ -138,14 +158,14 @@ public abstract class CustomProcessor implements Processor {
         if  (supportedAnnotationTypes != null) {
             return convertArrayToUnmodifiableSet(supportedAnnotationTypes.value());
         } else {
-            AnnotationLog.error("No SupportedAnnotationTypes annotation found on " + getClass().getName() + ".");
+            AnnotationLog.error("No '@SupportedAnnotationTypes' annotation found on " + QuoteString.inSingle(getClass().getName()));
             return Collections.emptySet();
         }
     }
     
     @Pure
     @Override
-    public SourceVersion getSupportedSourceVersion() {
+    public @Nonnull SourceVersion getSupportedSourceVersion() {
         final @Nullable SupportedSourceVersion supportedSourceVersion = getClass().getAnnotation(SupportedSourceVersion.class);
         if (supportedSourceVersion != null) {
             return supportedSourceVersion.value();

@@ -47,7 +47,8 @@ public abstract class Logger {
         assert level != null : "The given level is not null.";
         
         if (level.getValue() >= Level.threshold.get().getValue()) {
-            logger.get().log(level, Caller.get(), message, throwable);
+            final boolean addNoPeriod = message.endsWith(".") || message.endsWith(":") || message.endsWith("\n");
+            logger.get().log(level, Caller.get(), addNoPeriod ? message : message + ".", throwable);
         }
     }
     

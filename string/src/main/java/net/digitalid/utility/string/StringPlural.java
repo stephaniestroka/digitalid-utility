@@ -32,7 +32,7 @@ public class StringPlural {
      */
     @Pure
     public static @Nonnull String prependWithNumberAndPluralize(int number, @Nonnull String word) {
-        return NumberToString.getCardinal(number) + " " + (number == 1 ? word : pluralize(word));
+        return NumberString.getCardinal(number) + " " + (number == 1 ? word : pluralize(word));
     }
     
 }

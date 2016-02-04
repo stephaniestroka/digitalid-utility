@@ -9,7 +9,7 @@ import net.digitalid.utility.validation.annotations.type.Utiliy;
  * This class provides useful operations to transform numbers into strings.
  */
 @Utiliy
-public class NumberToString {
+public class NumberString {
     
     /* -------------------------------------------------- Cardinal Numbers -------------------------------------------------- */
     

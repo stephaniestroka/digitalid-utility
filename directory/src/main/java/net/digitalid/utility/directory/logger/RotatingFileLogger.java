@@ -9,7 +9,6 @@ import java.util.Date;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.configuration.Configuration;
-import net.digitalid.utility.configuration.ConfigurationObserver;
 import net.digitalid.utility.directory.Directory;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.logger.FileLogger;
@@ -68,7 +67,7 @@ public class RotatingFileLogger extends FileLogger {
     /**
      * Stores the observer, which changes the log file to the new root directory.
      */
-    private final @Nonnull ConfigurationObserver<File> observer = new ConfigurationObserver<File>() {
+    private final @Nonnull Configuration.Observer<File> observer = new Configuration.Observer<File>() {
         @Override public void replaced(@Nonnull Configuration<File> configuration, @Nonnull File oldFile, @Nonnull File newFile) {
             rotate();
         }

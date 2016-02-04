@@ -3,6 +3,7 @@ package net.digitalid.utility.logging.processing;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 
 /**
  * This class models a position in the source code.
@@ -108,7 +109,27 @@ public class SourcePosition {
     
     @Override
     public String toString() {
-        return "(" + element.getSimpleName() + (annotationMirror != null ? ", " + annotationMirror.getAnnotationType().asElement().getSimpleName() : "") + (annotationValue != null ? ", " + annotationValue.toString() : "") + ")";
+        final StringBuilder string = new StringBuilder("'");
+        final Element enclosingElement = element.getEnclosingElement();
+        if (enclosingElement != null && (enclosingElement.getKind().isClass() || enclosingElement.getKind().isInterface())) {
+            string.append(enclosingElement.getSimpleName()).append("#");
+        }
+        if (element.getKind() == ElementKind.PACKAGE || element.getKind().isClass() || element.getKind().isInterface()) {
+            string.append(element.getSimpleName());
+        } else {
+            string.append(element);
+        }
+        string.append("'");
+        
+        if (annotationMirror != null) {
+            string.append(" for '@").append(annotationMirror.getAnnotationType().asElement().getSimpleName()).append("'");
+        }
+        
+        if (annotationValue != null) {
+            string.append(" at '").append(annotationValue.toString()).append("'");
+        }
+        
+        return string.toString();
     }
     
 }
