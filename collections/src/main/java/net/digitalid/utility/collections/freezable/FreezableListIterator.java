@@ -6,13 +6,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.collections.readonly.ReadOnlyListIterator;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
+import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.reference.Captured;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This interface models a {@link ListIterator list iterator} that can be {@link Freezable frozen}.
@@ -98,7 +99,7 @@ public class FreezableListIterator<E> extends FreezableIterableIterator<E> imple
     @Override
     @NonFrozenRecipient
     public void set(@Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         iterator.set(element);
     }
@@ -106,7 +107,7 @@ public class FreezableListIterator<E> extends FreezableIterableIterator<E> imple
     @Override
     @NonFrozenRecipient
     public void add(@Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         iterator.add(element);
     }

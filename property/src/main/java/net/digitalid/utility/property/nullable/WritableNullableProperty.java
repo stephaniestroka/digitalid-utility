@@ -3,6 +3,7 @@ package net.digitalid.utility.property.nullable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
 
@@ -46,7 +47,7 @@ public abstract class WritableNullableProperty<V> extends ReadOnlyNullableProper
      * @require !oldValue.equals(newValue) : "The old and the new value are not the same.";
      */
     protected final void notify(@Nonnull @Validated V oldValue, @Nonnull @Validated V newValue) {
-        assert !oldValue.equals(newValue) : "The old and the new value are not the same.";
+        Require.that(!oldValue.equals(newValue)).orThrow("The old and the new value are not the same.");
         
         if (hasObservers()) {
             for (final @Nonnull NullablePropertyObserver<V> observer : getObservers()) {

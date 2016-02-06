@@ -1,6 +1,7 @@
 package net.digitalid.utility.logging.logger;
 
 import net.digitalid.utility.configuration.Configuration;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Log;
@@ -41,10 +42,10 @@ public abstract class Logger {
     /**
      * Logs the given message and throwable if the given level is greater or equal to the configured level.
      * 
-     * @require level != null : "The given level is not null.";
+     * @require level != null : "The level may not be null.";
      */
     public static void log(Level level, String message, Throwable throwable) {
-        assert level != null : "The given level is not null.";
+        Require.that(level != null).orThrow("The level may not be null.");
         
         if (level.getValue() >= Level.threshold.get().getValue()) {
             final boolean addNoPeriod = message.endsWith(".") || message.endsWith(":") || message.endsWith("\n");

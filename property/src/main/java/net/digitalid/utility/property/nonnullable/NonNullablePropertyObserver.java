@@ -18,7 +18,7 @@ public interface NonNullablePropertyObserver<V> extends PropertyObserver {
      * @param oldValue the old value of the given property.
      * @param newValue the new value of the given property.
      * 
-     * assert !newValue.equals(oldValue) : "The new value is not the same as the old value.";
+     * Require.that(!newValue.equals(oldValue)).orThrow("The new value is not the same as the old value.");
      */
     public void replaced(@Nonnull ReadOnlyNonNullableProperty<V> property, @Nonnull @Validated V oldValue, @Nonnull @Validated V newValue);
     

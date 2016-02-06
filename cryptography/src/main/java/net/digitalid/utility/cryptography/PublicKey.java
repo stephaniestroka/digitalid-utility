@@ -1,14 +1,14 @@
 package net.digitalid.utility.cryptography;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
 import net.digitalid.utility.math.GroupWithUnknownOrder;
-import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class stores the groups, elements and exponents of a host's public key.
@@ -283,15 +283,15 @@ public final class PublicKey implements Convertible {
      * @require verifySubgroupProof() : "Assert that au, ai, av and ao are in the subgroup of ab.";
      */
     private PublicKey(@Nonnull GroupWithUnknownOrder compositeGroup, @Nonnull Exponent e, @Nonnull Element ab, @Nonnull Element au, @Nonnull Element ai, @Nonnull Element av, @Nonnull Element ao, @Nonnull Exponent t, @Nonnull Exponent su, @Nonnull Exponent si, @Nonnull Exponent sv, @Nonnull Exponent so, @Nonnull GroupWithUnknownOrder squareGroup, @Nonnull Element g, @Nonnull Element y, @Nonnull Element zPlus1) {
-        assert ab.isElement(compositeGroup) : "ab is an element in the composite group.";
-        assert au.isElement(compositeGroup) : "au is an element in the composite group.";
-        assert ai.isElement(compositeGroup) : "ai is an element in the composite group.";
-        assert av.isElement(compositeGroup) : "av is an element in the composite group.";
-        assert ao.isElement(compositeGroup) : "ao is an element in the composite group.";
+        Require.that(ab.isElement(compositeGroup)).orThrow("ab is an element in the composite group.");
+        Require.that(au.isElement(compositeGroup)).orThrow("au is an element in the composite group.");
+        Require.that(ai.isElement(compositeGroup)).orThrow("ai is an element in the composite group.");
+        Require.that(av.isElement(compositeGroup)).orThrow("av is an element in the composite group.");
+        Require.that(ao.isElement(compositeGroup)).orThrow("ao is an element in the composite group.");
         
-        assert g.isElement(squareGroup) : "g is an element in the square group.";
-        assert y.isElement(squareGroup) : "y is an element in the square group.";
-        assert zPlus1.isElement(squareGroup) : "zPlus1 is an element in the square group.";
+        Require.that(g.isElement(squareGroup)).orThrow("g is an element in the square group.");
+        Require.that(y.isElement(squareGroup)).orThrow("y is an element in the square group.");
+        Require.that(zPlus1.isElement(squareGroup)).orThrow("zPlus1 is an element in the square group.");
         
         this.compositeGroup = compositeGroup;
         this.e = e;
@@ -310,7 +310,7 @@ public final class PublicKey implements Convertible {
         this.y = y;
         this.zPlus1 = zPlus1;
         
-        assert verifySubgroupProof() : "The elements au, ai, av and ao are in the subgroup of ab.";
+        Require.that(verifySubgroupProof()).orThrow("The elements au, ai, av and ao are in the subgroup of ab.");
     }
     
     /**

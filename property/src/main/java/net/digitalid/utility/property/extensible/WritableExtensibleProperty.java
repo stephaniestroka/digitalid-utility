@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.collections.freezable.FreezableSet;
 import net.digitalid.utility.collections.readonly.ReadOnlySet;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
@@ -57,7 +58,7 @@ public abstract class WritableExtensibleProperty<V, R extends ReadOnlySet<V>, F 
      * @require set.contains(value) : "The value does not exist in the set.";
      */
     protected final void notifyAdded(@Nonnull F set, @Nonnull @Validated V value) {
-        assert set.contains(value) : "The value does not exist in the set.";
+        Require.that(set.contains(value)).orThrow("The value does not exist in the set.");
         
         if (hasObservers()) {
             for (final @Nonnull ExtensiblePropertyObserver<V, R> observer : getObservers()) {
@@ -74,7 +75,7 @@ public abstract class WritableExtensibleProperty<V, R extends ReadOnlySet<V>, F 
      * @require set.contains(value) : "The value exists in the set.";
      */
     protected final void notifyRemoved(@Nonnull F set, @Nonnull @Validated V value) {
-        assert set.contains(value) : "The value exists in the set.";
+        Require.that(set.contains(value)).orThrow("The value exists in the set.");
         
         if (hasObservers()) {
             for (final @Nonnull ExtensiblePropertyObserver<V, R> observer : getObservers()) {

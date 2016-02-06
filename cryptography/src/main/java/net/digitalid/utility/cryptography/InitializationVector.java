@@ -5,6 +5,7 @@ import java.security.SecureRandom;
 import javax.annotation.Nonnull;
 import javax.crypto.spec.IvParameterSpec;
 
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.size.Size;
@@ -38,7 +39,7 @@ public final class InitializationVector extends IvParameterSpec implements Conve
     private InitializationVector(@Nonnull @Size(16) byte[] bytes) {
         super(bytes);
         
-        assert bytes.length == 16 : "The array contains 16 bytes.";
+        Require.that(bytes.length == 16).orThrow("The array contains 16 bytes.");
     }
     
     /**

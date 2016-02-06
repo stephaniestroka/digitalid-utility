@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -86,7 +87,7 @@ public final class Exponent extends Number<Exponent, Object> implements Converti
      */
     @Pure
     public @Nonnull Exponent inverse(@Nonnull GroupWithKnownOrder group) {
-        assert group.getOrder().gcd(getValue()).compareTo(BigInteger.ONE) == 0 : "The exponent is relatively prime to the group order.";
+        Require.that(group.getOrder().gcd(getValue()).compareTo(BigInteger.ONE) == 0).orThrow("The exponent is relatively prime to the group order.");
         
         return new Exponent(getValue().modInverse(group.getOrder()));
     }

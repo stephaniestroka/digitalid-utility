@@ -1,8 +1,13 @@
 package net.digitalid.utility.configuration;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.ServiceLoader;
 import java.util.Set;
+
+import net.digitalid.utility.configuration.exceptions.CyclicDependenciesException;
+import net.digitalid.utility.configuration.exceptions.InitializedConfigurationException;
+import net.digitalid.utility.configuration.exceptions.UninitializedConfigurationException;
+import net.digitalid.utility.contracts.Require;
 
 /**
  * The configuration of a service is given by a provider.
@@ -26,7 +31,7 @@ public class Configuration<P> {
          * @param oldProvider the nullable old provider of the given configuration.
          * @param newProvider the non-nullable new provider of the given configuration.
          * 
-         * @require !newProvider.equals(oldProvider) : "The new provider is not the same as the old provider.";
+         * @require !newProvider.equals(oldProvider) : "The new provider may not the same as the old provider.";
          */
         public void replaced(Configuration<P> configuration, P oldProvider, P newProvider);
         
@@ -42,10 +47,10 @@ public class Configuration<P> {
     /**
      * Registers the given non-nullable observer for this configuration.
      * 
-     * @require observer != null : "The given observer is not null.";
+     * @require observer != null : "The observer may not be null.";
      */
     public void register(Observer<P> observer) {
-        assert observer != null : "The given observer is not null.";
+        Require.that(observer != null).orThrow("The observer may not be null.");
         
         observers.add(observer);
     }
@@ -53,10 +58,10 @@ public class Configuration<P> {
     /**
      * Deregisters the given non-nullable observer for this configuration.
      * 
-     * @require observer != null : "The given observer is not null.";
+     * @require observer != null : "The observer may not be null.";
      */
     public void deregister(Observer<P> observer) {
-        assert observer != null : "The given observer is not null.";
+        Require.that(observer != null).orThrow("The observer may not be null.");
         
         observers.remove(observer);
     }
@@ -64,10 +69,10 @@ public class Configuration<P> {
     /**
      * Returns whether the given non-nullable observer is registered for this configuration.
      * 
-     * @require observer != null : "The given observer is not null.";
+     * @require observer != null : "The observer may not be null.";
      */
     public boolean isRegistered(Observer<P> observer) {
-        assert observer != null : "The given observer is not null.";
+        Require.that(observer != null).orThrow("The observer may not be null.");
         
         return observers.contains(observer);
     }
@@ -83,24 +88,22 @@ public class Configuration<P> {
     /**
      * Returns the provider of this configuration.
      * 
-     * @ensure result != null : "The returned provider is not null";
+     * @ensure result != null : "The returned provider may not be null.";
      * 
-     * @throws InitializationError if no provider was set for this configuration.
+     * @throws UninitializedConfigurationException if no provider was set for this configuration.
      */
     public P get() {
-        if (provider == null) {
-            throw InitializationError.with("No provider was set for this configuration.");
-        }
+        if (provider == null) { throw UninitializedConfigurationException.with(this); }
         return provider;
     }
     
     /**
      * Sets the provider of this configuration and notifies all observers.
      * 
-     * @require provider != null : "The provider is not null.";
+     * @require provider != null : "The provider may not be null.";
      */
     public void set(P provider) {
-        assert provider != null : "The provider is not null.";
+        Require.that(provider != null).orThrow("The provider may not be null.");
         
         if (!provider.equals(this.provider)) {
             for (Observer<P> observer : observers) {
@@ -125,21 +128,12 @@ public class Configuration<P> {
     private static final Set<Configuration<?>> configurations = new LinkedHashSet<>();
     
     /**
-     * Initializes all configurations of this library.
+     * Returns an unmodifiable set of all configurations that were created.
      * 
-     * @throws InitializationError if an issue occurs.
+     * @ensure result != null : "The returned set may not be null.";
      */
-    public static void initializeAllConfigurations() {
-        for (Initializer initializer : ServiceLoader.load(Initializer.class)) {
-            System.out.println(initializer.getClass() + " was loaded."); // TODO: Remove the output.
-        }
-        try {
-            for (Configuration<?> configuration : configurations) {
-                configuration.initialize();
-            }
-        } catch (Exception exception) {
-            throw InitializationError.with("A problem occurred during the initialization of the library.", exception);
-        }
+    public static Set<Configuration<?>> getAllConfigurations() {
+        return Collections.unmodifiableSet(configurations);
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
@@ -150,15 +144,20 @@ public class Configuration<P> {
     protected Configuration(P provider) {
         this.provider = provider;
         configurations.add(this);
+        
+        // TODO: Introduce and set a name based on the call-stack.
+        final StackTraceElement element = Thread.currentThread().getStackTrace()[3];
+        final String className = element.getClassName();
+        System.out.println("Created the configuration for " + className.substring(className.lastIndexOf('.') + 1));
     }
     
     /**
      * Returns a configuration with the given non-nullable provider.
      * 
-     * @require provider != null : "The given provider is not null.";
+     * @require provider != null : "The provider may not be null.";
      */
     public static <P> Configuration<P> with(P provider) {
-        assert provider != null : "The given provider is not null.";
+        Require.that(provider != null).orThrow("The provider may not be null.");
         
         return new Configuration<>(provider);
     }
@@ -180,17 +179,14 @@ public class Configuration<P> {
     /**
      * Adds the given non-nullable initializer to the set of initializers for this configuration.
      * 
-     * @throws InitializationError if this configuration is already initialized.
+     * @throws InitializedConfigurationException if this configuration has already been initialized.
      * 
-     * @require initializer != null : "The given initializer is not null.";
+     * @require initializer != null : "The initializer may not be null.";
      */
     protected void addInitializer(Initializer initializer) {
-        assert initializer != null : "The given initializer is not null.";
+        Require.that(initializer != null).orThrow("The initializer may not be null.");
         
-        if (isInitialized) {
-            throw InitializationError.with("This configuration is already initialized.");
-        }
-        
+        if (isInitialized) { throw InitializedConfigurationException.with(this); }
         initializers.add(initializer);
     }
     
@@ -203,8 +199,12 @@ public class Configuration<P> {
     
     /**
      * Returns whether this configuration depends on the given non-nullable configuration (directly or indirectly).
+     * 
+     * @require configuration != null : "The configuration may not be null.";
      */
     public boolean dependsOn(Configuration<?> configuration) {
+        Require.that(configuration != null).orThrow("The configuration may not be null.");
+        
         if (configuration.equals(this)) { return true; }
         for (Configuration<?> dependency : dependencies) {
             if (dependency.dependsOn(configuration)) { return true; }
@@ -215,22 +215,17 @@ public class Configuration<P> {
     /**
      * Adds the given non-nullable dependency to the set of dependencies and returns this configuration.
      * 
-     * @throws InitializationError if the given dependency depends on this configuration.
-     * @throws InitializationError if this configuration is already initialized.
+     * @throws InitializedConfigurationException if this configuration has already been initialized.
+     * @throws CyclicDependenciesException if the given dependency depends on this configuration.
      * 
-     * @require dependency != null : "The given dependency is not null.";
+     * @require dependency != null : "The dependency may not be null.";
+     * @ensure result == this : "The returned configuration is this.";
      */
     public Configuration<P> addDependency(Configuration<?> dependency) {
-        assert dependency != null : "The given dependency is not null.";
+        Require.that(dependency != null).orThrow("The dependency may not be null.");
         
-        if (isInitialized) {
-            throw InitializationError.with("This configuration is already initialized.");
-        }
-        
-        if (dependency.dependsOn(this)) {
-            throw InitializationError.with("The given dependency depends on this configuration.");
-        }
-        
+        if (isInitialized) { throw InitializedConfigurationException.with(this); }
+        if (dependency.dependsOn(this)) { throw CyclicDependenciesException.with(this, dependency); }
         dependencies.add(dependency);
         return this;
     }
@@ -247,7 +242,7 @@ public class Configuration<P> {
      * 
      * @throws Exception if any problems occur.
      */
-    protected void initialize() throws Exception {
+    public void initialize() throws Exception {
         if (!isInitialized) {
             for (Configuration<?> dependency : dependencies) {
                 dependency.initialize();

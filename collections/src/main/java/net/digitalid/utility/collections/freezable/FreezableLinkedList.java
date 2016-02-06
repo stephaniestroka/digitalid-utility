@@ -9,16 +9,17 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.validation.annotations.index.Index;
-import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
+import net.digitalid.utility.validation.annotations.index.Index;
+import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
+import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class extends the {@link LinkedList} and makes it {@link Freezable}.
@@ -150,7 +151,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     public @Nonnull E getNonNullable(@Index int index) {
         @Nullable E element = get(index);
-        assert element != null : "The element at the given index is not null.";
+        Require.that(element != null).orThrow("The element at the given index is not null.");
         
         return element;
     }
@@ -190,7 +191,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public boolean add(@Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.add(element);
     }
@@ -198,7 +199,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public void add(@IndexForInsertion int index, @Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         super.add(index, element);
     }
@@ -206,7 +207,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public void addFirst(@Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         super.addFirst(element);
     }
@@ -214,7 +215,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public void addLast(@Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         super.addLast(element);
     }
@@ -222,7 +223,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public boolean addAll(@Nonnull Collection<? extends E> collection) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.addAll(collection);
     }
@@ -230,7 +231,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public boolean addAll(@IndexForInsertion int index, @Nonnull Collection<? extends E> collection) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.addAll(index, collection);
     }
@@ -240,7 +241,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public boolean offer(@Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.offer(element);
     }
@@ -248,7 +249,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public boolean offerFirst(@Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.offerFirst(element);
     }
@@ -256,7 +257,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public boolean offerLast(@Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.offerLast(element);
     }
@@ -266,7 +267,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public @Nullable E remove() {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.remove();
     }
@@ -274,7 +275,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public @Nullable E removeFirst() {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.removeFirst();
     }
@@ -282,7 +283,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public @Nullable E removeLast() {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.removeLast();
     }
@@ -290,7 +291,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public @Nullable E remove(@Index int index) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.remove(index);
     }
@@ -298,7 +299,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public boolean remove(@Nullable Object object) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.remove(object);
     }
@@ -306,7 +307,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public boolean removeFirstOccurrence(@Nullable Object object) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.removeFirstOccurrence(object);
     }
@@ -314,7 +315,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public boolean removeLastOccurrence(@Nullable Object object) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.removeLastOccurrence(object);
     }
@@ -322,7 +323,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     protected void removeRange(@Index int fromIndex, @IndexForInsertion int toIndex) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         super.removeRange(fromIndex, toIndex);
     }
@@ -330,7 +331,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public boolean removeAll(@Nonnull Collection<?> collection) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.removeAll(collection);
     }
@@ -340,7 +341,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public @Nullable E poll() {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.poll();
     }
@@ -348,7 +349,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public @Nullable E pollFirst() {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.pollFirst();
     }
@@ -356,7 +357,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public @Nullable E pollLast() {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.pollLast();
     }
@@ -366,7 +367,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public void push(@Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         super.push(element);
     }
@@ -374,7 +375,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public @Nullable E pop() {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.pop();
     }
@@ -384,7 +385,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public @Nullable E set(@Index int index, @Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.set(index, element);
     }
@@ -392,7 +393,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public void clear() {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         super.clear();
     }
@@ -400,7 +401,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
     @Override
     @NonFrozenRecipient
     public boolean retainAll(@Nonnull Collection<?> collection) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.retainAll(collection);
     }

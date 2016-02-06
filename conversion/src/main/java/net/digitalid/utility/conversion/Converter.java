@@ -1,17 +1,22 @@
 package net.digitalid.utility.conversion;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.conversion.exceptions.RecoveryException;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.reflection.ReflectionUtility;
 import net.digitalid.utility.reflection.exceptions.StructureException;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
@@ -127,7 +132,7 @@ public abstract class Converter {
      */
     protected static @Nonnull Field getConvertibleField(@Nonnull Class<?> type) throws StructureException {
         final @Nonnull @NonNullableElements @Frozen ReadOnlyList<Field> fields = ReflectionUtility.getReconstructionFields(type);
-        assert fields.size() == 1 : "There is only one field in type '" + type + "'";
+        Require.that(fields.size() == 1).orThrow("There is only one field in type '" + type + "'");
         return fields.getNonNullable(0);
     }
     

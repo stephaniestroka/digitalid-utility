@@ -2,15 +2,15 @@ package net.digitalid.utility.castable.exceptions;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.exceptions.CustomException;
-import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.exceptions.InternalException;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This exception is thrown when an object cannot be cast to the desired class.
  */
 @Immutable
-public class InvalidClassCastException extends CustomException { // TODO: Rather extend a ValidationException.
+public class InvalidClassCastException extends InternalException { // TODO: Rather extend a ValidationException.
     
     /* -------------------------------------------------- Object -------------------------------------------------- */
     

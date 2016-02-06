@@ -1,11 +1,9 @@
 package net.digitalid.utility.string;
 
-import net.digitalid.utility.testing.LoggerSetup;
-
 import org.junit.Assert;
 import org.junit.Test;
 
-public class StringPrefixTest extends LoggerSetup {
+public class StringPrefixTest {
     
     @Test
     public void testLongestCommonPrefix() {

@@ -30,7 +30,7 @@ import javax.tools.JavaFileObject;
 
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.Initializer;
-import net.digitalid.utility.errors.ShouldNeverHappenError;
+import net.digitalid.utility.exceptions.UnexpectedValueException;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
@@ -103,7 +103,9 @@ public class InitializationProcessor extends CustomProcessor {
                 }
             }
             
-            if (targetFieldElement == null) { throw ShouldNeverHappenError.with("The target field element should never be null because specifying the target class of the '@Initialize' annotation is mandatory and this code is skipped due to the continue statement if no unique, public and static configuration field is found in the target class."); }
+            // The target field element should never be null because specifying the target class of the '@Initialize' annotation is mandatory and
+            // this code is skipped due to the continue statement if no unique, public and static configuration field is found in the target class.
+            if (targetFieldElement == null) { throw UnexpectedValueException.with("targetFieldElement", targetFieldElement); }
             if (dependencyFieldElements == null) { dependencyFieldElements = new LinkedList<>(); }
             
             final @Nonnull String qualifiedSourceClassName = ((QualifiedNameable) annotatedMethod.getEnclosingElement()).getQualifiedName().toString();

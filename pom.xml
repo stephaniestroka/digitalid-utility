@@ -35,11 +35,10 @@
     
     <modules>
         <module>taglets</module>
-        <module>errors</module>
+        <module>exceptions</module>
+        <module>contracts</module>
         <module>configuration</module>
         <module>logging</module>
-        <module>testing</module>
-        <module>exceptions</module>
         <module>validation</module>
         <module>system</module>
         <module>threading</module>
@@ -50,6 +49,7 @@
         <module>concurrency</module>
         <module>processor</module>
         <module>initialization</module>
+        <module>testing</module>
         <module>directory</module>
         <module>generator</module>
         <module>testcases</module>
@@ -71,6 +71,14 @@
             <artifactId>j2objc-annotations</artifactId>
             <version>0.9.8</version>
         </dependency>
+        <!-- Add this dependency wherever you have testcases:
+        <dependency>
+            <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-testing</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        -->
     </dependencies>
     
     <repositories>

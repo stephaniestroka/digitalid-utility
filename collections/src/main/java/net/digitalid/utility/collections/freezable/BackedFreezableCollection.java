@@ -7,13 +7,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
+import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class implements a {@link Collection collection} that can be {@link Freezable frozen}.
@@ -158,7 +159,7 @@ class BackedFreezableCollection<E> implements FreezableCollection<E> {
     @Override
     @NonFrozenRecipient
     public boolean add(@Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return collection.add(element);
     }
@@ -166,7 +167,7 @@ class BackedFreezableCollection<E> implements FreezableCollection<E> {
     @Override
     @NonFrozenRecipient
     public boolean addAll(@Nonnull Collection<? extends E> c) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return collection.addAll(c);
     }
@@ -174,7 +175,7 @@ class BackedFreezableCollection<E> implements FreezableCollection<E> {
     @Override
     @NonFrozenRecipient
     public boolean remove(@Nullable Object object) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return collection.remove(object);
     }
@@ -182,7 +183,7 @@ class BackedFreezableCollection<E> implements FreezableCollection<E> {
     @Override
     @NonFrozenRecipient
     public boolean removeAll(@Nonnull Collection<?> c) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return collection.removeAll(c);
     }
@@ -190,7 +191,7 @@ class BackedFreezableCollection<E> implements FreezableCollection<E> {
     @Override
     @NonFrozenRecipient
     public boolean retainAll(@Nonnull Collection<?> c) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return collection.retainAll(c);
     }
@@ -198,7 +199,7 @@ class BackedFreezableCollection<E> implements FreezableCollection<E> {
     @Override
     @NonFrozenRecipient
     public void clear() {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         collection.clear();
     }

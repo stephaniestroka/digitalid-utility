@@ -9,6 +9,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.logger.FileLogger;
@@ -22,9 +23,11 @@ public class AnnotationLog {
     /* -------------------------------------------------- Setup -------------------------------------------------- */
     
     /**
-     * Sets the output file of the logger to the given name.
+     * Sets the output file of the logger to the given non-nullable name.
      */
     public static void setUp(String name) {
+        Require.that(name != null).orThrow("The name may not be null.");
+        
         Logger.logger.set(FileLogger.with("target/processor-logs/" + name + ".log"));
         Level.threshold.set(Level.VERBOSE);
         Caller.index.set(6);
@@ -51,8 +54,8 @@ public class AnnotationLog {
      * Logs the given non-nullable message with the given nullable position at the given non-nullable level.
      */
     private static void log(Level level, CharSequence message, SourcePosition position) {
-        assert level != null : "The given level is not null.";
-        assert message != null : "The given message is not null.";
+        Require.that(level != null).orThrow("The level may not be null.");
+        Require.that(message != null).orThrow("The message may not be null.");
         
         Logger.log(level, message.toString() + (position != null ? " " + position : ""), null);
         if (level.getValue() >= Level.INFORMATION.getValue() && AnnotationProcessing.environment.isSet()) {
@@ -152,8 +155,14 @@ public class AnnotationLog {
     
     /**
      * Logs the elements which are annotated with one of the given annotations of the given non-nullable round environment.
+     * 
+     * @require annotations != null : "The annotations may not be null.";
+     * @require roundEnvironment != null : "The round environment may not be null.";
      */
     public static void annotatedElements(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
+        Require.that(annotations != null).orThrow("The annotations may not be null.");
+        Require.that(roundEnvironment != null).orThrow("The round environment may not be null.");
+        
         for (TypeElement annotation : annotations) {
             for (Element element : roundEnvironment.getElementsAnnotatedWith(annotation)) {
                 AnnotationLog.information("Found '@" + annotation.getSimpleName() + "' on", SourcePosition.of(element));
@@ -163,8 +172,12 @@ public class AnnotationLog {
     
     /**
      * Logs the root elements of the given non-nullable round environment.
+     * 
+     * @require roundEnvironment != null : "The round environment may not be null.";
      */
     public static void rootElements(RoundEnvironment roundEnvironment) {
+        Require.that(roundEnvironment != null).orThrow("The round environment may not be null.");
+        
         for (Element rootElement : roundEnvironment.getRootElements()) {
             AnnotationLog.information("Found the " + rootElement.getKind().toString().toLowerCase() + " '" + rootElement.asType().toString() + "'.");
         }

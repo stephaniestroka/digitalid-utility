@@ -2,19 +2,20 @@ package net.digitalid.utility.cryptography;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.collections.freezable.FreezableIterator;
 import net.digitalid.utility.collections.freezable.FreezableList;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
-import net.digitalid.utility.generator.conversion.Convertible;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.cryptography.exceptions.InvalidParameterValueCombinationException;
 import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.time.Time;
 import net.digitalid.utility.tuples.FreezablePair;
 import net.digitalid.utility.tuples.ReadOnlyPair;
-import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.size.NonEmpty;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * A key chain contains several items to support the rotation of host keys.
@@ -83,8 +84,8 @@ public abstract class KeyChain<C extends KeyChain<C, K>, K extends Convertible> 
      */
     @Pure
     public final @Nonnull KeyChain<C, K> add(@Nonnull Time time, @Nonnull K key) {
-        assert time.isGreaterThan(getNewestTime()) : "The time is greater than the newest time of this key chain.";
-        assert time.isGreaterThan(Time.getCurrent().add(Time.TROPICAL_YEAR)) : "The time lies at least one year in the future.";
+        Require.that(time.isGreaterThan(getNewestTime())).orThrow("The time is greater than the newest time of this key chain.");
+        Require.that(time.isGreaterThan(Time.getCurrent().add(Time.TROPICAL_YEAR))).orThrow("The time lies at least one year in the future.");
         
         final @Nonnull FreezableList<ReadOnlyPair<Time, K>> copy = items.clone();
         final @Nonnull ReadOnlyPair<Time, K> pair = FreezablePair.get(time, key).freeze();

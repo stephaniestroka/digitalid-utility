@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -59,7 +60,7 @@ public final class GroupWithKnownOrder extends Group<GroupWithKnownOrder> implem
     private GroupWithKnownOrder(@Nonnull @Positive BigInteger modulus, @Nonnull @Positive BigInteger order) {
         super(modulus);
         
-        assert order.compareTo(BigInteger.ZERO) == 1 && order.compareTo(modulus) == -1 : "The order is positive and smaller than the modulus.";
+        Require.that(order.compareTo(BigInteger.ZERO) == 1 && order.compareTo(modulus) == -1).orThrow("The order is positive and smaller than the modulus.");
         
         this.order = order;
     }

@@ -5,9 +5,9 @@ import java.io.File;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.configuration.Configuration;
-import net.digitalid.utility.configuration.InitializationError;
 import net.digitalid.utility.directory.annotations.Existing;
 import net.digitalid.utility.directory.annotations.IsDirectory;
+import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
@@ -43,7 +43,7 @@ public final class Directory {
      */
     private static @Nonnull @Existing @IsDirectory File createDirectory(@Nonnull String name) {
         final @Nonnull File directory = new File(configuration.get().getPath() + File.separator + name);
-        if (!directory.exists() && !directory.mkdirs()) { throw InitializationError.with("Could not create the directory '" + directory.getPath() + "'."); }
+        if (!directory.exists() && !directory.mkdirs()) { throw UnexpectedFailureException.with("Could not create the directory '" + directory.getPath() + "'."); }
         return directory;
     }
     

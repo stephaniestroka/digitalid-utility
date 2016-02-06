@@ -7,6 +7,7 @@ import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -46,7 +47,7 @@ public abstract class Group<G extends Group<G>> implements Convertible {
      * @param modulus the modulus of the new group.
      */
     protected Group(@Nonnull @Positive BigInteger modulus) {
-        assert modulus.compareTo(BigInteger.ZERO) == 1 : "The modulus is positive.";
+        Require.that(modulus.compareTo(BigInteger.ZERO) == 1).orThrow("The modulus is positive.");
         
         this.modulus = modulus;
     }

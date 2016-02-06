@@ -6,9 +6,8 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.collections.readonly.ReadOnlyMap;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
@@ -16,11 +15,13 @@ import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.string.iterable.Brackets;
 import net.digitalid.utility.string.iterable.ElementConverter;
 import net.digitalid.utility.string.iterable.IterableConverter;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
+import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class extends the {@link HashMap} and makes it {@link Freezable}.
@@ -140,7 +141,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
     @Override
     @NonFrozenRecipient
     public @Nullable V put(@Nullable K key, @Nullable V value) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.put(key, value);
     }
@@ -148,7 +149,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
     @Override
     @NonFrozenRecipient
     public void putAll(@Nonnull Map<? extends K,? extends V> map) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         super.putAll(map);
     }
@@ -156,7 +157,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
     @Override
     @NonFrozenRecipient
     public @Nonnull V putIfAbsentOrNullElseReturnPresent(@Nonnull K key, @Nonnull V value) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         final @Nullable V oldValue = get(key);
         if (oldValue != null) { return oldValue; }
@@ -167,7 +168,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
     @Override
     @NonFrozenRecipient
     public @Nullable V remove(@Nullable Object object) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.remove(object);
     }
@@ -175,7 +176,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
     @Override
     @NonFrozenRecipient
     public void clear() {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         super.clear();
     }

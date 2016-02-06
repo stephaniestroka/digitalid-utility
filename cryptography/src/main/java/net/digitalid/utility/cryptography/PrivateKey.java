@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
@@ -105,7 +106,7 @@ public final class PrivateKey implements Convertible {
      */
     @Pure
     public @Nonnull Element powD(@Nonnull Element c) {
-        assert c.getGroup().equals(compositeGroup) : "The element belongs to the composite group.";
+        Require.that(c.getGroup().equals(compositeGroup)).orThrow("The element belongs to the composite group.");
         
         return powD(c.getValue());
     }
@@ -157,7 +158,7 @@ public final class PrivateKey implements Convertible {
      * @require compositeGroup.getModulus().equals(p.multiply(q)) : "The modulus of the composite group is the product of p and q.";
      */
     private PrivateKey(@Nonnull GroupWithKnownOrder compositeGroup, @Nonnull BigInteger p, @Nonnull BigInteger q, @Nonnull Exponent d, @Nonnull GroupWithKnownOrder squareGroup, @Nonnull Exponent x) {
-        assert compositeGroup.getModulus().equals(p.multiply(q)) : "The modulus of the composite group is the product of p and q.";
+        Require.that(compositeGroup.getModulus().equals(p.multiply(q))).orThrow("The modulus of the composite group is the product of p and q.");
         
         this.compositeGroup = compositeGroup;
         this.p = p;

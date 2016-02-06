@@ -2,6 +2,7 @@ package net.digitalid.utility.property.nonnullable;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -26,7 +27,7 @@ public final class VolatileNonNullableProperty<V> extends WritableNonNullablePro
     
     @Override
     public void set(@Nonnull @Validated V newValue) {
-        assert getValueValidator().isValid(newValue) : "The new value is valid.";
+        Require.that(getValueValidator().isValid(newValue)).orThrow("The new value is valid.");
 
         final @Nonnull V oldValue = this.value;
         this.value = newValue;
@@ -45,7 +46,7 @@ public final class VolatileNonNullableProperty<V> extends WritableNonNullablePro
     private VolatileNonNullableProperty(@Nonnull ValueValidator<? super V> validator, @Nonnull @Validated V value) {
         super(validator);
 
-        assert validator.isValid(value) : "The given value is valid.";
+        Require.that(validator.isValid(value)).orThrow("The given value is valid.");
 
         this.value = value;
     }

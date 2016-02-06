@@ -2,16 +2,17 @@ package net.digitalid.utility.cryptography;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.collections.freezable.FreezableLinkedList;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.time.Time;
 import net.digitalid.utility.tuples.FreezablePair;
 import net.digitalid.utility.tuples.ReadOnlyPair;
-import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.size.NonEmpty;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class models a {@link KeyChain key chain} of {@link PublicKey public keys}.
@@ -58,7 +59,7 @@ public final class PublicKeyChain extends KeyChain<PublicKeyChain, PublicKey> {
      */
     @Pure
     public static @Nonnull PublicKeyChain get(@Nonnull Time time, @Nonnull PublicKey key) {
-        assert time.isLessThanOrEqualTo(Time.getCurrent()) : "The time lies in the past.";
+        Require.that(time.isLessThanOrEqualTo(Time.getCurrent())).orThrow("The time lies in the past.");
         
         final @Nonnull FreezableLinkedList<ReadOnlyPair<Time, PublicKey>> items = FreezableLinkedList.get();
         items.add(FreezablePair.get(time, key).freeze());

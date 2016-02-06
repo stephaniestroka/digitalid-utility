@@ -2,10 +2,10 @@ package net.digitalid.utility.validation.validator;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.contracts.exceptions.ContractViolationException;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.exceptions.ContractViolationException;
 
 /**
  * This class wraps a {@link #getCondition() condition} and {@link #getMessage() message} for annotation processing.

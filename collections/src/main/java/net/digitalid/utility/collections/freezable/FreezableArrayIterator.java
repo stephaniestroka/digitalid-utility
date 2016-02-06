@@ -6,12 +6,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.collections.readonly.ReadOnlyArrayIterator;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
+import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This interface models an array iterator that can be {@link Freezable frozen}.
@@ -117,7 +118,7 @@ public class FreezableArrayIterator<E> implements ReadOnlyArrayIterator<E>, Free
     @Override
     @NonFrozenRecipient
     public void remove() {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         array.set(index, null);
     }

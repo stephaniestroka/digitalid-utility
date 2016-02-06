@@ -6,8 +6,8 @@ import java.util.HashSet;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.collections.readonly.ReadOnlyArray;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.FreezableObject;
 import net.digitalid.utility.freezable.annotations.Frozen;
@@ -15,11 +15,12 @@ import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.string.iterable.Brackets;
 import net.digitalid.utility.string.iterable.IterableConverter;
+import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.reference.Captured;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class models {@link Freezable freezable} arrays.
@@ -147,7 +148,7 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
     @Pure
     @Override
     public @Nullable E getNullable(@Index int index) {
-        assert index >= 0 && index < size() : "The index is valid.";
+        Require.that(index >= 0 && index < size()).orThrow("The index is valid.");
         
         return array[index];
     }
@@ -160,9 +161,10 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
     
     @Pure
     @Override
+    @SuppressWarnings("null")
     public @Nonnull E getNonNullable(@Index int index) {
         @Nullable E element = getNullable(index);
-        assert element != null : "The element at the given index is not null.";
+        Require.that(element != null).orThrow("The element at the given index is not null.");
         
         return element;
     }
@@ -183,8 +185,8 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
      */
     @NonFrozenRecipient
     public void set(@Index int index, @Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
-        assert index >= 0 && index < size() : "The index is valid.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
+        Require.that(index >= 0 && index < size()).orThrow("The index is valid.");
         
         array[index] = element;
     }
@@ -198,7 +200,7 @@ public class FreezableArray<E> extends FreezableObject implements ReadOnlyArray<
      */
     @NonFrozenRecipient
     public @Nonnull @NonFrozen FreezableArray<E> setAll(@Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         for (int i = 0; i < array.length; i++) { array[i] = element; }
         return this;

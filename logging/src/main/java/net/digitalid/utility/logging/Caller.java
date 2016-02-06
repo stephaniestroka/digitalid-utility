@@ -18,6 +18,8 @@ public class Caller {
     
     /**
      * Returns the entry at the given index in the stack trace.
+     * 
+     * @ensure result != null : "The returned caller may not be null.";
      */
     public static String get(int index) {
         final StackTraceElement element = Thread.currentThread().getStackTrace()[index];
@@ -28,6 +30,8 @@ public class Caller {
     
     /**
      * Returns the caller of the logging method.
+     * 
+     * @ensure result != null : "The returned caller may not be null.";
      */
     public static String get() {
         return get(index.get());

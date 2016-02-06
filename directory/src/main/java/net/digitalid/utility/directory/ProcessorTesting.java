@@ -1,7 +1,7 @@
 package net.digitalid.utility.directory;
 
-import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.initialization.Initialize;
+import net.digitalid.utility.initialization.Library;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Version;
 import net.digitalid.utility.logging.logger.Logger;
@@ -12,7 +12,7 @@ import net.digitalid.utility.logging.logger.Logger;
 public class ProcessorTesting {
     
     public static void main(String[] args) {
-        Configuration.initializeAllConfigurations();
+        Library.initialize();
     }
     
     /**

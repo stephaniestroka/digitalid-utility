@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.errors.ShouldNeverHappenError;
+import net.digitalid.utility.exceptions.MissingSupportException;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
@@ -31,7 +31,7 @@ public class HashGenerator {
             }
             return new BigInteger(1, instance.digest());
         } catch (@Nonnull NoSuchAlgorithmException exception) {
-            throw ShouldNeverHappenError.with("The hashing algorithm 'SHA-256' is not supported on this platform.", exception);
+            throw MissingSupportException.with("The hashing algorithm 'SHA-256' is not supported on this platform.", exception);
         }
     }
 

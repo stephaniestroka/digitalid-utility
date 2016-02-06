@@ -1,4 +1,4 @@
 /**
- * Provides classes for custom exceptions.
+ * Provides custom runtime exceptions.
  */
 package net.digitalid.utility.exceptions;

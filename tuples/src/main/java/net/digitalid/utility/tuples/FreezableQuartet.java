@@ -5,13 +5,14 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.validation.annotations.elements.NullableElements;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
-import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
 
 /**
  * This class models a {@link Freezable freezable} quartet.
@@ -79,7 +80,7 @@ public class FreezableQuartet<E0, E1, E2, E3> extends FreezableTriplet<E0, E1, E
     @Pure
     @Override
     public final @Nonnull E3 getNonNullableElement3() {
-        assert element3 != null : "The element is not null.";
+        Require.that(element3 != null).orThrow("The element is not null.");
         
         return element3;
     }
@@ -93,7 +94,7 @@ public class FreezableQuartet<E0, E1, E2, E3> extends FreezableTriplet<E0, E1, E
      */
     @NonFrozenRecipient
     public final void setElement3(@Nullable E3 element3) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         this.element3 = element3;
     }

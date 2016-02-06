@@ -6,12 +6,13 @@ import java.util.Random;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
 import net.digitalid.utility.math.GroupWithKnownOrder;
-import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class generates new key pairs.
@@ -111,7 +112,7 @@ public final class KeyPair implements Convertible {
         final @Nonnull Exponent sv = rv.subtract(t.multiply(ev));
         final @Nonnull Exponent so = ro.subtract(t.multiply(eo));
         
-        assert tu.equals(ab.pow(su).multiply(au.pow(t))) && ti.equals(ab.pow(si).multiply(ai.pow(t))) && tv.equals(ab.pow(sv).multiply(av.pow(t))) && to.equals(ab.pow(so).multiply(ao.pow(t))) : "The non-interactive proof of the bases' correctness is valid.";
+        Require.that(tu.equals(ab.pow(su).multiply(au.pow(t))) && ti.equals(ab.pow(si).multiply(ai.pow(t))) && tv.equals(ab.pow(sv).multiply(av.pow(t))) && to.equals(ab.pow(so).multiply(ao.pow(t)))).orThrow("The non-interactive proof of the bases' correctness is valid.");
         
         // Determine the values for the verifiable encryption.
         final @Nonnull BigInteger z = BigInteger.probablePrime(Parameters.VERIFIABLE_ENCRYPTION, random);
@@ -154,7 +155,7 @@ public final class KeyPair implements Convertible {
      */
     @Pure
     private static @Nonnull BigInteger getSafePrime(int length, @Nonnull Random random) {
-        assert length > 1 : "The length is positive.";
+        Require.that(length > 1).orThrow("The length is positive.");
         
         while (true) {
             final @Nonnull BigInteger prime = BigInteger.probablePrime(length - 1, random);

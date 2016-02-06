@@ -9,17 +9,18 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.validation.annotations.index.Index;
-import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
+import net.digitalid.utility.validation.annotations.index.Index;
+import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class extends the {@link ArrayList} and makes it {@link Freezable}.
@@ -168,7 +169,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
     @Override
     public @Nonnull E getNonNullable(@Index int index) {
         @Nullable E element = get(index);
-        assert element != null : "The element at the given index is not null.";
+        Require.that(element != null).orThrow("The element at the given index is not null.");
         
         return element;
     }
@@ -202,7 +203,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
     @Override
     @NonFrozenRecipient
     public @Nullable E set(@Index int index, @Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.set(index, element);
     }
@@ -210,7 +211,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
     @Override
     @NonFrozenRecipient
     public boolean add(@Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.add(element);
     }
@@ -218,7 +219,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
     @Override
     @NonFrozenRecipient
     public void add(@IndexForInsertion int index, @Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         super.add(index, element);
     }
@@ -226,7 +227,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
     @Override
     @NonFrozenRecipient
     public @Nullable E remove(@Index int index) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.remove(index);
     }
@@ -234,7 +235,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
     @Override
     @NonFrozenRecipient
     public boolean remove(@Nullable Object object) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.remove(object);
     }
@@ -242,7 +243,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
     @Override
     @NonFrozenRecipient
     public void clear() {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         super.clear();
     }
@@ -250,7 +251,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
     @Override
     @NonFrozenRecipient
     public boolean addAll(@Nonnull Collection<? extends E> collection) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.addAll(collection);
     }
@@ -258,7 +259,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
     @Override
     @NonFrozenRecipient
     protected void removeRange(@Index int fromIndex, @IndexForInsertion int toIndex) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         super.removeRange(fromIndex, toIndex);
     }
@@ -266,7 +267,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
     @Override
     @NonFrozenRecipient
     public boolean removeAll(@Nonnull Collection<?> collection) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.removeAll(collection);
     }
@@ -274,7 +275,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
     @Override
     @NonFrozenRecipient
     public boolean retainAll(@Nonnull Collection<?> collection) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.retainAll(collection);
     }

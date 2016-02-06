@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.collections.readonly.ReadOnlySet;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
@@ -16,9 +17,9 @@ import net.digitalid.utility.string.iterable.Brackets;
 import net.digitalid.utility.string.iterable.IterableConverter;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
+import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class extends the {@link LinkedHashSet} and makes it {@link Freezable}.
@@ -162,7 +163,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
     @Override
     @NonFrozenRecipient
     public boolean add(@Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.add(element);
     }
@@ -170,7 +171,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
     @Override
     @NonFrozenRecipient
     public boolean addAll(@Nonnull Collection<? extends E> c) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.addAll(c);
     }
@@ -178,7 +179,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
     @Override
     @NonFrozenRecipient
     public boolean remove(@Nullable Object object) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.remove(object);
     }
@@ -186,7 +187,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
     @Override
     @NonFrozenRecipient
     public boolean removeAll(@Nonnull Collection<?> c) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.removeAll(c);
     }
@@ -194,7 +195,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
     @Override
     @NonFrozenRecipient
     public boolean retainAll(@Nonnull Collection<?> c) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.retainAll(c);
     }
@@ -202,7 +203,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
     @Override
     @NonFrozenRecipient
     public void clear() {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         super.clear();
     }

@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.collections.freezable.FreezableMap;
 import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
 import net.digitalid.utility.collections.readonly.ReadOnlyMap;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
@@ -60,7 +61,7 @@ public class VolatileIndexedProperty<K, V, R extends ReadOnlyMap<K, V>, F extend
     
     @Override
     public void add(@Nonnull K key, @Nonnull @Validated V value) {
-        assert !map.containsKey(key) : "The key may not already be indexed.";
+        Require.that(!map.containsKey(key)).orThrow("The key may not already be indexed.");
         
         map.put(key, value);
         
@@ -90,7 +91,7 @@ public class VolatileIndexedProperty<K, V, R extends ReadOnlyMap<K, V>, F extend
     private VolatileIndexedProperty(@Nonnull ValueValidator<? super K> keyValidator, @Nonnull ValueValidator<? super V> valueValidator, @Nonnull @Validated F map) {
         super(keyValidator, valueValidator);
 
-        assert keysAndValuesValid(keyValidator, valueValidator, map) : "The keys and values are valid.";
+        Require.that(keysAndValuesValid(keyValidator, valueValidator, map)).orThrow("The keys and values are valid.");
 
         this.map = map;
     }

@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -57,7 +58,7 @@ public final class Element extends Number<Element, Group<?>> implements Converti
         super(value.mod(group.getModulus()));
         this.group = group;
         
-        assert getValue().compareTo(BigInteger.ZERO) >= 0 && getValue().compareTo(getGroup().getModulus()) == -1 : "The value is non-negative and smaller than the group modulus.";
+        Require.that(getValue().compareTo(BigInteger.ZERO) >= 0 && getValue().compareTo(getGroup().getModulus()) == -1).orThrow("The value is non-negative and smaller than the group modulus.");
     }
     
     /**
@@ -84,7 +85,7 @@ public final class Element extends Number<Element, Group<?>> implements Converti
      */
     @Pure
     public @Nonnull @Matching Element add(@Nonnull @Matching Element element) {
-        assert getGroup().equals(element.getGroup()) : "Both elements are in the same group.";
+        Require.that(getGroup().equals(element.getGroup())).orThrow("Both elements are in the same group.");
         
         return new Element(getGroup(), getValue().add(element.getValue()));
     }
@@ -98,7 +99,7 @@ public final class Element extends Number<Element, Group<?>> implements Converti
      */
     @Pure
     public @Nonnull @Matching Element subtract(@Nonnull @Matching Element element) {
-        assert getGroup().equals(element.getGroup()) : "Both elements are in the same group.";
+        Require.that(getGroup().equals(element.getGroup())).orThrow("Both elements are in the same group.");
         
         return new Element(getGroup(), getValue().subtract(element.getValue()));
     }
@@ -112,7 +113,7 @@ public final class Element extends Number<Element, Group<?>> implements Converti
      */
     @Pure
     public @Nonnull @Matching Element multiply(@Nonnull @Matching Element element) {
-        assert getGroup().equals(element.getGroup()) : "Both elements are in the same group.";
+        Require.that(getGroup().equals(element.getGroup())).orThrow("Both elements are in the same group.");
         
         return new Element(getGroup(), getValue().multiply(element.getValue()));
     }
@@ -126,7 +127,7 @@ public final class Element extends Number<Element, Group<?>> implements Converti
      */
     @Pure
     public @Nonnull @Matching Element inverse() {
-        assert isRelativelyPrime() : "The element is relatively prime to the group modulus.";
+        Require.that(isRelativelyPrime()).orThrow("The element is relatively prime to the group modulus.");
         
         return new Element(getGroup(), getValue().modInverse(getGroup().getModulus()));
     }

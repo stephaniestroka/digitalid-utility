@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Version;
 
@@ -37,10 +38,10 @@ public abstract class PrintStreamLogger extends Logger {
     /**
      * Sets the non-nullable print stream to which the messages are printed.
      * 
-     * @require printStream != null : "The given print stream is not null.";
+     * @require printStream != null : "The print stream may not be null.";
      */
     protected void setPrintStream(PrintStream printStream) {
-        assert printStream != null : "The given print stream is not null.";
+        Require.that(printStream != null).orThrow("The print stream may not be null.");
         
         this.printStream = printStream;
     }
@@ -50,10 +51,10 @@ public abstract class PrintStreamLogger extends Logger {
     /**
      * Creates a print stream logger that logs the messages to the given non-nullable print stream.
      * 
-     * @require printStream != null : "The given print stream is not null.";
+     * @require printStream != null : "The print stream may not be null.";
      */
     protected PrintStreamLogger(PrintStream printStream) {
-        assert printStream != null : "The given print stream is not null.";
+        Require.that(printStream != null).orThrow("The print stream may not be null.");
         
         this.printStream = printStream;
     }

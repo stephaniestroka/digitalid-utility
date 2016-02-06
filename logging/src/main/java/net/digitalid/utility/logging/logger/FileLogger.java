@@ -5,7 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-import net.digitalid.utility.configuration.InitializationError;
+import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.exceptions.UnexpectedFailureException;
 
 /**
  * This class implements a logger that logs the messages to a file.
@@ -21,7 +22,7 @@ public class FileLogger extends PrintStreamLogger {
      * 
      * @throws FileNotFoundException if the given file cannot be opened or created.
      * 
-     * @require file != null : "The given file is not null.";
+     * @require file != null : "The file may not be null.";
      */
     protected FileLogger(File file) throws FileNotFoundException {
         super(new PrintStream(new FileOutputStream(file, true)));
@@ -32,10 +33,10 @@ public class FileLogger extends PrintStreamLogger {
      * 
      * @throws FileNotFoundException if the given file cannot be opened or created.
      * 
-     * @require file != null : "The given file is not null.";
+     * @require file != null : "The file may not be null.";
      */
     public static FileLogger with(File file) throws FileNotFoundException {
-        assert file != null : "The given file is not null.";
+        Require.that(file != null).orThrow("The file may not be null.");
         
         return new FileLogger(file);
     }
@@ -44,20 +45,20 @@ public class FileLogger extends PrintStreamLogger {
      * Returns a file logger that logs the messages to a file at the given non-nullable path.
      * This method creates missing parent directories and the file, if necessary.
      * 
-     * @require path != null : "The given path is not null.";
+     * @require path != null : "The path may not be null.";
      */
     public static FileLogger with(String path) {
-        assert path != null : "The given path is not null.";
+        Require.that(path != null).orThrow("The path may not be null.");
         
         final File file = new File(path);
         final File directory = file.getParentFile();
         if (directory != null && !directory.exists() && !directory.mkdirs()) {
-            throw InitializationError.with("Could not create the directory '" + directory.getPath() + "'.");
+            throw UnexpectedFailureException.with("Could not create the directory '" + directory.getPath() + "'.");
         }
         try {
             return new FileLogger(file);
         } catch (FileNotFoundException exception) {
-            throw InitializationError.with("The file '" + file.getPath() + "' could not be opened or created.", exception);
+            throw UnexpectedFailureException.with("The file '" + file.getPath() + "' could not be opened or created.", exception);
         }
     }
     
@@ -68,10 +69,10 @@ public class FileLogger extends PrintStreamLogger {
      * 
      * @throws FileNotFoundException if the given file cannot be opened or created.
      * 
-     * @require file != null : "The given file is not null.";
+     * @require file != null : "The file may not be null.";
      */
     protected void setFile(File file) throws FileNotFoundException {
-        assert file != null : "The given file is not null.";
+        Require.that(file != null).orThrow("The file may not be null.");
         
         setPrintStream(new PrintStream(new FileOutputStream(file, true)));
     }

@@ -2,7 +2,7 @@ package net.digitalid.utility.conversion.exceptions;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.exceptions.ExternalException;
+import net.digitalid.utility.logging.exceptions.ExternalException;
 
 public class RecoveryException extends ExternalException {
     

@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.collections.freezable.FreezableSet;
 import net.digitalid.utility.collections.readonly.ReadOnlySet;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
@@ -67,7 +68,7 @@ public class VolatileExtensibleProperty<V, R extends ReadOnlySet<V>, F extends F
     private VolatileExtensibleProperty(@Nonnull ValueValidator<? super V> valueValidator, @Nonnull @Validated F set) {
         super(valueValidator);
 
-        assert valuesValid(valueValidator, set) : "The values of the set are valid.";
+        Require.that(valuesValid(valueValidator, set)).orThrow("The values of the set are valid.");
 
         this.set = set;
     }

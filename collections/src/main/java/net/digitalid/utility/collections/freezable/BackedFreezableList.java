@@ -8,18 +8,19 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.validation.annotations.index.Index;
-import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.string.iterable.Brackets;
 import net.digitalid.utility.string.iterable.IterableConverter;
+import net.digitalid.utility.validation.annotations.index.Index;
+import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
+import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class implements a {@link Set set} that can be {@link Freezable frozen}.
@@ -93,9 +94,10 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
     
     @Pure
     @Override
+    @SuppressWarnings("null")
     public @Nonnull E getNonNullable(@Index int index) {
         final @Nullable E element = get(index);
-        assert element != null : "The element at the given index is not null.";
+        Require.that(element != null).orThrow("The element at the given index is not null.");
         
         return element;
     }
@@ -135,7 +137,7 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
     @Override
     @NonFrozenRecipient
     public @Nullable E set(@Index int index, @Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return list.set(index, element);
     }
@@ -143,7 +145,7 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
     @Override
     @NonFrozenRecipient
     public void add(@IndexForInsertion int index, @Nullable E element) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         list.add(index, element);
     }
@@ -151,7 +153,7 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
     @Override
     @NonFrozenRecipient
     public @Nullable E remove(@Index int index) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return list.remove(index);
     }
@@ -159,7 +161,7 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
     @Override
     @NonFrozenRecipient
     public boolean addAll(@IndexForInsertion int index, @Nonnull Collection<? extends E> collection) {
-        assert !isFrozen() : "This object is not frozen.";
+        Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return list.addAll(index, collection);
     }
