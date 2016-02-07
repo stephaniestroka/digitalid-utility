@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 /**
  * .
  */
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface GenericTypes {
     
