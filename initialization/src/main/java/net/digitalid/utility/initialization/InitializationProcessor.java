@@ -35,6 +35,7 @@ import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.processor.CustomProcessor;
+import net.digitalid.utility.processor.ProcessingUtility;
 import net.digitalid.utility.processor.files.ServiceLoaderFile;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -62,7 +63,7 @@ public class InitializationProcessor extends CustomProcessor {
             else if (annotatedMethod.getEnclosingElement().getEnclosingElement().getKind() != ElementKind.PACKAGE) { errorMessage = "The annotated method has to be in a top-level class:"; }
             if (errorMessage != null) { AnnotationLog.error(errorMessage, SourcePosition.of(annotatedMethod)); continue; }
             
-            final @Nullable AnnotationMirror annotationMirror = AnnotationProcessing.getAnnotationMirror(annotatedMethod, Initialize.class);
+            final @Nullable AnnotationMirror annotationMirror = ProcessingUtility.getAnnotationMirror(annotatedMethod, Initialize.class);
             if (annotationMirror == null) { continue; }
             
             @Nullable VariableElement targetFieldElement = null;
@@ -74,7 +75,7 @@ public class InitializationProcessor extends CustomProcessor {
                     final @Nonnull DeclaredType targetClassMirror = (DeclaredType) targetClassValue.getValue();
                     AnnotationLog.debugging("The type mirror of the target class is " + QuoteString.inSingle(targetClassMirror));
                     final @Nonnull TypeElement targetClassElement = (TypeElement) targetClassMirror.asElement();
-                    targetFieldElement = AnnotationProcessing.getUniquePublicStaticFieldOfType(targetClassElement, Configuration.class);
+                    targetFieldElement = ProcessingUtility.getUniquePublicStaticFieldOfType(targetClassElement, Configuration.class);
                     if (targetFieldElement == null) {
                         AnnotationLog.error("The referenced class does not have a unique, public and static configuration field:", SourcePosition.of(annotatedMethod, annotationMirror, targetClassValue));
                         continue annotatedElement;
@@ -86,7 +87,7 @@ public class InitializationProcessor extends CustomProcessor {
                         final @Nonnull DeclaredType dependencyClassMirror = (DeclaredType) dependencyClassValue.getValue();
                         AnnotationLog.debugging("The type mirror of the dependency class is " + QuoteString.inSingle(dependencyClassMirror));
                         final @Nonnull TypeElement dependencyClassElement = (TypeElement) dependencyClassMirror.asElement();
-                        final @Nullable VariableElement dependencyFieldElement = AnnotationProcessing.getUniquePublicStaticFieldOfType(dependencyClassElement, Configuration.class);
+                        final @Nullable VariableElement dependencyFieldElement = ProcessingUtility.getUniquePublicStaticFieldOfType(dependencyClassElement, Configuration.class);
                         if (dependencyFieldElement == null) {
                             AnnotationLog.error("The referenced class does not have a unique, public and static configuration field:", SourcePosition.of(annotatedMethod, annotationMirror, dependencyClassValue));
                         } else {
