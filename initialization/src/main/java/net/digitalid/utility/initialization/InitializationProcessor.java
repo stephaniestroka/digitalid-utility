@@ -42,13 +42,6 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This annotation processor generates a subclass of {@link Initializer} for each static method annotated with {@link Initialize} and registers it in a {@link ServiceLoaderFile}.
- * 
- * @Initialize can take a target class (e.g. IdentityResolver.class or SQLDialect.class), which is initialized, or depend on the initialization of a certain class. (The target defaults to null, which is considered as initializing the surrounding class itself.)
- * @Initialize(target = Directory.class, dependencies = {Logger.class})
- * 
- * @Configurable for classes that have static configure(...) and isConfigured() methods, the latter of which is/can be checked as a precondition for methods annotated with @Configured. What about default configurations (e.g. in the case of the logger or the directory)?
- * @Configurable(required = false) [defaults to true] – or no such parameter, simply check whether an isConfigured() method exists. Add 'dependencies' as a potential parameter?
- * Introduce a Configuration interface [or rather abstract class] for a service loader with methods void add(Initializer), [void addDependency(Configuration, Initializer), boolean hasDependency(Configuration), Class<?> getSource()], boolean isConfigured(), void configure() [runs all associated initializers after ensuring that all dependencies are configured].
  */
 @SupportedAnnotationTypes("net.digitalid.utility.initialization.Initialize")
 public class InitializationProcessor extends CustomProcessor {
@@ -114,7 +107,7 @@ public class InitializationProcessor extends CustomProcessor {
             final @Nonnull String generatedClassName = sourceClassName + "$" + annotatedMethod.getSimpleName();
             AnnotationLog.debugging("Generating the class " + QuoteString.inSingle(qualifiedGeneratedClassName));
             try {
-                final @Nonnull JavaFileObject javaFileObject = AnnotationProcessing.environment.get().getFiler().createSourceFile(qualifiedGeneratedClassName);
+                final @Nonnull JavaFileObject javaFileObject = AnnotationProcessing.environment.get().getFiler().createSourceFile(qualifiedGeneratedClassName); // TODO: Also provide the originating elements!
                 try (@Nonnull Writer writer = javaFileObject.openWriter(); @Nonnull PrintWriter printWriter = new PrintWriter(writer)) {
                     printWriter.println("package " + AnnotationProcessing.getElementUtils().getPackageOf(annotatedElement).getQualifiedName() + ";");
                     printWriter.println();

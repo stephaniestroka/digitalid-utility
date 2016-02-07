@@ -2,6 +2,8 @@ package net.digitalid.utility.configuration;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import net.digitalid.utility.configuration.exceptions.CyclicDependenciesException;
@@ -47,23 +49,27 @@ public class Configuration<P> {
     /**
      * Registers the given non-nullable observer for this configuration.
      * 
+     * @return whether the given observer was not already registered.
+     * 
      * @require observer != null : "The observer may not be null.";
      */
-    public void register(Observer<P> observer) {
+    public boolean register(Observer<P> observer) {
         Require.that(observer != null).orThrow("The observer may not be null.");
         
-        observers.add(observer);
+        return observers.add(observer);
     }
     
     /**
      * Deregisters the given non-nullable observer for this configuration.
      * 
+     * @return whether the given observer was actually registered.
+     * 
      * @require observer != null : "The observer may not be null.";
      */
-    public void deregister(Observer<P> observer) {
+    public boolean deregister(Observer<P> observer) {
         Require.that(observer != null).orThrow("The observer may not be null.");
         
-        observers.remove(observer);
+        return observers.remove(observer);
     }
     
     /**
@@ -120,6 +126,40 @@ public class Configuration<P> {
         return provider != null;
     }
     
+    /* -------------------------------------------------- Declaration -------------------------------------------------- */
+    
+    private final String qualifiedClassName;
+    
+    /**
+     * Returns the non-nullable qualified name of the class where this configuration is declared.
+     */
+    public String getQualifiedClassName() {
+        return qualifiedClassName;
+    }
+    
+    private final String className;
+    
+    /**
+     * Returns the non-nullable simple name of the class where this configuration is declared.
+     */
+    public String getClassName() {
+        return className;
+    }
+    
+    private final int lineNumber;
+    
+    /**
+     * Returns the line number on which this configuration is declared.
+     */
+    public int getLineNumber() {
+        return lineNumber;
+    }
+    
+    @Override
+    public String toString() {
+        return getClassName();
+    }
+    
     /* -------------------------------------------------- Configurations -------------------------------------------------- */
     
     /**
@@ -143,12 +183,13 @@ public class Configuration<P> {
      */
     protected Configuration(P provider) {
         this.provider = provider;
-        configurations.add(this);
         
-        // TODO: Introduce and set a name based on the call-stack.
         final StackTraceElement element = Thread.currentThread().getStackTrace()[3];
-        final String className = element.getClassName();
-        System.out.println("Created the configuration for " + className.substring(className.lastIndexOf('.') + 1));
+        this.qualifiedClassName = element.getClassName();
+        this.className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf('.') + 1);
+        this.lineNumber = element.getLineNumber();
+        
+        configurations.add(this);
     }
     
     /**
@@ -210,6 +251,55 @@ public class Configuration<P> {
             if (dependency.dependsOn(configuration)) { return true; }
         }
         return false;
+    }
+    
+    private static final List<Configuration<?>> EMPTY_LIST = Collections.unmodifiableList(new LinkedList<Configuration<?>>());
+    
+    /**
+     * Returns a non-nullable list of configurations through which this configuration depends on the given configuration.
+     * The returned list is empty if (and only if) this configuration does not depend on the given configuration.
+     * Otherwise, the first element in the returned list is this configuration and the last the given configuration.
+     * If (and only if) the returned list is not empty, it is modifiable and can be captured by the caller.
+     * 
+     * @require configuration != null : "The configuration may not be null.";
+     */
+    public List<Configuration<?>> getDependencyChain(Configuration<?> configuration) {
+        Require.that(configuration != null).orThrow("The configuration may not be null.");
+        
+        if (configuration.equals(this)) {
+            final LinkedList<Configuration<?>> result = new LinkedList<>();
+            result.add(this);
+            return result;
+        }
+        
+        for (Configuration<?> dependency : dependencies) {
+            final List<Configuration<?>> dependencyChain = dependency.getDependencyChain(configuration);
+            if (!dependencyChain.isEmpty()) {
+                dependencyChain.add(0, this);
+                return dependencyChain;
+            }
+        }
+        
+        return EMPTY_LIST;
+    }
+    
+    /**
+     * Returns the {@link #getDependencyChain(net.digitalid.utility.configuration.Configuration) dependency chain} as a non-nullable string.
+     * 
+     * @require configuration != null : "The configuration may not be null.";
+     * @require dependsOn(configuration) : "This configuration has to depend on the given configuration.";
+     */
+    public String getDependencyChainAsString(Configuration<?> configuration) {
+        Require.that(configuration != null).orThrow("The configuration may not be null.");
+        Require.that(dependsOn(configuration)).orThrow("This configuration has to depend on the given configuration.");
+        
+        final StringBuilder result = new StringBuilder();
+        final List<Configuration<?>> dependencyChain = getDependencyChain(configuration);
+        for (Configuration<?> dependency : dependencyChain) {
+            if (result.length() == 0) { result.append(" -> "); }
+            result.append(dependency);
+        }
+        return result.toString();
     }
     
     /**

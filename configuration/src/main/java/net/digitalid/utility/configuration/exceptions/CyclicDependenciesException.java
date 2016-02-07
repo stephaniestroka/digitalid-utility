@@ -36,8 +36,9 @@ public class CyclicDependenciesException extends InitializationException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
+    @SuppressWarnings("null")
     protected CyclicDependenciesException(Configuration<?> configuration, Configuration<?> dependency) {
-        super("Two configurations have cyclic dependencies.");
+        super("Could not add '" + dependency + "' as a dependency of '" + configuration + "', as '" + dependency + "' already depends on '" + configuration + "' (" + dependency.getDependencyChainAsString(configuration) + ").");
         
         Require.that(configuration != null).orThrow("The configuration may not be null.");
         Require.that(dependency != null).orThrow("The dependency may not be null.");
