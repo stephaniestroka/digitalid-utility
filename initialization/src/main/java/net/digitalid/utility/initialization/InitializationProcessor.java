@@ -1,11 +1,6 @@
 package net.digitalid.utility.initialization;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -26,16 +21,15 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
-import javax.tools.JavaFileObject;
 
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.Initializer;
 import net.digitalid.utility.exceptions.UnexpectedValueException;
 import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.processor.ProcessingUtility;
+import net.digitalid.utility.processor.files.JavaSourceFile;
 import net.digitalid.utility.processor.files.ServiceLoaderFile;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -102,43 +96,38 @@ public class InitializationProcessor extends CustomProcessor {
             if (targetFieldElement == null) { throw UnexpectedValueException.with("targetFieldElement", targetFieldElement); }
             if (dependencyFieldElements == null) { dependencyFieldElements = new LinkedList<>(); }
             
-            final @Nonnull String qualifiedSourceClassName = ((QualifiedNameable) annotatedMethod.getEnclosingElement()).getQualifiedName().toString();
+            final @Nonnull TypeElement sourceClassElement = (TypeElement) annotatedMethod.getEnclosingElement();
+            
+            final @Nonnull String qualifiedSourceClassName = sourceClassElement.getQualifiedName().toString();
             final @Nonnull String qualifiedGeneratedClassName = qualifiedSourceClassName + "$" + annotatedMethod.getSimpleName();
-            final @Nonnull String sourceClassName = annotatedMethod.getEnclosingElement().getSimpleName().toString();
+            final @Nonnull String sourceClassName = sourceClassElement.getSimpleName().toString();
             final @Nonnull String generatedClassName = sourceClassName + "$" + annotatedMethod.getSimpleName();
-            AnnotationLog.debugging("Generating the class " + QuoteString.inSingle(qualifiedGeneratedClassName));
-            try {
-                final @Nonnull JavaFileObject javaFileObject = AnnotationProcessing.environment.get().getFiler().createSourceFile(qualifiedGeneratedClassName); // TODO: Also provide the originating elements!
-                try (@Nonnull Writer writer = javaFileObject.openWriter(); @Nonnull PrintWriter printWriter = new PrintWriter(writer)) {
-                    printWriter.println("package " + AnnotationProcessing.getElementUtils().getPackageOf(annotatedElement).getQualifiedName() + ";");
-                    printWriter.println();
-                    printWriter.println("import javax.annotation.Generated;");
-                    printWriter.println();
-                    printWriter.println("import net.digitalid.utility.configuration.Initializer;");
-                    printWriter.println();
-                    printWriter.println("@Generated(value = {" + QuoteString.inDouble(getClass().getCanonicalName()) + "}, date = " + QuoteString.inDouble(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date())) + ")");
-                    printWriter.println("public class " + generatedClassName + " extends Initializer {");
-                    printWriter.println("    ");
-                    printWriter.println("    public " + generatedClassName + "() {");
-                    printWriter.print("        super(" + ((QualifiedNameable) targetFieldElement.getEnclosingElement()).getQualifiedName() + "." + targetFieldElement);
-                    if (!dependencyFieldElements.isEmpty()) {
-                        for (@Nonnull VariableElement dependencyFieldElement : dependencyFieldElements) {
-                            printWriter.print(", " + ((QualifiedNameable) dependencyFieldElement.getEnclosingElement()).getQualifiedName() + "." + dependencyFieldElement);
-                        }
-                    }
-                    printWriter.println(");");
-                    printWriter.println("    }");
-                    printWriter.println("    ");
-                    printWriter.println("    protected void execute() throws Exception {");
-                    printWriter.println("        " + sourceClassName + "." + annotatedMethod + ";");
-                    printWriter.println("    }");
-                    printWriter.println("    ");
-                    printWriter.println("}");
-                    printWriter.flush();
+            
+            final @Nonnull JavaSourceFile javaSourceFile = JavaSourceFile.forClass(qualifiedGeneratedClassName, sourceClassElement);
+            javaSourceFile.addImport("net.digitalid.utility.configuration.Initializer");
+            javaSourceFile.beginClass("public class " + generatedClassName + " extends Initializer");
+            javaSourceFile.beginConstructor("public " + generatedClassName + "()");
+            
+            final @Nonnull StringBuilder parameters = new StringBuilder();
+            javaSourceFile.addImport(((QualifiedNameable) targetFieldElement.getEnclosingElement()).getQualifiedName().toString());
+            parameters.append(targetFieldElement.getEnclosingElement().getSimpleName()).append(".").append(targetFieldElement);
+            if (!dependencyFieldElements.isEmpty()) {
+                for (@Nonnull VariableElement dependencyFieldElement : dependencyFieldElements) {
+                    javaSourceFile.addImport(((QualifiedNameable) dependencyFieldElement.getEnclosingElement()).getQualifiedName().toString());
+                    parameters.append(", ").append(dependencyFieldElement.getEnclosingElement().getSimpleName()).append(".").append(dependencyFieldElement);
                 }
-            } catch (@Nonnull IOException exception) {
-                AnnotationLog.error("An exception occurred while generating the class " + QuoteString.inSingle(qualifiedGeneratedClassName) + ": " + exception);
             }
+            
+            javaSourceFile.addStatement("super(" + parameters + ")");
+            javaSourceFile.endConstructor();
+            
+            javaSourceFile.addAnnotation("@Override");
+            javaSourceFile.beginMethod("protected void execute() throws Exception");
+            javaSourceFile.addStatement(sourceClassName + "." + annotatedMethod);
+            javaSourceFile.endMethod();
+            
+            javaSourceFile.endClass();
+            javaSourceFile.write();
             
             serviceLoaderFile.addProvider(qualifiedGeneratedClassName);
         }
