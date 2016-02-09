@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.math.Element;
-import net.digitalid.utility.testing.LoggerSetup;
+import net.digitalid.utility.testing.CustomTest;
 import net.digitalid.utility.time.Time;
 
 import org.junit.Assert;
@@ -13,7 +13,7 @@ import org.junit.Test;
 /**
  * Unit testing of the class {@link KeyPair}.
  */
-public class KeyPairTest extends LoggerSetup {
+public class KeyPairTest extends CustomTest {
     
     @Test
     public void testKeyPair() {

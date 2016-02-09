@@ -51,7 +51,8 @@ public class InitializationProcessor extends CustomProcessor {
             final @Nonnull ExecutableElement annotatedMethod = (ExecutableElement) annotatedElement;
             
             @Nullable String errorMessage = null;
-            if (!annotatedMethod.getModifiers().contains(Modifier.STATIC)) { errorMessage = "The annotated method has to be static:"; }
+            if (annotatedMethod.getModifiers().contains(Modifier.PRIVATE)) { errorMessage = "The annotated method may not be private:"; }
+            else if (!annotatedMethod.getModifiers().contains(Modifier.STATIC)) { errorMessage = "The annotated method has to be static:"; }
             else if (!annotatedMethod.getParameters().isEmpty()) { errorMessage = "The annotated method may not have parameters:"; }
             else if (annotatedMethod.getReturnType().getKind() != TypeKind.VOID) { errorMessage = "The annotated method may not have a return type:"; }
             else if (annotatedMethod.getEnclosingElement().getEnclosingElement().getKind() != ElementKind.PACKAGE) { errorMessage = "The annotated method has to be in a top-level class:"; }
@@ -59,6 +60,8 @@ public class InitializationProcessor extends CustomProcessor {
             
             final @Nullable AnnotationMirror annotationMirror = ProcessingUtility.getAnnotationMirror(annotatedMethod, Initialize.class);
             if (annotationMirror == null) { continue; }
+            
+            // TODO: It should be possible to ensure during compile-time that there are no cyclic dependencies.
             
             @Nullable VariableElement targetFieldElement = null;
             @Nullable @NonNullableElements List<VariableElement> dependencyFieldElements = null;
@@ -104,8 +107,8 @@ public class InitializationProcessor extends CustomProcessor {
             final @Nonnull String generatedClassName = sourceClassName + "$" + annotatedMethod.getSimpleName();
             
             final @Nonnull JavaSourceFile javaSourceFile = JavaSourceFile.forClass(qualifiedGeneratedClassName, sourceClassElement);
-            javaSourceFile.addImport("net.digitalid.utility.configuration.Initializer");
-            javaSourceFile.beginClass("public class " + generatedClassName + " extends Initializer");
+            javaSourceFile.addImport("net.digitalid.utility.initialization.LoggingInitializer");
+            javaSourceFile.beginClass("public class " + generatedClassName + " extends LoggingInitializer");
             
             javaSourceFile.beginJavadoc();
             javaSourceFile.addJavadoc("This default constructor is called by the service loader.");
@@ -126,7 +129,7 @@ public class InitializationProcessor extends CustomProcessor {
             javaSourceFile.endConstructor();
             
             javaSourceFile.addAnnotation("@Override");
-            javaSourceFile.beginMethod("protected void execute() throws Exception");
+            javaSourceFile.beginMethod("protected void executeWithoutLogging() throws Exception");
             javaSourceFile.addStatement(sourceClassName + "." + annotatedMethod);
             javaSourceFile.endMethod();
             
