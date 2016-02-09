@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.processor.files.JavaSourceFile;
-import net.digitalid.utility.validation.annotations.meta.TargetTypes;
+import net.digitalid.utility.validation.annotations.meta.MethodAnnotation;
 
 /**
  * This annotation indicates that a method may only be invoked in one of the given code blocks.
@@ -18,8 +18,8 @@ import net.digitalid.utility.validation.annotations.meta.TargetTypes;
  */
 @Documented
 @Target(ElementType.METHOD)
-@TargetTypes(JavaSourceFile.class)
 @Retention(RetentionPolicy.RUNTIME)
+@MethodAnnotation(JavaSourceFile.class)
 public @interface OnlyPossibleIn {
     
     /**

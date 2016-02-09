@@ -1,7 +1,5 @@
 package net.digitalid.utility.processor.files;
 
-import net.digitalid.utility.processor.files.annotations.NonWrittenRecipient;
-
 import java.io.IOException;
 
 import javax.annotation.Nonnull;
@@ -9,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
 import net.digitalid.utility.logging.processing.AnnotationLog;
+import net.digitalid.utility.processor.files.annotations.NonWrittenRecipient;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
