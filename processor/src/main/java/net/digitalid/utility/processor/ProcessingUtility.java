@@ -61,14 +61,22 @@ public class ProcessingUtility {
     /* -------------------------------------------------- Fields of Type -------------------------------------------------- */
     
     /**
+     * Returns the type of the given field as a string without any generic types.
+     */
+    @Pure
+    public static @Nonnull String getNonGenericFieldType(@Nonnull VariableElement field) {
+        final @Nonnull String fieldTypeName = field.asType().toString();
+        return fieldTypeName.contains("<") ? fieldTypeName.substring(0, fieldTypeName.indexOf('<')) : fieldTypeName;
+    }
+    
+    /**
      * Returns a list of all the fields with the given type in the given class.
      */
     @Pure
     public static @Capturable @Nonnull List<VariableElement> getFieldsOfType(@Nonnull TypeElement classElement, @Nonnull Class<?> fieldType) {
         final @Nonnull List<VariableElement> fields = new LinkedList<>();
         for (@Nonnull VariableElement field : ElementFilter.fieldsIn(classElement.getEnclosedElements())) {
-            @Nonnull String fieldTypeName = field.asType().toString();
-            if (fieldTypeName.contains("<")) { fieldTypeName = fieldTypeName.substring(0, fieldTypeName.indexOf('<')); }
+            final @Nonnull String fieldTypeName = getNonGenericFieldType(field);
             AnnotationLog.verbose("Found with the type '" + fieldTypeName + "' the field", SourcePosition.of(field));
             if (fieldTypeName.equals(fieldType.getCanonicalName())) { fields.add(field); }
         }

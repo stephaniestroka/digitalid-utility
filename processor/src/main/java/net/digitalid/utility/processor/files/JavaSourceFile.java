@@ -20,9 +20,12 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.UnexpectedValueException;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
+import net.digitalid.utility.processor.files.annotations.NonWrittenRecipient;
+import net.digitalid.utility.processor.files.annotations.OnlyPossibleIn;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 import static net.digitalid.utility.processor.files.JavaSourceFile.CodeBlock.*;
@@ -37,15 +40,36 @@ public class JavaSourceFile extends GeneratedFile {
     
     private final @Nonnull String qualifiedClassName;
     
+    /**
+     * Returns the qualified name of the class that is generated.
+     */
+    @Pure
+    public @Nonnull String getQualifiedClassName() {
+        return qualifiedClassName;
+    }
+    
     @Pure
     @Override
     public @Nonnull String getName() {
         return qualifiedClassName;
     }
     
+    protected void printPackage(@Nonnull PrintWriter printWriter) {
+        printWriter.println("package " + qualifiedClassName.substring(0, qualifiedClassName.lastIndexOf('.')) + ";");
+        printWriter.println();
+    }
+    
     /* -------------------------------------------------- Source Class -------------------------------------------------- */
     
     private final @Nonnull TypeElement sourceClassElement;
+    
+    /**
+     * Returns the type element of the class for which this source file is generated.
+     */
+    @Pure
+    public @Nonnull TypeElement getSourceClassElement() {
+        return sourceClassElement;
+    }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
@@ -56,15 +80,19 @@ public class JavaSourceFile extends GeneratedFile {
     }
     
     /**
-     * Returns a Java source file for the given class.
+     * Returns a Java source file in which the class with the given qualified name is generated for the given source class.
      */
     @Pure
     public static @Nonnull JavaSourceFile forClass(@Nonnull String qualifiedClassName, @Nonnull TypeElement sourceClassElement) {
         return new JavaSourceFile(qualifiedClassName, sourceClassElement);
     }
     
-    /* -------------------------------------------------- Imports -------------------------------------------------- */
+    /* -------------------------------------------------- Import Groups -------------------------------------------------- */
     
+    /**
+     * An import group collects all the import statements of a given prefix.
+     */
+    @Mutable
     private static class ImportGroup {
         
         final @Nonnull String prefix;
@@ -74,17 +102,40 @@ public class JavaSourceFile extends GeneratedFile {
         }
         
         final @Nonnull @NonNullableElements Set<String> imports = new HashSet<>();
+        
     }
     
+    /**
+     * Stores the import groups which will be separated by an empty line in the desired order.
+     */
     private final @Nonnull @NonNullableElements ImportGroup[] importGroups = {
         new ImportGroup("java."),
         new ImportGroup("javax."),
         new ImportGroup("net.digitalid.utility."),
         new ImportGroup("net.digitalid.database"),
         new ImportGroup("net.digitalid.core"),
+        new ImportGroup("static "),
         new ImportGroup("")
     };
     
+    protected void printImports(@Nonnull PrintWriter printWriter) {
+        for (@Nonnull ImportGroup importGroup : importGroups) {
+            if (!importGroup.imports.isEmpty()) {
+                final @Nonnull @NonNullableElements ArrayList<String> imports = new ArrayList<>(importGroup.imports);
+                Collections.sort(imports);
+                for (@Nonnull String importString : imports) {
+                    printWriter.println("import " + importString + ";");
+                }
+                printWriter.println();
+            }
+        }
+    }
+    
+    /**
+     * Adds an import statement for the class with the given qualified name.
+     * 
+     * @return whether the class with the given qualified name has already been imported.
+     */
     @NonWrittenRecipient
     public boolean addImport(@Nonnull String qualifiedClassName) {
         requireNotWritten();
@@ -94,39 +145,80 @@ public class JavaSourceFile extends GeneratedFile {
                 return importGroup.imports.add(qualifiedClassName);
             }
         }
+        
+        // The empty prefix of the last import group should always be matched.
         throw UnexpectedValueException.with("qualifiedClassName", qualifiedClassName);
     }
     
-    /* -------------------------------------------------- Stack -------------------------------------------------- */
+    /**
+     * Adds a static import statement for the member with the given qualified name.
+     * 
+     * @return whether the member with the given qualified name has already been imported.
+     */
+    @NonWrittenRecipient
+    public boolean addStaticImport(@Nonnull String qualifiedMemberName) {
+        return addImport("static " + qualifiedMemberName);
+    }
     
+    /* -------------------------------------------------- Code Blocks -------------------------------------------------- */
+    
+    /**
+     * This class enumerates the various code blocks which can be nested in each other to generate Java code.
+     */
+    @Immutable
     public static enum CodeBlock {
-        NONE(""), JAVADOC(" * "), CLASS, BLOCK, CONSTRUCTOR, METHOD, IF, ELSE, ELSE_IF, FOR_LOOP, WHILE_LOOP;
+        NONE(""), JAVADOC(" * "), CLASS(false), BLOCK(true), CONSTRUCTOR(true), METHOD(true), IF(true), ELSE(true), ELSE_IF(true), FOR_LOOP(true), WHILE_LOOP(true);
         
         private final @Nonnull String indentation;
         
+        /**
+         * Returns the indentation that is used for all blocks that are nested within this code block.
+         */
         @Pure
         public @Nonnull String getIndentation() {
             return indentation;
         }
         
-        private CodeBlock(@Nonnull String indentation) {
+        private final boolean allowsStatements;
+        
+        /**
+         * Returns whether this code block allows to {@link #addStatement(java.lang.String) add statements}.
+         */
+        @Pure
+        public boolean allowsStatements() {
+            return allowsStatements;
+        }
+        
+        private CodeBlock(@Nonnull String indentation, boolean allowsStatements) {
             this.indentation = indentation;
+            this.allowsStatements = allowsStatements;
         }
         
-        private CodeBlock() {
-            this("    ");
+        private CodeBlock(@Nonnull String indentation) {
+            this(indentation, false);
         }
         
-    }
-    
-    private final @Nonnull @NonNullableElements Stack<CodeBlock> codeStack = new Stack<>();
-    
-    public @Nonnull CodeBlock getCurrentCodeBlock() {
-        return codeStack.empty() ? CodeBlock.NONE : codeStack.peek();
+        private CodeBlock(boolean allowsStatements) {
+            this("    ", allowsStatements);
+        }
+        
     }
     
     /**
-     * Requires that the {@link #getCurrentCodeBlock() current code block} is one of the given types.
+     * Stores the stack of code blocks that are currently nested in each other.
+     */
+    private final @Nonnull @NonNullableElements Stack<CodeBlock> codeBlocksStack = new Stack<>();
+    
+    /**
+     * Returns the code block which is currently on top of the stack or {@link #NONE} if the stack is empty.
+     */
+    public @Nonnull CodeBlock getCurrentCodeBlock() {
+        return codeBlocksStack.empty() ? CodeBlock.NONE : codeBlocksStack.peek();
+    }
+    
+    /**
+     * Requires that the {@link #getCurrentCodeBlock() current code block} is one of the given code blocks.
+     * An empty array of code blocks is used to indicate that any block that {@link CodeBlock#allowsStatements() allows statements} is fine.
      * 
      * @throws PreconditionViolationException if this is not the case.
      */
@@ -134,57 +226,95 @@ public class JavaSourceFile extends GeneratedFile {
     @NonWrittenRecipient
     protected void requireCurrentCodeBlock(@Nonnull CodeBlock... codeBlocks) {
         requireNotWritten();
-        Require.that(Arrays.asList(codeBlocks).contains(getCurrentCodeBlock())).orThrow("The current code block should have been one of " + Arrays.toString(codeBlocks) + " but was " + getCurrentCodeBlock());
+        
+        if (codeBlocks.length == 0) {
+            Require.that(getCurrentCodeBlock().allowsStatements()).orThrow("The current code block (" + getCurrentCodeBlock() + ") should allow statements but does not.");
+        } else {
+            Require.that(Arrays.asList(codeBlocks).contains(getCurrentCodeBlock())).orThrow("The current code block should have been one of " + Arrays.toString(codeBlocks) + " but was " + getCurrentCodeBlock());
+        }
     }
     
-    /* -------------------------------------------------- Code -------------------------------------------------- */
+    /* -------------------------------------------------- Source Code -------------------------------------------------- */
     
+    /**
+     * Stores the source code that is added after the import statements.
+     */
     private final @Nonnull StringBuilder sourceCode = new StringBuilder();
     
+    protected void printSourceCode(@Nonnull PrintWriter printWriter) {
+        printWriter.append(sourceCode);
+    }
+    
+    /**
+     * Adds the given code to the source code on a new line with the right indentation.
+     */
     @NonWrittenRecipient
-    protected void addCodeLineWithIndentation(@Nonnull String statement) {
+    protected void addCodeLineWithIndentation(@Nonnull String code) {
         requireNotWritten();
         
-        for (@Nonnull CodeBlock codeBlock : codeStack) {
+        for (@Nonnull CodeBlock codeBlock : codeBlocksStack) {
             sourceCode.append(codeBlock.getIndentation());
         }
-        sourceCode.append(statement).append("\n");
+        sourceCode.append(code).append(System.lineSeparator());
     }
     
+    /**
+     * Begins the given code block with the given declaration and a brace.
+     */
     @NonWrittenRecipient
-    protected void beginBlock(@Nonnull String declaration, @Nonnull CodeBlock codeBlock, @Nonnull CodeBlock... codeBlocks) {
-        requireCurrentCodeBlock(codeBlocks);
+    protected void beginBlock(@Nonnull String declaration, @Nonnull CodeBlock codeBlock, @Nonnull CodeBlock... requiredCurrentCodeBlocks) {
+        requireCurrentCodeBlock(requiredCurrentCodeBlocks);
         
         addCodeLineWithIndentation(declaration + (declaration.isEmpty() ? "" : " ") + "{");
-        codeStack.push(codeBlock);
+        codeBlocksStack.push(codeBlock);
     }
     
+    /**
+     * Begins the given code block with the given keyword and condition in parentheses before a brace.
+     */
     @NonWrittenRecipient
-    protected void beginBlockWithParantheses(@Nonnull String keyword, @Nonnull String condition, @Nonnull CodeBlock codeBlock, @Nonnull CodeBlock... codeBlocks) {
-        beginBlock(keyword + " (" + condition + ")", codeBlock, codeBlocks);
+    protected void beginBlock(@Nonnull String keyword, @Nonnull String condition, @Nonnull CodeBlock codeBlock, @Nonnull CodeBlock... requiredCurrentCodeBlocks) {
+        beginBlock(keyword + " (" + condition + ")", codeBlock, requiredCurrentCodeBlocks);
     }
     
+    /**
+     * Ends the current code block by adding the closing brace on a new line with less indentation.
+     */
     @NonWrittenRecipient
-    protected void endBlock(@Nonnull CodeBlock... codeBlocks) {
-        requireCurrentCodeBlock(codeBlocks);
+    protected void endBlock(@Nonnull CodeBlock... requiredCurrentCodeBlocks) {
+        requireCurrentCodeBlock(requiredCurrentCodeBlocks);
         
-        codeStack.pop();
+        codeBlocksStack.pop();
         addCodeLineWithIndentation("}");
+    }
+    
+    /* -------------------------------------------------- Empty Line -------------------------------------------------- */
+    
+    @NonWrittenRecipient
+    public void addEmptyLine() {
+        addCodeLineWithIndentation("");
+    }
+    
+    /* -------------------------------------------------- Comment -------------------------------------------------- */
+    
+    @NonWrittenRecipient
+    public void addComment(@Nonnull String comment) {
+        addCodeLineWithIndentation("// " + comment);
     }
     
     /* -------------------------------------------------- Javadoc -------------------------------------------------- */
     
     @NonWrittenRecipient
-    @OnlyIn({NONE, CLASS})
+    @OnlyPossibleIn({NONE, CLASS})
     public void beginJavadoc() {
         requireCurrentCodeBlock(NONE, CLASS);
         
         addCodeLineWithIndentation("/**");
-        codeStack.push(JAVADOC);
+        codeBlocksStack.push(JAVADOC);
     }
     
     @NonWrittenRecipient
-    @OnlyIn({JAVADOC})
+    @OnlyPossibleIn(JAVADOC)
     public void addJavadoc(@Nonnull String javadoc) {
         requireCurrentCodeBlock(JAVADOC);
         
@@ -192,18 +322,18 @@ public class JavaSourceFile extends GeneratedFile {
     }
     
     @NonWrittenRecipient
-    @OnlyIn({JAVADOC})
+    @OnlyPossibleIn(JAVADOC)
     public void endJavadoc() {
         requireCurrentCodeBlock(JAVADOC);
         
-        codeStack.pop();
+        codeBlocksStack.pop();
         addCodeLineWithIndentation(" */");
     }
     
     /* -------------------------------------------------- Annotation -------------------------------------------------- */
     
     @NonWrittenRecipient
-    @OnlyIn({NONE, CLASS})
+    @OnlyPossibleIn({NONE, CLASS})
     public void addAnnotation(@Nonnull String annotation) {
         requireCurrentCodeBlock(NONE, CLASS);
         
@@ -213,17 +343,19 @@ public class JavaSourceFile extends GeneratedFile {
     /* -------------------------------------------------- Class -------------------------------------------------- */
     
     @NonWrittenRecipient
-    @OnlyIn({NONE, CLASS})
+    @OnlyPossibleIn({NONE, CLASS})
     public void beginClass(@Nonnull String declaration) {
         addImport("javax.annotation.Generated");
         StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
-        addAnnotation("@Generated(value = {" + QuoteString.inDouble(caller.getClassName()) + "}, date = " + QuoteString.inDouble(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date())) + ")");
+        final @Nonnull String generator = caller.getClassName();
+        final @Nonnull String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date());
+        addAnnotation("@Generated(value = {" + QuoteString.inDouble(generator) + "}, date = " + QuoteString.inDouble(date) + ")");
         beginBlock(declaration, CLASS, NONE, CLASS);
-        addCodeLineWithIndentation("");
+        addEmptyLine();
     }
     
     @NonWrittenRecipient
-    @OnlyIn({CLASS})
+    @OnlyPossibleIn({CLASS})
     public void endClass() {
         endBlock(CLASS);
     }
@@ -231,13 +363,13 @@ public class JavaSourceFile extends GeneratedFile {
     /* -------------------------------------------------- Block -------------------------------------------------- */
     
     @NonWrittenRecipient
-    @OnlyIn({CLASS})
+    @OnlyPossibleIn(CLASS)
     public void beginBlock(boolean withStaticModifier) {
         beginBlock(withStaticModifier ? "static" : "", BLOCK, CLASS);
     }
     
     @NonWrittenRecipient
-    @OnlyIn({BLOCK})
+    @OnlyPossibleIn(BLOCK)
     public void endBlock() {
         endBlock(BLOCK);
     }
@@ -245,43 +377,43 @@ public class JavaSourceFile extends GeneratedFile {
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     @NonWrittenRecipient
-    @OnlyIn({CLASS})
+    @OnlyPossibleIn(CLASS)
     public void beginConstructor(@Nonnull String declaration) {
         beginBlock(declaration, CONSTRUCTOR, CLASS);
     }
     
     @NonWrittenRecipient
-    @OnlyIn({CONSTRUCTOR})
+    @OnlyPossibleIn(CONSTRUCTOR)
     public void endConstructor() {
         endBlock(CONSTRUCTOR);
-        addCodeLineWithIndentation("");
+        addEmptyLine();
     }
     
     /* -------------------------------------------------- Method -------------------------------------------------- */
     
     @NonWrittenRecipient
-    @OnlyIn({CLASS})
+    @OnlyPossibleIn(CLASS)
     public void beginMethod(@Nonnull String declaration) {
         beginBlock(declaration, METHOD, CLASS);
     }
     
     @NonWrittenRecipient
-    @OnlyIn({METHOD})
+    @OnlyPossibleIn(METHOD)
     public void endMethod() {
         endBlock(METHOD);
-        addCodeLineWithIndentation("");
+        addEmptyLine();
     }
     
     /* -------------------------------------------------- If -------------------------------------------------- */
     
     @NonWrittenRecipient
-    @OnlyIn({BLOCK, CONSTRUCTOR, METHOD, IF, ELSE, ELSE_IF, FOR_LOOP, WHILE_LOOP})
+    @OnlyPossibleIn()
     public void beginIf(@Nonnull String condition) {
-        beginBlockWithParantheses("if", condition, IF, BLOCK, CONSTRUCTOR, METHOD, IF, ELSE, ELSE_IF, FOR_LOOP, WHILE_LOOP);
+        beginBlock("if", condition, IF);
     }
     
     @NonWrittenRecipient
-    @OnlyIn({IF})
+    @OnlyPossibleIn(IF)
     public void endIf() {
         endBlock(IF);
     }
@@ -289,16 +421,16 @@ public class JavaSourceFile extends GeneratedFile {
     /* -------------------------------------------------- Else -------------------------------------------------- */
     
     @NonWrittenRecipient
-    @OnlyIn({IF, ELSE_IF})
+    @OnlyPossibleIn({IF, ELSE_IF})
     public void beginElse() {
         requireCurrentCodeBlock(IF, ELSE_IF);
         
-        codeStack.pop();
-        beginBlock("} else", ELSE, BLOCK, CONSTRUCTOR, METHOD, IF, ELSE, ELSE_IF, FOR_LOOP, WHILE_LOOP);
+        codeBlocksStack.pop();
+        beginBlock("} else", ELSE);
     }
     
     @NonWrittenRecipient
-    @OnlyIn({ELSE})
+    @OnlyPossibleIn(ELSE)
     public void endElse() {
         endBlock(ELSE);
     }
@@ -306,16 +438,16 @@ public class JavaSourceFile extends GeneratedFile {
     /* -------------------------------------------------- Else If -------------------------------------------------- */
     
     @NonWrittenRecipient
-    @OnlyIn({IF, ELSE_IF})
+    @OnlyPossibleIn({IF, ELSE_IF})
     public void beginElseIf(@Nonnull String condition) {
         requireCurrentCodeBlock(IF, ELSE_IF);
         
-        codeStack.pop();
-        beginBlockWithParantheses("} else if", condition, ELSE_IF, BLOCK, CONSTRUCTOR, METHOD, IF, ELSE, ELSE_IF, FOR_LOOP, WHILE_LOOP);
+        codeBlocksStack.pop();
+        beginBlock("} else if", condition, ELSE_IF);
     }
     
     @NonWrittenRecipient
-    @OnlyIn({ELSE_IF})
+    @OnlyPossibleIn(ELSE_IF)
     public void endElseIf() {
         endBlock(ELSE_IF);
     }
@@ -323,13 +455,13 @@ public class JavaSourceFile extends GeneratedFile {
     /* -------------------------------------------------- For Loop -------------------------------------------------- */
     
     @NonWrittenRecipient
-    @OnlyIn({BLOCK, CONSTRUCTOR, METHOD, IF, ELSE, ELSE_IF, FOR_LOOP, WHILE_LOOP})
+    @OnlyPossibleIn()
     public void beginForLoop(@Nonnull String condition) {
-        beginBlockWithParantheses("for", condition, FOR_LOOP, BLOCK, CONSTRUCTOR, METHOD, IF, ELSE, ELSE_IF, FOR_LOOP, WHILE_LOOP);
+        beginBlock("for", condition, FOR_LOOP);
     }
     
     @NonWrittenRecipient
-    @OnlyIn({FOR_LOOP})
+    @OnlyPossibleIn(FOR_LOOP)
     public void endForLoop() {
         endBlock(FOR_LOOP);
     }
@@ -337,13 +469,13 @@ public class JavaSourceFile extends GeneratedFile {
     /* -------------------------------------------------- While Loop -------------------------------------------------- */
     
     @NonWrittenRecipient
-    @OnlyIn({BLOCK, CONSTRUCTOR, METHOD, IF, ELSE, ELSE_IF, FOR_LOOP, WHILE_LOOP})
+    @OnlyPossibleIn()
     public void beginWhileLoop(@Nonnull String condition) {
-        beginBlockWithParantheses("while", condition, WHILE_LOOP, BLOCK, CONSTRUCTOR, METHOD, IF, ELSE, ELSE_IF, FOR_LOOP, WHILE_LOOP);
+        beginBlock("while", condition, WHILE_LOOP);
     }
     
     @NonWrittenRecipient
-    @OnlyIn({WHILE_LOOP})
+    @OnlyPossibleIn(WHILE_LOOP)
     public void endWhileLoop() {
         endBlock(WHILE_LOOP);
     }
@@ -351,9 +483,9 @@ public class JavaSourceFile extends GeneratedFile {
     /* -------------------------------------------------- Statement -------------------------------------------------- */
     
     @NonWrittenRecipient
-    @OnlyIn({BLOCK, CONSTRUCTOR, METHOD, IF, ELSE, ELSE_IF, FOR_LOOP, WHILE_LOOP})
+    @OnlyPossibleIn()
     public void addStatement(@Nonnull String statement) {
-        requireCurrentCodeBlock(BLOCK, CONSTRUCTOR, METHOD, IF, ELSE, ELSE_IF, FOR_LOOP, WHILE_LOOP);
+        requireCurrentCodeBlock();
         
         addCodeLineWithIndentation(statement + ";");
     }
@@ -361,33 +493,16 @@ public class JavaSourceFile extends GeneratedFile {
     /* -------------------------------------------------- Writing -------------------------------------------------- */
     
     @Override
-    public boolean writeOnce() {
+    @NonWrittenRecipient
+    protected void writeOnce() throws IOException {
         requireCurrentCodeBlock(NONE);
         
-        try {
-            final @Nonnull JavaFileObject javaFileObject = AnnotationProcessing.environment.get().getFiler().createSourceFile(qualifiedClassName, sourceClassElement);
-            try (@Nonnull Writer writer = javaFileObject.openWriter(); @Nonnull PrintWriter printWriter = new PrintWriter(writer)) {
-                    printWriter.println("package " + qualifiedClassName.substring(0, qualifiedClassName.lastIndexOf('.')) + ";");
-                    printWriter.println();
-                    for (@Nonnull ImportGroup importGroup : importGroups) {
-                        if (!importGroup.imports.isEmpty()) {
-                            final @Nonnull @NonNullableElements ArrayList<String> imports = new ArrayList<>(importGroup.imports);
-                            Collections.sort(imports);
-                            for (@Nonnull String importString : imports) {
-                                printWriter.println("import " + importString + ";");
-                            }
-                            printWriter.println();
-                        }
-                    }
-                    printWriter.append(sourceCode);
-                    printWriter.flush();
-            }
-            AnnotationLog.information("Wrote the source code to the file " + this);
-            return true;
-        } catch (@Nonnull IOException exception) {
-            AnnotationLog.error("An exception occurred while writing the source code to the file " + this + ": " + exception);
+        final @Nonnull JavaFileObject javaFileObject = AnnotationProcessing.environment.get().getFiler().createSourceFile(qualifiedClassName, sourceClassElement);
+        try (@Nonnull Writer writer = javaFileObject.openWriter(); @Nonnull PrintWriter printWriter = new PrintWriter(writer)) {
+            printPackage(printWriter);
+            printImports(printWriter);
+            printSourceCode(printWriter);
         }
-        return false;
     }
     
 }

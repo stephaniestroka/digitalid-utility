@@ -106,8 +106,13 @@ public class InitializationProcessor extends CustomProcessor {
             final @Nonnull JavaSourceFile javaSourceFile = JavaSourceFile.forClass(qualifiedGeneratedClassName, sourceClassElement);
             javaSourceFile.addImport("net.digitalid.utility.configuration.Initializer");
             javaSourceFile.beginClass("public class " + generatedClassName + " extends Initializer");
-            javaSourceFile.beginConstructor("public " + generatedClassName + "()");
             
+            javaSourceFile.beginJavadoc();
+            javaSourceFile.addJavadoc("This default constructor is called by the service loader.");
+            javaSourceFile.addJavadoc("It registers this initializer at the given configuration.");
+            javaSourceFile.endJavadoc();
+            
+            javaSourceFile.beginConstructor("public " + generatedClassName + "()");
             final @Nonnull StringBuilder parameters = new StringBuilder();
             javaSourceFile.addImport(((QualifiedNameable) targetFieldElement.getEnclosingElement()).getQualifiedName().toString());
             parameters.append(targetFieldElement.getEnclosingElement().getSimpleName()).append(".").append(targetFieldElement);
@@ -117,7 +122,6 @@ public class InitializationProcessor extends CustomProcessor {
                     parameters.append(", ").append(dependencyFieldElement.getEnclosingElement().getSimpleName()).append(".").append(dependencyFieldElement);
                 }
             }
-            
             javaSourceFile.addStatement("super(" + parameters + ")");
             javaSourceFile.endConstructor();
             

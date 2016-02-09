@@ -1,9 +1,14 @@
 package net.digitalid.utility.processor.files;
 
+import net.digitalid.utility.processor.files.annotations.NonWrittenRecipient;
+
+import java.io.IOException;
+
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
+import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
@@ -54,13 +59,11 @@ public abstract class GeneratedFile {
     /* -------------------------------------------------- Writing -------------------------------------------------- */
     
     /**
-     * Writes this generated file to the file system and returns whether it was successful.
-     * <p>
-     * <em>Important:</em> This method is guaranteed to be called only once and the
-     * implementation should not check that this file has not already been written.
+     * Writes this generated file to the file system.
+     * This method is guaranteed to be called only once.
      */
     @NonWrittenRecipient
-    protected abstract boolean writeOnce(); // TODO: Catch the IOException in the other write-method!
+    protected abstract void writeOnce() throws IOException;
     
     /**
      * Writes this generated file to the file system and returns whether it was successful.
@@ -69,9 +72,16 @@ public abstract class GeneratedFile {
     public final boolean write() {
         requireNotWritten();
         
-        final boolean result = writeOnce();
+        try {
+            writeOnce();
+        } catch (@Nonnull IOException exception) {
+            AnnotationLog.error("A problem occurred while writing the file " + this + ": " + exception);
+            return false;
+        }
+        
+        AnnotationLog.information("Wrote the generated file " + this);
         this.written = true;
-        return result;
+        return true;
     }
     
 }

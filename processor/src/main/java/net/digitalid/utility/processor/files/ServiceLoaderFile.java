@@ -21,6 +21,7 @@ import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.processor.ProcessingUtility;
+import net.digitalid.utility.processor.files.annotations.NonWrittenRecipient;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
@@ -66,7 +67,7 @@ public class ServiceLoaderFile extends GeneratedFile {
     protected ServiceLoaderFile(@Nonnull Class<?> service) {
         this.service = service;
         this.serviceMirror = AnnotationProcessing.getElementUtils().getTypeElement(service.getCanonicalName()).asType();
-        AnnotationLog.verbose("Created for the service " + QuoteString.inSingle(service.getName()));
+        AnnotationLog.verbose("Created the service loader file for the service " + QuoteString.inSingle(service.getName()));
     }
     
     /**
@@ -108,10 +109,10 @@ public class ServiceLoaderFile extends GeneratedFile {
         else if (!ProcessingUtility.hasPublicDefaultConstructor(providerElement)) { errorMessage = "The annotated class does not have a public default constructor:"; }
         else if (!AnnotationProcessing.getTypeUtils().isSubtype(providerElement.asType(), serviceMirror)) { errorMessage = "The annotated class does not implement the specified service:"; }
         
-        if (errorMessage != null) {
-            AnnotationLog.error(errorMessage, SourcePosition.of(providerElement));
-        } else {
+        if (errorMessage == null) {
             addProvider(AnnotationProcessing.getElementUtils().getBinaryName((TypeElement) providerElement).toString());
+        } else {
+            AnnotationLog.error(errorMessage, SourcePosition.of(providerElement));
         }
     }
     
@@ -119,21 +120,14 @@ public class ServiceLoaderFile extends GeneratedFile {
     
     @Override
     @NonWrittenRecipient
-    public boolean writeOnce() {
+    protected void writeOnce() throws IOException {
         Collections.sort(qualifiedProviderNames);
-        try {
-            final @Nonnull FileObject fileObject = AnnotationProcessing.environment.get().getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", getJarRelativeFilePath());
-            try (@Nonnull Writer writer = fileObject.openWriter()) {
-                for (@Nonnull String qualifiedProviderName : qualifiedProviderNames) {
-                    writer.write(qualifiedProviderName + "\n");
-                }
+        final @Nonnull FileObject fileObject = AnnotationProcessing.environment.get().getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", getJarRelativeFilePath());
+        try (@Nonnull Writer writer = fileObject.openWriter()) {
+            for (@Nonnull String qualifiedProviderName : qualifiedProviderNames) {
+                writer.write(qualifiedProviderName + "\n");
             }
-            AnnotationLog.information("Wrote the service providers to the file " + this);
-            return true;
-        } catch (@Nonnull IOException exception) {
-            AnnotationLog.error("An exception occurred while writing the service providers to the file " + this + ": " + exception);
         }
-        return false;
     }
     
 }
