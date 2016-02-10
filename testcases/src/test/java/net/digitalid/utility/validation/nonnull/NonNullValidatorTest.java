@@ -1,11 +1,11 @@
 package net.digitalid.utility.validation.nonnull;
 
-import net.digitalid.utility.testing.LoggerSetup;
+import net.digitalid.utility.testing.CustomTest;
 
 /**
  *
  */
-public class NonNullValidatorTest extends LoggerSetup {
+public class NonNullValidatorTest extends CustomTest {
     
 //    @Rule
 //    public ExpectedException expectedException = ExpectedException.none();

@@ -3,13 +3,15 @@ package net.digitalid.utility.testing;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
+import net.digitalid.utility.validation.annotations.type.Stateless;
 
 import org.junit.BeforeClass;
 
 /**
  * This class sets the output file of the logger.
  */
-public class LoggerSetup extends TestingBase {
+@Stateless
+public abstract class LoggerSetup {
     
     /**
      * Sets the output file of the logger.

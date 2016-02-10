@@ -2,7 +2,7 @@ package net.digitalid.utility.validation.math;
 
 import java.math.BigInteger;
 
-import net.digitalid.utility.testing.LoggerSetup;
+import net.digitalid.utility.testing.CustomTest;
 import net.digitalid.utility.validation.annotations.math.NonPositive;
 
 import org.junit.Rule;
@@ -11,7 +11,7 @@ import org.junit.rules.ExpectedException;
 /**
  *
  */
-public class NonPositiveBigIntegerTest extends LoggerSetup {
+public class NonPositiveBigIntegerTest extends CustomTest {
     
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

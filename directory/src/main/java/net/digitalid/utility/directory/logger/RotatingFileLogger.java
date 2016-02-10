@@ -10,9 +10,12 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.directory.Directory;
+import net.digitalid.utility.initialization.Initialize;
 import net.digitalid.utility.logging.Level;
+import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
+import net.digitalid.utility.logging.logger.StandardOutputLogger;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
@@ -38,7 +41,7 @@ public class RotatingFileLogger extends FileLogger {
      */
     @Pure
     private static @Nonnull File getCurrentFile() {
-        return new File(Directory.getLogsDirectory().getPath() + File.separator + fileFormat.get().format(new Date()) + ".log");
+        return new File(Directory.getLogsDirectory().getPath() + "/" + fileFormat.get().format(new Date()) + ".log");
     }
     
     /* -------------------------------------------------- Current Date -------------------------------------------------- */
@@ -112,9 +115,14 @@ public class RotatingFileLogger extends FileLogger {
     /**
      * Initializes the logger with a rotating file logger.
      */
-    // @Initialize(Logger.class, dependencies = {Directory.class}) // TODO: Remove the comment!
+    @Initialize(target = Logger.class, dependencies = {Directory.class})
     public static void initialize() throws FileNotFoundException {
-        Logger.logger.set(RotatingFileLogger.withDefaultDirectory());
+        if (Logger.logger.get() instanceof StandardOutputLogger) {
+            Logger.logger.set(RotatingFileLogger.withDefaultDirectory());
+            Log.verbose("Replaced the default standard output logger with a rotating file logger.");
+        } else {
+            Log.verbose("Did not replace the non-default logger with a rotating file logger.");
+        }
     }
     
 }

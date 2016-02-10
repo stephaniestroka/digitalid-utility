@@ -30,7 +30,7 @@ public abstract class Logger {
     /**
      * Stores the logger which is used for logging.
      */
-    public static final Configuration<Logger> logger = Configuration.<Logger>with(StandardOutputLogger.withNoArguments()).addDependency(Level.threshold).addDependency(Caller.index).addDependency(Version.string);
+    public static final Configuration<Logger> logger = Configuration.<Logger>with(StandardOutputLogger.withNoArguments()).addDependency(Caller.index).addDependency(Version.string);
     
     /* -------------------------------------------------- Logging -------------------------------------------------- */
     

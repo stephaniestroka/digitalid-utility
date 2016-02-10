@@ -1,6 +1,7 @@
 package net.digitalid.utility.logging;
 
 import net.digitalid.utility.configuration.Configuration;
+import net.digitalid.utility.logging.logger.Logger;
 
 /**
  * This class enumerates the various levels of log messages.
@@ -77,6 +78,6 @@ public enum Level {
     /**
      * Stores the level above (and including) which the messages are logged.
      */
-    public static final Configuration<Level> threshold = Configuration.with(INFORMATION);
+    public static final Configuration<Level> threshold = Configuration.with(INFORMATION).addDependency(Logger.logger);
     
 }

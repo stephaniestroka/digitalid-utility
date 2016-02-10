@@ -1,11 +1,11 @@
 package net.digitalid.utility.validation;
 
-import net.digitalid.utility.testing.LoggerSetup;
+import net.digitalid.utility.testing.CustomTest;
 
 /**
  *
  */
-public class ValidatorTest extends LoggerSetup {
+public class ValidatorTest extends CustomTest {
     
 //    @Rule
 //    public ExpectedException expectedException = ExpectedException.none();

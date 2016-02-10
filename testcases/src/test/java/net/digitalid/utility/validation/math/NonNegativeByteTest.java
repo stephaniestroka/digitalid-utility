@@ -1,6 +1,6 @@
 package net.digitalid.utility.validation.math;
 
-import net.digitalid.utility.testing.LoggerSetup;
+import net.digitalid.utility.testing.CustomTest;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 
 import org.junit.Rule;
@@ -9,7 +9,7 @@ import org.junit.rules.ExpectedException;
 /**
  *
  */
-public class NonNegativeByteTest extends LoggerSetup {
+public class NonNegativeByteTest extends CustomTest {
     
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

@@ -4,10 +4,12 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 import net.digitalid.utility.configuration.exceptions.CyclicDependenciesException;
 import net.digitalid.utility.configuration.exceptions.InitializedConfigurationException;
+import net.digitalid.utility.configuration.exceptions.MaskingInitializationException;
 import net.digitalid.utility.configuration.exceptions.UninitializedConfigurationException;
 import net.digitalid.utility.contracts.Require;
 
@@ -174,6 +176,24 @@ public class Configuration<P> {
      */
     public static Set<Configuration<?>> getAllConfigurations() {
         return Collections.unmodifiableSet(configurations);
+    }
+    
+    /**
+     * Initializes all configurations of this library.
+     * 
+     * @throws InitializationException if a problem occurs.
+     */
+    public static void initializeAllConfigurations() {
+        for (Initializer initializer : ServiceLoader.load(Initializer.class)) {
+            initializer.toString(); // Just to remove the unused variable warning.
+        }
+        try {
+            for (Configuration<?> configuration : configurations) {
+                configuration.initialize();
+            }
+        } catch (Exception exception) {
+            throw MaskingInitializationException.with(exception);
+        }
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */

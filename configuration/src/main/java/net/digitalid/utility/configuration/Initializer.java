@@ -11,7 +11,7 @@ public abstract class Initializer {
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
-     * Creates and registers an initializer with the given non-nullable target and non-nullable dependencies.
+     * Creates and registers this initializer with the given non-nullable target and non-nullable dependencies.
      */
     protected Initializer(Configuration<?> target, Configuration<?>... dependencies) {
         Require.that(target != null).orThrow("The target may not be null.");
