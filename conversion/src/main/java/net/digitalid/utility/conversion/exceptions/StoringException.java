@@ -9,11 +9,11 @@ public class StoringException extends Exception {
      *
      * @param message a string explaining the illegal operation.
      */
-    private StoringException(@Nonnull Class<?> clazz, @Nonnull String message) {
+    protected StoringException(@Nonnull Class<?> clazz, @Nonnull String message) {
         super("Failed to store object of type '" + clazz + "': " + message);
     }
 
-    private StoringException(@Nonnull Class<?> clazz, @Nonnull String message, @Nonnull Throwable throwable) {
+    protected StoringException(@Nonnull Class<?> clazz, @Nonnull String message, @Nonnull Throwable throwable) {
         super("Failed to store object of type '" + clazz + "': " + message, throwable);
     }
     

@@ -38,7 +38,7 @@ public class VolatileNullableProperty<V> extends WritableNullableProperty<V> {
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
-    private VolatileNullableProperty(@Nonnull ValueValidator<? super V> validator, @Nullable @Validated V value) {
+    protected VolatileNullableProperty(@Nonnull ValueValidator<? super V> validator, @Nullable @Validated V value) {
         super(validator);
 
         Require.that(validator.isValid(value)).orThrow("The given value is valid.");
