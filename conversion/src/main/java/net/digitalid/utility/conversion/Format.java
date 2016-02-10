@@ -2,7 +2,7 @@ package net.digitalid.utility.conversion;
 
 import java.lang.reflect.Field;
 import java.math.BigInteger;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -14,9 +14,9 @@ import net.digitalid.utility.conversion.annotations.ConvertToConvertibleType;
 import net.digitalid.utility.conversion.exceptions.ConverterNotFoundException;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.generator.conversion.Convertible;
+import net.digitalid.utility.property.ReadOnlyProperty;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.property.ReadOnlyProperty;
 
 /**
  * The abstract format class defines all converters, which must be implemented by each format.
@@ -203,7 +203,7 @@ public abstract class Format<C extends Converter> {
                 converter = getConvertibleConverter();
             } else if (ReadOnlyProperty.class.isAssignableFrom(type)) {
                 converter = getPropertyConverter();
-            } else if (Collections.class.isAssignableFrom(type)) {
+            } else if (Collection.class.isAssignableFrom(type)) {
                 converter = getCollectionConverter();
             } else if (type.isArray()) {
                 converter = getArrayConverter();
