@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.conversion.TypeMapper;
+import net.digitalid.utility.conversion.converter.TypeMapper;
 
 /**
  * Specifies a type mapper which converts a field type to a convertible type before converting it to a format.

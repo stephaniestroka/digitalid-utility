@@ -1,9 +1,8 @@
-package net.digitalid.utility.reflection;
+package net.digitalid.utility.conversion.reflection;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -11,9 +10,10 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.collections.freezable.FreezableArrayList;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.conversion.annotations.Constructing;
+import net.digitalid.utility.conversion.annotations.Parameters;
+import net.digitalid.utility.conversion.reflection.exceptions.StructureException;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.property.ReadOnlyProperty;
-import net.digitalid.utility.reflection.exceptions.StructureException;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 
 /**
@@ -55,26 +55,6 @@ public class ReflectionUtility {
         }
         return null;
     }
-
-    /**
-     * Returns the type parameters of a recovery method or constructor of a given type.
-     *
-     * @param type the type for which the type parameters of a recovery method or constructor are returned.
-     *
-     * @return the type parameters of a recovery method or constructor of a given type.
-     *
-     * @throws StructureException
-     */
-    // TODO: instead of expecting the -parameters compiler flag, we should generate a data structure containing information about the parameter names, types and order using annotation processing.
-    public static @Nonnull @NonNullableElements Parameter[] getTypesOfFields(@Nonnull Class<?> type) throws StructureException {
-        final @Nullable Method constructorMethod = getStaticRecoveryMethod(type);
-        if (constructorMethod == null) {
-            final @Nonnull Constructor<?> constructor = getConstructor(type);
-            return constructor.getParameters();
-        } else {
-            return constructorMethod.getParameters();
-        }
-    }
     
     private static @Nonnull @NonNullableElements @Frozen ReadOnlyList<Field> getPropertyFields(@Nonnull Class<?> type) {
         @Nonnull @NonNullableElements FreezableArrayList propertyFields = FreezableArrayList.get();
@@ -84,6 +64,28 @@ public class ReflectionUtility {
             }
         }
         return propertyFields.freeze();
+    }
+    
+    /**
+     * Returns a string array of field names that represent the fields of a type that is converted. 
+     * The field names are retrieved from the @Parameters annotation, which is set on the constructing method or the constructor.
+     */
+    private static @Nonnull @NonNullableElements String[] getRepresentingFieldNames(@Nonnull Class<?> type) throws StructureException {
+        final @Nullable Method staticRecoveryMethod = getStaticRecoveryMethod(type);
+        final @Nonnull Parameters parameters;
+        if (staticRecoveryMethod != null) {
+            if (!staticRecoveryMethod.isAnnotationPresent(Parameters.class)) {
+                throw StructureException.get("Field names for conversion must be recovered from @Parameters annotation, but @Parameters annotation is missing.");
+            }
+            parameters = staticRecoveryMethod.getAnnotation(Parameters.class);
+        } else {
+            final @Nullable Constructor<?> constructor = getConstructor(type);
+            if (!constructor.isAnnotationPresent(Parameters.class)) {
+                throw StructureException.get("Field names for conversion must be recovered from @Parameters annotation, but @Parameters annotation is missing.");
+            }
+            parameters = constructor.getAnnotation(Parameters.class);
+        }
+        return parameters.value();
     }
     
     /**
@@ -98,16 +100,15 @@ public class ReflectionUtility {
      */
     // TODO: optimize with a cache
     public static @Frozen @Nonnull @NonNullableElements ReadOnlyList<Field> getReconstructionFields(@Nonnull Class<?> type) throws StructureException {
-        final @Nonnull Parameter[] typesOfConvertibleFields = getTypesOfFields(type);
+        final @Nonnull @NonNullableElements String[] representingFieldNames = getRepresentingFieldNames(type);
         final @Nonnull @NonNullableElements FreezableArrayList<Field> fields = FreezableArrayList.get();
-        for (Parameter typeOfConvertibleField : typesOfConvertibleFields) {
-            final @Nonnull String name = typeOfConvertibleField.getName();
+        for (@Nonnull String representingFieldName : representingFieldNames) {
             final @Nonnull Field field;
             // TODO: what if the constructor parameter name is not equal to the types field name?
             try {
-                field = type.getField(name);
+                field = type.getField(representingFieldName);
             } catch (NoSuchFieldException e) {
-                throw StructureException.get("The class does not have a field '" + name + "'.");
+                throw StructureException.get("The class does not have a field '" + representingFieldName + "'.");
             }
             fields.add(field);
         }

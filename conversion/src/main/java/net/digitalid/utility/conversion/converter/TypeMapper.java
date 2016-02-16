@@ -1,4 +1,4 @@
-package net.digitalid.utility.conversion;
+package net.digitalid.utility.conversion.converter;
 
 import javax.annotation.Nonnull;
 

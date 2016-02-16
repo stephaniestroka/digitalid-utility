@@ -1,4 +1,4 @@
 /**
  * Provides auxiliary classes for other packages.
  */
-package net.digitalid.utility.conversion;
+package net.digitalid.utility.conversion.converter;
