@@ -11,11 +11,16 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.logging.processing.AnnotationLog;
+import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
+import net.digitalid.utility.string.iterable.NonNullableElementConverter;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Utiliy;
@@ -61,22 +66,13 @@ public class ProcessingUtility {
     /* -------------------------------------------------- Fields of Type -------------------------------------------------- */
     
     /**
-     * Returns the type of the given field as a string without any generic types.
-     */
-    @Pure
-    public static @Nonnull String getNonGenericFieldType(@Nonnull VariableElement field) {
-        final @Nonnull String fieldTypeName = field.asType().toString();
-        return fieldTypeName.contains("<") ? fieldTypeName.substring(0, fieldTypeName.indexOf('<')) : fieldTypeName;
-    }
-    
-    /**
      * Returns a list of all the fields with the given type in the given class.
      */
     @Pure
     public static @Capturable @Nonnull List<VariableElement> getFieldsOfType(@Nonnull TypeElement classElement, @Nonnull Class<?> fieldType) {
         final @Nonnull List<VariableElement> fields = new LinkedList<>();
         for (@Nonnull VariableElement field : ElementFilter.fieldsIn(classElement.getEnclosedElements())) {
-            final @Nonnull String fieldTypeName = getNonGenericFieldType(field);
+            final @Nonnull String fieldTypeName = AnnotationProcessing.getTypeUtils().erasure(field.asType()).toString();
             AnnotationLog.verbose("Found with the type '" + fieldTypeName + "' the field", SourcePosition.of(field));
             if (fieldTypeName.equals(fieldType.getCanonicalName())) { fields.add(field); }
         }
@@ -104,5 +100,35 @@ public class ProcessingUtility {
         }
         return null;
     }
+    
+    /* -------------------------------------------------- Converters -------------------------------------------------- */
+    
+    public static final @Nonnull NonNullableElementConverter<VariableElement> DECLARATION_CONVERTER = new NonNullableElementConverter<VariableElement>() {
+        @Override
+        public String toString(@Nonnull VariableElement element) {
+            return element.asType() + " " + element.getSimpleName();
+        }
+    };
+    
+    public static final @Nonnull NonNullableElementConverter<VariableElement> CALL_CONVERTER = new NonNullableElementConverter<VariableElement>() {
+        @Override
+        public String toString(@Nonnull VariableElement element) {
+            return element.getSimpleName().toString();
+        }
+    };
+    
+    public static final @Nonnull NonNullableElementConverter<TypeParameterElement> TYPE_CONVERTER = new NonNullableElementConverter<TypeParameterElement>() {
+        @Override
+        public String toString(@Nonnull TypeParameterElement element) {
+            AnnotationLog.debugging("element.toString(): " + element.toString());
+            AnnotationLog.debugging("element.asType(): " + element.asType());
+            AnnotationLog.debugging("element.getSimpleName(): " + element.getSimpleName());
+            final @Nonnull @NonNullableElements List<? extends TypeMirror> bounds = element.getBounds();
+            for (@Nonnull TypeMirror bound : bounds) {
+                AnnotationLog.debugging("bound.toString(): " + bound.toString());
+            }
+            return element.getSimpleName().toString() + (bounds.isEmpty() ? "" : " extends " + bounds.get(0));
+        }
+    };
     
 }

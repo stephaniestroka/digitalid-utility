@@ -12,7 +12,7 @@ public class StructureException extends Exception {
      * 
      * @param message the message propagated with this exception.
      */
-    private StructureException(@Nonnull String message) {
+    protected StructureException(@Nonnull String message) {
         super(message);
     }
     

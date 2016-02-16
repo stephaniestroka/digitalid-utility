@@ -11,11 +11,11 @@ public class RecoveryException extends ExternalException {
      *
      * @param message a string explaining the illegal operation.
      */
-    private RecoveryException(@Nonnull Class<?> type, String message) {
+    protected RecoveryException(@Nonnull Class<?> type, String message) {
         super("Failed to restore object of type '" + type + "': " + message);
     }
     
-    private RecoveryException(@Nonnull Class<?> type, @Nonnull String message, @Nonnull Exception exception) {
+    protected RecoveryException(@Nonnull Class<?> type, @Nonnull String message, @Nonnull Exception exception) {
         super("Failed to restore object of type '" + type + "': " + message, exception);
     }
     

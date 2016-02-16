@@ -110,13 +110,39 @@
     <build>
         <plugins>
             
+<!--            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.10</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>target/generated-sources/annotations</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>-->
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.5.1</version>
                 <configuration>
+                    <fork>true</fork>
                     <source>1.7</source>
                     <target>1.7</target>
+                    <verbose>true</verbose>
+                    <compilerVersion>1.7</compilerVersion>
+                    <executable>${JAVA_7_HOME}/bin/javac</executable>
+                    <!-- NetBeans seems to need the following line: -->
+                    <generatedSourcesDirectory>target/generated-sources/annotations</generatedSourcesDirectory>
                 </configuration>
             </plugin>
             

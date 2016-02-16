@@ -88,7 +88,7 @@ public class VolatileIndexedProperty<K, V, R extends ReadOnlyMap<K, V>, F extend
      * 
      * @require keysAndValuesValid(keyValidator, valueValidator, map) : "The keys and values are valid.";
      */
-    private VolatileIndexedProperty(@Nonnull ValueValidator<? super K> keyValidator, @Nonnull ValueValidator<? super V> valueValidator, @Nonnull @Validated F map) {
+    protected VolatileIndexedProperty(@Nonnull ValueValidator<? super K> keyValidator, @Nonnull ValueValidator<? super V> valueValidator, @Nonnull @Validated F map) {
         super(keyValidator, valueValidator);
 
         Require.that(keysAndValuesValid(keyValidator, valueValidator, map)).orThrow("The keys and values are valid.");

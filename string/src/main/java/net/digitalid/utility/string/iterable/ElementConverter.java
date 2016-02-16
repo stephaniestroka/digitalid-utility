@@ -9,6 +9,7 @@ import net.digitalid.utility.validation.annotations.method.Pure;
  * Implementations of this interface convert elements to strings.
  * 
  * TODO: Rename to NullableElementConverter and create a subclass NonNullableElementConverter.
+ * TODO: Rename to ElementMapper!
  * 
  * @see IterableConverter
  */

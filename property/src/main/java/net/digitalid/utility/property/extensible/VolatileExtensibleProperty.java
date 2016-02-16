@@ -65,7 +65,7 @@ public class VolatileExtensibleProperty<V, R extends ReadOnlySet<V>, F extends F
      *
      * @require valuesValid(valueValidator, set) : "The values of the set are valid.";
      */
-    private VolatileExtensibleProperty(@Nonnull ValueValidator<? super V> valueValidator, @Nonnull @Validated F set) {
+    protected VolatileExtensibleProperty(@Nonnull ValueValidator<? super V> valueValidator, @Nonnull @Validated F set) {
         super(valueValidator);
 
         Require.that(valuesValid(valueValidator, set)).orThrow("The values of the set are valid.");
