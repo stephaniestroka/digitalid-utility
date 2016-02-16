@@ -22,7 +22,7 @@ import net.digitalid.utility.validation.annotations.meta.TargetTypes;
  * @see InitializationProcessor
  */
 @Documented
-@TargetTypes({Void.class})
+@TargetTypes(Void.class)
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Initialize {

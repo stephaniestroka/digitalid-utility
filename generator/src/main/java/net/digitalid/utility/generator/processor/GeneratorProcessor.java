@@ -5,7 +5,6 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -28,6 +27,7 @@ import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.processor.ProcessingUtility;
+import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.processor.files.JavaSourceFile;
 import net.digitalid.utility.string.PrefixString;
 import net.digitalid.utility.string.QuoteString;
@@ -64,7 +64,7 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
  * Delegate all interface methods to an instance (e.g. stored in a field).
  */
 @SupportedOptions({"release"})
-@SupportedAnnotationTypes("*")
+@SupportedAnnotations(prefix = "")
 public class GeneratorProcessor extends CustomProcessor {
     
     /* -------------------------------------------------- Processing -------------------------------------------------- */
@@ -75,7 +75,6 @@ public class GeneratorProcessor extends CustomProcessor {
         final @Nonnull String subclassName = "Generated" + typeElement.getSimpleName();
         final @Nonnull String qualifiedSubclassName = ((QualifiedNameable) typeElement.getEnclosingElement()).getQualifiedName() + "." + subclassName;
         final @Nonnull JavaSourceFile javaSourceFile = JavaSourceFile.forClass(qualifiedSubclassName, typeElement);
-        javaSourceFile.addImport(Log.class.getCanonicalName());
         
         Require.that(typeElement.asType().getKind() == TypeKind.DECLARED).orThrow(typeElement.asType().getKind() + " should have been a declared type.");
         final @Nonnull DeclaredType declaredType = (DeclaredType) typeElement.asType();
@@ -120,7 +119,7 @@ public class GeneratorProcessor extends CustomProcessor {
                     javaSourceFile.addComment("executableType: " + executableType);
                     final @Nonnull @NonNullableElements List<? extends TypeVariable> typeVariables = executableType.getTypeVariables();
                     javaSourceFile.beginMethod(IterableConverter.toString(modifiers, " ") + (typeVariables.isEmpty() ? "" : " <" + IterableConverter.toString(typeVariables) + ">") + " " + executableType.getReturnType() + " " + method.getSimpleName() + IterableConverter.toString(method.getParameters(), ProcessingUtility.DECLARATION_CONVERTER, Brackets.ROUND) + (method.getThrownTypes().isEmpty() ? "" : " throws " + IterableConverter.toString(method.getThrownTypes())));
-                    javaSourceFile.addStatement("Log.verbose(" + QuoteString.inDouble("The method " + method.getSimpleName() + " was called.") + ")");
+                    javaSourceFile.addStatement(javaSourceFile.importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + method.getSimpleName() + " was called.") + ")");
                     javaSourceFile.addStatement((method.getReturnType().getKind() == TypeKind.VOID ? "" : "return ") + "super." + method.getSimpleName() + IterableConverter.toString(method.getParameters(), ProcessingUtility.CALL_CONVERTER, Brackets.ROUND));
                     javaSourceFile.endMethod();
                 }

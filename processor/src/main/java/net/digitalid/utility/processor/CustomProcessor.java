@@ -1,5 +1,6 @@
 package net.digitalid.utility.processor;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -12,7 +13,6 @@ import javax.annotation.processing.Completion;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
@@ -24,6 +24,7 @@ import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
+import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.string.NumberString;
 import net.digitalid.utility.string.PrefixString;
 import net.digitalid.utility.string.QuoteString;
@@ -66,7 +67,7 @@ public abstract class CustomProcessor implements Processor {
     /* -------------------------------------------------- Processing -------------------------------------------------- */
     
     /**
-     * Processes the given annotations in the first round.
+     * Processes the given annotations in the first round (that means on the non-generated files).
      * 
      * @see #process(java.util.Set, javax.annotation.processing.RoundEnvironment)
      */
@@ -134,9 +135,9 @@ public abstract class CustomProcessor implements Processor {
      * Converts the given non-nullable array to an unmodifiable set.
      */
     @Pure
-    protected @Nonnull <T> Set<T> convertArrayToUnmodifiableSet(@Nonnull T[] array) {
-        final @Nonnull Set<T> set = new HashSet<>(array.length);
-        for (@Nullable T s : array) { set.add(s); }
+    protected @Nonnull <T> Set<T> convertArrayToUnmodifiableSet(@Nonnull @NonNullableElements T[] array) {
+        final @Nonnull @NonNullableElements Set<T> set = new HashSet<>(array.length);
+        for (@Nonnull T s : array) { set.add(s); }
         return Collections.unmodifiableSet(set);
     }
     
@@ -154,11 +155,18 @@ public abstract class CustomProcessor implements Processor {
     @Pure
     @Override
     public @Nonnull Set<String> getSupportedAnnotationTypes() {
-        final @Nullable SupportedAnnotationTypes supportedAnnotationTypes = getClass().getAnnotation(SupportedAnnotationTypes.class);
-        if  (supportedAnnotationTypes != null) {
-            return convertArrayToUnmodifiableSet(supportedAnnotationTypes.value());
+        final @Nullable SupportedAnnotations supportedAnnotations = getClass().getAnnotation(SupportedAnnotations.class);
+        if  (supportedAnnotations != null) {
+            final @Nonnull @NonNullableElements Set<String> result = new HashSet<>(supportedAnnotations.value().length + supportedAnnotations.prefix().length);
+            for (@Nonnull Class<? extends Annotation> annotation : supportedAnnotations.value()) {
+                result.add(annotation.getCanonicalName());
+            }
+            for (@Nonnull String prefix : supportedAnnotations.prefix()) {
+                result.add(prefix + "*");
+            }
+            return Collections.unmodifiableSet(result);
         } else {
-            AnnotationLog.error("No '@SupportedAnnotationTypes' annotation found on " + QuoteString.inSingle(getClass().getName()));
+            AnnotationLog.error("No '@SupportedAnnotations' annotation found on " + QuoteString.inSingle(getClass().getName()));
             return Collections.emptySet();
         }
     }

@@ -9,14 +9,12 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
@@ -29,6 +27,7 @@ import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.processor.ProcessingUtility;
+import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.processor.files.JavaSourceFile;
 import net.digitalid.utility.processor.files.ServiceLoaderFile;
 import net.digitalid.utility.string.QuoteString;
@@ -36,9 +35,10 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
 import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
- * This annotation processor generates a subclass of {@link Initializer} for each static method annotated with {@link Initialize} and registers it in a {@link ServiceLoaderFile}.
+ * This annotation processor generates a subclass of {@link Initializer} for each static method
+ * annotated with {@link Initialize} and registers it in a {@link ServiceLoaderFile}.
  */
-@SupportedAnnotationTypes("net.digitalid.utility.initialization.Initialize")
+@SupportedAnnotations(Initialize.class)
 public class InitializationProcessor extends CustomProcessor {
     
     /* -------------------------------------------------- Processing -------------------------------------------------- */
@@ -107,8 +107,7 @@ public class InitializationProcessor extends CustomProcessor {
             final @Nonnull String generatedClassName = sourceClassName + "$" + annotatedMethod.getSimpleName();
             
             final @Nonnull JavaSourceFile javaSourceFile = JavaSourceFile.forClass(qualifiedGeneratedClassName, sourceClassElement);
-            javaSourceFile.addImport("net.digitalid.utility.initialization.LoggingInitializer");
-            javaSourceFile.beginClass("public class " + generatedClassName + " extends LoggingInitializer");
+            javaSourceFile.beginClass("public class " + generatedClassName + " extends " + javaSourceFile.importIfPossible(LoggingInitializer.class));
             
             javaSourceFile.beginJavadoc();
             javaSourceFile.addJavadoc("This default constructor is called by the service loader.");
@@ -117,12 +116,10 @@ public class InitializationProcessor extends CustomProcessor {
             
             javaSourceFile.beginConstructor("public " + generatedClassName + "()");
             final @Nonnull StringBuilder parameters = new StringBuilder();
-            javaSourceFile.addImport(((QualifiedNameable) targetFieldElement.getEnclosingElement()).getQualifiedName().toString());
-            parameters.append(targetFieldElement.getEnclosingElement().getSimpleName()).append(".").append(targetFieldElement);
+            parameters.append(javaSourceFile.importIfPossible(targetFieldElement.getEnclosingElement())).append(".").append(targetFieldElement.getSimpleName());
             if (!dependencyFieldElements.isEmpty()) {
                 for (@Nonnull VariableElement dependencyFieldElement : dependencyFieldElements) {
-                    javaSourceFile.addImport(((QualifiedNameable) dependencyFieldElement.getEnclosingElement()).getQualifiedName().toString());
-                    parameters.append(", ").append(dependencyFieldElement.getEnclosingElement().getSimpleName()).append(".").append(dependencyFieldElement);
+                    parameters.append(", ").append(javaSourceFile.importIfPossible(dependencyFieldElement.getEnclosingElement())).append(".").append(dependencyFieldElement.getSimpleName());
                 }
             }
             javaSourceFile.addStatement("super(" + parameters + ")");

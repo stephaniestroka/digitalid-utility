@@ -8,11 +8,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
 import javax.annotation.Nonnull;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 
@@ -137,17 +141,17 @@ public class JavaSourceFile extends GeneratedFile {
      * @return whether the class with the given qualified name has already been imported.
      */
     @NonWrittenRecipient
-    public boolean addImport(@Nonnull String qualifiedClassName) {
+    protected boolean addImport(@Nonnull String qualifiedName) {
         requireNotWritten();
         
         for (@Nonnull ImportGroup importGroup : importGroups) {
-            if (qualifiedClassName.startsWith(importGroup.prefix)) {
-                return importGroup.imports.add(qualifiedClassName);
+            if (qualifiedName.startsWith(importGroup.prefix)) {
+                return importGroup.imports.add(qualifiedName);
             }
         }
         
         // The empty prefix of the last import group should always be matched.
-        throw UnexpectedValueException.with("qualifiedClassName", qualifiedClassName);
+        throw UnexpectedValueException.with("qualifiedClassName", qualifiedName);
     }
     
     /**
@@ -156,8 +160,71 @@ public class JavaSourceFile extends GeneratedFile {
      * @return whether the member with the given qualified name has already been imported.
      */
     @NonWrittenRecipient
-    public boolean addStaticImport(@Nonnull String qualifiedMemberName) {
+    protected boolean addStaticImport(@Nonnull String qualifiedMemberName) {
         return addImport("static " + qualifiedMemberName);
+    }
+    
+    /**
+     * Maps the non-qualified names that are currently imported to their fully qualified names.
+     */
+    private final @Nonnull @NonNullableElements Map<String, String> nameSpace = new HashMap<>();
+    
+    /**
+     * Imports the given qualified type name if its simple name is not yet mapped to a different type.
+     * 
+     * @return the simple name of the given qualified type name if it could be imported without a naming conflict and the given qualified type name otherwise.
+     */
+    @NonWrittenRecipient
+    public @Nonnull String importIfPossible(@Nonnull String qualifiedTypeName) {
+        final @Nonnull String simpleTypeName = qualifiedTypeName.substring(qualifiedTypeName.lastIndexOf('.') + 1);
+        if (!nameSpace.containsKey(simpleTypeName)) {
+            addImport(qualifiedTypeName);
+            nameSpace.put(simpleTypeName, qualifiedTypeName);
+            return simpleTypeName;
+        } else if (qualifiedTypeName.equals(nameSpace.get(simpleTypeName))) {
+            return simpleTypeName;
+        } else {
+            return qualifiedTypeName;
+        }
+    }
+    
+    /**
+     * Imports the given type if its simple name is not yet mapped to a different type.
+     * 
+     * @return the simple name of the given type if it could be imported without a naming conflict and the qualified name of the given type otherwise.
+     */
+    @NonWrittenRecipient
+    public @Nonnull String importIfPossible(@Nonnull Class<?> type) {
+        return importIfPossible(type.getCanonicalName());
+    }
+    
+    /**
+     * Imports the given element, which has to be qualified nameable, if its simple name is not yet mapped to a different type.
+     * 
+     * @return the simple name of the given element if it could be imported without a naming conflict and the qualified name of the given element otherwise.
+     */
+    @NonWrittenRecipient
+    public @Nonnull String importIfPossible(@Nonnull Element typeElement) {
+        return importIfPossible(((QualifiedNameable) typeElement).getQualifiedName().toString());
+    }
+    
+    /**
+     * Imports the given qualified type name if its simple name is not yet mapped to a different type.
+     * 
+     * @return the simple name of the given type if the qualified type name could be imported without a naming conflict and the given qualified type name otherwise.
+     */
+    @NonWrittenRecipient
+    public @Nonnull String importStaticallyIfPossible(@Nonnull String qualifiedMemberName) {
+        final @Nonnull String simpleMemberName = qualifiedMemberName.substring(qualifiedMemberName.lastIndexOf('.') + 1);
+        if (!nameSpace.containsKey(simpleMemberName)) {
+            addStaticImport(qualifiedMemberName);
+            nameSpace.put(simpleMemberName, qualifiedMemberName);
+            return simpleMemberName;
+        } else if (qualifiedMemberName.equals(nameSpace.get(simpleMemberName))) {
+            return simpleMemberName;
+        } else {
+            return qualifiedMemberName;
+        }
     }
     
     /* -------------------------------------------------- Code Blocks -------------------------------------------------- */
