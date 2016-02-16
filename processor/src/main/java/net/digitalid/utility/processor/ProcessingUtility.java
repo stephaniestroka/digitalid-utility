@@ -49,8 +49,7 @@ public class ProcessingUtility {
     /* -------------------------------------------------- Annotation Mirror -------------------------------------------------- */
     
     /**
-     * Returns the annotation mirror corresponding to the given annotation type of the given element.
-     * If no such annotation mirror is found, this method logs an error message and returns null.
+     * Returns the annotation mirror corresponding to the given annotation type of the given element or null if not found.
      */
     @Pure
     public static @Nullable AnnotationMirror getAnnotationMirror(@Nonnull Element element, @Nonnull Class<? extends Annotation> annotation) {
@@ -59,7 +58,6 @@ public class ProcessingUtility {
             AnnotationLog.verbose("Found the annotation '@" + annotationElement.getSimpleName() + "' on", SourcePosition.of(element));
             if (annotationElement.getQualifiedName().contentEquals(annotation.getCanonicalName())) { return annotationMirror; }
         }
-        AnnotationLog.error("Found no annotation '@" + annotation.getSimpleName() + "' on", SourcePosition.of(element));
         return null;
     }
     
