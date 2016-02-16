@@ -1,4 +1,4 @@
-package net.digitalid.utility.conversion;
+package net.digitalid.utility.conversion.converter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -14,8 +14,8 @@ import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.conversion.exceptions.RecoveryException;
 import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.reflection.ReflectionUtility;
-import net.digitalid.utility.reflection.exceptions.StructureException;
+import net.digitalid.utility.conversion.reflection.ReflectionUtility;
+import net.digitalid.utility.conversion.reflection.exceptions.StructureException;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 

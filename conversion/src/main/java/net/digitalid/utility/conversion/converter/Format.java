@@ -1,4 +1,4 @@
-package net.digitalid.utility.conversion;
+package net.digitalid.utility.conversion.converter;
 
 import java.lang.reflect.Field;
 import java.math.BigInteger;

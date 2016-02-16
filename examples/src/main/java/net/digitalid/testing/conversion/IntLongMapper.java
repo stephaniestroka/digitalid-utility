@@ -2,7 +2,7 @@ package net.digitalid.testing.conversion;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.conversion.TypeMapper;
+import net.digitalid.utility.conversion.converter.TypeMapper;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
