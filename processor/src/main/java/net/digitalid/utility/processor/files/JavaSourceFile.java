@@ -77,7 +77,7 @@ public class JavaSourceFile extends GeneratedFile {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    public JavaSourceFile(@Nonnull String qualifiedClassName, @Nonnull TypeElement sourceClassElement) {
+    protected JavaSourceFile(@Nonnull String qualifiedClassName, @Nonnull TypeElement sourceClassElement) {
         this.qualifiedClassName = qualifiedClassName;
         this.sourceClassElement = sourceClassElement;
         AnnotationLog.verbose("Generating the class " + this);
@@ -367,6 +367,17 @@ public class JavaSourceFile extends GeneratedFile {
     @NonWrittenRecipient
     public void addComment(@Nonnull String comment) {
         addCodeLineWithIndentation("// " + comment);
+    }
+    
+    /* -------------------------------------------------- Section -------------------------------------------------- */
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn(CLASS)
+    public void addSection(@Nonnull String name) {
+        requireCurrentCodeBlock(CLASS);
+        
+        addCodeLineWithIndentation("/* -------------------------------------------------- " + name + " -------------------------------------------------- */");
+        addEmptyLine();
     }
     
     /* -------------------------------------------------- Javadoc -------------------------------------------------- */

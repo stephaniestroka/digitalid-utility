@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.ValidateWith;
+import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
@@ -15,7 +15,7 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@ValidateWith(UniqueElements.Validator.class)
+@Validator(UniqueElements.Validator.class)
 @TargetTypes({Iterable.class, Object[].class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface UniqueElements {

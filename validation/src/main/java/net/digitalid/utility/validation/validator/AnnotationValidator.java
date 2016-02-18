@@ -3,9 +3,8 @@ package net.digitalid.utility.validation.validator;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.type.DeclaredType;
 
-import net.digitalid.utility.validation.annotations.meta.ValidateWith;
+import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
@@ -14,11 +13,11 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  * of and {@link #generateContract(javax.lang.model.element.Element, javax.lang.model.element.AnnotationMirror) generates the contract}
  * for an annotation during annotation processing. This class provides a default implementation for both of these validation phases.
  * 
- * @see ValidateWith
+ * @see Validator
  * @see GeneratedContract
  */
 @Stateless
-public abstract class AnnotationValidator {
+public abstract class AnnotationValidator extends CodeGenerator {
     
     /* -------------------------------------------------- Processing -------------------------------------------------- */
     
@@ -26,7 +25,8 @@ public abstract class AnnotationValidator {
      * 
      */
     @Pure
-    public void checkUsage(@Nonnull Element element, @Nonnull DeclaredType declaredType) {
+    @Override
+    public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
         // TODO: Implementation based on @TargetTypes. Overriden by annotation validators like @Immutable to ensure that no mutable methods are present.
     }
     

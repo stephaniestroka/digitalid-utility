@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.annotations.reference;
+package net.digitalid.utility.generator.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -6,24 +6,23 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.digitalid.utility.validation.annotations.meta.Validator;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
+import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 
 /**
- * This annotation indicates that a method returns the recipient of the call (the 'this' object).
+ * 
  */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(Chainable.Validator.class)
-public @interface Chainable {
+@Interceptor(Logged.Interceptor.class)
+public @interface Logged {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
-    public static class Validator extends AnnotationValidator {
+    public static class Interceptor extends MethodInterceptor {
         // TODO: Generate the contract.
     }
     

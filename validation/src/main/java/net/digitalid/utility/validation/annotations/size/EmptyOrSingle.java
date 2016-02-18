@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import java.util.Collection;
 
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.ValidateWith;
+import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
@@ -18,7 +18,7 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@ValidateWith(EmptyOrSingle.Validator.class)
+@Validator(EmptyOrSingle.Validator.class)
 @TargetTypes({Collection.class, Countable.class, Object[].class, CharSequence.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface EmptyOrSingle {

@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.ValidateWith;
+import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
@@ -16,7 +16,7 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
 @Documented
 @TargetTypes(CharSequence.class)
 @Retention(RetentionPolicy.RUNTIME)
-@ValidateWith(JavaExpression.Validator.class)
+@Validator(JavaExpression.Validator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface JavaExpression {
     

@@ -71,25 +71,25 @@ public class InitializationProcessor extends CustomProcessor {
     /**
      * Generates the initializer for the given annotated method with the given target and dependency configuration fields.
      * 
-     * @return the qualified name of the generated class.
+     * @return the qualified name of the generated initializer.
      */
     protected @Nonnull String generateInitializer(@Nonnull ExecutableElement annotatedMethod, @Nonnull VariableElement targetConfigurationField, @Nonnull @NonNullableElements List<VariableElement> dependencyConfigurationFields) {
         final @Nonnull TypeElement sourceClassElement = (TypeElement) annotatedMethod.getEnclosingElement();
         
         final @Nonnull String qualifiedSourceClassName = sourceClassElement.getQualifiedName().toString();
         final @Nonnull String qualifiedGeneratedClassName = qualifiedSourceClassName + "$" + annotatedMethod.getSimpleName();
-        final @Nonnull String sourceClassName = sourceClassElement.getSimpleName().toString();
-        final @Nonnull String generatedClassName = sourceClassName + "$" + annotatedMethod.getSimpleName();
+        final @Nonnull String simpleSourceClassName = sourceClassElement.getSimpleName().toString();
+        final @Nonnull String simpleGeneratedClassName = simpleSourceClassName + "$" + annotatedMethod.getSimpleName();
         
         final @Nonnull JavaSourceFile javaSourceFile = JavaSourceFile.forClass(qualifiedGeneratedClassName, sourceClassElement);
-        javaSourceFile.beginClass("public class " + generatedClassName + " extends " + javaSourceFile.importIfPossible(LoggingInitializer.class));
+        javaSourceFile.beginClass("public class " + simpleGeneratedClassName + " extends " + javaSourceFile.importIfPossible(LoggingInitializer.class));
         
         javaSourceFile.beginJavadoc();
         javaSourceFile.addJavadoc("This default constructor is called by the service loader.");
         javaSourceFile.addJavadoc("It registers this initializer at the given configuration.");
         javaSourceFile.endJavadoc();
         
-        javaSourceFile.beginConstructor("public " + generatedClassName + "()");
+        javaSourceFile.beginConstructor("public " + simpleGeneratedClassName + "()");
         final @Nonnull StringBuilder parameters = new StringBuilder();
         parameters.append(javaSourceFile.importIfPossible(targetConfigurationField.getEnclosingElement())).append(".").append(targetConfigurationField.getSimpleName());
         if (!dependencyConfigurationFields.isEmpty()) {
@@ -102,7 +102,7 @@ public class InitializationProcessor extends CustomProcessor {
         
         javaSourceFile.addAnnotation("@Override");
         javaSourceFile.beginMethod("protected void executeWithoutLogging() throws Exception");
-        javaSourceFile.addStatement(sourceClassName + "." + annotatedMethod);
+        javaSourceFile.addStatement(simpleSourceClassName + "." + annotatedMethod);
         javaSourceFile.endMethod();
         
         javaSourceFile.endClass();
@@ -128,8 +128,8 @@ public class InitializationProcessor extends CustomProcessor {
             
             @Nullable VariableElement targetConfigurationField = null;
             @Nullable @NonNullableElements List<VariableElement> dependencyConfigurationFields = null;
-            final @Nonnull Map<? extends ExecutableElement, ? extends AnnotationValue> annotationValues = annotationMirror.getElementValues();
-            for (@Nonnull Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationValues.entrySet()) {
+            
+            for (@Nonnull Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationMirror.getElementValues().entrySet()) {
                 if (entry.getKey().getSimpleName().contentEquals("target")) {
                     targetConfigurationField = getConfigurationField(entry.getValue());
                     if (targetConfigurationField == null) {

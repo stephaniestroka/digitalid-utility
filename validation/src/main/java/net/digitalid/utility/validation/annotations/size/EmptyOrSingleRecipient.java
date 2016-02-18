@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.digitalid.utility.validation.annotations.meta.ValidateWith;
+import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
@@ -15,7 +15,7 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@ValidateWith(EmptyOrSingleRecipient.Validator.class)
+@Validator(EmptyOrSingleRecipient.Validator.class)
 public @interface EmptyOrSingleRecipient {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */

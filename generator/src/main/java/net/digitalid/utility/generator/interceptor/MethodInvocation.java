@@ -1,18 +1,21 @@
 package net.digitalid.utility.generator.interceptor;
 
-/**
- * Description.
- */
-public interface MethodInvocation {
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public abstract class MethodInvocation {
     
-//    public @Nonnull Method getMethod();
-//    
-//    public @Nonnull Object getRecipient();
-//    
-//    public @Nonnull Object[] getArguments();
-//    
-//    public @Nullable Object proceed() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-//        return getMethod().invoke(getRecipient(), getArguments());
-//    }
+    public abstract @Nonnull Method getMethod();
+    
+    public abstract @Nonnull Object getRecipient();
+    
+    public abstract @Nonnull Object[] getArguments();
+    
+    public @Nullable Object proceed() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        return getMethod().invoke(getRecipient(), getArguments());
+    }
     
 }

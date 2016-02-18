@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.digitalid.utility.validation.annotations.meta.ValidateWith;
+import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
@@ -19,7 +19,7 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@ValidateWith(Utiliy.Validator.class)
+@Validator(Utiliy.Validator.class)
 public @interface Utiliy {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */

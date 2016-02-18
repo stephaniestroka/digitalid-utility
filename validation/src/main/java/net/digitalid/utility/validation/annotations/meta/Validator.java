@@ -16,7 +16,7 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
-public @interface ValidateWith {
+public @interface Validator {
     
     /**
      * Returns the validator with which the annotated annotation is validated.

@@ -105,6 +105,7 @@ public class SourcePosition {
             string.append(enclosingElement.getSimpleName()).append("#");
         }
         if (element.getKind() == ElementKind.PACKAGE || element.getKind().isClass() || element.getKind().isInterface()) {
+            if (element.getKind() == ElementKind.ANNOTATION_TYPE) { string.append("@"); }
             string.append(element.getSimpleName());
         } else {
             string.append(element);

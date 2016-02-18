@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.ValidateWith;
+import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
@@ -21,7 +21,7 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @TargetTypes({Iterable.class, Object[].class})
-@ValidateWith(NonNullableElements.Validator.class)
+@Validator(NonNullableElements.Validator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface NonNullableElements {
     

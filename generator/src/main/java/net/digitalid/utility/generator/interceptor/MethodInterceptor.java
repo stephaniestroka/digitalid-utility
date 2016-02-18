@@ -1,10 +1,13 @@
 package net.digitalid.utility.generator.interceptor;
 
-/**
- * Description.
- */
-public interface MethodInterceptor {
+import javax.annotation.Nonnull;
+
+import net.digitalid.utility.validation.validator.CodeGenerator;
+
+public class MethodInterceptor extends CodeGenerator {
     
-//    public Object invoke(@Nonnull MethodInvocation methodInvocation) throws Throwable; // TODO: Also pass potential annotation values like the logging level. No, this should be retrievable from the passed method!
+    public Object invoke(@Nonnull MethodInvocation methodInvocation) throws Throwable {
+        return null;
+    }
     
 }

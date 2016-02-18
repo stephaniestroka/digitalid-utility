@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import java.math.BigInteger;
 
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.ValidateWith;
+import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
@@ -18,7 +18,7 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@ValidateWith(Even.Validator.class)
+@Validator(Even.Validator.class)
 @TargetTypes({long.class, int.class, short.class, byte.class, BigInteger.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface Even {
