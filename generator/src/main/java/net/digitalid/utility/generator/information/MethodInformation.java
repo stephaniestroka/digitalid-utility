@@ -47,6 +47,20 @@ public class MethodInformation {
      */
     public final @Nonnull String methodName;
     
+    /* -------------------------------------------------- Package -------------------------------------------------- */
+    
+    public final @Nonnull String packageName;
+    
+    @Pure
+    public boolean isPartOfRuntimeEnvironment() {
+        return packageName.startsWith("java");
+    }
+    
+    @Pure
+    public boolean isPartOfDigitalIDLibrary() {
+        return packageName.startsWith("net.digitalid.");
+    }
+    
     /* -------------------------------------------------- Parameters -------------------------------------------------- */
     
     @Pure
@@ -193,8 +207,8 @@ public class MethodInformation {
         this.resultValidators = ProcessingUtility.getCodeGenerators(method, Validator.class, AnnotationValidator.class);
         this.methodInterceptors = ProcessingUtility.getCodeGenerators(method, Interceptor.class, MethodInterceptor.class);
         
-        final @Nonnull String packageName = ((QualifiedNameable) method.getEnclosingElement().getEnclosingElement()).getQualifiedName().toString();
-        if (!packageName.startsWith("java")) {
+        this.packageName = ((QualifiedNameable) method.getEnclosingElement().getEnclosingElement()).getQualifiedName().toString();
+        if (!isPartOfRuntimeEnvironment()) {
             if (isGetter() && !hasAnnotation(Pure.class)) { AnnotationLog.error("A getter has to be '@Pure':", SourcePosition.of(method)); }
             if (isSetter() && hasAnnotation(Pure.class)) { AnnotationLog.error("A setter may not be '@Pure':", SourcePosition.of(method)); }
         }

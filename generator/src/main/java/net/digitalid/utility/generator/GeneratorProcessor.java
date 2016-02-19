@@ -1,6 +1,5 @@
 package net.digitalid.utility.generator;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -8,32 +7,15 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
-import javax.lang.model.util.ElementFilter;
 
-import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.information.TypeInformation;
-import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.processor.CustomProcessor;
-import net.digitalid.utility.processor.ProcessingUtility;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
-import net.digitalid.utility.processor.files.JavaSourceFile;
 import net.digitalid.utility.string.PrefixString;
 import net.digitalid.utility.string.QuoteString;
-import net.digitalid.utility.string.iterable.Brackets;
-import net.digitalid.utility.string.iterable.IterableConverter;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 
 /**
@@ -71,83 +53,17 @@ public class GeneratorProcessor extends CustomProcessor {
     /* -------------------------------------------------- Processing -------------------------------------------------- */
     
     /**
-     * Generates a subclass (the target) for the given class element (the source).
+     * Generates a subclass and a builder for the given type if possible.
+     * 
+     * @return whether these classes can be generated for the given type.
      */
-    protected void generateSubclass(@Nonnull TypeElement sourceTypeElement) {
-        final @Nonnull String simpleTargetClassName = "Generated" + sourceTypeElement.getSimpleName();
-        final @Nonnull String qualifiedTargetClassName = ((QualifiedNameable) sourceTypeElement.getEnclosingElement()).getQualifiedName() + "." + simpleTargetClassName;
-        final @Nonnull JavaSourceFile javaSourceFile = JavaSourceFile.forClass(qualifiedTargetClassName, sourceTypeElement);
-        
-        Require.that(sourceTypeElement.asType().getKind() == TypeKind.DECLARED).orThrow(sourceTypeElement.asType().getKind() + " should have been a declared type.");
-        final @Nonnull DeclaredType sourceDeclaredType = (DeclaredType) sourceTypeElement.asType();
-        final @Nonnull @NonNullableElements List<? extends TypeMirror> sourceTypeArguments = sourceDeclaredType.getTypeArguments();
-        for (@Nonnull TypeMirror typeArgument : sourceTypeArguments) {
-            AnnotationLog.debugging("typeArgument.toString(): " + typeArgument.toString());
-            final @Nonnull TypeVariable typeVariable = (TypeVariable) typeArgument;
-            AnnotationLog.debugging("typeVariable.toString(): " + typeVariable.toString());
-            AnnotationLog.debugging("typeVariable.getLowerBound(): " + typeVariable.getLowerBound());
-            AnnotationLog.debugging("typeVariable.getUpperBound(): " + typeVariable.getUpperBound());
-        }
-        
-        final @Nonnull String type = sourceTypeElement.asType().toString();
-        final @Nonnull @NonNullableElements List<? extends TypeParameterElement> typeParameters = sourceTypeElement.getTypeParameters();
-        javaSourceFile.beginClass((sourceTypeElement.getKind().isInterface() || sourceTypeElement.getModifiers().contains(Modifier.ABSTRACT) ? "abstract " : "") + "class " + simpleTargetClassName + (typeParameters.isEmpty() ? "" : IterableConverter.toString(typeParameters, ProcessingUtility.TYPE_CONVERTER, Brackets.POINTY)) + (sourceTypeElement.getKind() == ElementKind.CLASS ? " extends " : " implements ") + type);
-        
-        final @Nonnull @NonNullableElements List<ExecutableElement> constructors = ElementFilter.constructorsIn(sourceTypeElement.getEnclosedElements());
-        for (@Nonnull ExecutableElement constructor : constructors) {
-            final @Nonnull @NonNullableElements List<? extends VariableElement> parameters = constructor.getParameters();
-            
-            // TODO: Also do thrown types.
-            
-            javaSourceFile.beginConstructor(simpleTargetClassName + IterableConverter.toString(parameters, ProcessingUtility.DECLARATION_CONVERTER, Brackets.ROUND));
-            javaSourceFile.addStatement("super" + IterableConverter.toString(parameters, ProcessingUtility.CALL_CONVERTER, Brackets.ROUND));
-            javaSourceFile.endConstructor();
-        }
-        
-        for (@Nonnull Element member : AnnotationProcessing.getElementUtils().getAllMembers(sourceTypeElement)) {
-            if (member.getKind() == ElementKind.METHOD) {
-                final @Nonnull ExecutableElement method = (ExecutableElement) member;
-                final @Nonnull Set<Modifier> modifiers = method.getModifiers();
-                // TODO: Maybe use Collections.disjoint(A, B) instead?
-                if (!modifiers.contains(Modifier.ABSTRACT) && !modifiers.contains(Modifier.FINAL) && !modifiers.contains(Modifier.PRIVATE) && !modifiers.contains(Modifier.STATIC) && !modifiers.contains(Modifier.NATIVE)) {
-//                    javaSourceFile.addComment("method.asType(): " + method.asType());
-//                    javaSourceFile.addComment("method.toString(): " + method.toString());
-//                    javaSourceFile.addComment("method.getReturnType(): " + method.getReturnType());
-//                    javaSourceFile.addComment("method.asType().getKind(): " + method.asType().getKind());
-//                    javaSourceFile.addComment("((ExecutableType) method.asType()).getTypeVariables(): " + ((ExecutableType) method.asType()).getTypeVariables());
-                    
-                    javaSourceFile.addAnnotation("@Override");
-                    final @Nonnull ExecutableType executableType = (ExecutableType) method.asType();
-                    javaSourceFile.addComment("executableType: " + executableType);
-                    final @Nonnull @NonNullableElements List<? extends TypeVariable> typeVariables = executableType.getTypeVariables();
-                    javaSourceFile.beginMethod(IterableConverter.toString(modifiers, " ") + (typeVariables.isEmpty() ? "" : " <" + IterableConverter.toString(typeVariables) + ">") + " " + executableType.getReturnType() + " " + method.getSimpleName() + IterableConverter.toString(method.getParameters(), ProcessingUtility.DECLARATION_CONVERTER, Brackets.ROUND) + (method.getThrownTypes().isEmpty() ? "" : " throws " + IterableConverter.toString(method.getThrownTypes())));
-                    javaSourceFile.addStatement(javaSourceFile.importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + method.getSimpleName() + " was called.") + ")");
-                    javaSourceFile.addStatement((method.getReturnType().getKind() == TypeKind.VOID ? "" : "return ") + "super." + method.getSimpleName() + IterableConverter.toString(method.getParameters(), ProcessingUtility.CALL_CONVERTER, Brackets.ROUND));
-                    javaSourceFile.endMethod();
-                }
-            }
-        }
-        
-//        javaSourceFile.addAnnotation("@Override");
-//        javaSourceFile.beginMethod("public " + subclassName + " clone()");
-//        javaSourceFile.addStatement("return null");
-//        javaSourceFile.endMethod();
-        
-        javaSourceFile.endClass();
-        
-        javaSourceFile.write();
-    }
-    
-    protected void generateBuilder() {
-        
-    }
-    
-    protected void generateClasses(@Nonnull TypeElement typeElement) {
-        // TODO: Determine if the source type has abstract methods, whose implementations cannot be generated by this processor. If yes, skip the rest.
+    protected boolean generateClasses(@Nonnull TypeElement typeElement) {
         final @Nonnull TypeInformation typeInformation = TypeInformation.forType(typeElement);
-        // TODO: Determine which fields exist, which of them represent the instances of the source type, which of them are required or have a default value, which of them are mutable and which of them have to be generated.
-        // TODO: Generate the subclass with the information about the fields.
-        // TODO: Generate the builder with the information about the fields.
+        if (typeInformation.generatable) {
+            SubclassGenerator.generateSubclassOf(typeInformation);
+            BuilderGenerator.generateBuilderFor(typeInformation);
+        }
+        return typeInformation.generatable;
     }
     
     @Override
@@ -155,11 +71,11 @@ public class GeneratorProcessor extends CustomProcessor {
         for (@Nonnull Element rootElement : roundEnvironment.getRootElements()) {
             if (rootElement.getKind() == ElementKind.CLASS || rootElement.getKind() == ElementKind.INTERFACE) {
                 if (!rootElement.getModifiers().contains(Modifier.FINAL) && !PrefixString.startsWithAny(rootElement.getSimpleName().toString(), "ReadOnly", "Freezable") && !rootElement.getSimpleName().toString().endsWith("Test") && !rootElement.getSimpleName().toString().equals("ConverterAnnotations")) {
-                    AnnotationLog.debugging("Generate a subclass for  " + QuoteString.inSingle(rootElement.getSimpleName()));
+                    AnnotationLog.debugging("Generate the classes for  " + QuoteString.inSingle(rootElement.getSimpleName()));
                     final long start = System.currentTimeMillis();
-                    generateClasses((TypeElement) rootElement);
+                    final boolean generated = generateClasses((TypeElement) rootElement);
                     final long end = System.currentTimeMillis();
-                    AnnotationLog.debugging("Generated a subclass for " + QuoteString.inSingle(rootElement.getSimpleName()) + " in " + (end - start) + " ms.\n");
+                    AnnotationLog.debugging("Generated " + (generated ? "the" : "no") + " classes for " + QuoteString.inSingle(rootElement.getSimpleName()) + " in " + (end - start) + " ms.\n");
                 }
             }
         }

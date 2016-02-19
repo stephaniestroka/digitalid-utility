@@ -25,7 +25,7 @@ public class AbstractClass {
     @Pure
     @Recover
     public static @Nonnull AbstractClass with(@Nonnull String value) {
-        return new /*Generated*/AbstractClass();
+        return new GeneratedAbstractClass();
     }
     
     public static void main(@Nonnull String... args) {

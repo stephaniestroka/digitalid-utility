@@ -23,6 +23,7 @@ import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.processor.ProcessingUtility;
+import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -38,6 +39,14 @@ public class TypeInformation {
     public final @Nonnull TypeElement typeElement;
     
     public final @Nonnull DeclaredType typeMirror;
+    
+    public final @Nonnull String typeName;
+    
+    @Pure
+    @Override
+    public @Nonnull String toString() {
+        return QuoteString.inSingle(typeName);
+    }
     
     /* -------------------------------------------------- Package -------------------------------------------------- */
     
@@ -81,10 +90,6 @@ public class TypeInformation {
     
     /* -------------------------------------------------- Generation -------------------------------------------------- */
     
-    /**
-     * There may only be once constructor. If there are several, one of them or a static method has to be annotated with '@Recover'.
-     * This is the constructor or static method that the builder calls. No, rather it calls the 'overriding' constructor.
-     */
     public final @Nullable MethodInformation recoverMethod;
     
     public final @Nullable MethodInformation equalsMethod;
@@ -104,6 +109,7 @@ public class TypeInformation {
     protected TypeInformation(@Nonnull TypeElement typeElement) {
         this.typeElement = typeElement;
         this.typeMirror = (DeclaredType) typeElement.asType();
+        this.typeName = typeElement.getSimpleName().toString();
         this.packageElement = (PackageElement) typeElement.getEnclosingElement();
         this.packageName = packageElement.getQualifiedName().toString();
         this.typeValidators = ProcessingUtility.getCodeGenerators(typeElement, Validator.class, AnnotationValidator.class);
@@ -179,7 +185,9 @@ public class TypeInformation {
                             if (methodInformation.isGetter()) {
                                 implementedGetters.put(methodInformation.getFieldName(), methodInformation);
                             }
-                            overridableMethods.add(methodInformation);
+                            if (!methodInformation.isPartOfRuntimeEnvironment()) {
+                                overridableMethods.add(methodInformation);
+                            }
                         }
                     }
                 }

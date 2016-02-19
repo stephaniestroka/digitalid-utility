@@ -113,6 +113,7 @@ public class ProcessingUtility {
                         try {
                             final @Nonnull Class<?> codeGeneratorImplementationClass = Class.forName(codeGeneratorImplementationBinaryName);
                             if (codeGeneratorType.isAssignableFrom(codeGeneratorImplementationClass)) {
+                                // TODO: Cache the new generator instance!
                                 final @Nonnull G codeGenerator = (G) codeGeneratorImplementationClass.newInstance();
                                 codeGenerator.checkUsage(element, annotationMirror);
                                 result.put(annotationMirror, codeGenerator);
