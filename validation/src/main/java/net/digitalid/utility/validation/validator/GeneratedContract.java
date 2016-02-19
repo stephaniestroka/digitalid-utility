@@ -39,6 +39,11 @@ public class GeneratedContract {
         return message;
     }
     
+    @Pure
+    public @Nonnull String getMessageInDoubleQuotes() {
+        return "\"" + getMessage() + "\"";
+    }
+    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     protected GeneratedContract(@Nonnull @JavaExpression String condition, @Nonnull String message) {

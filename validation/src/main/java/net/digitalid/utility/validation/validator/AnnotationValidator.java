@@ -3,6 +3,7 @@ package net.digitalid.utility.validation.validator;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 
 import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -40,5 +41,10 @@ public abstract class AnnotationValidator extends CodeGenerator {
     }
     
     /* -------------------------------------------------- Utility -------------------------------------------------- */
+    
+    @Pure
+    protected @Nonnull String getName(@Nonnull Element element) {
+        return element.getKind() == ElementKind.METHOD ? "result" : element.getSimpleName().toString();
+    }
     
 }

@@ -54,6 +54,30 @@ public class TypeInformation {
     
     public final @Nonnull String packageName;
     
+    /* -------------------------------------------------- Subclass -------------------------------------------------- */
+    
+    @Pure
+    public @Nonnull String getSimpleNameOfGeneratedSubclass() {
+        return "Generated" + typeName;
+    }
+    
+    @Pure
+    public @Nonnull String getQualifiedNameOfGeneratedSubclass() {
+        return packageName + "." + getSimpleNameOfGeneratedSubclass();
+    }
+    
+    /* -------------------------------------------------- Builder -------------------------------------------------- */
+    
+    @Pure
+    public @Nonnull String getSimpleNameOfGeneratedBuilder() {
+        return typeName + "Builder";
+    }
+    
+    @Pure
+    public @Nonnull String getQualifiedNameOfGeneratedBuilder() {
+        return packageName + "." + getSimpleNameOfGeneratedBuilder();
+    }
+    
     /* -------------------------------------------------- Validators -------------------------------------------------- */
     
     /**
@@ -205,7 +229,7 @@ public class TypeInformation {
         final @Nonnull @NonNullableElements List<? extends VariableElement> parameters;
         
         if (recoverMethod != null) {
-            parameters = recoverMethod.method.getParameters();
+            parameters = recoverMethod.methodElement.getParameters();
         } else if (constructors.size() == 1) {
             parameters = constructors.get(0).getParameters();
         } else {

@@ -7,6 +7,7 @@ import net.digitalid.utility.generator.annotations.Logged;
 import net.digitalid.utility.generator.annotations.Recover;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Log;
+import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -14,13 +15,14 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * Description.
  */
 @Immutable
-public class AbstractClass {
+public abstract class AbstractClass {
     
     @Pure
     @Logged
-    public @Nonnull String getValue() {
-        return "hello";
-    }
+    public abstract @Nonnull String getValue();
+    
+    @Pure
+    public abstract @Positive int getNumber();
     
     @Pure
     @Recover

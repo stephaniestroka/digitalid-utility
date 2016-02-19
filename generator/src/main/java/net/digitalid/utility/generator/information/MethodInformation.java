@@ -11,6 +11,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 
 import net.digitalid.utility.contracts.Require;
@@ -40,12 +41,37 @@ public class MethodInformation {
     /**
      * Stores the underlying method.
      */
-    public final @Nonnull ExecutableElement method;
+    public final @Nonnull ExecutableElement methodElement;
     
     /**
      * Stores the name of the underlying method.
      */
     public final @Nonnull String methodName;
+    
+    @Pure
+    @Override
+    public @Nonnull String toString() {
+        return QuoteString.inSingle(methodName);
+    }
+    
+    /* -------------------------------------------------- Type -------------------------------------------------- */
+    
+    /**
+     * Stores the type of the underlying method.
+     */
+    public final @Nonnull ExecutableType methodType;
+    
+    @Pure
+    public boolean isGeneric() {
+        return !methodType.getTypeVariables().isEmpty();
+    }
+    
+    /* -------------------------------------------------- Exceptions -------------------------------------------------- */
+    
+    @Pure
+    public boolean throwsExceptions() {
+        return !methodElement.getThrownTypes().isEmpty();
+    }
     
     /* -------------------------------------------------- Package -------------------------------------------------- */
     
@@ -65,18 +91,18 @@ public class MethodInformation {
     
     @Pure
     public boolean hasParameters() {
-        return !method.getParameters().isEmpty();
+        return !methodElement.getParameters().isEmpty();
     }
     
     @Pure
     public boolean hasSingleParameter() {
-        return method.getParameters().size() == 1;
+        return methodElement.getParameters().size() == 1;
     }
     
     @Pure
     public boolean hasSingleParameter(@Nonnull String desiredTypeName) {
         if (hasSingleParameter()) {
-            final @Nonnull String parameterTypeName = method.getParameters().get(0).asType().toString();
+            final @Nonnull String parameterTypeName = methodElement.getParameters().get(0).asType().toString();
             AnnotationLog.verbose("Parameter type: " + QuoteString.inSingle(parameterTypeName) + ", desired type:" + QuoteString.inSingle(desiredTypeName));
             return parameterTypeName.equals(desiredTypeName);
         } else {
@@ -91,7 +117,7 @@ public class MethodInformation {
     
     @Pure
     public boolean hasReturnType(@Nonnull String desiredTypeName) {
-        final @Nonnull String returnTypeName = method.getReturnType().toString();
+        final @Nonnull String returnTypeName = methodElement.getReturnType().toString();
         AnnotationLog.verbose("Return type: " + QuoteString.inSingle(returnTypeName) + ", desired type:" + QuoteString.inSingle(desiredTypeName));
         return returnTypeName.equals(desiredTypeName);
     }
@@ -115,12 +141,12 @@ public class MethodInformation {
     
     @Pure
     public boolean isGetter() {
-        return !hasParameters() && hasReturnType() && (methodName.startsWith("get") || (methodName.startsWith("is") || methodName.startsWith("has")) && hasReturnType(boolean.class));
+        return !isGeneric() && !throwsExceptions() && !hasParameters() && hasReturnType() && (methodName.startsWith("get") || (methodName.startsWith("is") || methodName.startsWith("has")) && hasReturnType(boolean.class));
     }
     
     @Pure
     public boolean isSetter() {
-        return hasSingleParameter() && hasNoReturnType() && methodName.startsWith("set");
+        return !isGeneric() && !throwsExceptions() && hasSingleParameter() && hasNoReturnType() && methodName.startsWith("set");
     }
     
     /**
@@ -170,11 +196,25 @@ public class MethodInformation {
         return modifiers.contains(Modifier.FINAL);
     }
     
+    @Pure
+    public boolean isSynchronized() {
+        return modifiers.contains(Modifier.SYNCHRONIZED);
+    }
+    
+    @Pure
+    public @Nonnull String getModifiersForOverridingMethod() {
+        final @Nonnull StringBuilder result = new StringBuilder();
+        if (isPublic()) { result.append("public "); }
+        if (isProtected()) { result.append("protected "); }
+        if (isSynchronized()) { result.append("synchronized "); }
+        return result.toString();
+    }
+    
     /* -------------------------------------------------- Annotations -------------------------------------------------- */
     
     @Pure
     public boolean hasAnnotation(@Nonnull Class<? extends Annotation> annotationType) {
-        return ProcessingUtility.getAnnotationMirror(method, annotationType) != null;
+        return ProcessingUtility.getAnnotationMirror(methodElement, annotationType) != null;
     }
     
     /* -------------------------------------------------- Validators -------------------------------------------------- */
@@ -200,29 +240,30 @@ public class MethodInformation {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected MethodInformation(@Nonnull ExecutableElement method) {
-        this.method = method;
-        this.methodName = method.getSimpleName().toString();
-        this.modifiers = method.getModifiers();
-        this.resultValidators = ProcessingUtility.getCodeGenerators(method, Validator.class, AnnotationValidator.class);
-        this.methodInterceptors = ProcessingUtility.getCodeGenerators(method, Interceptor.class, MethodInterceptor.class);
+    protected MethodInformation(@Nonnull ExecutableElement methodElement) {
+        this.methodElement = methodElement;
+        this.methodName = methodElement.getSimpleName().toString();
+        this.methodType = (ExecutableType) methodElement.asType();
+        this.modifiers = methodElement.getModifiers();
+        this.resultValidators = ProcessingUtility.getCodeGenerators(methodElement, Validator.class, AnnotationValidator.class);
+        this.methodInterceptors = ProcessingUtility.getCodeGenerators(methodElement, Interceptor.class, MethodInterceptor.class);
         
-        this.packageName = ((QualifiedNameable) method.getEnclosingElement().getEnclosingElement()).getQualifiedName().toString();
+        this.packageName = ((QualifiedNameable) methodElement.getEnclosingElement().getEnclosingElement()).getQualifiedName().toString();
         if (!isPartOfRuntimeEnvironment()) {
-            if (isGetter() && !hasAnnotation(Pure.class)) { AnnotationLog.error("A getter has to be '@Pure':", SourcePosition.of(method)); }
-            if (isSetter() && hasAnnotation(Pure.class)) { AnnotationLog.error("A setter may not be '@Pure':", SourcePosition.of(method)); }
+            if (isGetter() && !hasAnnotation(Pure.class)) { AnnotationLog.error("A getter has to be '@Pure':", SourcePosition.of(methodElement)); }
+            if (isSetter() && hasAnnotation(Pure.class)) { AnnotationLog.error("A setter may not be '@Pure':", SourcePosition.of(methodElement)); }
         }
         
-        final @Nullable AnnotationMirror recoverAnnotationMirror = ProcessingUtility.getAnnotationMirror(method, Recover.class);
+        final @Nullable AnnotationMirror recoverAnnotationMirror = ProcessingUtility.getAnnotationMirror(methodElement, Recover.class);
         if (recoverAnnotationMirror != null) {
             @Nullable String errorMessage = null;
             if (!isStatic()) { errorMessage = "The annotated method has to be static:"; }
-            if (method.getReturnType().getKind() != TypeKind.DECLARED) { errorMessage = "The return type has to be a declared type:"; }
-            final @Nonnull String qualifiedReturnTypeName = ((QualifiedNameable) ((DeclaredType) method.getReturnType()).asElement()).getQualifiedName().toString();
-            final @Nonnull String qualifiedEnclosingClassName = ((QualifiedNameable) method.getEnclosingElement()).getQualifiedName().toString();
+            if (methodElement.getReturnType().getKind() != TypeKind.DECLARED) { errorMessage = "The return type has to be a declared type:"; }
+            final @Nonnull String qualifiedReturnTypeName = ((QualifiedNameable) ((DeclaredType) methodElement.getReturnType()).asElement()).getQualifiedName().toString();
+            final @Nonnull String qualifiedEnclosingClassName = ((QualifiedNameable) methodElement.getEnclosingElement()).getQualifiedName().toString();
             if (!qualifiedReturnTypeName.equals(qualifiedEnclosingClassName)) { errorMessage = "The return type has to be the enclosing class:"; }
-            if (errorMessage != null) { AnnotationLog.error(errorMessage, SourcePosition.of(method)); }
-            AnnotationLog.verbose("Found the recover method", SourcePosition.of(method));
+            if (errorMessage != null) { AnnotationLog.error(errorMessage, SourcePosition.of(methodElement)); }
+            AnnotationLog.verbose("Found the recover method", SourcePosition.of(methodElement));
             this.recover = true;
         } else {
             this.recover = false;

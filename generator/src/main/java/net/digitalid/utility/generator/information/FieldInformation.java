@@ -80,9 +80,9 @@ public class FieldInformation {
     public static @Nonnull FieldInformation forField(@Nonnull String name, @Nullable MethodInformation getter, @Nullable MethodInformation setter) {
         Require.that(getter != null || setter != null).orThrow("The getter and the setter may not both be null.");
         
-        final @Nonnull TypeMirror type = getter != null ? getter.method.getReturnType() : setter.method.getParameters().get(0).asType();
-        final @Nullable String defaultValue = getter != null ? ProcessingUtility.getStringValue(getter.method, DefaultValue.class) : null;
-        return new FieldInformation(true, name, type, defaultValue, null, getter, setter, ProcessingUtility.getCodeGenerators(getter != null ? getter.method : setter.method.getParameters().get(0), Validator.class, AnnotationValidator.class));
+        final @Nonnull TypeMirror type = getter != null ? getter.methodElement.getReturnType() : setter.methodElement.getParameters().get(0).asType();
+        final @Nullable String defaultValue = getter != null ? ProcessingUtility.getStringValue(getter.methodElement, DefaultValue.class) : null;
+        return new FieldInformation(true, name, type, defaultValue, null, getter, setter, ProcessingUtility.getCodeGenerators(getter != null ? getter.methodElement : setter.methodElement.getParameters().get(0), Validator.class, AnnotationValidator.class));
     }
     
 }

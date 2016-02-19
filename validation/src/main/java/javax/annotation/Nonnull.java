@@ -6,8 +6,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+
 import net.digitalid.utility.validation.annotations.meta.Validator;
+import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
+import net.digitalid.utility.validation.validator.GeneratedContract;
 
 /**
  * This annotation indicates that the annotated reference is not null.
@@ -29,7 +34,13 @@ public @interface Nonnull {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     public static class Validator extends AnnotationValidator {
-        // TODO: Generate the contract.
+        
+        @Pure
+        @Override
+        public @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
+            return GeneratedContract.with(getName(element) + " != null", "The " + getName(element) + " may not be null.");
+        }
+        
     }
     
 }

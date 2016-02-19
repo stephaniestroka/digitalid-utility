@@ -7,9 +7,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.math.BigInteger;
 
+import javax.annotation.Nonnull;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
 import net.digitalid.utility.validation.annotations.meta.Validator;
+import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
+import net.digitalid.utility.validation.validator.GeneratedContract;
 
 /**
  * This annotation indicates that a numeric value is positive.
@@ -29,7 +35,14 @@ public @interface Positive {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     public static class Validator extends AnnotationValidator {
-        // TODO: Generate the contract.
+        
+        @Pure
+        @Override
+        public @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
+            // TODO: Handle BigInteger differently!
+            return GeneratedContract.with(getName(element) + " > 0", "The " + getName(element) + " has to be positive but was \" + " + getName(element) + " + \".");
+        }
+        
     }
     
 //    /**

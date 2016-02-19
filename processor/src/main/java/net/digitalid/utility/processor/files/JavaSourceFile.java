@@ -438,6 +438,17 @@ public class JavaSourceFile extends GeneratedFile {
         endBlock(CLASS);
     }
     
+    /* -------------------------------------------------- Field -------------------------------------------------- */
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn(CLASS)
+    public void addField(@Nonnull String declaration) {
+        requireCurrentCodeBlock(CLASS);
+        
+        addCodeLineWithIndentation(declaration + ";");
+        addEmptyLine();
+    }
+    
     /* -------------------------------------------------- Block -------------------------------------------------- */
     
     @NonWrittenRecipient

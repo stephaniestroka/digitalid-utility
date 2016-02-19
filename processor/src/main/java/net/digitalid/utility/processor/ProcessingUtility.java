@@ -191,13 +191,13 @@ public class ProcessingUtility {
     public static final @Nonnull NonNullableElementConverter<TypeParameterElement> TYPE_CONVERTER = new NonNullableElementConverter<TypeParameterElement>() {
         @Override
         public String toString(@Nonnull TypeParameterElement element) {
-            AnnotationLog.debugging("element.toString(): " + element.toString());
-            AnnotationLog.debugging("element.asType(): " + element.asType());
-            AnnotationLog.debugging("element.getSimpleName(): " + element.getSimpleName());
+//            AnnotationLog.debugging("element.toString(): " + element.toString());
+//            AnnotationLog.debugging("element.asType(): " + element.asType());
+//            AnnotationLog.debugging("element.getSimpleName(): " + element.getSimpleName());
             final @Nonnull @NonNullableElements List<? extends TypeMirror> bounds = element.getBounds();
-            for (@Nonnull TypeMirror bound : bounds) {
-                AnnotationLog.debugging("bound.toString(): " + bound.toString());
-            }
+//            for (@Nonnull TypeMirror bound : bounds) {
+//                AnnotationLog.debugging("bound.toString(): " + bound.toString());
+//            }
             return element.getSimpleName().toString() + (bounds.isEmpty() ? "" : " extends " + bounds.get(0));
         }
     };
