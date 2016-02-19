@@ -6,6 +6,7 @@ import net.digitalid.utility.collections.readonly.ReadOnlySet;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.property.ReadOnlyProperty;
 import net.digitalid.utility.property.ValueValidator;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This is the read-only abstract class for extensible properties.
@@ -32,6 +33,7 @@ public abstract class ReadOnlyExtensibleProperty<V, R extends ReadOnlySet<V>> ex
      * 
      * @return a read-only representation of the map.
      */
+    @Pure
     public abstract @Nonnull @NonFrozen R get();
     
 }

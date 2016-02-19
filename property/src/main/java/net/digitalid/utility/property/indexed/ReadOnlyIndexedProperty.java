@@ -7,6 +7,7 @@ import net.digitalid.utility.collections.readonly.ReadOnlyMap;
 import net.digitalid.utility.property.ReadOnlyProperty;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This is the read-only abstract class for properties that stores an indexed value.
@@ -18,11 +19,10 @@ public abstract class ReadOnlyIndexedProperty<K, V, R extends ReadOnlyMap<K, V>>
     /**
      * Stores the key validator, which is only used in indexed property objects.
      */
-    private final @Nonnull
-    ValueValidator<? super K> keyValidator;
-
+    private final @Nonnull ValueValidator<? super K> keyValidator;
+    
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
-
+    
     /**
      * Creates a new read-only indexed property with the given validators.
      *
@@ -31,10 +31,10 @@ public abstract class ReadOnlyIndexedProperty<K, V, R extends ReadOnlyMap<K, V>>
      */
     protected ReadOnlyIndexedProperty(@Nonnull ValueValidator<? super K> keyValidator, @Nonnull ValueValidator<? super V> valueValidator) {
         super(valueValidator);
-
+        
         this.keyValidator = keyValidator;
     }
-
+    
     /* -------------------------------------------------- Getter -------------------------------------------------- */
     
     /**
@@ -44,6 +44,7 @@ public abstract class ReadOnlyIndexedProperty<K, V, R extends ReadOnlyMap<K, V>>
      * 
      * @return the value for a given key.
      */
+    @Pure
     public abstract @Nonnull @Validated V get(@Nonnull K key);
     
     /**
@@ -51,6 +52,7 @@ public abstract class ReadOnlyIndexedProperty<K, V, R extends ReadOnlyMap<K, V>>
      * 
      * @return all indexed values.
      */
+    @Pure
     public abstract @Nonnull @Validated ReadOnlyCollection<V> getAll();
     
     /**
@@ -58,6 +60,7 @@ public abstract class ReadOnlyIndexedProperty<K, V, R extends ReadOnlyMap<K, V>>
      * 
      * @return a read-only representation of the map.
      */
+    @Pure
     public abstract @Nonnull @Validated R getMap();
     
 }

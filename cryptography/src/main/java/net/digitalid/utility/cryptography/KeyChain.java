@@ -104,15 +104,16 @@ public abstract class KeyChain<C extends KeyChain<C, K>, K extends Convertible> 
         }
         return getKeyChainCreator().createKeyChain(copy.freeze());
     }
-
+    
     protected abstract class KeyChainCreator<C, K> {
-
+        
         protected abstract @Nonnull C createKeyChain(@Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<ReadOnlyPair<Time, K>> items);
-
+        
     }
-
+    
+    @Pure
     protected abstract KeyChainCreator<C, K> getKeyChainCreator();
-
+    
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**

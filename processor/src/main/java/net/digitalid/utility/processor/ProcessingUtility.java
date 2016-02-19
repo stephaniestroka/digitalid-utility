@@ -70,6 +70,28 @@ public class ProcessingUtility {
     }
     
     /**
+     * Returns the value of the given annotation type on the given element or null if not found.
+     */
+    @Pure
+    public static @Nullable String getStringValue(@Nonnull Element element, @Nonnull Class<? extends Annotation> annotationType) {
+        final @Nullable AnnotationMirror annotationMirror = getAnnotationMirror(element, annotationType);
+        if (annotationMirror != null) {
+            for (@Nonnull Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationEntry : annotationMirror.getElementValues().entrySet()) {
+                if (annotationEntry.getKey().getSimpleName().contentEquals("value")) {
+                    final @Nonnull AnnotationValue annotationValue = annotationEntry.getValue();
+                    final @Nonnull Object object = annotationValue.getValue();
+                    if (object instanceof String) {
+                        return (String) object;
+                    } else {
+                        AnnotationLog.error("The value is not a string:", SourcePosition.of(element, annotationMirror, annotationValue));
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
      * Returns the code generators of the given type which are found with the given meta-annotation type on the annotations of the given element.
      */
     @Pure

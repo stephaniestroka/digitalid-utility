@@ -15,7 +15,8 @@ public class GenericClass<G extends GenericClass<G>> {
         return object;
     }
     
-    public G get() {
+    @Pure
+    public G getField() {
         return null;
     }
     

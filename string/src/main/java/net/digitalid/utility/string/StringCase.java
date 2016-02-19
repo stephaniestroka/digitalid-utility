@@ -45,7 +45,7 @@ public class StringCase {
      */
     @Pure
     public static @Nonnull String lowerCaseFirstCharacter(@Nonnull String string) {
-        return string.substring(0, 1).toLowerCase() + string.substring(1);
+        return string.isEmpty() ? "" : string.substring(0, 1).toLowerCase() + string.substring(1);
     }
     
     /**
@@ -53,7 +53,7 @@ public class StringCase {
      */
     @Pure
     public static @Nonnull String upperCaseFirstCharacter(@Nonnull String string) {
-        return string.substring(0, 1).toUpperCase()+ string.substring(1);
+        return string.isEmpty() ? "" : string.substring(0, 1).toUpperCase()+ string.substring(1);
     }
     
 }

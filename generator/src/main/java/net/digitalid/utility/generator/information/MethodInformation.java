@@ -193,8 +193,11 @@ public class MethodInformation {
         this.resultValidators = ProcessingUtility.getCodeGenerators(method, Validator.class, AnnotationValidator.class);
         this.methodInterceptors = ProcessingUtility.getCodeGenerators(method, Interceptor.class, MethodInterceptor.class);
         
-        if (isGetter() && !hasAnnotation(Pure.class)) { AnnotationLog.error("A getter has to be '@Pure':", SourcePosition.of(method)); }
-        if (isSetter() && hasAnnotation(Pure.class)) { AnnotationLog.error("A setter may not be '@Pure':", SourcePosition.of(method)); }
+        final @Nonnull String packageName = ((QualifiedNameable) method.getEnclosingElement().getEnclosingElement()).getQualifiedName().toString();
+        if (!packageName.startsWith("java")) {
+            if (isGetter() && !hasAnnotation(Pure.class)) { AnnotationLog.error("A getter has to be '@Pure':", SourcePosition.of(method)); }
+            if (isSetter() && hasAnnotation(Pure.class)) { AnnotationLog.error("A setter may not be '@Pure':", SourcePosition.of(method)); }
+        }
         
         final @Nullable AnnotationMirror recoverAnnotationMirror = ProcessingUtility.getAnnotationMirror(method, Recover.class);
         if (recoverAnnotationMirror != null) {

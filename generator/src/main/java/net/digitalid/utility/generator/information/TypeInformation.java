@@ -1,5 +1,6 @@
 package net.digitalid.utility.generator.information;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -13,6 +14,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
@@ -37,6 +39,12 @@ public class TypeInformation {
     
     public final @Nonnull DeclaredType typeMirror;
     
+    /* -------------------------------------------------- Package -------------------------------------------------- */
+    
+    public final @Nonnull PackageElement packageElement;
+    
+    public final @Nonnull String packageName;
+    
     /* -------------------------------------------------- Validators -------------------------------------------------- */
     
     /**
@@ -48,8 +56,6 @@ public class TypeInformation {
     
     public final boolean generatable;
     
-//    public final @Nonnull @NonNullableElements List<AnnotationValidator> typeValidators;
-    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     public final @Nonnull @NonNullableElements List<ExecutableElement> constructors;
@@ -59,14 +65,19 @@ public class TypeInformation {
     /**
      * Stores the non-static and non-final methods that are to be overridden.
      */
-    public final @Nonnull @NonNullableElements List<MethodInformation> methods;
+    public final @Nonnull @NonNullableElements List<MethodInformation> overridableMethods;
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
     /**
      * Stores the parameters of the constructor, which also represent the object.
      */
-    public final @Nonnull @NonNullableElements List<FieldInformation> fields;
+    public final @Nonnull @NonNullableElements List<FieldInformation> representingFields;
+    
+    /**
+     * Stores the accessible fields, which can be validated by the generated subclass.
+     */
+    public final @Nonnull @NonNullableElements List<VariableElement> accessibleFields;
     
     /* -------------------------------------------------- Generation -------------------------------------------------- */
     
@@ -93,13 +104,16 @@ public class TypeInformation {
     protected TypeInformation(@Nonnull TypeElement typeElement) {
         this.typeElement = typeElement;
         this.typeMirror = (DeclaredType) typeElement.asType();
+        this.packageElement = (PackageElement) typeElement.getEnclosingElement();
+        this.packageName = packageElement.getQualifiedName().toString();
         this.typeValidators = ProcessingUtility.getCodeGenerators(typeElement, Validator.class, AnnotationValidator.class);
         
         boolean generatable = true;
         
         final @Nonnull @NonNullableElements List<ExecutableElement> constructors = new LinkedList<>();
-        final @Nonnull @NonNullableElements List<MethodInformation> methods = new LinkedList<>();
-        final @Nonnull @NonNullableElements List<FieldInformation> fields = new LinkedList<>();
+        final @Nonnull @NonNullableElements List<MethodInformation> overridableMethods = new LinkedList<>();
+        final @Nonnull @NonNullableElements List<FieldInformation> representingFields = new LinkedList<>();
+        final @Nonnull @NonNullableElements Map<String, VariableElement> accessibleFields = new LinkedHashMap<>();
         
         @Nullable MethodInformation recoverMethod = null;
         @Nullable MethodInformation equalsMethod = null;
@@ -111,21 +125,20 @@ public class TypeInformation {
         
         final @Nonnull @NonNullableElements Map<String, MethodInformation> abstractGetters = new LinkedHashMap<>();
         final @Nonnull @NonNullableElements Map<String, MethodInformation> abstractSetters = new LinkedHashMap<>();
-        final @Nonnull @NonNullableElements Map<String, MethodInformation> getters = new LinkedHashMap<>();
-        
-        final @Nonnull @NonNullableElements Map<String, VariableElement> nonPrivateFields = new LinkedHashMap<>();
+        final @Nonnull @NonNullableElements Map<String, MethodInformation> implementedGetters = new LinkedHashMap<>();
         
         final @Nonnull @NonNullableElements List<? extends Element> members = AnnotationProcessing.getElementUtils().getAllMembers(typeElement);
         for (@Nonnull Element member : members) {
+            
             if (member.getKind() == ElementKind.CONSTRUCTOR) {
                 final @Nonnull ExecutableElement constructor = (ExecutableElement) member;
                 AnnotationLog.verbose("Found the constructor", SourcePosition.of(constructor));
                 constructors.add(constructor);
+                
             } else if (member.getKind() == ElementKind.METHOD) {
                 final @Nonnull ExecutableElement method = (ExecutableElement) member;
                 AnnotationLog.verbose("Found the method", SourcePosition.of(method));
                 final @Nonnull String methodName = method.getSimpleName().toString();
-                
                 final @Nonnull MethodInformation methodInformation = MethodInformation.forMethod(method);
                 if (methodInformation.recover) {
                     if (recoverMethod != null) {
@@ -133,11 +146,10 @@ public class TypeInformation {
                     }
                     recoverMethod = methodInformation;
                 }
-                
-                if (!methodInformation.isStatic()) {
+                if (!methodInformation.isStatic() && !methodInformation.isPrivate()) {
                     if (methodInformation.isFinal()) {
                         if (methodInformation.isGetter()) {
-                            getters.put(methodInformation.getFieldName(), methodInformation);
+                            implementedGetters.put(methodInformation.getFieldName(), methodInformation);
                         }
                     } else {
                         if (methodInformation.isAbstract()) {
@@ -165,23 +177,23 @@ public class TypeInformation {
                             }
                         } else {
                             if (methodInformation.isGetter()) {
-                                getters.put(methodInformation.getFieldName(), methodInformation);
+                                implementedGetters.put(methodInformation.getFieldName(), methodInformation);
                             }
-                            methods.add(methodInformation);
+                            overridableMethods.add(methodInformation);
                         }
                     }
                 }
+                
             } else if (member.getKind() == ElementKind.FIELD) {
                 final @Nonnull VariableElement field = (VariableElement) member;
                 AnnotationLog.verbose("Found the field", SourcePosition.of(field));
                 final @Nonnull String fieldName = field.getSimpleName().toString();
                 if (!field.getModifiers().contains(Modifier.PRIVATE)) {
-                    nonPrivateFields.put(fieldName, field);
+                    accessibleFields.put(fieldName, field);
                 }
             }
         }
         
-        // TODO: Rather store the ExecutableElement so that the source position can be more accurate.
         final @Nonnull @NonNullableElements List<? extends VariableElement> parameters;
         
         if (recoverMethod != null) {
@@ -196,31 +208,40 @@ public class TypeInformation {
         
         for (@Nonnull VariableElement parameter : parameters) {
             final @Nonnull String parameterName = parameter.getSimpleName().toString();
-            final @Nullable VariableElement field = nonPrivateFields.get(parameterName);
+            final @Nullable VariableElement field = accessibleFields.get(parameterName);
             if (field != null) {
-//                fields.add(FieldInformation.forField(parameter));
+                representingFields.add(FieldInformation.forField(parameter, field));
             } else {
-                final @Nullable MethodInformation getter = getters.get(parameterName);
+                final @Nullable MethodInformation getter = implementedGetters.get(parameterName);
                 if (getter != null) {
-//                    fields.add(FieldInformation.forField(parameter, getter));
-                } else if (recoverMethod != null && abstractGetters.get(parameterName) == null) { // TODO: Check the condition.
-                    AnnotationLog.information("Cannot access the field:", SourcePosition.of(typeElement));
+                    representingFields.add(FieldInformation.forField(parameter, getter));
+                } else if (recoverMethod == null || abstractGetters.get(parameterName) == null) {
+                    AnnotationLog.information("Can neither access a field nor a getter for the required parameter", SourcePosition.of(parameter));
                     generatable = false;
                 }
             }
         }
         
         for (@Nonnull Map.Entry<String, MethodInformation> entry : abstractGetters.entrySet()) {
-            final @Nonnull String getterName = entry.getKey();
+            final @Nonnull String fieldName = entry.getKey();
             final @Nonnull MethodInformation getter = entry.getValue();
-            // TODO: Add the generated fields to the fields.
+            final @Nullable MethodInformation setter = abstractSetters.get(fieldName);
+            if (setter != null) { abstractSetters.remove(fieldName); }
+            representingFields.add(FieldInformation.forField(fieldName, getter, setter));
+        }
+        
+        for (@Nonnull Map.Entry<String, MethodInformation> entry : abstractSetters.entrySet()) {
+            final @Nonnull String fieldName = entry.getKey();
+            final @Nonnull MethodInformation setter = entry.getValue();
+            representingFields.add(FieldInformation.forField(fieldName, null, setter));
         }
         
         this.generatable = generatable;
         
         this.constructors = Collections.unmodifiableList(constructors);
-        this.methods = Collections.unmodifiableList(methods);
-        this.fields = Collections.unmodifiableList(fields);
+        this.overridableMethods = Collections.unmodifiableList(overridableMethods);
+        this.representingFields = Collections.unmodifiableList(representingFields);
+        this.accessibleFields = Collections.unmodifiableList(new ArrayList<>(accessibleFields.values()));
         
         this.recoverMethod = recoverMethod;
         this.equalsMethod = equalsMethod;
