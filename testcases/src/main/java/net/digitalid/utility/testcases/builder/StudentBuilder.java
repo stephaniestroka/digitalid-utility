@@ -1,11 +1,16 @@
 package net.digitalid.utility.testcases.builder;
 
+import java.util.List;
+
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.reference.Captured;
 import net.digitalid.utility.validation.annotations.reference.Chainable;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.type.Mutable;
@@ -25,43 +30,83 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 @Generated(value = {"net.digitalid.utility.generator.processor.GeneratorProcessor"}, date = "2016-02-10T21:39:49.202+0100")
 public class StudentBuilder {
     
-    /* -------------------------------------------------- Name -------------------------------------------------- */
+    class RequiredFieldsStudentBuilder extends StudentBuilder {
     
-    @Nonnull @MaxSize(64) String name;
-    
-    @Pure
-    @Chainable
-    public @Nonnull StudentBuilder withName(@Nonnull @MaxSize(64) String name) {
-        Require.that(name != null).orThrow("The name may not be null.");
-        Require.that(name.length() <= 64).orThrow("The length of the name may be at most 64 character.");
+        private boolean allRequiredFieldsAreSet() {
+            return this.name != null && this.ID != null;
+        }
         
-        this.name = name;
-        return this;
+        /* -------------------------------------------------- Name -------------------------------------------------- */
+        
+        @Nonnull @MaxSize(64) String name;
+        
+        @Pure
+        @Chainable
+        public @Nonnull StudentBuilder withName(@Nonnull @MaxSize(64) String name) {
+            Require.that(name != null).orThrow("The name may not be null.");
+            Require.that(name.length() <= 64).orThrow("The length of the name may be at most 64 character.");
+            
+            this.name = name;
+            if (allRequiredFieldsAreSet()) {
+                return new OptionalFieldsStudentBuilder(this);
+            } else {
+                return this;
+            }
+        }
+        
+            
+        /* -------------------------------------------------- ID -------------------------------------------------- */
+        
+        @Positive Integer ID;
+        
+        @Pure
+        @Chainable
+        public @Nonnull StudentBuilder withID(@Positive int ID) {
+            this.ID = ID;
+            if (allRequiredFieldsAreSet()) {
+                return new OptionalFieldsStudentBuilder(this);
+            } else {
+                return this;
+            }
+        }
+    
+        /**
+         * Copy constructor.
+         */
+        protected RequiredFieldsStudentBuilder(RequiredFieldsStudentBuilder requiredFieldsStudentBuilder) {
+            this.name = requiredFieldsStudentBuilder.name;
+            this.ID = requiredFieldsStudentBuilder.ID;
+        }
+    
     }
     
-    /* -------------------------------------------------- ID -------------------------------------------------- */
+    class OptionalFieldsStudentBuilder extends RequiredFieldsStudentBuilder {
+        
+        protected OptionalFieldsStudentBuilder(RequiredFieldsStudentBuilder requiredFieldsStudentBuilder) {
+            super(requiredFieldsStudentBuilder);
+        }
+        
+        /* -------------------------------------------------- Buddies -------------------------------------------------- */
     
-    @Positive int ID;
-    
-    @Pure
-    @Chainable
-    public @Nonnull StudentBuilder withID(@Positive int ID) {
-        this.ID = ID;
-        return this;
+        @Nonnull @NonNullableElements @NonFrozen List<Student> buddies;
+        
+        @Pure
+        @Chainable
+        // With @Captured annotation!
+        public @Nonnull StudentBuilder withBuddies(@Captured @Nonnull @NonNullableElements @NonFrozen List<Student> buddies) {
+            this.buddies = buddies;
+            return this;
+        }
+        
+        /* -------------------------------------------------- Build -------------------------------------------------- */
+        
+        public @Nonnull Student build() {
+            //return new GeneratedStudent(name, ID, buddies);
+            return null;
+        }
+        
     }
-    
-    /* -------------------------------------------------- Buddies -------------------------------------------------- */
-    
-//    @Nonnull @NonNullableElements @NonFrozen FreezableList<Student> buddies;
-//    
-//    @Pure
-//    @Chainable
-//    // With @Captured annotation!
-//    public @Nonnull StudentBuilder withBuddies(@Captured @Nonnull @NonNullableElements @NonFrozen FreezableList<Student> buddies) {
-//        this.buddies = buddies;
-//        return this;
-//    }
-    
+   
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     protected StudentBuilder() {}
