@@ -27,15 +27,15 @@ import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.processor.ProcessingUtility;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
-import net.digitalid.utility.processor.files.JavaSourceFile;
-import net.digitalid.utility.processor.files.ServiceLoaderFile;
+import net.digitalid.utility.processor.generator.JavaFileGenerator;
+import net.digitalid.utility.processor.generator.ServiceFileGenerator;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This annotation processor generates a subclass of {@link Initializer} for each static method
- * annotated with {@link Initialize} and registers it in a {@link ServiceLoaderFile}.
+ * annotated with {@link Initialize} and registers it in a {@link ServiceFileGenerator}.
  */
 @SupportedAnnotations(Initialize.class)
 public class InitializationProcessor extends CustomProcessor {
@@ -81,7 +81,7 @@ public class InitializationProcessor extends CustomProcessor {
         final @Nonnull String simpleSourceClassName = sourceClassElement.getSimpleName().toString();
         final @Nonnull String simpleGeneratedClassName = simpleSourceClassName + "$" + annotatedMethod.getSimpleName();
         
-        final @Nonnull JavaSourceFile javaSourceFile = JavaSourceFile.forClass(qualifiedGeneratedClassName, sourceClassElement);
+        final @Nonnull JavaFileGenerator javaSourceFile = JavaFileGenerator.forClass(qualifiedGeneratedClassName, sourceClassElement);
         javaSourceFile.beginClass("public class " + simpleGeneratedClassName + " extends " + javaSourceFile.importIfPossible(LoggingInitializer.class));
         
         javaSourceFile.beginJavadoc();
@@ -113,7 +113,7 @@ public class InitializationProcessor extends CustomProcessor {
     
     @Override
     public void processFirstRound(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
-        final @Nonnull ServiceLoaderFile serviceLoaderFile = ServiceLoaderFile.forService(Initializer.class);
+        final @Nonnull ServiceFileGenerator serviceLoaderFile = ServiceFileGenerator.forService(Initializer.class);
         for (@Nonnull Element annotatedElement : roundEnvironment.getElementsAnnotatedWith(Initialize.class)) {
             // Enforced by the compiler due to the '@Target' meta-annotation:
             final @Nonnull ExecutableElement annotatedMethod = (ExecutableElement) annotatedElement;

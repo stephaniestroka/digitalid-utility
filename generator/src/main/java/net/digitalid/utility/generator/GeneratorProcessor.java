@@ -61,7 +61,7 @@ public class GeneratorProcessor extends CustomProcessor {
         final @Nonnull TypeInformation typeInformation = TypeInformation.forType(typeElement);
         if (typeInformation.generatable) {
             SubclassGenerator.generateSubclassOf(typeInformation);
-            BuilderGenerator.generateBuilderFor(typeInformation);
+//            BuilderGenerator.generateBuilderFor(typeInformation);
         }
         return typeInformation.generatable;
     }
@@ -70,6 +70,7 @@ public class GeneratorProcessor extends CustomProcessor {
     public void processFirstRound(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
         for (@Nonnull Element rootElement : roundEnvironment.getRootElements()) {
             if (rootElement.getKind() == ElementKind.CLASS || rootElement.getKind() == ElementKind.INTERFACE) {
+                // TODO: In order to just generate a builder, the class can actually be final.
                 if (!rootElement.getModifiers().contains(Modifier.FINAL) && !PrefixString.startsWithAny(rootElement.getSimpleName().toString(), "ReadOnly", "Freezable") && !rootElement.getSimpleName().toString().endsWith("Test") && !rootElement.getSimpleName().toString().equals("ConverterAnnotations")) {
                     AnnotationLog.debugging("Generate the classes for  " + QuoteString.inSingle(rootElement.getSimpleName()));
                     final long start = System.currentTimeMillis();

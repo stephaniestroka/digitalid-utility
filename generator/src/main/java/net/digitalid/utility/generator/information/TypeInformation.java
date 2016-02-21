@@ -30,22 +30,25 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
- * Description.
+ * This class collects the relevant information about a type for generating a subclass and builder.
+ * 
+ * @see SubclassGenerator
+ * @see BuilderGenerator
  */
 public class TypeInformation {
     
     /* -------------------------------------------------- Type -------------------------------------------------- */
     
-    public final @Nonnull TypeElement typeElement;
+    public final @Nonnull TypeElement element;
     
-    public final @Nonnull DeclaredType typeMirror;
+    public final @Nonnull DeclaredType type;
     
-    public final @Nonnull String typeName;
+    public final @Nonnull String name;
     
     @Pure
     @Override
     public @Nonnull String toString() {
-        return QuoteString.inSingle(typeName);
+        return QuoteString.inSingle(name);
     }
     
     /* -------------------------------------------------- Package -------------------------------------------------- */
@@ -58,7 +61,7 @@ public class TypeInformation {
     
     @Pure
     public @Nonnull String getSimpleNameOfGeneratedSubclass() {
-        return "Generated" + typeName;
+        return "Generated" + name;
     }
     
     @Pure
@@ -70,7 +73,7 @@ public class TypeInformation {
     
     @Pure
     public @Nonnull String getSimpleNameOfGeneratedBuilder() {
-        return typeName + "Builder";
+        return name + "Builder";
     }
     
     @Pure
@@ -83,7 +86,7 @@ public class TypeInformation {
     /**
      * Stores the validators that validate the type.
      */
-    public final @Nonnull @NonNullableElements Map<AnnotationMirror, AnnotationValidator> typeValidators;
+    public final @Nonnull @NonNullableElements Map<AnnotationMirror, AnnotationValidator> validators;
     
     /* -------------------------------------------------- Generatable -------------------------------------------------- */
     
@@ -92,13 +95,6 @@ public class TypeInformation {
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     public final @Nonnull @NonNullableElements List<ExecutableElement> constructors;
-    
-    /* -------------------------------------------------- Methods -------------------------------------------------- */
-    
-    /**
-     * Stores the non-static and non-final methods that are to be overridden.
-     */
-    public final @Nonnull @NonNullableElements List<MethodInformation> overridableMethods;
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
@@ -110,9 +106,16 @@ public class TypeInformation {
     /**
      * Stores the accessible fields, which can be validated by the generated subclass.
      */
-    public final @Nonnull @NonNullableElements List<VariableElement> accessibleFields;
+    public final @Nonnull @NonNullableElements List<FieldInformation> accessibleFields;
     
-    /* -------------------------------------------------- Generation -------------------------------------------------- */
+    /* -------------------------------------------------- Overridden Methods -------------------------------------------------- */
+    
+    /**
+     * Stores the non-static and non-final methods that are to be overridden.
+     */
+    public final @Nonnull @NonNullableElements List<MethodInformation> overriddenMethods;
+    
+    /* -------------------------------------------------- Generated Methods -------------------------------------------------- */
     
     public final @Nullable MethodInformation recoverMethod;
     
@@ -128,22 +131,24 @@ public class TypeInformation {
     
     public final @Nullable MethodInformation cloneMethod;
     
+    // TODO: Include the freezable methods here!
+    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected TypeInformation(@Nonnull TypeElement typeElement) {
-        this.typeElement = typeElement;
-        this.typeMirror = (DeclaredType) typeElement.asType();
-        this.typeName = typeElement.getSimpleName().toString();
-        this.packageElement = (PackageElement) typeElement.getEnclosingElement();
+    protected TypeInformation(@Nonnull TypeElement element) {
+        this.element = element;
+        this.type = (DeclaredType) element.asType();
+        this.name = element.getSimpleName().toString();
+        this.packageElement = (PackageElement) element.getEnclosingElement();
         this.packageName = packageElement.getQualifiedName().toString();
-        this.typeValidators = ProcessingUtility.getCodeGenerators(typeElement, Validator.class, AnnotationValidator.class);
+        this.validators = ProcessingUtility.getCodeGenerators(element, Validator.class, AnnotationValidator.class);
         
         boolean generatable = true;
         
         final @Nonnull @NonNullableElements List<ExecutableElement> constructors = new LinkedList<>();
-        final @Nonnull @NonNullableElements List<MethodInformation> overridableMethods = new LinkedList<>();
+        final @Nonnull @NonNullableElements List<MethodInformation> overriddenMethods = new LinkedList<>();
         final @Nonnull @NonNullableElements List<FieldInformation> representingFields = new LinkedList<>();
-        final @Nonnull @NonNullableElements Map<String, VariableElement> accessibleFields = new LinkedHashMap<>();
+        final @Nonnull @NonNullableElements Map<String, FieldInformation> accessibleFields = new LinkedHashMap<>();
         
         @Nullable MethodInformation recoverMethod = null;
         @Nullable MethodInformation equalsMethod = null;
@@ -157,7 +162,7 @@ public class TypeInformation {
         final @Nonnull @NonNullableElements Map<String, MethodInformation> abstractSetters = new LinkedHashMap<>();
         final @Nonnull @NonNullableElements Map<String, MethodInformation> implementedGetters = new LinkedHashMap<>();
         
-        final @Nonnull @NonNullableElements List<? extends Element> members = AnnotationProcessing.getElementUtils().getAllMembers(typeElement);
+        final @Nonnull @NonNullableElements List<? extends Element> members = AnnotationProcessing.getElementUtils().getAllMembers(element);
         for (@Nonnull Element member : members) {
             
             if (member.getKind() == ElementKind.CONSTRUCTOR) {
@@ -169,8 +174,8 @@ public class TypeInformation {
                 final @Nonnull ExecutableElement method = (ExecutableElement) member;
                 AnnotationLog.verbose("Found the method", SourcePosition.of(method));
                 final @Nonnull String methodName = method.getSimpleName().toString();
-                final @Nonnull MethodInformation methodInformation = MethodInformation.forMethod(method);
-                if (methodInformation.recover) {
+                final @Nonnull MethodInformation methodInformation = MethodInformation.forMethod(type, method);
+                if (methodInformation.isRecover()) {
                     if (recoverMethod != null) {
                         AnnotationLog.error("Only one method may be annotated with '@Recover':", SourcePosition.of(method));
                     }
@@ -189,9 +194,9 @@ public class TypeInformation {
                                 hashCodeMethod = methodInformation;
                             } else if (methodName.equals("toString") && !methodInformation.hasParameters()) {
                                 toStringMethod = methodInformation;
-                            } else if (methodName.equals("validate") && !methodInformation.hasParameters() && methodInformation.hasNoReturnType()) {
+                            } else if (methodName.equals("validate") && !methodInformation.hasParameters() && !methodInformation.hasReturnType()) {
                                 validateMethod = methodInformation;
-                            } else if (methodName.equals("compareTo") && methodInformation.hasSingleParameter(typeElement.getQualifiedName().toString())) {
+                            } else if (methodName.equals("compareTo") && methodInformation.hasSingleParameter(element.getQualifiedName().toString())) {
                                 compareToMethod = methodInformation;
                             } else if (methodName.equals("clone") && !methodInformation.hasParameters()) {
                                 cloneMethod = methodInformation;
@@ -210,7 +215,7 @@ public class TypeInformation {
                                 implementedGetters.put(methodInformation.getFieldName(), methodInformation);
                             }
                             if (!methodInformation.isPartOfRuntimeEnvironment()) {
-                                overridableMethods.add(methodInformation);
+                                overriddenMethods.add(methodInformation);
                             }
                         }
                     }
@@ -221,7 +226,7 @@ public class TypeInformation {
                 AnnotationLog.verbose("Found the field", SourcePosition.of(field));
                 final @Nonnull String fieldName = field.getSimpleName().toString();
                 if (!field.getModifiers().contains(Modifier.PRIVATE)) {
-                    accessibleFields.put(fieldName, field);
+                    accessibleFields.put(fieldName, FieldInformation.forField(type, field));
                 }
             }
         }
@@ -229,24 +234,26 @@ public class TypeInformation {
         final @Nonnull @NonNullableElements List<? extends VariableElement> parameters;
         
         if (recoverMethod != null) {
-            parameters = recoverMethod.methodElement.getParameters();
+            parameters = recoverMethod.element.getParameters();
         } else if (constructors.size() == 1) {
             parameters = constructors.get(0).getParameters();
         } else {
-            AnnotationLog.information("Cannot determine the fields with several constructors and no recover method:", SourcePosition.of(typeElement));
+            AnnotationLog.information("Cannot determine the representing fields with several constructors and no recover method:", SourcePosition.of(element));
             parameters = new LinkedList<>();
             generatable = false;
         }
         
         for (@Nonnull VariableElement parameter : parameters) {
             final @Nonnull String parameterName = parameter.getSimpleName().toString();
-            final @Nullable VariableElement field = accessibleFields.get(parameterName);
-            if (field != null) {
-                representingFields.add(FieldInformation.forField(parameter, field));
+            final @Nullable FieldInformation fieldInformation = accessibleFields.get(parameterName);
+            if (fieldInformation != null) {
+                final @Nullable VariableElement field = fieldInformation.field;
+                assert field != null : "The value is set for all accessible fields.";
+                representingFields.add(FieldInformation.forField(type, parameter, field));
             } else {
                 final @Nullable MethodInformation getter = implementedGetters.get(parameterName);
                 if (getter != null) {
-                    representingFields.add(FieldInformation.forField(parameter, getter));
+                    representingFields.add(FieldInformation.forField(type, parameter, getter));
                 } else if (recoverMethod == null || abstractGetters.get(parameterName) == null) {
                     AnnotationLog.information("Can neither access a field nor a getter for the required parameter", SourcePosition.of(parameter));
                     generatable = false;
@@ -259,19 +266,18 @@ public class TypeInformation {
             final @Nonnull MethodInformation getter = entry.getValue();
             final @Nullable MethodInformation setter = abstractSetters.get(fieldName);
             if (setter != null) { abstractSetters.remove(fieldName); }
-            representingFields.add(FieldInformation.forField(fieldName, getter, setter));
+            representingFields.add(FieldInformation.forField(type, fieldName, getter, setter));
         }
         
-        for (@Nonnull Map.Entry<String, MethodInformation> entry : abstractSetters.entrySet()) {
-            final @Nonnull String fieldName = entry.getKey();
-            final @Nonnull MethodInformation setter = entry.getValue();
-            representingFields.add(FieldInformation.forField(fieldName, null, setter));
+        for (@Nonnull MethodInformation setter : abstractSetters.values()) {
+            AnnotationLog.information("There is no corresponding getter for", SourcePosition.of(setter.element));
+            generatable = false;
         }
         
         this.generatable = generatable;
         
         this.constructors = Collections.unmodifiableList(constructors);
-        this.overridableMethods = Collections.unmodifiableList(overridableMethods);
+        this.overriddenMethods = Collections.unmodifiableList(overriddenMethods);
         this.representingFields = Collections.unmodifiableList(representingFields);
         this.accessibleFields = Collections.unmodifiableList(new ArrayList<>(accessibleFields.values()));
         
@@ -288,8 +294,8 @@ public class TypeInformation {
      * Returns the type information for the given type element.
      */
     @Pure
-    public static @Nonnull TypeInformation forType(@Nonnull TypeElement typeElement) {
-        return new TypeInformation(typeElement);
+    public static @Nonnull TypeInformation forType(@Nonnull TypeElement element) {
+        return new TypeInformation(element);
     }
     
 }

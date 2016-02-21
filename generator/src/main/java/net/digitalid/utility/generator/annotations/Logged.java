@@ -23,7 +23,7 @@ public @interface Logged {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     public static class Interceptor extends MethodInterceptor {
-        // TODO: Generate the contract.
+        // TODO: Generate the method interception.
     }
     
 }

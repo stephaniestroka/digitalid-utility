@@ -1,4 +1,4 @@
-package net.digitalid.utility.processor.files;
+package net.digitalid.utility.processor.generator;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,27 +18,29 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.UnexpectedValueException;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
-import net.digitalid.utility.processor.files.annotations.NonWrittenRecipient;
-import net.digitalid.utility.processor.files.annotations.OnlyPossibleIn;
+import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
+import net.digitalid.utility.processor.generator.annotations.OnlyPossibleIn;
+import net.digitalid.utility.processor.visitor.ImportingTypeVisitor;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
-import static net.digitalid.utility.processor.files.JavaSourceFile.CodeBlock.*;
+import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.*;
 
 /**
- * This class makes it easier to write Java source files during annotation processing.
+ * This class generates Java source files during annotation processing.
  */
 @Mutable
-public class JavaSourceFile extends GeneratedFile {
+public class JavaFileGenerator extends FileGenerator {
     
     /* -------------------------------------------------- Generated Class -------------------------------------------------- */
     
@@ -58,11 +60,6 @@ public class JavaSourceFile extends GeneratedFile {
         return qualifiedClassName;
     }
     
-    protected void printPackage(@Nonnull PrintWriter printWriter) {
-        printWriter.println("package " + qualifiedClassName.substring(0, qualifiedClassName.lastIndexOf('.')) + ";");
-        printWriter.println();
-    }
-    
     /* -------------------------------------------------- Source Class -------------------------------------------------- */
     
     private final @Nonnull TypeElement sourceClassElement;
@@ -75,20 +72,35 @@ public class JavaSourceFile extends GeneratedFile {
         return sourceClassElement;
     }
     
+    /* -------------------------------------------------- Package -------------------------------------------------- */
+    
+    private final @Nonnull String packageName;
+    
+    @Pure
+    public @Nonnull String getPackageName() {
+        return packageName;
+    }
+    
+    protected void printPackage(@Nonnull PrintWriter printWriter) {
+        printWriter.println("package " + packageName + ";");
+        printWriter.println();
+    }
+    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected JavaSourceFile(@Nonnull String qualifiedClassName, @Nonnull TypeElement sourceClassElement) {
+    protected JavaFileGenerator(@Nonnull String qualifiedClassName, @Nonnull TypeElement sourceClassElement) {
         this.qualifiedClassName = qualifiedClassName;
         this.sourceClassElement = sourceClassElement;
+        this.packageName = qualifiedClassName.substring(0, qualifiedClassName.lastIndexOf('.'));
         AnnotationLog.verbose("Generating the class " + this);
     }
     
     /**
-     * Returns a Java source file in which the class with the given qualified name is generated for the given source class.
+     * Returns a Java file generator that generates the class with the given qualified name for the given source class.
      */
     @Pure
-    public static @Nonnull JavaSourceFile forClass(@Nonnull String qualifiedClassName, @Nonnull TypeElement sourceClassElement) {
-        return new JavaSourceFile(qualifiedClassName, sourceClassElement);
+    public static @Nonnull JavaFileGenerator forClass(@Nonnull String qualifiedClassName, @Nonnull TypeElement sourceClassElement) {
+        return new JavaFileGenerator(qualifiedClassName, sourceClassElement);
     }
     
     /* -------------------------------------------------- Import Groups -------------------------------------------------- */
@@ -138,11 +150,14 @@ public class JavaSourceFile extends GeneratedFile {
     /**
      * Adds an import statement for the class with the given qualified name.
      * 
-     * @return whether the class with the given qualified name has already been imported.
+     * @return whether the class with the given qualified name has not already been imported.
      */
     @NonWrittenRecipient
     protected boolean addImport(@Nonnull String qualifiedName) {
         requireNotWritten();
+        
+        final @Nonnull String packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
+        if (packageName.equals("java.lang") || packageName.equals(getPackageName())) { return false; }
         
         for (@Nonnull ImportGroup importGroup : importGroups) {
             if (qualifiedName.startsWith(importGroup.prefix)) {
@@ -157,7 +172,7 @@ public class JavaSourceFile extends GeneratedFile {
     /**
      * Adds a static import statement for the member with the given qualified name.
      * 
-     * @return whether the member with the given qualified name has already been imported.
+     * @return whether the member with the given qualified name has not already been imported.
      */
     @NonWrittenRecipient
     protected boolean addStaticImport(@Nonnull String qualifiedMemberName) {
@@ -206,6 +221,18 @@ public class JavaSourceFile extends GeneratedFile {
     @NonWrittenRecipient
     public @Nonnull String importIfPossible(@Nonnull Element typeElement) {
         return importIfPossible(((QualifiedNameable) typeElement).getQualifiedName().toString());
+    }
+    
+    private final @Nonnull ImportingTypeVisitor importingTypeVisitor = ImportingTypeVisitor.with(this);
+    
+    /**
+     * Imports the given type mirror with its generic parameters if their simple names are not yet mapped to different types.
+     * 
+     * @return the simple name of the given type mirror if it could be imported without a naming conflict and the qualified name of the given type mirror otherwise.
+     */
+    @NonWrittenRecipient
+    public @Nonnull String importIfPossible(@Nonnull TypeMirror typeMirror) {
+        return importingTypeVisitor.visit(typeMirror).toString();
     }
     
     /**

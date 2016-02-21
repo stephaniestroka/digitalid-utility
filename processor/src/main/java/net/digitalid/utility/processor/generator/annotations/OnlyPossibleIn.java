@@ -1,4 +1,4 @@
-package net.digitalid.utility.processor.files.annotations;
+package net.digitalid.utility.processor.generator.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -8,18 +8,18 @@ import java.lang.annotation.Target;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.processor.files.JavaSourceFile;
+import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.validation.annotations.meta.MethodAnnotation;
 
 /**
  * This annotation indicates that a method may only be invoked in one of the given code blocks.
  * 
- * @see JavaSourceFile
+ * @see JavaFileGenerator
  */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@MethodAnnotation(JavaSourceFile.class)
+@MethodAnnotation(JavaFileGenerator.class)
 public @interface OnlyPossibleIn {
     
     /**
@@ -28,6 +28,6 @@ public @interface OnlyPossibleIn {
      * {@link JavaSourceFile.CodeBlock#allowsStatements() allows statements}
      * is fine. For this reason, the value defaults to an empty array.
      */
-    @Nonnull JavaSourceFile.CodeBlock[] value() default {};
+    @Nonnull JavaFileGenerator.CodeBlock[] value() default {};
     
 }

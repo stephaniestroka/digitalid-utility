@@ -9,7 +9,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
-import net.digitalid.utility.processor.files.ServiceLoaderFile;
+import net.digitalid.utility.processor.generator.ServiceFileGenerator;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 
 /**
@@ -22,7 +22,7 @@ public class ProcessorProcessor extends CustomProcessor {
     
     @Override
     public void processFirstRound(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
-        final @Nonnull ServiceLoaderFile serviceLoaderFile = ServiceLoaderFile.forService(Processor.class);
+        final @Nonnull ServiceFileGenerator serviceLoaderFile = ServiceFileGenerator.forService(Processor.class);
         for (@Nonnull Element annotatedElement : roundEnvironment.getElementsAnnotatedWith(SupportedAnnotations.class)) {
             serviceLoaderFile.addProvider(annotatedElement);
         }

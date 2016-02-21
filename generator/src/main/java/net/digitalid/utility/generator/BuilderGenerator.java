@@ -12,7 +12,7 @@ import net.digitalid.utility.generator.information.FieldInformation;
 import net.digitalid.utility.generator.information.TypeInformation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.processor.ProcessingUtility;
-import net.digitalid.utility.processor.files.JavaSourceFile;
+import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.string.iterable.Brackets;
 import net.digitalid.utility.string.iterable.IterableConverter;
@@ -25,7 +25,7 @@ import net.digitalid.utility.validation.annotations.type.Utiliy;
  * Once all required fields are set, an OptionalFields[name_of_the_type]Builder is returned, which allows to set optional fields and build an object of the type.
  */
 @Utiliy
-public class BuilderGenerator extends JavaSourceFile {
+public class BuilderGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Type Information -------------------------------------------------- */
     
@@ -128,9 +128,9 @@ public class BuilderGenerator extends JavaSourceFile {
         
         addSection(StringCase.capitalizeFirstLetters("Build"));
         // TODO: check if typeName is correct here
-        beginMethod("public " + typeInformation.typeName + " build()");
+        beginMethod("public " + typeInformation.name + " build()");
     
-        final @Nonnull @NonNullableElements List<ExecutableElement> constructors = ElementFilter.constructorsIn(typeInformation.typeElement.getEnclosedElements());
+        final @Nonnull @NonNullableElements List<ExecutableElement> constructors = ElementFilter.constructorsIn(typeInformation.element.getEnclosedElements());
         if (constructors.size() != 1) {
             AnnotationLog.error("Expected one constructor in generated type:");
         }
@@ -188,11 +188,11 @@ public class BuilderGenerator extends JavaSourceFile {
      * is generated 
      */
     protected BuilderGenerator(@Nonnull TypeInformation typeInformation) {
-        super(typeInformation.getQualifiedNameOfGeneratedSubclass(), typeInformation.typeElement);
+        super(typeInformation.getQualifiedNameOfGeneratedSubclass(), typeInformation.element);
     
         this.typeInformation = typeInformation;
         
-        final @Nonnull @NonNullableElements List<? extends TypeParameterElement> typeParameters = typeInformation.typeElement.getTypeParameters();
+        final @Nonnull @NonNullableElements List<? extends TypeParameterElement> typeParameters = typeInformation.element.getTypeParameters();
         beginClass("class " + typeInformation.getSimpleNameOfGeneratedBuilder() + (typeParameters.isEmpty() ? "" : IterableConverter.toString(typeParameters, ProcessingUtility.TYPE_CONVERTER, Brackets.POINTY)));
         
         createInnerClassForRequiredFields();

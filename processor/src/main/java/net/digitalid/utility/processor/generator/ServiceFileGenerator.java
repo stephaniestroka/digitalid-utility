@@ -1,4 +1,4 @@
-package net.digitalid.utility.processor.files;
+package net.digitalid.utility.processor.generator;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -21,18 +21,18 @@ import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.processor.ProcessingUtility;
-import net.digitalid.utility.processor.files.annotations.NonWrittenRecipient;
+import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * This class makes it easier to write files in the "META-INF/services" directory.
+ * This class generates files in the "META-INF/services" directory.
  * 
  * @see ServiceLoader
  */
 @Mutable
-public class ServiceLoaderFile extends GeneratedFile {
+public class ServiceFileGenerator extends FileGenerator {
     
     /* -------------------------------------------------- Service -------------------------------------------------- */
     
@@ -64,18 +64,18 @@ public class ServiceLoaderFile extends GeneratedFile {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ServiceLoaderFile(@Nonnull Class<?> service) {
+    protected ServiceFileGenerator(@Nonnull Class<?> service) {
         this.service = service;
         this.serviceMirror = AnnotationProcessing.getElementUtils().getTypeElement(service.getCanonicalName()).asType();
         AnnotationLog.verbose("Created the service loader file for the service " + QuoteString.inSingle(service.getName()));
     }
     
     /**
-     * Returns a service loader file for the given service.
+     * Returns a service file generator for the given service.
      */
     @Pure
-    public static @Nonnull ServiceLoaderFile forService(@Nonnull Class<?> service) {
-        return new ServiceLoaderFile(service);
+    public static @Nonnull ServiceFileGenerator forService(@Nonnull Class<?> service) {
+        return new ServiceFileGenerator(service);
     }
     
     /* -------------------------------------------------- Providers -------------------------------------------------- */

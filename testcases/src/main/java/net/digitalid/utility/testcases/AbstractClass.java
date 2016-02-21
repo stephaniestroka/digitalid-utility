@@ -3,6 +3,7 @@ package net.digitalid.utility.testcases;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.configuration.Configuration;
+import net.digitalid.utility.generator.annotations.DefaultValue;
 import net.digitalid.utility.generator.annotations.Logged;
 import net.digitalid.utility.generator.annotations.Recover;
 import net.digitalid.utility.logging.Level;
@@ -22,6 +23,7 @@ public abstract class AbstractClass {
     public abstract @Nonnull String getValue();
     
     @Pure
+    @DefaultValue("42")
     public abstract @Positive int getNumber();
     
     @Pure
