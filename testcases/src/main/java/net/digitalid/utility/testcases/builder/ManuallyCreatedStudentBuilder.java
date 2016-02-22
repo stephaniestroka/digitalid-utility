@@ -28,9 +28,9 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  */
 @Mutable
 @Generated(value = {"net.digitalid.utility.generator.processor.GeneratorProcessor"}, date = "2016-02-10T21:39:49.202+0100")
-public class StudentBuilder {
+public class ManuallyCreatedStudentBuilder {
     
-    static class RequiredFieldsStudentBuilder extends StudentBuilder {
+    static class RequiredFieldsManuallyCreatedStudentBuilder extends ManuallyCreatedStudentBuilder {
     
         private boolean allRequiredFieldsAreSet() {
             return this.name != null && this.ID != null;
@@ -42,13 +42,14 @@ public class StudentBuilder {
         
         @Pure
         @Chainable
-        public @Nonnull RequiredFieldsStudentBuilder withName(@Nonnull @MaxSize(64) String name) {
+        public @Nonnull
+        RequiredFieldsManuallyCreatedStudentBuilder withName(@Nonnull @MaxSize(64) String name) {
             Require.that(name != null).orThrow("The name may not be null.");
             Require.that(name.length() <= 64).orThrow("The length of the name may be at most 64 character.");
             
             this.name = name;
             if (allRequiredFieldsAreSet()) {
-                return new OptionalFieldsStudentBuilder(this);
+                return new OptionalFieldsManuallyCreatedStudentBuilder(this);
             } else {
                 return this;
             }
@@ -61,10 +62,11 @@ public class StudentBuilder {
         
         @Pure
         @Chainable
-        public @Nonnull RequiredFieldsStudentBuilder withID(@Positive int ID) {
+        public @Nonnull
+        RequiredFieldsManuallyCreatedStudentBuilder withID(@Positive int ID) {
             this.ID = ID;
             if (allRequiredFieldsAreSet()) {
-                return new OptionalFieldsStudentBuilder(this);
+                return new OptionalFieldsManuallyCreatedStudentBuilder(this);
             } else {
                 return this;
             }
@@ -73,18 +75,18 @@ public class StudentBuilder {
         /**
          * Copy constructor.
          */
-        protected RequiredFieldsStudentBuilder(RequiredFieldsStudentBuilder requiredFieldsStudentBuilder) {
+        protected RequiredFieldsManuallyCreatedStudentBuilder(RequiredFieldsManuallyCreatedStudentBuilder requiredFieldsStudentBuilder) {
             this.name = requiredFieldsStudentBuilder.name;
             this.ID = requiredFieldsStudentBuilder.ID;
         }
         
-        protected RequiredFieldsStudentBuilder() {}
+        protected RequiredFieldsManuallyCreatedStudentBuilder() {}
     
     }
     
-    static class OptionalFieldsStudentBuilder extends RequiredFieldsStudentBuilder {
+    static class OptionalFieldsManuallyCreatedStudentBuilder extends RequiredFieldsManuallyCreatedStudentBuilder {
         
-        protected OptionalFieldsStudentBuilder(RequiredFieldsStudentBuilder requiredFieldsStudentBuilder) {
+        protected OptionalFieldsManuallyCreatedStudentBuilder(RequiredFieldsManuallyCreatedStudentBuilder requiredFieldsStudentBuilder) {
             super(requiredFieldsStudentBuilder);
         }
         
@@ -95,7 +97,8 @@ public class StudentBuilder {
         @Pure
         @Chainable
         // With @Captured annotation!
-        public @Nonnull StudentBuilder withBuddies(@Captured @Nonnull @NonNullableElements @NonFrozen List<Student> buddies) {
+        public @Nonnull
+        ManuallyCreatedStudentBuilder withBuddies(@Captured @Nonnull @NonNullableElements @NonFrozen List<Student> buddies) {
             this.buddies = buddies;
             return this;
         }
@@ -111,16 +114,17 @@ public class StudentBuilder {
    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected StudentBuilder() {}
+    protected ManuallyCreatedStudentBuilder() {}
     
     // Rather have a public constructor with all the fields as parameters for conversion recovery? Or make it private so that no one else calls it?
-    public StudentBuilder(@Nonnull Object[] fieldValues) {
+    public ManuallyCreatedStudentBuilder(@Nonnull Object[] fieldValues) {
         // TODO: Cast and assign the elements to the fields.
     }
     
     @Pure
-    public static @Nonnull RequiredFieldsStudentBuilder get() {
-        return new RequiredFieldsStudentBuilder();
+    public static @Nonnull
+    RequiredFieldsManuallyCreatedStudentBuilder get() {
+        return new RequiredFieldsManuallyCreatedStudentBuilder();
     }
     
     /* -------------------------------------------------- Builder -------------------------------------------------- */
