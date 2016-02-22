@@ -8,6 +8,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.generator.BuilderGenerator;
@@ -87,7 +88,7 @@ public class FieldInformation {
     // TODO: The type might not be necessary here as getter.element is already a member of the given type!
     @Pure
     public static @Nonnull FieldInformation forField(@Nonnull DeclaredType type, @Nonnull String name, @Nonnull MethodInformation getter, @Nullable MethodInformation setter) {
-        return new FieldInformation(true, name, AnnotationProcessing.getTypeUtils().asMemberOf(type, getter.element), ProcessingUtility.getStringValue(getter.element, DefaultValue.class), null, getter, setter, ProcessingUtility.getCodeGenerators(getter.element, Validator.class, AnnotationValidator.class));
+        return new FieldInformation(true, name, ((ExecutableType) AnnotationProcessing.getTypeUtils().asMemberOf(type, getter.element)).getReturnType(), ProcessingUtility.getStringValue(getter.element, DefaultValue.class), null, getter, setter, ProcessingUtility.getCodeGenerators(getter.element, Validator.class, AnnotationValidator.class));
     }
     
 }
