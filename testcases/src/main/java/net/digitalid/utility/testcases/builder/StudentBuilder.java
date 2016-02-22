@@ -30,7 +30,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 @Generated(value = {"net.digitalid.utility.generator.processor.GeneratorProcessor"}, date = "2016-02-10T21:39:49.202+0100")
 public class StudentBuilder {
     
-    class RequiredFieldsStudentBuilder extends StudentBuilder {
+    static class RequiredFieldsStudentBuilder extends StudentBuilder {
     
         private boolean allRequiredFieldsAreSet() {
             return this.name != null && this.ID != null;
@@ -42,7 +42,7 @@ public class StudentBuilder {
         
         @Pure
         @Chainable
-        public @Nonnull StudentBuilder withName(@Nonnull @MaxSize(64) String name) {
+        public @Nonnull RequiredFieldsStudentBuilder withName(@Nonnull @MaxSize(64) String name) {
             Require.that(name != null).orThrow("The name may not be null.");
             Require.that(name.length() <= 64).orThrow("The length of the name may be at most 64 character.");
             
@@ -61,7 +61,7 @@ public class StudentBuilder {
         
         @Pure
         @Chainable
-        public @Nonnull StudentBuilder withID(@Positive int ID) {
+        public @Nonnull RequiredFieldsStudentBuilder withID(@Positive int ID) {
             this.ID = ID;
             if (allRequiredFieldsAreSet()) {
                 return new OptionalFieldsStudentBuilder(this);
@@ -77,10 +77,12 @@ public class StudentBuilder {
             this.name = requiredFieldsStudentBuilder.name;
             this.ID = requiredFieldsStudentBuilder.ID;
         }
+        
+        protected RequiredFieldsStudentBuilder() {}
     
     }
     
-    class OptionalFieldsStudentBuilder extends RequiredFieldsStudentBuilder {
+    static class OptionalFieldsStudentBuilder extends RequiredFieldsStudentBuilder {
         
         protected OptionalFieldsStudentBuilder(RequiredFieldsStudentBuilder requiredFieldsStudentBuilder) {
             super(requiredFieldsStudentBuilder);
@@ -117,8 +119,8 @@ public class StudentBuilder {
     }
     
     @Pure
-    public static @Nonnull StudentBuilder get() {
-        return new StudentBuilder();
+    public static @Nonnull RequiredFieldsStudentBuilder get() {
+        return new RequiredFieldsStudentBuilder();
     }
     
     /* -------------------------------------------------- Builder -------------------------------------------------- */

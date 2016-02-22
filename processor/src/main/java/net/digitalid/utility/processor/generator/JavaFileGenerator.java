@@ -538,7 +538,7 @@ public class JavaFileGenerator extends FileGenerator {
     
     @NonWrittenRecipient
     @OnlyPossibleIn({IF, ELSE_IF})
-    public void beginElse() {
+    public void endIfBeginElse() {
         requireCurrentCodeBlock(IF, ELSE_IF);
         
         codeBlocksStack.pop();
@@ -555,7 +555,7 @@ public class JavaFileGenerator extends FileGenerator {
     
     @NonWrittenRecipient
     @OnlyPossibleIn({IF, ELSE_IF})
-    public void beginElseIf(@Nonnull String condition) {
+    public void endIfBeginElseIf(@Nonnull String condition) {
         requireCurrentCodeBlock(IF, ELSE_IF);
         
         codeBlocksStack.pop();

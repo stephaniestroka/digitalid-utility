@@ -37,8 +37,9 @@ public class BuilderGenerator extends JavaFileGenerator {
      * Creates an inner class for required fields that returns an OptionalFields_Builder once all required fields are set.
      */
     protected void createInnerClassForRequiredFields() {
-        beginClass("class RequiredFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + " extends " + typeInformation.getSimpleNameOfGeneratedBuilder());
-    
+        beginClass("static class RequiredFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + " extends " + typeInformation.getSimpleNameOfGeneratedBuilder());
+        
+        AnnotationLog.debugging("createInnerClassForRequiredFields()");
         addSection(StringCase.capitalizeFirstLetters("Check Required Fields"));
         addAnnotation("@Chainable");
         // TODO: the nullable is really stupid here. There must be a better way to signal that not all fields have been set.
@@ -50,20 +51,20 @@ public class BuilderGenerator extends JavaFileGenerator {
                 if (!firstRound) {
                     condition.append(" && ");
                 }
-                condition.append("this.").append(fieldInformation).append(" != null");
+                condition.append("this.").append(fieldInformation.name).append(" != null");
                 firstRound = false;
             }
         }
-         if (condition.toString().isEmpty()) {
-             condition.append("true");
-         }
+        if (condition.toString().isEmpty()) {
+            condition.append("true");
+        }
         
         beginIf(condition.toString());
         addStatement("return new OptionalFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + "(this)");
-        beginElse();
+        endIfBeginElse();
         // TODO: Think of something more clever.
         addStatement("return null");
-        endIf();
+        endElse();
         endMethod();
         
         for (@Nonnull FieldInformation fieldInformation : typeInformation.representingFields) {
@@ -93,7 +94,8 @@ public class BuilderGenerator extends JavaFileGenerator {
                         return;
                     }
                 } else {
-                    type = fieldInformation.type.toString();
+                    type = "" + fieldInformation.type;
+                    AnnotationLog.debugging("Type of fields " + fieldInformation.name + ": " + type);
                 }
                 addField("protected " + type + " " + fieldInformation.name);
                 final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(fieldInformation.name);
@@ -113,21 +115,20 @@ public class BuilderGenerator extends JavaFileGenerator {
      * Creates an inner class for optional fields that returns an OptionalFields_Builder once all required fields are set.
      */
     protected void createInnerClassForOptionalFields() {
-        beginClass("class OptionalFields" + typeInformation.getSimpleNameOfGeneratedBuilder());
+        beginClass("static class OptionalFields" + typeInformation.getSimpleNameOfGeneratedBuilder());
     
         addSection(StringCase.capitalizeFirstLetters("Constructor"));
-        beginConstructor("OptionalFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + "(this)");
+        beginConstructor("OptionalFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + "(RequiredFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + " requiredFieldsBuilder)");
         for (@Nonnull FieldInformation fieldInformation : typeInformation.representingFields) {
             if (fieldInformation.defaultValue == null) {
-                addStatement("this." + fieldInformation.name + " = " + fieldInformation.name);
+                addStatement("this." + fieldInformation.name + " = requiredFieldsBuilder." + fieldInformation.name);
             } else {
-                addStatement("this." + fieldInformation.name + " = " + fieldInformation.defaultValue);
+                addStatement("this." + fieldInformation.name + " = requiredFieldsBuilder." + fieldInformation.defaultValue);
             }
         }
         endConstructor();
         
         addSection(StringCase.capitalizeFirstLetters("Build"));
-        // TODO: check if typeName is correct here
         beginMethod("public " + typeInformation.name + " build()");
     
         final @Nonnull @NonNullableElements List<ExecutableElement> constructors = ElementFilter.constructorsIn(typeInformation.element.getEnclosedElements());
@@ -136,7 +137,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         }
         final @Nonnull ExecutableElement constructor = constructors.get(0);
         
-        addStatement("return new " + typeInformation.getSimpleNameOfGeneratedBuilder() + IterableConverter.toString(constructor.getParameters(), ProcessingUtility.DECLARATION_CONVERTER, Brackets.ROUND));
+        addStatement("return new " + typeInformation.name + IterableConverter.toString(constructor.getParameters(), ProcessingUtility.DECLARATION_CONVERTER, Brackets.ROUND));
         endMethod();
         
         for (@Nonnull FieldInformation fieldInformation : typeInformation.representingFields) {
@@ -175,8 +176,8 @@ public class BuilderGenerator extends JavaFileGenerator {
         }
         if (!atLeastOneMethodCreated) {
             addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize("Construct Builder")));
-            beginMethod("public static void get" + "()");
-            addStatement("return new OptionalFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + "()");
+            beginMethod("public static OptionalFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + " get" + "()");
+            addStatement("return new OptionalFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + "(new RequiredFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + "())");
             endMethod();
         }
     }
@@ -188,18 +189,29 @@ public class BuilderGenerator extends JavaFileGenerator {
      * is generated 
      */
     protected BuilderGenerator(@Nonnull TypeInformation typeInformation) {
-        super(typeInformation.getQualifiedNameOfGeneratedSubclass(), typeInformation.element);
+        super(typeInformation.getQualifiedNameOfGeneratedBuilder(), typeInformation.element);
+        AnnotationLog.debugging("BuilderGenerator(" + typeInformation + ")");
     
         this.typeInformation = typeInformation;
         
+        addImport("javax.annotation.Nullable");
+        addImport("net.digitalid.utility.validation.annotations.reference.Chainable");
         final @Nonnull @NonNullableElements List<? extends TypeParameterElement> typeParameters = typeInformation.element.getTypeParameters();
         beginClass("class " + typeInformation.getSimpleNameOfGeneratedBuilder() + (typeParameters.isEmpty() ? "" : IterableConverter.toString(typeParameters, ProcessingUtility.TYPE_CONVERTER, Brackets.POINTY)));
         
-        createInnerClassForRequiredFields();
+        try {
+            createInnerClassForRequiredFields();
+        } catch (Throwable t) {
+            AnnotationLog.error("Failed to generate inner class for required fields: " + t.getMessage());
+        }
+        AnnotationLog.debugging("createInnerClassForRequiredFields()");
         createInnerClassForOptionalFields();
+        AnnotationLog.debugging("createInnerClassForOptionalFields()");
         createStaticEntryMethods();
+        AnnotationLog.debugging("createStaticEntryMethods()");
         
         endClass();
+        AnnotationLog.debugging("endClass()");
     }
     
     /**
@@ -208,6 +220,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     public static void generateBuilderFor(@Nonnull TypeInformation typeInformation) {
         Require.that(typeInformation.generatable).orThrow("No subclass can be generated for " + typeInformation);
         
+        AnnotationLog.debugging("generateBuilderFor(" + typeInformation + ")");
         new BuilderGenerator(typeInformation).write();
     }
     
