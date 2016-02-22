@@ -17,7 +17,6 @@ import net.digitalid.utility.generator.annotations.DefaultValue;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.processor.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 
@@ -72,23 +71,23 @@ public class FieldInformation {
     
     @Pure
     public static @Nonnull FieldInformation forField(@Nonnull DeclaredType type, @Nonnull VariableElement field) {
-        return new FieldInformation(false, field.getSimpleName().toString(), AnnotationProcessing.getTypeUtils().asMemberOf(type, field), null, field, null, null, ProcessingUtility.getCodeGenerators(field, Validator.class, AnnotationValidator.class));
+        return new FieldInformation(false, field.getSimpleName().toString(), AnnotationProcessing.getTypeUtils().asMemberOf(type, field), null, field, null, null, ProcessingUtility.getAnnotationValidators(field));
     }
     
     @Pure
     public static @Nonnull FieldInformation forField(@Nonnull DeclaredType type, @Nonnull VariableElement parameter, @Nonnull VariableElement field) {
-        return new FieldInformation(false, parameter.getSimpleName().toString(), AnnotationProcessing.getTypeUtils().asMemberOf(type, parameter), ProcessingUtility.getStringValue(parameter, DefaultValue.class), field, null, null, ProcessingUtility.getCodeGenerators(parameter, Validator.class, AnnotationValidator.class));
+        return new FieldInformation(false, parameter.getSimpleName().toString(), AnnotationProcessing.getTypeUtils().asMemberOf(type, parameter), ProcessingUtility.getStringValue(parameter, DefaultValue.class), field, null, null, ProcessingUtility.getAnnotationValidators(parameter));
     }
     
     @Pure
     public static @Nonnull FieldInformation forField(@Nonnull DeclaredType type, @Nonnull VariableElement parameter, @Nonnull MethodInformation getter) {
-        return new FieldInformation(false, parameter.getSimpleName().toString(), AnnotationProcessing.getTypeUtils().asMemberOf(type, parameter), ProcessingUtility.getStringValue(parameter, DefaultValue.class), null, getter, null, ProcessingUtility.getCodeGenerators(parameter, Validator.class, AnnotationValidator.class));
+        return new FieldInformation(false, parameter.getSimpleName().toString(), AnnotationProcessing.getTypeUtils().asMemberOf(type, parameter), ProcessingUtility.getStringValue(parameter, DefaultValue.class), null, getter, null, ProcessingUtility.getAnnotationValidators(parameter));
     }
     
     // TODO: The type might not be necessary here as getter.element is already a member of the given type!
     @Pure
     public static @Nonnull FieldInformation forField(@Nonnull DeclaredType type, @Nonnull String name, @Nonnull MethodInformation getter, @Nullable MethodInformation setter) {
-        return new FieldInformation(true, name, ((ExecutableType) AnnotationProcessing.getTypeUtils().asMemberOf(type, getter.element)).getReturnType(), ProcessingUtility.getStringValue(getter.element, DefaultValue.class), null, getter, setter, ProcessingUtility.getCodeGenerators(getter.element, Validator.class, AnnotationValidator.class));
+        return new FieldInformation(true, name, ((ExecutableType) AnnotationProcessing.getTypeUtils().asMemberOf(type, getter.element)).getReturnType(), ProcessingUtility.getStringValue(getter.element, DefaultValue.class), null, getter, setter, ProcessingUtility.getAnnotationValidators(getter.element));
     }
     
 }

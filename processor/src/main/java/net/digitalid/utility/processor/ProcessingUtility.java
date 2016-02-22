@@ -26,9 +26,11 @@ import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.string.iterable.NonNullableElementConverter;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Utiliy;
+import net.digitalid.utility.validation.validator.AnnotationValidator;
 import net.digitalid.utility.validation.validator.CodeGenerator;
 
 /**
@@ -130,6 +132,14 @@ public class ProcessingUtility {
             }
         }
         return Collections.unmodifiableMap(result);
+    }
+    
+    /**
+     * Returns the annotation validators mapped from their corresponding annotation mirror with which the given element is annotated.
+     */
+    @Pure
+    public static @Nonnull @NonNullableElements Map<AnnotationMirror, AnnotationValidator> getAnnotationValidators(@Nonnull Element element) {
+        return getCodeGenerators(element, Validator.class, AnnotationValidator.class);
     }
     
     /* -------------------------------------------------- Fields of Type -------------------------------------------------- */

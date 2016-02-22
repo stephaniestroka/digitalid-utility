@@ -26,6 +26,8 @@ public abstract class AbstractClass {
     @DefaultValue("42")
     public abstract @Positive int getNumber();
     
+    public abstract void setNumber(@Positive int number);
+    
     @Pure
     @Recover
     public static @Nonnull AbstractClass with(@Nonnull String value) {
