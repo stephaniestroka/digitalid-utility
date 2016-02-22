@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.contracts.Require;
@@ -192,8 +191,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     
         this.typeInformation = typeInformation;
         
-        final @Nonnull @NonNullableElements List<? extends TypeParameterElement> typeParameters = typeInformation.element.getTypeParameters();
-        beginClass("class " + typeInformation.getSimpleNameOfGeneratedBuilder() + (typeParameters.isEmpty() ? "" : IterableConverter.toString(typeParameters, ProcessingUtility.TYPE_CONVERTER, Brackets.POINTY)));
+        beginClass("class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importingTypeVisitor.getTypeVariablesWithBounds(typeInformation.type.getTypeArguments(), false));
         
         createInnerClassForRequiredFields();
         createInnerClassForOptionalFields();

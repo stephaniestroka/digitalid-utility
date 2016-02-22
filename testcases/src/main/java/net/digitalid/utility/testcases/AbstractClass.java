@@ -20,7 +20,7 @@ public abstract class AbstractClass {
     
     @Pure
     @Logged
-    public abstract @Nonnull String getValue();
+    public abstract @Nonnull String[] getValue();
     
     @Pure
     @DefaultValue("42")
