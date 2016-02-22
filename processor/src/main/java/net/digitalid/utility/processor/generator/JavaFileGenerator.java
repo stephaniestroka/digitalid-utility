@@ -223,7 +223,7 @@ public class JavaFileGenerator extends FileGenerator {
         return importIfPossible(((QualifiedNameable) typeElement).getQualifiedName().toString());
     }
     
-    private final @Nonnull ImportingTypeVisitor importingTypeVisitor = ImportingTypeVisitor.with(this);
+    protected final @Nonnull ImportingTypeVisitor importingTypeVisitor = ImportingTypeVisitor.with(this);
     
     /**
      * Imports the given type mirror with its generic parameters if their simple names are not yet mapped to different types.

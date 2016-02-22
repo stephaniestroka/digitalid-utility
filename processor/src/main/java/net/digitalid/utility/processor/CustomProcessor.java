@@ -22,6 +22,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 
+import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
@@ -106,7 +107,6 @@ public abstract class CustomProcessor implements Processor {
     private int round = 0;
     
     @Override
-    @SuppressWarnings("CallToPrintStackTrace")
     public final boolean process(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
         AnnotationLog.setUp(getClass().getSimpleName());
         
@@ -120,7 +120,7 @@ public abstract class CustomProcessor implements Processor {
             try {
                 process(annotations, roundEnvironment, round++);
             } catch (@Nonnull Throwable throwable) {
-                throwable.printStackTrace();
+                Log.error("The compilation failed due to the following problem:", throwable);
                 throw throwable;
             }
             AnnotationLog.information("Finish " + (consumeAnnotations(annotations, roundEnvironment) ? "with" : "without") + " claiming the annotations.\n" + (roundEnvironment.processingOver() || onlyInterestedInFirstRound ? "\n" : ""));

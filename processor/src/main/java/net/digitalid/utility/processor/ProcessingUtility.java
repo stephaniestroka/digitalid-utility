@@ -15,10 +15,8 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.logging.Log;
@@ -174,6 +172,7 @@ public class ProcessingUtility {
     
     /* -------------------------------------------------- Converters -------------------------------------------------- */
     
+    @Deprecated
     public static final @Nonnull NonNullableElementConverter<VariableElement> DECLARATION_CONVERTER = new NonNullableElementConverter<VariableElement>() {
         @Override
         public String toString(@Nonnull VariableElement element) {
@@ -185,20 +184,6 @@ public class ProcessingUtility {
         @Override
         public String toString(@Nonnull VariableElement element) {
             return element.getSimpleName().toString();
-        }
-    };
-    
-    public static final @Nonnull NonNullableElementConverter<TypeParameterElement> TYPE_CONVERTER = new NonNullableElementConverter<TypeParameterElement>() {
-        @Override
-        public String toString(@Nonnull TypeParameterElement element) {
-//            AnnotationLog.debugging("element.toString(): " + element.toString());
-//            AnnotationLog.debugging("element.asType(): " + element.asType());
-//            AnnotationLog.debugging("element.getSimpleName(): " + element.getSimpleName());
-            final @Nonnull @NonNullableElements List<? extends TypeMirror> bounds = element.getBounds();
-//            for (@Nonnull TypeMirror bound : bounds) {
-//                AnnotationLog.debugging("bound.toString(): " + bound.toString());
-//            }
-            return element.getSimpleName().toString() + (bounds.isEmpty() ? "" : " extends " + bounds.get(0));
         }
     };
     

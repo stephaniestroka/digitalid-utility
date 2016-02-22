@@ -29,14 +29,15 @@ public class ReflectionUtility {
      *
      * @throws StructureException if the type has multiple of no declared constructors.
      */
-    public static @Nonnull Constructor<?> getConstructor(@Nonnull Class<?> type) throws StructureException {
+    @SuppressWarnings("unchecked")
+    public static @Nonnull <T> Constructor<T> getConstructor(@Nonnull Class<T> type) throws StructureException {
         final @Nonnull Constructor<?>[] constructors = type.getDeclaredConstructors();
         if (constructors.length > 1) {
             throw StructureException.get("The type has multiple constructors.");
         } else if (constructors.length == 0) {
             throw StructureException.get("The type does not have any declared constructors.");
         }
-        return constructors[0];
+        return (Constructor<T>) constructors[0];
     }
 
     /**

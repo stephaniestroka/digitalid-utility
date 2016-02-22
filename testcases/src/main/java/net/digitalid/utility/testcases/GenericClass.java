@@ -16,9 +16,11 @@ public class GenericClass<G extends GenericClass<G>> {
     }
     
     @Pure
-    public G getGenericField() {
+    public G[] getGenericFields() {
         return null;
     }
+    
+    public void setGenericField(@Nonnull G genericClass) {}
     
     @Pure
     public <T extends GenericClass<?>> T getFieldWithUpperBound() {
