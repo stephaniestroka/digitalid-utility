@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.contracts.Require;
@@ -42,7 +43,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     private @Nonnull String createInterfaceForField(@Nonnull FieldInformation field, @Nullable String nextInterface) {
         final @Nonnull String interfaceName = getNameOfFieldBuilder(field);
         final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.name);
-        beginClass("interface " + interfaceName);
+        beginClass("interface " + interfaceName + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeInformation.type.getTypeArguments()));
         addAnnotation("@" + importIfPossible(Chainable.class));
         addMethodDeclaration("public @" + importIfPossible(Nonnull.class) + " " + nextInterface + " " + methodName + "(" + field.type + " " + field.name + ")");
         endClass();
@@ -69,7 +70,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     
     private void addSetterForField(@Nonnull FieldInformation field, @Nonnull String returnType, @Nonnull String returnedInstance) {
         final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.name);
-        beginMethod("public static " + returnType + " " + methodName + "(" + field.type + " " + field.name + ")");
+        beginMethod("public static " + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeInformation.type.getTypeArguments()) + returnType + " " + methodName + "(" + field.type + " " + field.name + ")");
         addStatement("return new " + returnedInstance + "()." + methodName + "(" + field.name + ")");
         endMethod();
     }
@@ -94,8 +95,10 @@ public class BuilderGenerator extends JavaFileGenerator {
             }
             listOfInterfaces.add(createInterfaceForField(requiredField, nextInterface));
         }
-    
-        beginClass("static class " + nameOfInnerClass + " implements " + IterableConverter.toString(listOfInterfaces));
+        
+        final List<? extends TypeMirror> typeArguments = typeInformation.type.getTypeArguments();
+        
+        beginClass("static class " + nameOfInnerClass + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeArguments) + (listOfInterfaces.size() == 0 ? "" : " implements " + IterableConverter.toString(listOfInterfaces) + importingTypeVisitor.getTypeVariablesWithoutBounds(typeArguments, false)));
         
         for (@Nonnull FieldInformation field : typeInformation.representingFields) {
             field.getAnnotations();
@@ -103,7 +106,9 @@ public class BuilderGenerator extends JavaFileGenerator {
             // TODO: Add annotations.
             addField("private " + field.type + " " + field.name);
             final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.name);
-            addAnnotation("@" + importIfPossible(Override.class));
+            if (isFieldRequired(field)) {
+                addAnnotation("@" + importIfPossible(Override.class));
+            }
             addAnnotation("@" + importIfPossible(Chainable.class));
             beginMethod("public @" + importIfPossible(Nonnull.class) + " " + nameOfInnerClass + " " + methodName + "(" + field.type + " " + field.name + ")");
             addStatement("this." + field.name + " = " + field.name);
@@ -141,7 +146,7 @@ public class BuilderGenerator extends JavaFileGenerator {
                 final @Nonnull FieldInformation field = typeInformation.representingFields.get(0);
                 addSetterForField(field, nameOfInnerClass, nameOfInnerClass);
             }
-            beginMethod("public static " + nameOfInnerClass + " get()");
+            beginMethod("public static " + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeArguments) + nameOfInnerClass + " get()");
             addStatement("return new " + nameOfInnerClass + "()");
             endMethod();
         }

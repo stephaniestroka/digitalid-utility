@@ -1,6 +1,8 @@
 package net.digitalid.utility.testcases.builder;
 
 
+import java.util.List;
+
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -8,6 +10,7 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.logging.Log;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
@@ -54,13 +57,20 @@ class ManuallyGeneratedStudent extends Student {
     /* -------------------------------------------------- Buddies -------------------------------------------------- */
     
     // Freezable instead of ReadOnly because of the annotation @NonFrozen.
-//    private final @Nonnull @NonNullableElements @NonFrozen FreezableList<Student> buddies;
+    private final @Nonnull @NonNullableElements List<Student> buddies;
+    
+    @Pure
+    @Override 
+    public @Nonnull List<Student> getBuddies() {
+        return buddies;
+    }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ManuallyGeneratedStudent(@Nonnull StudentBuilder.RequiredFieldsStudentBuilder studentBuilder) {
-        this.name = studentBuilder.name;
-        this.ID = studentBuilder.ID;
+    protected ManuallyGeneratedStudent(@Nonnull String name, int ID, @Nonnull @NonNullableElements List<Student> buddies) {
+        this.name = name;
+        this.ID = ID;
+        this.buddies = buddies;
         
         // this.validate();
     }
@@ -68,7 +78,6 @@ class ManuallyGeneratedStudent extends Student {
     /* -------------------------------------------------- Convertible -------------------------------------------------- */
     
     @Pure
-    @Override
     public @Nonnull Object[] getFieldValues() {
         return new Object[] {name, ID};
     }
