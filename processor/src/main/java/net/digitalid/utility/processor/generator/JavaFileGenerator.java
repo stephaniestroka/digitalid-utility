@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.QualifiedNameable;
@@ -34,18 +35,7 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.BLOCK;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.CLASS;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.CONSTRUCTOR;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.ELSE;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.ELSE_IF;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.FOR_LOOP;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.IF;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.INTERFACE;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.JAVADOC;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.METHOD;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.NONE;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.WHILE_LOOP;
+import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.*;
 
 /**
  * This class generates Java source files during annotation processing.
@@ -465,11 +455,11 @@ public class JavaFileGenerator extends FileGenerator {
     @NonWrittenRecipient
     @OnlyPossibleIn({NONE, CLASS})
     public void beginClass(@Nonnull String declaration) {
-        addImport("javax.annotation.Generated");
+        addAnnotation("@" + importIfPossible(SuppressWarnings.class) + "(\"null\")");
         StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
         final @Nonnull String generator = caller.getClassName();
         final @Nonnull String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date());
-        addAnnotation("@Generated(value = {" + QuoteString.inDouble(generator) + "}, date = " + QuoteString.inDouble(date) + ")");
+        addAnnotation("@" + importIfPossible(Generated.class) + "(value = {" + QuoteString.inDouble(generator) + "}, date = " + QuoteString.inDouble(date) + ")");
         beginBlock(declaration, CLASS, NONE, CLASS);
         addEmptyLine();
     }
@@ -479,6 +469,8 @@ public class JavaFileGenerator extends FileGenerator {
     public void endClass() {
         endBlock(CLASS);
     }
+    
+    // TODO: Introduce methods to begin and end interfaces.
     
     /* -------------------------------------------------- Field -------------------------------------------------- */
     
@@ -538,6 +530,8 @@ public class JavaFileGenerator extends FileGenerator {
     @NonWrittenRecipient
     @OnlyPossibleIn({CLASS, INTERFACE})
     public void addMethodDeclaration(@Nonnull String declaration) {
+        requireCurrentCodeBlock(CLASS, INTERFACE);
+        
         addCodeLineWithIndentation(declaration + ";");
     }
     

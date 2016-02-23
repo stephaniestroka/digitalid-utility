@@ -14,6 +14,7 @@ import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 @Mutable
+@SuppressWarnings("null")
 @Generated(value = {"net.digitalid.utility.generator.processor.GeneratorProcessor"}, date = "2016-02-10T21:39:49.202+0100")
 class ManuallyGeneratedStudent extends Student {
     

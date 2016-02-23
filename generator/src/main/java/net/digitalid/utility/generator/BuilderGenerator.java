@@ -121,7 +121,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         final @Nonnull ExecutableElement constructor = constructors.get(0);
         
         final @Nonnull ExecutableType type = (ExecutableType) AnnotationProcessing.getTypeUtils().asMemberOf(typeInformation.type, constructor);
-        addStatement("return new " + typeInformation.getQualifiedNameOfGeneratedSubclass() + importingTypeVisitor.getParameterDeclaration(type, constructor));
+        addStatement("return new " + typeInformation.getQualifiedNameOfGeneratedSubclass() + importingTypeVisitor.reduceParametersDeclarationToString(type, constructor));
         
         endMethod();
         
@@ -160,7 +160,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     
         this.typeInformation = typeInformation;
     
-        beginClass("public class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importingTypeVisitor.getTypeVariablesWithBounds(typeInformation.type.getTypeArguments(), false));
+        beginClass("public class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeInformation.type.getTypeArguments()));
         
         createInnerClassForFields();
         

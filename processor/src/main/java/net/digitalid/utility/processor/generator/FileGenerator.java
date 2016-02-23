@@ -8,7 +8,6 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
-import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -32,7 +31,7 @@ public abstract class FileGenerator {
     @Pure
     @Override
     public @Nonnull String toString() {
-        return QuoteString.inSingle(getName());
+        return getName();
     }
     
     /* -------------------------------------------------- Written -------------------------------------------------- */
@@ -52,7 +51,7 @@ public abstract class FileGenerator {
      */
     @Pure
     protected void requireNotWritten() {
-        Require.that(!written).orThrow("The generated file " + this + " has already been written.");
+        Require.that(!written).orThrow("The generated file $ has already been written.", this);
     }
     
     /* -------------------------------------------------- Writing -------------------------------------------------- */

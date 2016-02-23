@@ -27,6 +27,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * - What if the type of the getter and the field are not exactly the same (for example, expose only ReadOnlyType but store a FreezableType for internal operations).
  */
 @Mutable
+@SuppressWarnings("null")
 @Generated(value = {"net.digitalid.utility.generator.processor.GeneratorProcessor"}, date = "2016-02-10T21:39:49.202+0100")
 public class ManuallyCreatedStudentBuilder {
     
