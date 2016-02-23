@@ -34,18 +34,7 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.BLOCK;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.CLASS;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.CONSTRUCTOR;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.ELSE;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.ELSE_IF;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.FOR_LOOP;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.IF;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.INTERFACE;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.JAVADOC;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.METHOD;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.NONE;
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.WHILE_LOOP;
+import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.*;
 
 /**
  * This class generates Java source files during annotation processing.

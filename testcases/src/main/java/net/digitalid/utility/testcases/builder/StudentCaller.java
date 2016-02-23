@@ -11,7 +11,7 @@ import net.digitalid.utility.validation.annotations.type.Utiliy;
 public class StudentCaller {
     
     public static void main(String[] args) {
-        @Nonnull Student student = ManuallyCreatedStudentBuilder.get().withName("Stephanie Stroka").withID(007).build();
+        @Nonnull Student student = ManuallyCreatedStudentBuilder.withName("Stephanie Stroka").withID(007).build();
     }
     
 }

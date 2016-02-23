@@ -50,6 +50,22 @@ public class ImportingTypeVisitor extends SimpleTypeVisitor7<StringBuilder, Stri
     }
     
     @Pure
+    public @Nonnull String getTypeVariablesWithoutBounds(@Nonnull @NonNullableElements List<? extends TypeMirror> types, boolean withTrailingSpace) {
+        final @Nonnull StringBuilder result = new StringBuilder();
+        if (!types.isEmpty()) {
+            result.append("<");
+            for (@Nonnull TypeMirror type : types) {
+                @Nonnull TypeVariable typeVariable = (TypeVariable) type;
+                if (result.length() > 1) { result.append(", "); }
+                result.append(typeVariable.toString());
+            }
+            result.append(">");
+            if (withTrailingSpace) { result.append(" "); }
+        }
+        return result.toString();
+    }
+    
+    @Pure
     public @Nonnull String getTypeVariablesWithBounds(@Nonnull @NonNullableElements List<? extends TypeMirror> types, boolean withTrailingSpace) {
         final @Nonnull StringBuilder result = new StringBuilder();
         if (!types.isEmpty()) {
