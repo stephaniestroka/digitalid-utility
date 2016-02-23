@@ -151,9 +151,12 @@ public class JavaFileGenerator extends FileGenerator {
      * Adds an import statement for the class with the given qualified name.
      * 
      * @return whether the class with the given qualified name has not already been imported.
+     * 
+     * @require qualifiedName.contains(".") : "The name has to be qualified.";
      */
     @NonWrittenRecipient
     protected boolean addImport(@Nonnull String qualifiedName) {
+        Require.that(qualifiedName.contains(".")).orThrow("The name " + QuoteString.inSingle(qualifiedName) + " has to be qualified.");
         requireNotWritten();
         
         final @Nonnull String packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));

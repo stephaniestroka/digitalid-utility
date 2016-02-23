@@ -1,5 +1,6 @@
 package net.digitalid.utility.processor.visitor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -18,8 +19,12 @@ import javax.lang.model.util.SimpleTypeVisitor7;
 
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
+import net.digitalid.utility.functional.string.Brackets;
+import net.digitalid.utility.functional.string.IterableConverter;
+import net.digitalid.utility.functional.string.NonNullableElementConverter;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -49,44 +54,55 @@ public class ImportingTypeVisitor extends SimpleTypeVisitor7<StringBuilder, Stri
         return string == null ? new StringBuilder() : string;
     }
     
-    @Pure
-    public @Nonnull String getTypeVariablesWithBounds(@Nonnull @NonNullableElements List<? extends TypeMirror> types, boolean withTrailingSpace) {
-        final @Nonnull StringBuilder result = new StringBuilder();
-        if (!types.isEmpty()) {
-            result.append("<");
-            for (@Nonnull TypeMirror type : types) {
-                @Nonnull TypeVariable typeVariable = (TypeVariable) type;
-                if (result.length() > 1) { result.append(", "); }
-                result.append(typeVariable.toString());
-                final @Nonnull TypeMirror lowerBound = typeVariable.getLowerBound();
-                if (lowerBound.getKind() != TypeKind.NULL) {
-                    result.append(" super ");
-                    visit(lowerBound, result);
-                }
-                final @Nonnull TypeMirror upperBound = typeVariable.getUpperBound();
-                if (!upperBound.toString().equals("java.lang.Object")) {
-                    result.append(" extends ");
-                    visit(upperBound, result);
-                }
-            }
-            result.append(">");
-            if (withTrailingSpace) { result.append(" "); }
+    public final @Nonnull NonNullableElementConverter<TypeMirror> TYPE_MAPPER = new NonNullableElementConverter<TypeMirror>() {
+        @Override
+        public String toString(@Nonnull TypeMirror type) {
+            return visit(type).toString();
         }
-        return result.toString();
+    };
+    
+    @Pure
+    public @Capturable @Nonnull @NonNullableElements List<String> mapTypeVariablesWithBoundsToStrings(@Nonnull @NonNullableElements List<? extends TypeMirror> types) {
+        final @Nonnull @NonNullableElements List<String> result = new ArrayList<>(types.size());
+        for (@Nonnull TypeMirror type : types) {
+            final @Nonnull TypeVariable typeVariable = (TypeVariable) type;
+            final @Nonnull StringBuilder string = new StringBuilder(typeVariable.toString());
+            final @Nonnull TypeMirror lowerBound = typeVariable.getLowerBound();
+            if (lowerBound.getKind() != TypeKind.NULL) {
+                string.append(" super ");
+                visit(lowerBound, string);
+            }
+            final @Nonnull TypeMirror upperBound = typeVariable.getUpperBound();
+            if (!upperBound.toString().equals("java.lang.Object")) {
+                string.append(" extends ");
+                visit(upperBound, string);
+            }
+            result.add(string.toString());
+        }
+        return result;
     }
     
     @Pure
-    public @Nonnull String getParameterDeclaration(@Nonnull ExecutableType type, @Nonnull ExecutableElement element) {
+    public @Nonnull String reduceTypeVariablesWithBoundsToString(@Nonnull @NonNullableElements List<? extends TypeMirror> types) {
+        return types.isEmpty() ? "" : IterableConverter.toString(mapTypeVariablesWithBoundsToStrings(types), Brackets.POINTY);
+    }
+    
+    @Pure
+    public @Capturable @Nonnull @NonNullableElements List<String> mapParametersDeclarationToStrings(@Nonnull ExecutableType type, @Nonnull ExecutableElement element) {
         final @Nonnull @NonNullableElements List<? extends TypeMirror> parameterTypes = type.getParameterTypes();
         final @Nonnull @NonNullableElements List<? extends VariableElement> parameterElements = element.getParameters();
         Require.that(parameterTypes.size() == parameterElements.size()).orThrow("The number of parameter types and parameter elements have to be the same.");
         
-        final @Nonnull StringBuilder result = new StringBuilder("(");
+        final @Nonnull @NonNullableElements List<String> result = new ArrayList<>(parameterTypes.size());
         for (int i = 0; i < parameterTypes.size(); i++) {
-            if (result.length() > 1) { result.append(", "); }
-            visit(parameterTypes.get(i), result).append(" ").append(parameterElements.get(i).getSimpleName());
+            result.add(visit(parameterTypes.get(i)).toString() + " " + parameterElements.get(i).getSimpleName());
         }
-        return result.append(")").toString();
+        return result;
+    }
+    
+    @Pure
+    public @Nonnull String reduceParametersDeclarationToString(@Nonnull ExecutableType type, @Nonnull ExecutableElement element) {
+        return IterableConverter.toString(mapParametersDeclarationToStrings(type, element), Brackets.ROUND);
     }
     
     /* -------------------------------------------------- Default Action -------------------------------------------------- */
@@ -137,7 +153,7 @@ public class ImportingTypeVisitor extends SimpleTypeVisitor7<StringBuilder, Stri
     @Pure
     @Override
     public @Nonnull StringBuilder visitExecutable(@Nonnull ExecutableType type, @Nullable StringBuilder string) {
-        return visit(type.getReturnType(), get(string).append(getTypeVariablesWithBounds(type.getTypeVariables(), true)));
+        return visit(type.getReturnType(), get(string).append(reduceTypeVariablesWithBoundsToString(type.getTypeVariables())).append(type.getTypeVariables().isEmpty() ? "" : " "));
     }
     
     @Pure

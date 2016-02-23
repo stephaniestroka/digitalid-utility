@@ -1,4 +1,4 @@
 /**
- * Provides auxiliary classes for other packages.
+ * Provides useful functions for strings.
  */
 package net.digitalid.utility.string;

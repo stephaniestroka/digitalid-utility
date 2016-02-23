@@ -57,7 +57,7 @@ class ManuallyGeneratedStudent extends Student {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ManuallyGeneratedStudent(@Nonnull StudentBuilder studentBuilder) {
+    protected ManuallyGeneratedStudent(@Nonnull StudentBuilder.RequiredFieldsStudentBuilder studentBuilder) {
         this.name = studentBuilder.name;
         this.ID = studentBuilder.ID;
         

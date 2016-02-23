@@ -7,22 +7,24 @@ public class UnexpectedFailureException extends InternalException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected UnexpectedFailureException(String message, Exception cause) {
-        super(message, cause);
+    protected UnexpectedFailureException(String message, Exception cause, Object... arguments) {
+        super(message, cause, arguments);
     }
     
     /**
      * Returns an unexpected failure exception with the given message and cause.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static UnexpectedFailureException with(String message, Exception cause) {
-        return new UnexpectedFailureException(message, cause);
+    public static UnexpectedFailureException with(String message, Exception cause, Object... arguments) {
+        return new UnexpectedFailureException(message, cause, arguments);
     }
     
     /**
      * Returns an unexpected failure exception with the given message.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static UnexpectedFailureException with(String message) {
-        return new UnexpectedFailureException(message, null);
+    public static UnexpectedFailureException with(String message, Object... arguments) {
+        return new UnexpectedFailureException(message, null, arguments);
     }
     
     /**

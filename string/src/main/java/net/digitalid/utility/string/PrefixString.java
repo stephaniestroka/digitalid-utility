@@ -1,27 +1,20 @@
 package net.digitalid.utility.string;
 
-import javax.annotation.Nonnull;
-
-import net.digitalid.utility.validation.annotations.method.Pure;
-import net.digitalid.utility.validation.annotations.type.Utiliy;
-
 /**
  * This class provides useful operations to transform numbers into strings.
  */
-@Utiliy
 public class PrefixString {
     
     /* -------------------------------------------------- Common Methods -------------------------------------------------- */
     
     /**
-     * Returns the longest common prefix of the given strings.
+     * Returns the longest common prefix of the given non-nullable strings.
      */
-    @Pure
-    public static @Nonnull String longestCommonPrefix(@Nonnull String... strings) {
+    public static String longestCommonPrefix(String... strings) {
         if (strings.length == 0) { return ""; }
-        @Nonnull String prefix = strings[0];
+        String prefix = strings[0];
         string: for (int s = 1; s < strings.length; s++) {
-            final @Nonnull String string = strings[s];
+            final String string = strings[s];
             final int minLength = Math.min(prefix.length(), string.length());
             character: for (int c = 0; c < minLength; c++) {
                 if (prefix.charAt(c) != string.charAt(c)) {
@@ -35,11 +28,10 @@ public class PrefixString {
     }
     
     /**
-     * Returns whether the given word starts with any of the given prefixes.
+     * Returns whether the given non-nullable word starts with any of the given non-nullable prefixes.
      */
-    @Pure
-    public static boolean startsWithAny(@Nonnull String word, @Nonnull String... prefixes) {
-        for (final @Nonnull String prefix : prefixes) {
+    public static boolean startsWithAny(String word, String... prefixes) {
+        for (final String prefix : prefixes) {
             if (word.startsWith(prefix)) { return true; }
         }
         return false;
@@ -48,16 +40,15 @@ public class PrefixString {
     /* -------------------------------------------------- Indefinite Article -------------------------------------------------- */
     
     /**
-     * Prepends the given word with the appropriate indefinite article in upper or lower case based on a simple heuristic.
+     * Prepends the given non-nullable word with the appropriate indefinite article in upper or lower case based on a simple heuristic.
      */
-    @Pure
-    public static @Nonnull String withIndefiniteArticle(@Nonnull String word, boolean uppercase) {
-        final @Nonnull String a = (uppercase ? "A" : "a") + " " + word, an = (uppercase ? "An" : "an") + " " + word;
-        final @Nonnull String lowercaseWord = word.toLowerCase();
+    public static String withIndefiniteArticle(String word, boolean uppercase) {
+        final String a = (uppercase ? "A" : "a") + " " + word, an = (uppercase ? "An" : "an") + " " + word;
+        final String lowercaseWord = word.toLowerCase();
         
-        final @Nonnull String[] prefixesForAn = { "hon", "heir" };
-        final @Nonnull String[] prefixesForA = { "us", "univ" };
-        final @Nonnull String[] vowels = { "a", "e", "i", "o", "u" };
+        final String[] prefixesForAn = { "hon", "heir" };
+        final String[] prefixesForA = { "us", "univ" };
+        final String[] vowels = { "a", "e", "i", "o", "u" };
         
         if (startsWithAny(lowercaseWord, prefixesForAn)) { return an; }
         if (startsWithAny(lowercaseWord, prefixesForA)) { return a; }
@@ -66,10 +57,9 @@ public class PrefixString {
     }
     
     /**
-     * Prepends the given word with the appropriate indefinite article written all lowercase.
+     * Prepends the given non-nullable word with the appropriate indefinite article written all lowercase.
      */
-    @Pure
-    public static @Nonnull String withIndefiniteArticle(@Nonnull String word) {
+    public static String withIndefiniteArticle(String word) {
         return withIndefiniteArticle(word, false);
     }
     

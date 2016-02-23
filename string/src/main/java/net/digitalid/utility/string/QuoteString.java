@@ -1,14 +1,8 @@
 package net.digitalid.utility.string;
 
-import javax.annotation.Nonnull;
-
-import net.digitalid.utility.validation.annotations.method.Pure;
-import net.digitalid.utility.validation.annotations.type.Utiliy;
-
 /**
  * This class provides useful operations to quote strings.
  */
-@Utiliy
 public class QuoteString {
     
     /* -------------------------------------------------- Single Quotes -------------------------------------------------- */
@@ -16,17 +10,15 @@ public class QuoteString {
     /**
      * Returns the given string in single quotes.
      */
-    @Pure
-    public static @Nonnull String inSingle(@Nonnull String string) {
+    public static String inSingle(String string) {
         return "'" + string + "'";
     }
     
     /**
      * Returns the given object in single quotes.
      */
-    @Pure
-    public static @Nonnull String inSingle(@Nonnull Object object) {
-        return inSingle(object.toString());
+    public static String inSingle(Object object) {
+        return inSingle(String.valueOf(object));
     }
     
     /* -------------------------------------------------- Double Quotes -------------------------------------------------- */
@@ -34,17 +26,15 @@ public class QuoteString {
     /**
      * Returns the given string in double quotes.
      */
-    @Pure
-    public static @Nonnull String inDouble(@Nonnull String string) {
+    public static String inDouble(String string) {
         return "\"" + string + "\"";
     }
     
     /**
      * Returns the given object in double quotes.
      */
-    @Pure
-    public static @Nonnull String inDouble(@Nonnull Object object) {
-        return inDouble(object.toString());
+    public static String inDouble(Object object) {
+        return inDouble(String.valueOf(object));
     }
     
 }

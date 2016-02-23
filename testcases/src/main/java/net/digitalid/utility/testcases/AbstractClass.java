@@ -1,5 +1,7 @@
 package net.digitalid.utility.testcases;
 
+import java.io.IOException;
+
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.configuration.Configuration;
@@ -28,17 +30,19 @@ public abstract class AbstractClass {
     
     public abstract void setNumber(@Positive int number);
     
+    protected AbstractClass() throws IOException {}
+    
     @Pure
     @Recover
-    public static @Nonnull AbstractClass with(@Nonnull String value) {
-        return new GeneratedAbstractClass();
+    public static @Nonnull AbstractClass with(@Nonnull String[] value, int number) throws IOException {
+        return new GeneratedAbstractClass(value, number);
     }
     
-    public static void main(@Nonnull String... args) {
+    public static void main(@Nonnull String... args) throws IOException {
         Level.threshold.set(Level.VERBOSE);
         Configuration.initializeAllConfigurations();
-        final @Nonnull AbstractClass object = AbstractClass.with("test");
-        Log.verbose("object.getValue(): " + object.getValue());
+        final @Nonnull AbstractClass object = AbstractClass.with(new String[] {"test"}, 4);
+        Log.verbose("object.getNumber(): " + object.getNumber());
     }
     
 }

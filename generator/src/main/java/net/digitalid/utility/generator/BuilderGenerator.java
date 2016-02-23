@@ -13,8 +13,8 @@ import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.processor.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.StringCase;
-import net.digitalid.utility.string.iterable.Brackets;
-import net.digitalid.utility.string.iterable.IterableConverter;
+import net.digitalid.utility.functional.string.Brackets;
+import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Utiliy;
 
@@ -191,7 +191,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     
         this.typeInformation = typeInformation;
         
-        beginClass("class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importingTypeVisitor.getTypeVariablesWithBounds(typeInformation.type.getTypeArguments(), false));
+        beginClass("class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeInformation.type.getTypeArguments()));
         
         createInnerClassForRequiredFields();
         createInnerClassForOptionalFields();

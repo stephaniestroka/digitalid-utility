@@ -1,4 +1,4 @@
-package net.digitalid.utility.string.iterable;
+package net.digitalid.utility.functional.string;
 
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.method.Pure;
