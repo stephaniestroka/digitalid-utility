@@ -1,9 +1,8 @@
-package net.digitalid.utility.generator.information;
+package net.digitalid.utility.generator.information.method;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,6 +19,7 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.annotations.Interceptor;
 import net.digitalid.utility.generator.annotations.Recover;
+import net.digitalid.utility.generator.information.NonFieldInformation;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
@@ -36,7 +36,7 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
  * 
  * @see SubclassGenerator
  */
-public class MethodInformation {
+public class MethodInformation extends ExecutableInformation implements NonFieldInformation {
     
     /* -------------------------------------------------- Method -------------------------------------------------- */
     
@@ -75,55 +75,7 @@ public class MethodInformation {
         return !element.getThrownTypes().isEmpty();
     }
     
-    /* -------------------------------------------------- Package -------------------------------------------------- */
-    
-    /**
-     * Stores the package in which the method is declared.
-     */
-    public final @Nonnull PackageElement packageElement;
-    
-    /**
-     * Stores the name of the package in which the method is declared.
-     */
-    public final @Nonnull String packageName;
-    
-    @Pure
-    public boolean isPartOfRuntimeEnvironment() {
-        return packageName.startsWith("java");
-    }
-    
-    @Pure
-    public boolean isPartOfDigitalIDLibrary() {
-        return packageName.startsWith("net.digitalid.");
-    }
-    
-    /* -------------------------------------------------- Parameters -------------------------------------------------- */
-    
-    @Pure
-    public boolean hasParameters() {
-        return !element.getParameters().isEmpty();
-    }
-    
-    @Pure
-    public boolean hasSingleParameter() {
-        return element.getParameters().size() == 1;
-    }
-    
-    @Pure
-    public boolean hasSingleParameter(@Nonnull String desiredTypeName) {
-        if (hasSingleParameter()) {
-            final @Nonnull String parameterTypeName = element.getParameters().get(0).asType().toString();
-            AnnotationLog.verbose("Parameter type: " + QuoteString.inSingle(parameterTypeName) + ", desired type:" + QuoteString.inSingle(desiredTypeName));
-            return parameterTypeName.equals(desiredTypeName);
-        } else {
-            return false;
-        }
-    }
-    
-    @Pure
-    public boolean hasSingleParameter(@Nonnull Class<?> type) {
-        return hasSingleParameter(type.getCanonicalName());
-    }
+    /* -------------------------------------------------- Return Type -------------------------------------------------- */
     
     @Pure
     public boolean hasReturnType(@Nonnull String desiredTypeName) {
@@ -166,39 +118,14 @@ public class MethodInformation {
     
     /* -------------------------------------------------- Modifiers -------------------------------------------------- */
     
-    /**
-     * Stores the modifiers of the underlying method.
-     */
-    public final @Nonnull @NonNullableElements Set<Modifier> modifiers;
-    
     @Pure
     public boolean isAbstract() {
-        return modifiers.contains(Modifier.ABSTRACT);
-    }
-    
-    @Pure
-    public boolean isPrivate() {
-        return modifiers.contains(Modifier.PRIVATE);
-    }
-    
-    @Pure
-    public boolean isProtected() {
-        return modifiers.contains(Modifier.PROTECTED);
-    }
-    
-    @Pure
-    public boolean isPublic() {
-        return modifiers.contains(Modifier.PUBLIC);
+        return getModifiers().contains(Modifier.ABSTRACT);
     }
     
     @Pure
     public boolean isStatic() {
         return modifiers.contains(Modifier.STATIC);
-    }
-    
-    @Pure
-    public boolean isFinal() {
-        return modifiers.contains(Modifier.FINAL);
     }
     
     @Pure

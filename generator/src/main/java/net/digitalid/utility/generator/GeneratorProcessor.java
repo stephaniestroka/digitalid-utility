@@ -10,7 +10,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
-import net.digitalid.utility.generator.information.TypeInformation;
+import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;

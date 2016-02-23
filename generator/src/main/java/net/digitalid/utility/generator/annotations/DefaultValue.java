@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.generator.information.FieldInformation;
+import net.digitalid.utility.generator.information.field.FieldInformation;
 
 /**
  * Description.

@@ -1,4 +1,4 @@
-package net.digitalid.utility.generator.information;
+package net.digitalid.utility.generator.information.field;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,7 @@ import javax.lang.model.type.TypeMirror;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.annotations.DefaultValue;
+import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.processor.ProcessingUtility;
@@ -26,6 +27,10 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
  * This class collects the relevant information about a field for generating a subclass and builder.
+ * 
+ * TODO: Transform this class into an interface, introduce the subinterfaces NonGeneratedFieldInformation, ParamaterBasedFieldInformation, PotentiallyInheritedFieldInformation
+ * and implement the subclasses DirectlyAccessibleFieldInformation and NonDirectlyAcessibleFieldInformation of NonTypeInformation that implement the FieldInformation. Finally,
+ * both DirectlyAccessibleFieldInformation and NonDirectlyAcessibleFieldInformation have two subclasses each, that implement the above interfaces according to their purpose.
  * 
  * @see SubclassGenerator
  * @see BuilderGenerator

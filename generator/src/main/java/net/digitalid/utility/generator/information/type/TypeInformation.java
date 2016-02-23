@@ -1,4 +1,4 @@
-package net.digitalid.utility.generator.information;
+package net.digitalid.utility.generator.information.type;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +19,10 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 
+import net.digitalid.utility.generator.information.ElementInformationImplementation;
+import net.digitalid.utility.generator.information.NonFieldInformation;
+import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
@@ -34,7 +38,7 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
  * @see SubclassGenerator
  * @see BuilderGenerator
  */
-public class TypeInformation {
+public class TypeInformation extends ElementInformationImplementation implements NonFieldInformation {
     
     /* -------------------------------------------------- Type -------------------------------------------------- */
     

@@ -444,6 +444,7 @@ public class JavaFileGenerator extends FileGenerator {
     
     @NonWrittenRecipient
     @OnlyPossibleIn({NONE, CLASS})
+    // TODO: Pass the annotation type and support easier value formatting with FormatString.
     public void addAnnotation(@Nonnull String annotation) {
         requireCurrentCodeBlock(NONE, CLASS);
         

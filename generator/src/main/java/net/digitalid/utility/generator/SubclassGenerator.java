@@ -13,9 +13,9 @@ import javax.lang.model.type.ExecutableType;
 
 import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.generator.information.FieldInformation;
-import net.digitalid.utility.generator.information.MethodInformation;
-import net.digitalid.utility.generator.information.TypeInformation;
+import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.generator.information.method.MethodInformation;
+import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;

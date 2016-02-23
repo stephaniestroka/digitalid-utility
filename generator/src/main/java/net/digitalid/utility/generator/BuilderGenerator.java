@@ -12,8 +12,8 @@ import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.string.IterableConverter;
-import net.digitalid.utility.generator.information.FieldInformation;
-import net.digitalid.utility.generator.information.TypeInformation;
+import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
