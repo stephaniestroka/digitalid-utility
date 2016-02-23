@@ -9,7 +9,7 @@ public class UnexpectedValueException extends InternalException {
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     protected UnexpectedValueException(String variable, Object value) {
-        super("It was not expected that '" + variable + "' = '" + value + "'.");
+        super("It was not expected that $ = $.", variable, value);
     }
     
     /**

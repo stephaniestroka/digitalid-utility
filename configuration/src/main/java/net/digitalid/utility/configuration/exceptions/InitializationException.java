@@ -14,12 +14,12 @@ public class InitializationException extends InternalException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected InitializationException(String message, Exception cause) {
-        super(message == null ? "A problem occurred during initialization." : message, cause);
+    protected InitializationException(String message, Exception cause, Object... arguments) {
+        super(message, cause, arguments);
     }
     
-    protected InitializationException(String message) {
-        this(message, null);
+    protected InitializationException(String message, Object... arguments) {
+        this(message, null, arguments);
     }
     
 }

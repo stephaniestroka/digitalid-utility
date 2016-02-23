@@ -23,8 +23,8 @@ import net.digitalid.utility.processor.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.string.StringCase;
-import net.digitalid.utility.string.iterable.Brackets;
-import net.digitalid.utility.string.iterable.IterableConverter;
+import net.digitalid.utility.functional.string.Brackets;
+import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
@@ -71,7 +71,7 @@ public class SubclassGenerator extends JavaFileGenerator {
                 // TODO: Support method interceptors!
                 if (setter != null) {
                     addAnnotation("@Override");
-                    beginMethod(setter.getModifiersForOverridingMethod() + "void " + setter.name + importingTypeVisitor.getParameterDeclaration(setter.type, setter.element));
+                    beginMethod(setter.getModifiersForOverridingMethod() + "void " + setter.name + importingTypeVisitor.reduceParametersDeclarationToString(setter.type, setter.element));
                     addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + setter + " was called.") + ")");
                     for (@Nonnull VariableElement parameter : setter.element.getParameters()) {
                         for (@Nonnull Map.Entry<AnnotationMirror, AnnotationValidator> entry : ProcessingUtility.getAnnotationValidators(parameter).entrySet()) {
@@ -90,12 +90,21 @@ public class SubclassGenerator extends JavaFileGenerator {
         addSection("Constructors");
         for (@Nonnull ExecutableElement constructor : typeInformation.constructors) {
             final @Nonnull @NonNullableElements List<? extends VariableElement> parameters = constructor.getParameters();
-            
-            // TODO: Also do thrown types.
-            
             final @Nonnull ExecutableType type = (ExecutableType) AnnotationProcessing.getTypeUtils().asMemberOf(typeInformation.type, constructor);
-            beginConstructor(typeInformation.getSimpleNameOfGeneratedSubclass() + importingTypeVisitor.getParameterDeclaration(type, constructor));
+            final @Nonnull @NonNullableElements List<String> parameterDeclarations = importingTypeVisitor.mapParametersDeclarationToStrings(type, constructor);
+            for (@Nonnull FieldInformation field : typeInformation.representingFields) {
+                if (field.generated) {
+                    parameterDeclarations.add(importIfPossible(field.type) + " " + field.name);
+                }
+            }
+            beginConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + IterableConverter.toString(parameterDeclarations, Brackets.ROUND) + (constructor.getThrownTypes().isEmpty() ? "" : " throws " + IterableConverter.toString(constructor.getThrownTypes(), importingTypeVisitor.TYPE_MAPPER)));
             addStatement("super" + IterableConverter.toString(parameters, ProcessingUtility.CALL_CONVERTER, Brackets.ROUND));
+            addEmptyLine();
+            for (@Nonnull FieldInformation field : typeInformation.representingFields) {
+                if (field.generated) {
+                    addStatement("this." + field.name + " = " + field.name);
+                }
+            }
             endConstructor();
         }
     }
@@ -105,7 +114,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         for (@Nonnull MethodInformation method : typeInformation.overriddenMethods) {
             AnnotationLog.verbose("Overriding the method " + QuoteString.inSingle(method.name));
             addAnnotation("@Override");
-            beginMethod(method.getModifiersForOverridingMethod() + importIfPossible(method.type) + " " + method.name + importingTypeVisitor.getParameterDeclaration(method.type, method.element) + (method.element.getThrownTypes().isEmpty() ? "" : " throws " + IterableConverter.toString(method.element.getThrownTypes())));
+            beginMethod(method.getModifiersForOverridingMethod() + importIfPossible(method.type) + " " + method.name + importingTypeVisitor.reduceParametersDeclarationToString(method.type, method.element) + (method.element.getThrownTypes().isEmpty() ? "" : " throws " + IterableConverter.toString(method.element.getThrownTypes(), importingTypeVisitor.TYPE_MAPPER)));
             addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + method.name + " was called.") + ")");
             addStatement((method.hasReturnType() ? "return " : "") + "super." + method.name + IterableConverter.toString(method.element.getParameters(), ProcessingUtility.CALL_CONVERTER, Brackets.ROUND));
             endMethod();
@@ -123,7 +132,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         
         this.typeInformation = typeInformation;
         
-        beginClass("class " + typeInformation.getSimpleNameOfGeneratedSubclass() + importingTypeVisitor.getTypeVariablesWithBounds(typeInformation.type.getTypeArguments(), false) + (typeInformation.element.getKind() == ElementKind.CLASS ? " extends " : " implements ") + importIfPossible(typeInformation.type));
+        beginClass("class " + typeInformation.getSimpleNameOfGeneratedSubclass() + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeInformation.type.getTypeArguments()) + (typeInformation.element.getKind() == ElementKind.CLASS ? " extends " : " implements ") + importIfPossible(typeInformation.type));
         
         generateFields();
         generateConstructors();

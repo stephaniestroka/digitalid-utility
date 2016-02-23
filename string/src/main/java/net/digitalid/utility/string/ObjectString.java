@@ -2,45 +2,41 @@ package net.digitalid.utility.string;
 
 import java.lang.reflect.Field;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import net.digitalid.utility.validation.annotations.method.Pure;
-import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.annotations.type.Utiliy;
 
 /**
  * This class provides useful operations to transform objects into strings through reflection.
  */
-@Utiliy
 public class ObjectString {
     
     /**
      * An enumeration of styles which can be used for the string representation.
      */
-    @Immutable
     public static enum RepresentationStyle {
         DEFAULT
     }
     
     /**
-     * Returns the field value or a &lt;access failure&gt; error message if the field cannot be accessed.
+     * Returns the nullable field value or a &lt;access failure&gt; error message if the field cannot be accessed.
+     * 
+     * @require field != null : "The field may not be null.;
+     * @require object != null : "The object may not be null.;
      */
-    @Pure
-    private static @Nullable Object getFieldValueOrErrorMessage(@Nonnull Field field, @Nonnull Object object) {
+    private static Object getFieldValueOrErrorMessage(Field field, Object object) {
+        assert field != null : "The field may not be null.";
+        assert object != null : "The object may not be null.";
+        
         field.setAccessible(true);
         try {
             return field.get(object);
-        } catch (@Nonnull IllegalAccessException exception) {
+        } catch (IllegalAccessException exception) {
             return "<access failure>";
         }
     }
     
     /**
-     * Returns a doubly-quoted string if the field value is a string. Otherwise, toString() is called on the object.
+     * Returns a non-nullable doubly-quoted string if the field value is a string. Otherwise, toString() is called on the object.
      */
-    @Pure
-    private static @Nonnull String transformFieldValue(@Nullable Object fieldValue) {
+    private static String transformFieldValue(Object fieldValue) {
         if (fieldValue instanceof String) {
             return "\"" + fieldValue + "\"";
         } else if (fieldValue == null) {
@@ -52,17 +48,24 @@ public class ObjectString {
     
     /**
      * Appends a representation of the given object in the given {@link RepresentationStyle style} to the given string builder.
+     * 
+     * @require object != null : "The object may not be null.;
+     * @require string != null : "The string may not be null.;
+     * @require style != null : "The style may not be null.;
      */
-    @Pure
-    public static void toString(@Nonnull Object object, @Nonnull RepresentationStyle style, @Nonnull StringBuilder string) {
-        final @Nonnull Class<?> type = object.getClass();
-        final @Nonnull String typeName = type.getSimpleName();
-        final @Nonnull Field[] fields = type.getDeclaredFields();
+    public static void toString(Object object, StringBuilder string, RepresentationStyle style) {
+        assert object != null : "The object may not be null.";
+        assert string != null : "The string may not be null.";
+        assert style != null : "The style may not be null.";
+        
+        final Class<?> type = object.getClass();
+        final String typeName = type.getSimpleName();
+        final Field[] fields = type.getDeclaredFields();
         switch (style) {
             case DEFAULT:
                 string.append(typeName).append("(");
                 for (int i = 0; i < fields.length; i++) {
-                    final @Nonnull Field field = fields[i];
+                    final Field field = fields[i];
                     string.append(field.getName()).append(": ").append(transformFieldValue(getFieldValueOrErrorMessage(field, object)));
                     if (i > 0) { string.append(fields[i]).append(", "); }
                 }

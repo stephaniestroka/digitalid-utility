@@ -21,11 +21,6 @@
         </dependency>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-tuples</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-math</artifactId>
             <version>${project.version}</version>
         </dependency>

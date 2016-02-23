@@ -25,7 +25,7 @@ import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.string.QuoteString;
-import net.digitalid.utility.string.iterable.NonNullableElementConverter;
+import net.digitalid.utility.functional.string.NonNullableElementConverter;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;

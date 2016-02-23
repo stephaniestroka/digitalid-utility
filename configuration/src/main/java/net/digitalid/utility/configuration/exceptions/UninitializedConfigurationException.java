@@ -1,34 +1,16 @@
 package net.digitalid.utility.configuration.exceptions;
 
 import net.digitalid.utility.configuration.Configuration;
-import net.digitalid.utility.contracts.Require;
 
 /**
  * This exception indicates that a configuration was not initialized.
  */
-public class UninitializedConfigurationException extends InitializationException {
-    
-    /* -------------------------------------------------- Configuration -------------------------------------------------- */
-    
-    private final Configuration<?> configuration;
-    
-    /**
-     * Returns the configuration that was not initialized.
-     * 
-     * @ensure result != null : "The returned configuration may not be null.";
-     */
-    public Configuration<?> getConfiguration() {
-        return configuration;
-    }
+public class UninitializedConfigurationException extends ConfigurationException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     protected UninitializedConfigurationException(Configuration<?> configuration) {
-        super("A configuration was not initialized.");
-        
-        Require.that(configuration != null).orThrow("The configuration may not be null.");
-        
-        this.configuration = configuration;
+        super("The configuration $ was not initialized.", configuration);
     }
     
     /**

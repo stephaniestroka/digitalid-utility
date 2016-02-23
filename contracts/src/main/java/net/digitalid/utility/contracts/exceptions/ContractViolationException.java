@@ -13,8 +13,8 @@ public class ContractViolationException extends InternalException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ContractViolationException(String message) {
-        super(message);
+    protected ContractViolationException(String message, Object... arguments) {
+        super(message, arguments);
     }
     
 }

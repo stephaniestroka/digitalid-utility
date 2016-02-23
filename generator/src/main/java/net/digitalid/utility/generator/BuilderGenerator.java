@@ -11,13 +11,13 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.generator.information.FieldInformation;
 import net.digitalid.utility.generator.information.TypeInformation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.StringCase;
-import net.digitalid.utility.string.iterable.IterableConverter;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.reference.Chainable;
 import net.digitalid.utility.validation.annotations.type.Utiliy;
@@ -43,7 +43,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     private @Nonnull String createInterfaceForField(@Nonnull FieldInformation field, @Nullable String nextInterface) {
         final @Nonnull String interfaceName = getNameOfFieldBuilder(field);
         final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.name);
-        beginClass("interface " + interfaceName + importingTypeVisitor.getTypeVariablesWithBounds(typeInformation.type.getTypeArguments(), false));
+        beginClass("interface " + interfaceName + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeInformation.type.getTypeArguments()));
         addAnnotation("@" + importIfPossible(Chainable.class));
         addMethodDeclaration("public @" + importIfPossible(Nonnull.class) + " " + nextInterface + " " + methodName + "(" + field.type + " " + field.name + ")");
         endClass();
@@ -70,7 +70,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     
     private void addSetterForField(@Nonnull FieldInformation field, @Nonnull String returnType, @Nonnull String returnedInstance) {
         final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.name);
-        beginMethod("public static " + importingTypeVisitor.getTypeVariablesWithBounds(typeInformation.type.getTypeArguments(), true) + returnType + " " + methodName + "(" + field.type + " " + field.name + ")");
+        beginMethod("public static " + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeInformation.type.getTypeArguments()) + returnType + " " + methodName + "(" + field.type + " " + field.name + ")");
         addStatement("return new " + returnedInstance + "()." + methodName + "(" + field.name + ")");
         endMethod();
     }
@@ -98,7 +98,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         
         final List<? extends TypeMirror> typeArguments = typeInformation.type.getTypeArguments();
         
-        beginClass("static class " + nameOfInnerClass + importingTypeVisitor.getTypeVariablesWithBounds(typeArguments, false) + (listOfInterfaces.size() == 0 ? "" : " implements " + IterableConverter.toString(listOfInterfaces) + importingTypeVisitor.getTypeVariablesWithoutBounds(typeArguments, false)));
+        beginClass("static class " + nameOfInnerClass + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeArguments) + (listOfInterfaces.size() == 0 ? "" : " implements " + IterableConverter.toString(listOfInterfaces) + importingTypeVisitor.getTypeVariablesWithoutBounds(typeArguments, false)));
         
         for (@Nonnull FieldInformation field : typeInformation.representingFields) {
             field.getAnnotations();
@@ -126,7 +126,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         final @Nonnull ExecutableElement constructor = constructors.get(0);
         
         final @Nonnull ExecutableType type = (ExecutableType) AnnotationProcessing.getTypeUtils().asMemberOf(typeInformation.type, constructor);
-        addStatement("return new " + typeInformation.getQualifiedNameOfGeneratedSubclass() + importingTypeVisitor.getParameterDeclaration(type, constructor));
+        addStatement("return new " + typeInformation.getQualifiedNameOfGeneratedSubclass() + importingTypeVisitor.reduceParametersDeclarationToString(type, constructor));
         
         endMethod();
         
@@ -146,7 +146,7 @@ public class BuilderGenerator extends JavaFileGenerator {
                 final @Nonnull FieldInformation field = typeInformation.representingFields.get(0);
                 addSetterForField(field, nameOfInnerClass, nameOfInnerClass);
             }
-            beginMethod("public static " + importingTypeVisitor.getTypeVariablesWithBounds(typeArguments, true) + nameOfInnerClass + " get()");
+            beginMethod("public static " + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeArguments) + nameOfInnerClass + " get()");
             addStatement("return new " + nameOfInnerClass + "()");
             endMethod();
         }
@@ -165,7 +165,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     
         this.typeInformation = typeInformation;
     
-        beginClass("public class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importingTypeVisitor.getTypeVariablesWithBounds(typeInformation.type.getTypeArguments(), false));
+        beginClass("public class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeInformation.type.getTypeArguments()));
         
         createInnerClassForFields();
         

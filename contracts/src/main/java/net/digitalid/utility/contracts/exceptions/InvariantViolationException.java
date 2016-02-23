@@ -7,15 +7,16 @@ public class InvariantViolationException extends ContractViolationException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected InvariantViolationException(String message) {
-        super(message);
+    protected InvariantViolationException(String message, Object... arguments) {
+        super(message, arguments);
     }
     
     /**
      * Returns an invariant violation exception with the given message.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static InvariantViolationException with(String message) {
-        return new InvariantViolationException(message);
+    public static InvariantViolationException with(String message, Object... arguments) {
+        return new InvariantViolationException(message, arguments);
     }
     
 }

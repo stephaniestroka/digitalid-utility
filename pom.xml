@@ -35,26 +35,27 @@
     
     <modules>
         <module>taglets</module>
+        <module>string</module>
         <module>exceptions</module>
         <module>contracts</module>
         <module>configuration</module>
         <module>logging</module>
+        <module>testing</module>
         <module>validation</module>
         <module>system</module>
         <module>threading</module>
         <module>freezable</module>
         <module>casting</module>
         <module>rootclass</module>
-        <module>string</module>
+        <module>tuples</module>
+        <module>functional</module>
         <module>concurrency</module>
         <module>processor</module>
         <module>initialization</module>
-        <module>testing</module>
         <module>directory</module>
         <module>generator</module>
         <module>testcases</module>
         <module>collections</module>
-        <module>tuples</module>
         <module>math</module>
         <module>time</module>
         <module>cryptography</module>

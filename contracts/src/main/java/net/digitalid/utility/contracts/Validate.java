@@ -31,9 +31,10 @@ public final class Validate extends Contract {
     
     /**
      * Checks whether the invariant returned by {@link #that(boolean)} is fulfilled and throws an {@link InvariantViolationException} with the given message otherwise.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public void orThrow(String message) throws InvariantViolationException {
-        if (isViolated()) { throw InvariantViolationException.with(message); }
+    public void orThrow(String message, Object... arguments) throws InvariantViolationException {
+        if (isViolated()) { throw InvariantViolationException.with(message, arguments); }
     }
     
 }

@@ -12,14 +12,14 @@ public final class Log {
     /**
      * Logs the given message and throwable as an error.
      */
-    public static void error(String message, Throwable throwable) {
+    public static void error(String message, Throwable throwable, Object... arguments) {
         Logger.log(Level.ERROR, message, throwable);
     }
     
     /**
      * Logs the given message as an error.
      */
-    public static void error(String message) {
+    public static void error(String message, Object... arguments) {
         Logger.log(Level.ERROR, message, null);
     }
     
@@ -28,14 +28,14 @@ public final class Log {
     /**
      * Logs the given message and throwable as a warning.
      */
-    public static void warning(String message, Throwable throwable) {
+    public static void warning(String message, Throwable throwable, Object... arguments) {
         Logger.log(Level.WARNING, message, throwable);
     }
     
     /**
      * Logs the given message as a warning.
      */
-    public static void warning(String message) {
+    public static void warning(String message, Object... arguments) {
         Logger.log(Level.WARNING, message, null);
     }
     
@@ -44,14 +44,14 @@ public final class Log {
     /**
      * Logs the given message and throwable as information.
      */
-    public static void information(String message, Throwable throwable) {
+    public static void information(String message, Throwable throwable, Object... arguments) {
         Logger.log(Level.INFORMATION, message, throwable);
     }
     
     /**
      * Logs the given message as information.
      */
-    public static void information(String message) {
+    public static void information(String message, Object... arguments) {
         Logger.log(Level.INFORMATION, message, null);
     }
     
@@ -60,14 +60,14 @@ public final class Log {
     /**
      * Logs the given message and throwable for debugging.
      */
-    public static void debugging(String message, Throwable throwable) {
+    public static void debugging(String message, Throwable throwable, Object... arguments) {
         Logger.log(Level.DEBUGGING, message, throwable);
     }
     
     /**
      * Logs the given message for debugging.
      */
-    public static void debugging(String message) {
+    public static void debugging(String message, Object... arguments) {
         Logger.log(Level.DEBUGGING, message, null);
     }
     
@@ -76,14 +76,14 @@ public final class Log {
     /**
      * Logs the given message and throwable only in verbose mode.
      */
-    public static void verbose(String message, Throwable throwable) {
+    public static void verbose(String message, Throwable throwable, Object... arguments) {
         Logger.log(Level.VERBOSE, message, throwable);
     }
     
     /**
      * Logs the given message only in verbose mode.
      */
-    public static void verbose(String message) {
+    public static void verbose(String message, Object... arguments) {
         Logger.log(Level.VERBOSE, message, null);
     }
     

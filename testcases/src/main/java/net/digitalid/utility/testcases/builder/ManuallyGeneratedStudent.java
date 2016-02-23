@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.math.Positive;
@@ -57,19 +56,19 @@ class ManuallyGeneratedStudent extends Student {
     /* -------------------------------------------------- Buddies -------------------------------------------------- */
     
     // Freezable instead of ReadOnly because of the annotation @NonFrozen.
-    private final @Nullable @NonNullableElements @NonFrozen List<Student> buddies;
+    private final @Nonnull @NonNullableElements List<Student> buddies;
     
     @Pure
-    @Override
+    @Override 
     public @Nonnull List<Student> getBuddies() {
         return buddies;
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ManuallyGeneratedStudent(@Nonnull String name, @Nonnull int id, @Nullable List<Student> buddies) {
+    protected ManuallyGeneratedStudent(@Nonnull String name, int ID, @Nonnull @NonNullableElements List<Student> buddies) {
         this.name = name;
-        this.ID = id;
+        this.ID = ID;
         this.buddies = buddies;
         
         // this.validate();

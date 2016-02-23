@@ -31,9 +31,10 @@ public final class Ensure extends Contract {
     
     /**
      * Checks whether the postcondition returned by {@link #that(boolean)} is fulfilled and throws a {@link PostconditionViolationException} with the given message otherwise.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public void orThrow(String message) throws PostconditionViolationException {
-        if (isViolated()) { throw PostconditionViolationException.with(message); }
+    public void orThrow(String message, Object... arguments) throws PostconditionViolationException {
+        if (isViolated()) { throw PostconditionViolationException.with(message, arguments); }
     }
     
 }

@@ -8,8 +8,8 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.string.iterable.Brackets;
-import net.digitalid.utility.string.iterable.IterableConverter;
+import net.digitalid.utility.functional.string.Brackets;
+import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.reference.Capturable;

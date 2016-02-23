@@ -31,9 +31,10 @@ public final class Require extends Contract {
     
     /**
      * Checks whether the precondition returned by {@link #that(boolean)} is fulfilled and throws a {@link PreconditionViolationException} with the given message otherwise.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public void orThrow(String message) throws PreconditionViolationException {
-        if (isViolated()) { throw PreconditionViolationException.with(message); }
+    public void orThrow(String message, Object... arguments) throws PreconditionViolationException {
+        if (isViolated()) { throw PreconditionViolationException.with(message, arguments); }
     }
     
 }

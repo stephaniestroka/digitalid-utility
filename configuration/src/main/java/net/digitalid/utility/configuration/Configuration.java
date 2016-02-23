@@ -311,7 +311,7 @@ public class Configuration<P> {
      */
     public String getDependencyChainAsString(Configuration<?> configuration) {
         Require.that(configuration != null).orThrow("The configuration may not be null.");
-        Require.that(dependsOn(configuration)).orThrow("This configuration has to depend on the given configuration.");
+        Require.that(dependsOn(configuration)).orThrow("This configuration $ has to depend on the given configuration $.", this, configuration);
         
         final StringBuilder result = new StringBuilder();
         final List<Configuration<?>> dependencyChain = getDependencyChain(configuration);
