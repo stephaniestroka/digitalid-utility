@@ -17,6 +17,7 @@ import net.digitalid.utility.generator.annotations.DefaultValue;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.processor.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 
@@ -45,6 +46,28 @@ public class FieldInformation {
     @Pure
     public boolean isMutable() {
         return setter != null || field != null && !field.getModifiers().contains(Modifier.FINAL);
+    }
+    
+    public List<String> getAnnotations() {
+        @Nonnull List<String> annotations = new ArrayList<>();
+        @Nonnull List<? extends AnnotationMirror> annotationMirrors;
+        if (field != null) {
+            annotationMirrors = field.getAnnotationMirrors();
+        } else if (getter != null) {
+            annotationMirrors = getter.element.getAnnotationMirrors();
+        } else {
+            AnnotationLog.debugging("field is null and getter is null. Returning empty annotations list.");
+            return annotations;
+        }
+        for (AnnotationMirror annotationMirror : annotationMirrors) {
+            DeclaredType annotationType = annotationMirror.getAnnotationType();
+            final @Nonnull TypeElement annotationsTypeElement = (TypeElement) annotationType.asElement();
+    
+            final @Nonnull String annotation = AnnotationProcessing.getElementUtils().getBinaryName(annotationsTypeElement).toString();
+            annotations.add(annotation);
+        }
+        AnnotationLog.debugging("getAnnotations() : " + annotations);
+        return annotations;
     }
     
     /* -------------------------------------------------- Validators -------------------------------------------------- */

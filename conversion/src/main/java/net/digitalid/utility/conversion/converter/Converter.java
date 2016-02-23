@@ -31,14 +31,14 @@ public abstract class Converter {
     /**
      * Returns a map of annotations which carries information such as generic types of a field.
      */
-    public static @Nonnull ConverterAnnotations getAnnotations(@Nonnull AnnotatedElement annotatedElement) {
+/*    public static @Nonnull ConverterAnnotations getAnnotations(@Nonnull AnnotatedElement annotatedElement) {
         final @Nonnull @NonNullableElements ConverterAnnotations fieldMetaData = ConverterAnnotations.get();
         for (@Nonnull Annotation annotation : annotatedElement.getDeclaredAnnotations()) {
             final @Nonnull Annotation annotationObject = annotatedElement.getAnnotation(annotation.annotationType());
             fieldMetaData.put(annotation.annotationType(), annotationObject);
         }
         return fieldMetaData;
-    }
+    }*/
     
     /* -------------------------------------------------- Object Recovery -------------------------------------------------- */
     
@@ -52,8 +52,8 @@ public abstract class Converter {
      * 
      * @throws RecoveryException if the object cannot be constructed.
      */
-    private static @Nonnull Object recoverObjectWithConstructor(@Nonnull Class<?> type, @Nullable Object... values) throws RecoveryException {
-        final @Nonnull Constructor constructor;
+    private static @Nonnull <T> T recoverObjectWithConstructor(@Nonnull Class<T> type, @Nullable Object... values) throws RecoveryException {
+        final @Nonnull Constructor<T> constructor;
         try {
             constructor = ReflectionUtility.getConstructor(type);
         } catch (StructureException e) {
@@ -95,13 +95,14 @@ public abstract class Converter {
      * 
      * @throws RecoveryException if the recovery method unexpectedly returns null.
      */
-    protected static @Nonnull Object recoverNonNullableObject(@Nonnull Class<?> type, @Nullable Object... values) throws RecoveryException {
+    @SuppressWarnings("unchecked")
+    protected static @Nonnull <T> T recoverNonNullableObject(@Nonnull Class<T> type, @Nullable Object... values) throws RecoveryException {
         final @Nullable Method constructorMethod = ReflectionUtility.getStaticRecoveryMethod(type);
-        final @Nullable Object restoredObject;
+        final @Nullable T restoredObject;
         if (constructorMethod == null) {
             restoredObject = recoverObjectWithConstructor(type, values);
         } else {
-            restoredObject = recoverObjectWithStaticMethod(constructorMethod, values);
+            restoredObject = (T) recoverObjectWithStaticMethod(constructorMethod, values);
         }
         if (restoredObject == null) {
             // TODO: Rather verify that the constructor method returns a non-nullable object.

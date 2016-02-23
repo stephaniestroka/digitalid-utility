@@ -1,21 +1,24 @@
 package net.digitalid.utility.generator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.generator.information.FieldInformation;
 import net.digitalid.utility.generator.information.TypeInformation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.processor.ProcessingUtility;
+import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.StringCase;
-import net.digitalid.utility.functional.string.Brackets;
-import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.reference.Chainable;
 import net.digitalid.utility.validation.annotations.type.Utiliy;
 
 /**
@@ -32,152 +35,117 @@ public class BuilderGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Required Fields Builder -------------------------------------------------- */
     
+    private @Nonnull String getNameOfFieldBuilder(@Nonnull FieldInformation field) {
+        return StringCase.capitalizeFirstLetters(field.name) + typeInformation.getSimpleNameOfGeneratedBuilder();
+    }
+    
+    private @Nonnull String createInterfaceForField(@Nonnull FieldInformation field, @Nullable String nextInterface) {
+        final @Nonnull String interfaceName = getNameOfFieldBuilder(field);
+        final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.name);
+        beginClass("interface " + interfaceName);
+        addAnnotation("@" + importIfPossible(Chainable.class));
+        addMethodDeclaration("public @" + importIfPossible(Nonnull.class) + " " + nextInterface + " " + methodName + "(" + field.type + " " + field.name + ")");
+        endClass();
+        return interfaceName;
+    }
+    
+    private boolean isFieldRequired(@Nonnull FieldInformation fieldInformation) {
+        // TODO: nullable fields are not required. Non-final fields are also not required (and probably not representing).
+        return fieldInformation.defaultValue == null;
+    }
+    
+    /**
+     * Returns a list of field information objects for fields that are required.
+     */
+    private @Nonnull @NonNullableElements List<FieldInformation> getRequiredFields() {
+        final @Nonnull @NonNullableElements List<FieldInformation> requiredFields = new ArrayList<>();
+        for (@Nonnull FieldInformation fieldInformation : typeInformation.representingFields) {
+            if (isFieldRequired(fieldInformation)) {
+                requiredFields.add(fieldInformation);
+            }
+        }
+        return requiredFields;
+    }
+    
+    private void addSetterForField(@Nonnull FieldInformation field, @Nonnull String returnType, @Nonnull String returnedInstance) {
+        final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.name);
+        beginMethod("public static " + returnType + " " + methodName + "(" + field.type + " " + field.name + ")");
+        addStatement("return new " + returnedInstance + "()." + methodName + "(" + field.name + ")");
+        endMethod();
+    }
+    
     /**
      * Creates an inner class for required fields that returns an OptionalFields_Builder once all required fields are set.
      */
-    protected void createInnerClassForRequiredFields() {
-        beginClass("class RequiredFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + " extends " + typeInformation.getSimpleNameOfGeneratedBuilder());
-    
-        addSection(StringCase.capitalizeFirstLetters("Check Required Fields"));
-        addAnnotation("@Chainable");
-        // TODO: the nullable is really stupid here. There must be a better way to signal that not all fields have been set.
-        beginMethod("public @Nullable OptionalFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + " check()");
-        final @Nonnull StringBuilder condition = new StringBuilder();
-        boolean firstRound = true;
-        for (@Nonnull FieldInformation fieldInformation : typeInformation.representingFields) {
-            if (fieldInformation.defaultValue == null) {
-                if (!firstRound) {
-                    condition.append(" && ");
-                }
-                condition.append("this.").append(fieldInformation).append(" != null");
-                firstRound = false;
-            }
-        }
-         if (condition.toString().isEmpty()) {
-             condition.append("true");
-         }
+    protected void createInnerClassForFields() {
         
-        beginIf(condition.toString());
-        addStatement("return new OptionalFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + "(this)");
-        beginElse();
-        // TODO: Think of something more clever.
-        addStatement("return null");
-        endIf();
-        endMethod();
+        AnnotationLog.debugging("createInnerClassForFields()");
         
-        for (@Nonnull FieldInformation fieldInformation : typeInformation.representingFields) {
-            // If the default value is not set, the field is required.
-            if (fieldInformation.defaultValue == null) {
-                addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize(fieldInformation.name)));
-    
-                final @Nonnull String type;
-                if (fieldInformation.type.getKind().isPrimitive()) {
-                    // Boxing the type into an object, so that we can check whether it has been set in the allRequiredFieldsAreSet() method.
-                    if (fieldInformation.type.toString().equals("byte")) {
-                        type = "Byte";
-                    } else if (fieldInformation.type.toString().equals("char")) {
-                        type = "Character";
-                    } else if (fieldInformation.type.toString().equals("short")) {
-                        type = "Short";
-                    } else if (fieldInformation.type.toString().equals("int")) {
-                        type = "Integer";
-                    } else if (fieldInformation.type.toString().equals("long")) {
-                        type = "Long";
-                    } else if (fieldInformation.type.toString().equals("float")) {
-                        type = "Float";
-                    } else if (fieldInformation.type.toString().equals("double")) {
-                        type = "Double";
-                    } else {
-                        AnnotationLog.error("primitive type '" + fieldInformation.type.toString() + "' cannot be boxed.");
-                        return;
-                    }
-                } else {
-                    type = fieldInformation.type.toString();
-                }
-                addField("protected " + type + " " + fieldInformation.name);
-                final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(fieldInformation.name);
-                addAnnotation("@Chainable");
-                beginMethod("public @Nonnull RequiredFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + " " + methodName + "(" + fieldInformation.type + " " + fieldInformation.name + ")");
-                addStatement("this." + fieldInformation.name + " = " + fieldInformation.name);
-                addStatement("return this");
-                endMethod();
-            }
-        }
-        endClass();
-    }
-    
-    /* -------------------------------------------------- Optional Fields Builder -------------------------------------------------- */
-    
-    /**
-     * Creates an inner class for optional fields that returns an OptionalFields_Builder once all required fields are set.
-     */
-    protected void createInnerClassForOptionalFields() {
-        beginClass("class OptionalFields" + typeInformation.getSimpleNameOfGeneratedBuilder());
-    
-        addSection(StringCase.capitalizeFirstLetters("Constructor"));
-        beginConstructor("OptionalFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + "(this)");
-        for (@Nonnull FieldInformation fieldInformation : typeInformation.representingFields) {
-            if (fieldInformation.defaultValue == null) {
-                addStatement("this." + fieldInformation.name + " = " + fieldInformation.name);
-            } else {
-                addStatement("this." + fieldInformation.name + " = " + fieldInformation.defaultValue);
-            }
-        }
-        endConstructor();
+        @Nonnull @NonNullableElements List<FieldInformation> requiredFields = getRequiredFields();
+        final @Nonnull String nameOfInnerClass = "Inner" + typeInformation.getSimpleNameOfGeneratedBuilder();
+        final @Nonnull List<String> listOfInterfaces = new ArrayList<>();
         
-        addSection(StringCase.capitalizeFirstLetters("Build"));
-        // TODO: check if typeName is correct here
+        for (int i = 0; i < requiredFields.size(); i++) {
+            final @Nonnull FieldInformation requiredField = requiredFields.get(i);
+            @Nonnull String nextInterface = nameOfInnerClass;
+            if ((i + 1) < requiredFields.size()) {
+                final @Nonnull FieldInformation nextField = requiredFields.get(i + 1);
+                nextInterface = getNameOfFieldBuilder(nextField);
+            }
+            listOfInterfaces.add(createInterfaceForField(requiredField, nextInterface));
+        }
+    
+        beginClass("static class " + nameOfInnerClass + " implements " + IterableConverter.toString(listOfInterfaces));
+        
+        for (@Nonnull FieldInformation field : typeInformation.representingFields) {
+            field.getAnnotations();
+            addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize(field.name)));
+            // TODO: Add annotations.
+            addField("private " + field.type + " " + field.name);
+            final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.name);
+            addAnnotation("@" + importIfPossible(Override.class));
+            addAnnotation("@" + importIfPossible(Chainable.class));
+            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + nameOfInnerClass + " " + methodName + "(" + field.type + " " + field.name + ")");
+            addStatement("this." + field.name + " = " + field.name);
+            addStatement("return this");
+            endMethod();
+        }
+        
+        addSection("Build");
         beginMethod("public " + typeInformation.name + " build()");
-    
+        
         final @Nonnull @NonNullableElements List<ExecutableElement> constructors = ElementFilter.constructorsIn(typeInformation.element.getEnclosedElements());
         if (constructors.size() != 1) {
             AnnotationLog.error("Expected one constructor in generated type:");
         }
         final @Nonnull ExecutableElement constructor = constructors.get(0);
         
-        addStatement("return new " + typeInformation.getSimpleNameOfGeneratedBuilder() + IterableConverter.toString(constructor.getParameters(), ProcessingUtility.DECLARATION_CONVERTER, Brackets.ROUND));
+        final @Nonnull ExecutableType type = (ExecutableType) AnnotationProcessing.getTypeUtils().asMemberOf(typeInformation.type, constructor);
+        addStatement("return new " + typeInformation.getQualifiedNameOfGeneratedSubclass() + importingTypeVisitor.getParameterDeclaration(type, constructor));
+        
         endMethod();
         
-        for (@Nonnull FieldInformation fieldInformation : typeInformation.representingFields) {
-            if (fieldInformation.defaultValue != null) {
-                addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize(fieldInformation.name)));
-    
-                addField("private " + fieldInformation.type + " " + fieldInformation.name);
-                final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(fieldInformation.name);
-                addAnnotation("@Chainable");
-                beginMethod("public @Nonnull OptionalFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + " " + methodName + "(" + fieldInformation.type + " " + fieldInformation.name + ")");
-                addStatement("this." + fieldInformation.name + " = " + fieldInformation.name);
-                addStatement("return this");
-                endMethod();
-            }
-        }
         endClass();
-    }
-    
-    /* -------------------------------------------------- Static Entry Methods -------------------------------------------------- */
-    
-    /**
-     * Creates static entry methods for all required fields. If no fields are required, creates a "get" method that returns an OptionalFields_Builder.
-     */
-    protected void createStaticEntryMethods() {
-        // TODO: sort out only the required fields.
-        boolean atLeastOneMethodCreated = false;
-        for (@Nonnull FieldInformation fieldInformation : typeInformation.representingFields) {
-            if (fieldInformation.defaultValue == null) {
-                atLeastOneMethodCreated = true;
-                addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize(fieldInformation.name)));
-                final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(fieldInformation.name);
-                beginMethod("public static void " + methodName + "(" + fieldInformation.type + " " + fieldInformation.name + ")");
-                addStatement("return new RequiredFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + "()." + methodName + "(" + fieldInformation.name + ")");
-                endMethod();
+        
+        if (listOfInterfaces.size() > 0) {
+            final @Nonnull String secondInterface;
+            if (listOfInterfaces.size() > 1) {
+                secondInterface = listOfInterfaces.get(1);
+            } else {
+                secondInterface = nameOfInnerClass;
             }
-        }
-        if (!atLeastOneMethodCreated) {
-            addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize("Construct Builder")));
-            beginMethod("public static void get" + "()");
-            addStatement("return new OptionalFields" + typeInformation.getSimpleNameOfGeneratedBuilder() + "()");
+            final @Nonnull FieldInformation field = requiredFields.get(0);
+            addSetterForField(field, secondInterface, nameOfInnerClass);
+        } else {
+            if (typeInformation.representingFields.size() > 0) {
+                final @Nonnull FieldInformation field = typeInformation.representingFields.get(0);
+                addSetterForField(field, nameOfInnerClass, nameOfInnerClass);
+            }
+            beginMethod("public static " + nameOfInnerClass + " get()");
+            addStatement("return new " + nameOfInnerClass + "()");
             endMethod();
         }
+        
     }
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
@@ -187,17 +155,17 @@ public class BuilderGenerator extends JavaFileGenerator {
      * is generated 
      */
     protected BuilderGenerator(@Nonnull TypeInformation typeInformation) {
-        super(typeInformation.getQualifiedNameOfGeneratedSubclass(), typeInformation.element);
+        super(typeInformation.getQualifiedNameOfGeneratedBuilder(), typeInformation.element);
+        AnnotationLog.debugging("BuilderGenerator(" + typeInformation + ")");
     
         this.typeInformation = typeInformation;
+    
+        beginClass("public class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importingTypeVisitor.getTypeVariablesWithBounds(typeInformation.type.getTypeArguments(), false));
         
-        beginClass("class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeInformation.type.getTypeArguments()));
-        
-        createInnerClassForRequiredFields();
-        createInnerClassForOptionalFields();
-        createStaticEntryMethods();
+        createInnerClassForFields();
         
         endClass();
+        AnnotationLog.debugging("endClass()");
     }
     
     /**
@@ -206,6 +174,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     public static void generateBuilderFor(@Nonnull TypeInformation typeInformation) {
         Require.that(typeInformation.generatable).orThrow("No subclass can be generated for " + typeInformation);
         
+        AnnotationLog.debugging("generateBuilderFor(" + typeInformation + ")");
         new BuilderGenerator(typeInformation).write();
     }
     

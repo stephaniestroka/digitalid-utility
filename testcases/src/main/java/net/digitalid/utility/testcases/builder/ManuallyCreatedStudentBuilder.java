@@ -27,64 +27,66 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * - What if the type of the getter and the field are not exactly the same (for example, expose only ReadOnlyType but store a FreezableType for internal operations).
  */
 @Mutable
-@SuppressWarnings("null")
 @Generated(value = {"net.digitalid.utility.generator.processor.GeneratorProcessor"}, date = "2016-02-10T21:39:49.202+0100")
-public class StudentBuilder {
+public class ManuallyCreatedStudentBuilder {
     
-    class RequiredFieldsStudentBuilder extends StudentBuilder {
+    static class NameManuallyCreatedStudentBuilder {
+    
+        NameManuallyCreatedStudentBuilder() {
+        }
         
-        private boolean allRequiredFieldsAreSet() {
-            return this.name != null && this.ID != null;
+        NameManuallyCreatedStudentBuilder(@Nonnull NameManuallyCreatedStudentBuilder builder) {
+            this.name = builder.name;
         }
         
         /* -------------------------------------------------- Name -------------------------------------------------- */
-        
-        @Nonnull @MaxSize(64) String name;
-        
+    
+        @Nonnull
+        @MaxSize(64)
+        String name;
+    
         @Pure
         @Chainable
-        public @Nonnull StudentBuilder withName(@Nonnull @MaxSize(64) String name) {
+        public
+        @Nonnull
+        IdManuallyCreatedStudentBuilder withName(@Nonnull @MaxSize(64) String name) {
             Require.that(name != null).orThrow("The name may not be null.");
             Require.that(name.length() <= 64).orThrow("The length of the name may be at most 64 character.");
-            
+        
             this.name = name;
-            if (allRequiredFieldsAreSet()) {
-                return new OptionalFieldsStudentBuilder(this);
-            } else {
-                return this;
-            }
+            return new IdManuallyCreatedStudentBuilder(this);
+        }
+    
+    }
+    
+    static class IdManuallyCreatedStudentBuilder extends NameManuallyCreatedStudentBuilder {
+        
+        IdManuallyCreatedStudentBuilder(@Nonnull NameManuallyCreatedStudentBuilder builder) {
+            super(builder);
+        }
+    
+        IdManuallyCreatedStudentBuilder(@Nonnull IdManuallyCreatedStudentBuilder builder) {
+            super(builder);
+            this.ID = builder.ID;
         }
         
-            
         /* -------------------------------------------------- ID -------------------------------------------------- */
         
         @Positive Integer ID;
         
         @Pure
         @Chainable
-        public @Nonnull StudentBuilder withID(@Positive int ID) {
+        public @Nonnull OptionalFieldsManuallyCreatedStudentBuilder withID(@Positive int ID) {
             this.ID = ID;
-            if (allRequiredFieldsAreSet()) {
-                return new OptionalFieldsStudentBuilder(this);
-            } else {
-                return this;
-            }
-        }
-    
-        /**
-         * Copy constructor.
-         */
-        protected RequiredFieldsStudentBuilder(RequiredFieldsStudentBuilder requiredFieldsStudentBuilder) {
-            this.name = requiredFieldsStudentBuilder.name;
-            this.ID = requiredFieldsStudentBuilder.ID;
+            return new OptionalFieldsManuallyCreatedStudentBuilder(this);
         }
     
     }
     
-    class OptionalFieldsStudentBuilder extends RequiredFieldsStudentBuilder {
+    static class OptionalFieldsManuallyCreatedStudentBuilder extends IdManuallyCreatedStudentBuilder {
         
-        protected OptionalFieldsStudentBuilder(RequiredFieldsStudentBuilder requiredFieldsStudentBuilder) {
-            super(requiredFieldsStudentBuilder);
+        OptionalFieldsManuallyCreatedStudentBuilder(@Nonnull IdManuallyCreatedStudentBuilder builder) {
+            super(builder);
         }
         
         /* -------------------------------------------------- Buddies -------------------------------------------------- */
@@ -94,7 +96,7 @@ public class StudentBuilder {
         @Pure
         @Chainable
         // With @Captured annotation!
-        public @Nonnull StudentBuilder withBuddies(@Captured @Nonnull @NonNullableElements @NonFrozen List<Student> buddies) {
+        public @Nonnull OptionalFieldsManuallyCreatedStudentBuilder withBuddies(@Captured @Nonnull @NonNullableElements @NonFrozen List<Student> buddies) {
             this.buddies = buddies;
             return this;
         }
@@ -102,31 +104,25 @@ public class StudentBuilder {
         /* -------------------------------------------------- Build -------------------------------------------------- */
         
         public @Nonnull Student build() {
-            //return new GeneratedStudent(name, ID, buddies);
-            return null;
+            return new ManuallyGeneratedStudent(name, ID, buddies);
         }
         
     }
    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected StudentBuilder() {}
-    
     // Rather have a public constructor with all the fields as parameters for conversion recovery? Or make it private so that no one else calls it?
-    public StudentBuilder(@Nonnull Object[] fieldValues) {
+    public ManuallyCreatedStudentBuilder(@Nonnull Object[] fieldValues) {
         // TODO: Cast and assign the elements to the fields.
     }
     
     @Pure
-    public static @Nonnull StudentBuilder get() {
-        return new StudentBuilder();
+    public static @Nonnull IdManuallyCreatedStudentBuilder withName(@Nonnull String name) {
+        return new NameManuallyCreatedStudentBuilder().withName(name);
     }
     
-    /* -------------------------------------------------- Builder -------------------------------------------------- */
-    
-    @Pure
-    public @Nonnull Student build() {
-        return new ManuallyGeneratedStudent(this);
+    public static void main(String[] args) {
+        //ManuallyCreatedStudentBuilder.withName("bla").withID(1).withBuddies(buddies).build();
+        ManuallyCreatedStudentBuilder.withName("bla").withID(1).build();
     }
-    
 }
