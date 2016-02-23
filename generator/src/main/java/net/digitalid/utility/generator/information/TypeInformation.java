@@ -25,7 +25,6 @@ import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.processor.ProcessingUtility;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 
@@ -141,7 +140,7 @@ public class TypeInformation {
         this.name = element.getSimpleName().toString();
         this.packageElement = (PackageElement) element.getEnclosingElement();
         this.packageName = packageElement.getQualifiedName().toString();
-        this.validators = ProcessingUtility.getCodeGenerators(element, Validator.class, AnnotationValidator.class);
+        this.validators = ProcessingUtility.getAnnotationValidators(element);
         
         boolean generatable = true;
         

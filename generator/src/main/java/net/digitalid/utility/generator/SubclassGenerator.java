@@ -52,18 +52,34 @@ public class SubclassGenerator extends JavaFileGenerator {
                 AnnotationLog.verbose("Generating the field " + QuoteString.inSingle(field.name));
                 addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize(field.name)));
                 addField("private " + (field.isMutable() ? "" : "final ") + importIfPossible(field.type) + " " + field.name);
+                
                 final @Nullable MethodInformation getter = field.getter;
+                assert getter != null : "If the field is generated, the getter was provided.";
                 // TODO: Support method interceptors!
-                if (getter != null) {
+                addAnnotation("@Override");
+                beginMethod(getter.getModifiersForOverridingMethod() + importIfPossible(getter.type) + " " + getter.name + "()");
+                addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + getter + " was called.") + ")");
+                addStatement("final " + importIfPossible(getter.type.getReturnType()) + " result = " + field.name);
+                for (@Nonnull Map.Entry<AnnotationMirror, AnnotationValidator> entry : getter.validators.entrySet()) {
+                    final @Nonnull GeneratedContract generatedContract = entry.getValue().generateContract(getter.element, entry.getKey());
+                    addStatement(importIfPossible(Ensure.class) + ".that(" + generatedContract.getCondition() + ").orThrow(" + generatedContract.getMessageInDoubleQuotes() + ")");
+                }
+                addStatement("return result");
+                endMethod();
+                
+                final @Nullable MethodInformation setter = field.setter;
+                // TODO: Support method interceptors!
+                if (setter != null) {
                     addAnnotation("@Override");
-                    beginMethod(getter.getModifiersForOverridingMethod() + importIfPossible(getter.type) + " " + getter.name + "()");
-                    addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + getter + " was called.") + ")");
-                    addStatement("final " + importIfPossible(getter.type.getReturnType()) + " result = " + field.name);
-                    for (@Nonnull Map.Entry<AnnotationMirror, AnnotationValidator> entry : getter.validators.entrySet()) {
-                        final @Nonnull GeneratedContract generatedContract = entry.getValue().generateContract(getter.element, entry.getKey());
-                        addStatement(importIfPossible(Ensure.class) + ".that(" + generatedContract.getCondition() + ").orThrow(" + generatedContract.getMessageInDoubleQuotes() + ")");
+                    beginMethod(setter.getModifiersForOverridingMethod() + "void " + setter.name + importingTypeVisitor.getParameterDeclaration(setter.type, setter.element));
+                    addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + setter + " was called.") + ")");
+                    for (@Nonnull VariableElement parameter : setter.element.getParameters()) {
+                        for (@Nonnull Map.Entry<AnnotationMirror, AnnotationValidator> entry : ProcessingUtility.getAnnotationValidators(parameter).entrySet()) {
+                            final @Nonnull GeneratedContract generatedContract = entry.getValue().generateContract(parameter, entry.getKey());
+                            addStatement(importIfPossible(Require.class) + ".that(" + generatedContract.getCondition() + ").orThrow(" + generatedContract.getMessageInDoubleQuotes() + ")");
+                        }
+                        addStatement("this." + field.name + " = " + parameter.getSimpleName());
                     }
-                    addStatement("return result");
                     endMethod();
                 }
             }
