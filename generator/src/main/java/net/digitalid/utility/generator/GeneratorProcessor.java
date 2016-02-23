@@ -61,7 +61,7 @@ public class GeneratorProcessor extends CustomProcessor {
         final @Nonnull TypeInformation typeInformation = TypeInformation.forType(typeElement);
         if (typeInformation.generatable) {
             SubclassGenerator.generateSubclassOf(typeInformation);
-//            BuilderGenerator.generateBuilderFor(typeInformation);
+            BuilderGenerator.generateBuilderFor(typeInformation);
         }
         return typeInformation.generatable;
     }

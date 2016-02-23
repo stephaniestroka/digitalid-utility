@@ -28,75 +28,55 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  */
 @Mutable
 @Generated(value = {"net.digitalid.utility.generator.processor.GeneratorProcessor"}, date = "2016-02-10T21:39:49.202+0100")
-public class ManuallyCreatedStudentBuilder {
+public class ManuallyCreatedStudentBuilder2 {
     
-    static class NameManuallyCreatedStudentBuilder {
+    interface NameManuallyCreatedStudentBuilder {
+        public @Nonnull IdManuallyCreatedStudentBuilder withName(@Nonnull String name);
+    }
     
-        NameManuallyCreatedStudentBuilder() {
-        }
-        
-        NameManuallyCreatedStudentBuilder(@Nonnull NameManuallyCreatedStudentBuilder builder) {
-            this.name = builder.name;
-        }
+    interface IdManuallyCreatedStudentBuilder {
+        public @Nonnull ManuallyCreatedStudentFieldsBuilder withId(@Nonnull int id);
+    }
+    
+    static class ManuallyCreatedStudentFieldsBuilder implements NameManuallyCreatedStudentBuilder, IdManuallyCreatedStudentBuilder {
         
         /* -------------------------------------------------- Name -------------------------------------------------- */
     
         @Nonnull
         @MaxSize(64)
-        String name;
+        private String name;
     
         @Pure
         @Chainable
-        public
-        @Nonnull
-        IdManuallyCreatedStudentBuilder withName(@Nonnull @MaxSize(64) String name) {
+        public @Nonnull ManuallyCreatedStudentFieldsBuilder withName(@Nonnull @MaxSize(64) String name) {
             Require.that(name != null).orThrow("The name may not be null.");
             Require.that(name.length() <= 64).orThrow("The length of the name may be at most 64 character.");
         
             this.name = name;
-            return new IdManuallyCreatedStudentBuilder(this);
+            return this;
         }
     
-    }
-    
-    static class IdManuallyCreatedStudentBuilder extends NameManuallyCreatedStudentBuilder {
-        
-        IdManuallyCreatedStudentBuilder(@Nonnull NameManuallyCreatedStudentBuilder builder) {
-            super(builder);
-        }
-    
-        IdManuallyCreatedStudentBuilder(@Nonnull IdManuallyCreatedStudentBuilder builder) {
-            super(builder);
-            this.ID = builder.ID;
-        }
-        
         /* -------------------------------------------------- ID -------------------------------------------------- */
         
-        @Positive Integer ID;
+        @Positive 
+        private Integer ID;
         
         @Pure
         @Chainable
-        public @Nonnull OptionalFieldsManuallyCreatedStudentBuilder withID(@Positive int ID) {
+        public @Nonnull ManuallyCreatedStudentFieldsBuilder withId(@Positive int ID) {
             this.ID = ID;
-            return new OptionalFieldsManuallyCreatedStudentBuilder(this);
+            return this;
         }
     
-    }
-    
-    static class OptionalFieldsManuallyCreatedStudentBuilder extends IdManuallyCreatedStudentBuilder {
-        
-        OptionalFieldsManuallyCreatedStudentBuilder(@Nonnull IdManuallyCreatedStudentBuilder builder) {
-            super(builder);
-        }
-        
         /* -------------------------------------------------- Buddies -------------------------------------------------- */
     
-        @Nonnull @NonNullableElements @NonFrozen List<Student> buddies;
+        @Nonnull @NonNullableElements @NonFrozen 
+        private List<Student> buddies;
         
         @Pure
         @Chainable
         // With @Captured annotation!
-        public @Nonnull OptionalFieldsManuallyCreatedStudentBuilder withBuddies(@Captured @Nonnull @NonNullableElements @NonFrozen List<Student> buddies) {
+        public @Nonnull ManuallyCreatedStudentFieldsBuilder withBuddies(@Captured @Nonnull @NonNullableElements @NonFrozen List<Student> buddies) {
             this.buddies = buddies;
             return this;
         }
@@ -112,17 +92,17 @@ public class ManuallyCreatedStudentBuilder {
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     // Rather have a public constructor with all the fields as parameters for conversion recovery? Or make it private so that no one else calls it?
-    public ManuallyCreatedStudentBuilder(@Nonnull Object[] fieldValues) {
+    public ManuallyCreatedStudentBuilder2(@Nonnull Object[] fieldValues) {
         // TODO: Cast and assign the elements to the fields.
     }
     
     @Pure
     public static @Nonnull IdManuallyCreatedStudentBuilder withName(@Nonnull String name) {
-        return new NameManuallyCreatedStudentBuilder().withName(name);
+        return new ManuallyCreatedStudentFieldsBuilder().withName(name);
     }
     
     public static void main(String[] args) {
         //ManuallyCreatedStudentBuilder.withName("bla").withID(1).withBuddies(buddies).build();
-        ManuallyCreatedStudentBuilder.withName("bla").withID(1).build();
+        ManuallyCreatedStudentBuilder2.withName("bla").withId(1).build();
     }
 }

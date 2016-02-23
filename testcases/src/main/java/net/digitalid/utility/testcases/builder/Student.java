@@ -1,7 +1,11 @@
 package net.digitalid.utility.testcases.builder;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
@@ -34,8 +38,8 @@ public abstract class Student /* implements Convertible */ {
     // @Default("0)
     public abstract @Positive int getID();
     
-//    @Pure
-//    public abstract @Nonnull @NonNullableElements @NonFrozen ReadOnlyList<Student> getBuddies();
+    @Pure
+    public abstract @Nonnull @NonNullableElements @NonFrozen List<Student> getBuddies();
     
     @Pure
     // @Ignore
@@ -45,7 +49,7 @@ public abstract class Student /* implements Convertible */ {
     
     /* -------------------------------------------------- Convertible -------------------------------------------------- */
     
-    @Pure
-    public abstract @Nonnull Object[] getFieldValues();
+/*    @Pure
+    public abstract @Nonnull Object[] getFieldValues();*/
     
 }

@@ -34,7 +34,18 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
-import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.*;
+import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.BLOCK;
+import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.CLASS;
+import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.CONSTRUCTOR;
+import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.ELSE;
+import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.ELSE_IF;
+import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.FOR_LOOP;
+import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.IF;
+import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.INTERFACE;
+import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.JAVADOC;
+import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.METHOD;
+import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.NONE;
+import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.WHILE_LOOP;
 
 /**
  * This class generates Java source files during annotation processing.
@@ -156,6 +167,7 @@ public class JavaFileGenerator extends FileGenerator {
     protected boolean addImport(@Nonnull String qualifiedName) {
         requireNotWritten();
         
+        // TODO: add precondition: The qualifiedName must be fully qualified.
         final @Nonnull String packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
         if (packageName.equals("java.lang") || packageName.equals(getPackageName())) { return false; }
         
@@ -261,7 +273,7 @@ public class JavaFileGenerator extends FileGenerator {
      */
     @Immutable
     public static enum CodeBlock {
-        NONE(""), JAVADOC(" * "), CLASS(false), BLOCK(true), CONSTRUCTOR(true), METHOD(true), IF(true), ELSE(true), ELSE_IF(true), FOR_LOOP(true), WHILE_LOOP(true);
+        NONE(""), JAVADOC(" * "), CLASS(false), INTERFACE(false), BLOCK(true), CONSTRUCTOR(true), METHOD(true), IF(true), ELSE(true), ELSE_IF(true), FOR_LOOP(true), WHILE_LOOP(true);
         
         private final @Nonnull String indentation;
         
@@ -518,6 +530,12 @@ public class JavaFileGenerator extends FileGenerator {
     public void endMethod() {
         endBlock(METHOD);
         addEmptyLine();
+    }
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn({CLASS, INTERFACE})
+    public void addMethodDeclaration(@Nonnull String declaration) {
+        addCodeLineWithIndentation(declaration + ";");
     }
     
     /* -------------------------------------------------- If -------------------------------------------------- */

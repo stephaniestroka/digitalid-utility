@@ -249,11 +249,11 @@ public class TypeInformation {
             if (fieldInformation != null) {
                 final @Nullable VariableElement field = fieldInformation.field;
                 assert field != null : "The value is set for all accessible fields.";
-                representingFields.add(FieldInformation.forField(type, parameter, field));
+                representingFields.add(FieldInformation.forField(parameter, field));
             } else {
                 final @Nullable MethodInformation getter = implementedGetters.get(parameterName);
                 if (getter != null) {
-                    representingFields.add(FieldInformation.forField(type, parameter, getter));
+                    representingFields.add(FieldInformation.forField(parameter, getter));
                 } else if (recoverMethod == null || abstractGetters.get(parameterName) == null) {
                     AnnotationLog.information("Can neither access a field nor a getter for the required parameter", SourcePosition.of(parameter));
                     generatable = false;
