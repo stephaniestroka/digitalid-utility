@@ -17,6 +17,7 @@ import javax.lang.model.type.TypeMirror;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.annotations.DefaultValue;
+import net.digitalid.utility.generator.information.NonTypeInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
@@ -35,7 +36,15 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
  * @see SubclassGenerator
  * @see BuilderGenerator
  */
-public class FieldInformation {
+public interface FieldInformation extends NonTypeInformation {
+    
+    /* -------------------------------------------------- Mutability -------------------------------------------------- */
+    
+    /**
+     * Returns whether this field is mutable.
+     */
+    @Pure
+    public boolean isMutable();
     
     public final boolean generated;
     

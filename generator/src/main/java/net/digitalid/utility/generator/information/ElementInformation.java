@@ -107,6 +107,14 @@ public interface ElementInformation {
     @Pure
     public boolean isFinal();
     
+    /* -------------------------------------------------- Validators -------------------------------------------------- */
+    
+    /**
+     * Returns the validators declared on the represented {@link #getElement() element}.
+     */
+    @Pure
+    public @Nonnull @NonNullableElements Map<AnnotationMirror, AnnotationValidator> getValidators();
+    
     /* -------------------------------------------------- Annotations -------------------------------------------------- */
     
     /**
@@ -120,13 +128,5 @@ public interface ElementInformation {
      */
     @Pure
     public boolean hasAnnotation(@Nonnull Class<? extends Annotation> annotationType);
-    
-    /* -------------------------------------------------- Validators -------------------------------------------------- */
-    
-    /**
-     * Returns the validators declared on the represented {@link #getElement() element}.
-     */
-    @Pure
-    public @Nonnull @NonNullableElements Map<AnnotationMirror, AnnotationValidator> getValidators();
     
 }

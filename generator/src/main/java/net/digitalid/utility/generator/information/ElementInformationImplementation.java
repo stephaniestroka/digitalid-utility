@@ -2,6 +2,8 @@ package net.digitalid.utility.generator.information;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,12 +14,18 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.type.TypeMirror;
 
+import net.digitalid.utility.generator.information.type.TypeInformation;
+import net.digitalid.utility.logging.processing.AnnotationProcessing;
+import net.digitalid.utility.processor.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
- * Description.
+ * This class implements the {@link ElementInformation} interface.
+ * 
+ * @see NonTypeInformationImplementation
+ * @see TypeInformation
  */
 public abstract class ElementInformationImplementation implements ElementInformation {
     
@@ -114,22 +122,6 @@ public abstract class ElementInformationImplementation implements ElementInforma
         return getModifiers().contains(Modifier.FINAL);
     }
     
-    /* -------------------------------------------------- Annotations -------------------------------------------------- */
-    
-    private final @Nonnull @NonNullableElements Map<String, ? extends AnnotationMirror> annotations;
-    
-    @Pure
-    @Override
-    public @Nonnull @NonNullableElements Collection<? extends AnnotationMirror> getAnnotations() {
-        return annotations.values();
-    }
-    
-    @Pure
-    @Override
-    public boolean hasAnnotation(@Nonnull Class<? extends Annotation> annotationType) {
-        return annotations.containsKey(annotationType.getCanonicalName());
-    }
-    
     /* -------------------------------------------------- Validators -------------------------------------------------- */
     
     private final @Nonnull @NonNullableElements Map<AnnotationMirror, AnnotationValidator> validators;
@@ -140,10 +132,38 @@ public abstract class ElementInformationImplementation implements ElementInforma
         return validators;
     }
     
+    /* -------------------------------------------------- Annotations -------------------------------------------------- */
+    
+    private final @Nonnull @NonNullableElements Map<String, AnnotationMirror> annotations;
+    
+    @Pure
+    @Override
+    public @Nonnull @NonNullableElements Collection<AnnotationMirror> getAnnotations() {
+        return annotations.values();
+    }
+    
+    @Pure
+    @Override
+    public boolean hasAnnotation(@Nonnull Class<? extends Annotation> annotationType) {
+        return annotations.containsKey(annotationType.getCanonicalName());
+    }
+    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ElementInformationImplementation() {
-        // TODO
+    protected ElementInformationImplementation(@Nonnull Element element, @Nonnull TypeMirror type) {
+        this.element = element;
+        this.name = element.getSimpleName().toString();
+        this.type = type;
+        this.packageElement = AnnotationProcessing.getElementUtils().getPackageOf(element);
+        this.packageName = packageElement.getQualifiedName().toString();
+        this.modifiers = Collections.unmodifiableSet(element.getModifiers());
+        this.validators = ProcessingUtility.getAnnotationValidators(element);
+        
+        final @Nonnull @NonNullableElements Map<String, AnnotationMirror> annotations = new LinkedHashMap<>();
+        for (@Nonnull AnnotationMirror annotationMirror : AnnotationProcessing.getElementUtils().getAllAnnotationMirrors(element)) {
+            annotations.put(ProcessingUtility.getQualifiedName(annotationMirror), annotationMirror);
+        }
+        this.annotations = Collections.unmodifiableMap(annotations);
     }
     
     /* -------------------------------------------------- Object -------------------------------------------------- */
@@ -151,7 +171,7 @@ public abstract class ElementInformationImplementation implements ElementInforma
     @Pure
     @Override
     public @Nonnull String toString() {
-        return type.toString(); // TODO: Improve here or in subclasses!
+        return element.getKind().toString().toLowerCase() + " " + name;
     }
     
 }

@@ -1,18 +1,15 @@
 package net.digitalid.utility.generator.information.method;
 
-import java.lang.annotation.Annotation;
-import java.util.Collections;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 
 import net.digitalid.utility.contracts.Require;
@@ -22,117 +19,106 @@ import net.digitalid.utility.generator.annotations.Recover;
 import net.digitalid.utility.generator.information.NonFieldInformation;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.processor.ProcessingUtility;
-import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
- * This class collects the relevant information about a method for generating a subclass.
+ * This class collects the relevant information about a method for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  * 
  * @see SubclassGenerator
  */
 public class MethodInformation extends ExecutableInformation implements NonFieldInformation {
     
-    /* -------------------------------------------------- Method -------------------------------------------------- */
-    
-    /**
-     * Stores the underlying method.
-     */
-    public final @Nonnull ExecutableElement element;
-    
-    /**
-     * Stores the name of the underlying method.
-     */
-    public final @Nonnull String name;
-    
-    @Pure
-    @Override
-    public @Nonnull String toString() {
-        return QuoteString.inSingle(name);
-    }
-    
     /* -------------------------------------------------- Type -------------------------------------------------- */
     
     /**
-     * Stores the type of the underlying method.
+     * Returns whether this method declares its own generic parameters.
      */
-    public final @Nonnull ExecutableType type;
-    
     @Pure
     public boolean isGeneric() {
-        return !type.getTypeVariables().isEmpty();
-    }
-    
-    /* -------------------------------------------------- Exceptions -------------------------------------------------- */
-    
-    @Pure
-    public boolean throwsExceptions() {
-        return !element.getThrownTypes().isEmpty();
+        return !getType().getTypeVariables().isEmpty();
     }
     
     /* -------------------------------------------------- Return Type -------------------------------------------------- */
     
+    /**
+     * Returns whether this method has the given return type.
+     */
     @Pure
     public boolean hasReturnType(@Nonnull String desiredTypeName) {
-        final @Nonnull String returnTypeName = element.getReturnType().toString();
-        AnnotationLog.verbose("Return type: " + QuoteString.inSingle(returnTypeName) + ", desired type:" + QuoteString.inSingle(desiredTypeName));
+        final @Nonnull String returnTypeName = getElement().getReturnType().toString();
+        AnnotationLog.verbose("Return type: $, desired type: $", returnTypeName, desiredTypeName);
         return returnTypeName.equals(desiredTypeName);
     }
     
+    /**
+     * Returns whether this method has the given return type.
+     */
     @Pure
     public boolean hasReturnType(@Nonnull Class<?> type) {
         return hasReturnType(type.getCanonicalName());
     }
     
+    /**
+     * Returns whether this method has a return type (does not return void).
+     */
     @Pure
     public boolean hasReturnType() {
-        return element.getReturnType().getKind() != TypeKind.VOID;
+        return getElement().getReturnType().getKind() != TypeKind.VOID;
     }
     
     /* -------------------------------------------------- Getters and Setters -------------------------------------------------- */
     
+    /**
+     * Returns whether this method is a getter.
+     */
     @Pure
     public boolean isGetter() {
-        return !isGeneric() && !throwsExceptions() && !hasParameters() && hasReturnType() && (name.startsWith("get") || (name.startsWith("is") || name.startsWith("has")) && hasReturnType(boolean.class));
-    }
-    
-    @Pure
-    public boolean isSetter() {
-        return !isGeneric() && !throwsExceptions() && hasSingleParameter() && !hasReturnType() && name.startsWith("set");
+        return !isGeneric() && !throwsExceptions() && !hasParameters() && hasReturnType() && (getName().startsWith("get") || (getName().startsWith("is") || getName().startsWith("has")) && hasReturnType(boolean.class));
     }
     
     /**
+     * Returns whether this method is a setter.
+     */
+    @Pure
+    public boolean isSetter() {
+        return !isGeneric() && !throwsExceptions() && hasSingleParameter() && !hasReturnType() && getName().startsWith("set");
+    }
+    
+    /**
+     * Returns the name of the field that corresponds to this getter or setter method.
+     * 
      * @require isGetter() || isSetter() : "The method is neither a getter nor a setter.";
      */
     @Pure
     protected @Nonnull String getFieldName() {
-        Require.that(isGetter() || isSetter()).orThrow("The method " + QuoteString.inSingle(name) + " is neither a getter nor a setter.");
+        Require.that(isGetter() || isSetter()).orThrow("The method $ is neither a getter nor a setter.", getName());
         
-        return StringCase.lowerCaseFirstCharacter(name.substring(name.startsWith("is") ? 2 : 3));
+        return StringCase.lowerCaseFirstCharacter(getName().substring(getName().startsWith("is") ? 2 : 3));
     }
     
     /* -------------------------------------------------- Modifiers -------------------------------------------------- */
     
     @Pure
+    @Override
     public boolean isAbstract() {
         return getModifiers().contains(Modifier.ABSTRACT);
     }
     
-    @Pure
-    public boolean isStatic() {
-        return modifiers.contains(Modifier.STATIC);
-    }
-    
+    /**
+     * Returns whether the represented {@link #getElement() element} is synchronized.
+     */
     @Pure
     public boolean isSynchronized() {
-        return modifiers.contains(Modifier.SYNCHRONIZED);
+        return getModifiers().contains(Modifier.SYNCHRONIZED);
     }
     
+    /**
+     * Returns the modifiers for the method that overrides this method.
+     */
     @Pure
     public @Nonnull String getModifiersForOverridingMethod() {
         final @Nonnull StringBuilder result = new StringBuilder();
@@ -144,11 +130,6 @@ public class MethodInformation extends ExecutableInformation implements NonField
     
     /* -------------------------------------------------- Annotations -------------------------------------------------- */
     
-    @Pure
-    public boolean hasAnnotation(@Nonnull Class<? extends Annotation> annotationType) {
-        return ProcessingUtility.getAnnotationMirror(element, annotationType) != null;
-    }
-    
     /**
      * Returns whether the method is annotated with '@Recover'.
      */
@@ -157,33 +138,28 @@ public class MethodInformation extends ExecutableInformation implements NonField
         return hasAnnotation(Recover.class);
     }
     
-    /* -------------------------------------------------- Validators -------------------------------------------------- */
-    
-    /**
-     * Stores the validators that validate the result of the method.
-     */
-    public final @Nonnull @NonNullableElements Map<AnnotationMirror, AnnotationValidator> validators;
-    
     /* -------------------------------------------------- Interceptors -------------------------------------------------- */
     
+    private final @Nonnull @NonNullableElements Map<AnnotationMirror, MethodInterceptor> interceptors;
+    
     /**
-     * Stores the interceptors which intercept the call to this method.
+     * Returns the interceptors that intercept the call to this method.
      */
-    public final @Nonnull @NonNullableElements Map<AnnotationMirror, MethodInterceptor> interceptors;
+    @Pure
+    public @Nonnull @NonNullableElements Map<AnnotationMirror, MethodInterceptor> getInterceptors() {
+        return interceptors;
+    }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected MethodInformation(@Nonnull DeclaredType type, @Nonnull ExecutableElement element) {
-        this.element = element;
-        this.name = element.getSimpleName().toString();
-        this.type = (ExecutableType) AnnotationProcessing.getTypeUtils().asMemberOf(type, element);
-        this.modifiers = Collections.unmodifiableSet(element.getModifiers());
-        this.validators = ProcessingUtility.getAnnotationValidators(element);
-        this.interceptors = ProcessingUtility.getCodeGenerators(element, Interceptor.class, MethodInterceptor.class);
-        this.packageElement = (PackageElement) element.getEnclosingElement().getEnclosingElement();
-        this.packageName = packageElement.getQualifiedName().toString();
+    protected MethodInformation(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType) {
+        super(element, containingType);
         
-        if (isPartOfDigitalIDLibrary()) {
+        Require.that(element.getKind() == ElementKind.METHOD).orThrow("The element $ has to be a method.", SourcePosition.of(element));
+        
+        this.interceptors = ProcessingUtility.getCodeGenerators(element, Interceptor.class, MethodInterceptor.class);
+        
+        if (isDeclaredInDigitalIDLibrary()) {
             if (isGetter() && !hasAnnotation(Pure.class)) { AnnotationLog.error("A getter has to be '@Pure':", SourcePosition.of(element)); }
             if (isSetter() && hasAnnotation(Pure.class)) { AnnotationLog.error("A setter may not be '@Pure':", SourcePosition.of(element)); }
         }
@@ -201,11 +177,13 @@ public class MethodInformation extends ExecutableInformation implements NonField
     }
     
     /**
-     * Returns the method information for the given method element.
+     * Returns the method information of the given method element and containing type.
+     * 
+     * @require element.getKind() == ElementKind.METHOD : "The element has to be a method.";
      */
     @Pure
-    public static @Nonnull MethodInformation forMethod(@Nonnull DeclaredType type, @Nonnull ExecutableElement element) {
-        return new MethodInformation(type, element);
+    public static @Nonnull MethodInformation of(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType) {
+        return new MethodInformation(element, containingType);
     }
     
 }
