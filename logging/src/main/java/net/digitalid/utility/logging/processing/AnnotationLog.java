@@ -14,6 +14,7 @@ import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
+import net.digitalid.utility.string.FormatString;
 
 /**
  * This class makes it easier to log messages during annotation processing.
@@ -52,21 +53,22 @@ public class AnnotationLog {
     
     /**
      * Logs the given non-nullable message with the given nullable position at the given non-nullable level.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    private static void log(Level level, CharSequence message, SourcePosition position) {
+    private static void log(Level level, CharSequence message, SourcePosition position, Object... arguments) {
         Require.that(level != null).orThrow("The level may not be null.");
         Require.that(message != null).orThrow("The message may not be null.");
         
-        Logger.log(level, message.toString() + (position != null ? " " + position : ""), null);
+        Logger.log(level, message + (position != null ? " " + position : ""), null, arguments);
         if (level.getValue() >= Level.INFORMATION.getValue() && AnnotationProcessing.environment.isSet()) {
             if (position == null) {
-                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), message);
+                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments));
             } else if (position.getAnnotationValue() != null) {
-                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), message, position.getElement(), position.getAnnotationMirror(), position.getAnnotationValue());
+                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement(), position.getAnnotationMirror(), position.getAnnotationValue());
             } else if (position.getAnnotationMirror() != null) {
-                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), message, position.getElement(), position.getAnnotationMirror());
+                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement(), position.getAnnotationMirror());
             } else {
-                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), message, position.getElement());
+                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement());
             }
         }
     }
@@ -75,15 +77,17 @@ public class AnnotationLog {
     
     /**
      * Logs the given non-nullable message with the given nullable position as an error.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void error(CharSequence message, SourcePosition position) {
+    public static void error(CharSequence message, SourcePosition position, Object... arguments) {
         log(Level.ERROR, message, position);
     }
     
     /**
      * Logs the given non-nullable message as an error.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void error(CharSequence message) {
+    public static void error(CharSequence message, Object... arguments) {
         log(Level.ERROR, message, null);
     }
     
@@ -91,15 +95,17 @@ public class AnnotationLog {
     
     /**
      * Logs the given non-nullable message with the given nullable position as a warning.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void warning(CharSequence message, SourcePosition position) {
+    public static void warning(CharSequence message, SourcePosition position, Object... arguments) {
         log(Level.WARNING, message, position);
     }
     
     /**
      * Logs the given non-nullable message as a warning.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void warning(CharSequence message) {
+    public static void warning(CharSequence message, Object... arguments) {
         log(Level.WARNING, message, null);
     }
     
@@ -107,15 +113,17 @@ public class AnnotationLog {
     
     /**
      * Logs the given non-nullable message with the given nullable position as information.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void information(CharSequence message, SourcePosition position) {
+    public static void information(CharSequence message, SourcePosition position, Object... arguments) {
         log(Level.INFORMATION, message, position);
     }
     
     /**
      * Logs the given non-nullable message as information.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void information(CharSequence message) {
+    public static void information(CharSequence message, Object... arguments) {
         log(Level.INFORMATION, message, null);
     }
     
@@ -123,15 +131,17 @@ public class AnnotationLog {
     
     /**
      * Logs the given non-nullable message with the given nullable position for debugging.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void debugging(CharSequence message, SourcePosition position) {
+    public static void debugging(CharSequence message, SourcePosition position, Object... arguments) {
         log(Level.DEBUGGING, message, position);
     }
     
     /**
      * Logs the given non-nullable message for debugging.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void debugging(CharSequence message) {
+    public static void debugging(CharSequence message, Object... arguments) {
         log(Level.DEBUGGING, message, null);
     }
     
@@ -139,15 +149,17 @@ public class AnnotationLog {
     
     /**
      * Logs the given non-nullable message with the given nullable position only in verbose mode.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void verbose(CharSequence message, SourcePosition position) {
+    public static void verbose(CharSequence message, SourcePosition position, Object... arguments) {
         log(Level.VERBOSE, message, position);
     }
     
     /**
      * Logs the given non-nullable message only in verbose mode.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void verbose(CharSequence message) {
+    public static void verbose(CharSequence message, Object... arguments) {
         log(Level.VERBOSE, message, null);
     }
     
@@ -165,7 +177,7 @@ public class AnnotationLog {
         
         for (TypeElement annotation : annotations) {
             for (Element element : roundEnvironment.getElementsAnnotatedWith(annotation)) {
-                AnnotationLog.information("Found '@" + annotation.getSimpleName() + "' on", SourcePosition.of(element));
+                AnnotationLog.information("Found $ on", SourcePosition.of(element), "@" + annotation.getSimpleName());
             }
         }
     }
@@ -179,7 +191,7 @@ public class AnnotationLog {
         Require.that(roundEnvironment != null).orThrow("The round environment may not be null.");
         
         for (Element rootElement : roundEnvironment.getRootElements()) {
-            AnnotationLog.information("Found the " + rootElement.getKind().toString().toLowerCase() + " '" + rootElement.asType().toString() + "'.");
+            AnnotationLog.information("Found the " + rootElement.getKind().toString().toLowerCase() + " $.", rootElement.asType());
         }
     }
     

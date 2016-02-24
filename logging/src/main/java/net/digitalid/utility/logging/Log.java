@@ -11,15 +11,17 @@ public final class Log {
     
     /**
      * Logs the given message and throwable as an error.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void error(String message, Throwable throwable, Object... arguments) {
+    public static void error(CharSequence message, Throwable throwable, Object... arguments) {
         Logger.log(Level.ERROR, message, throwable);
     }
     
     /**
      * Logs the given message as an error.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void error(String message, Object... arguments) {
+    public static void error(CharSequence message, Object... arguments) {
         Logger.log(Level.ERROR, message, null);
     }
     
@@ -27,15 +29,17 @@ public final class Log {
     
     /**
      * Logs the given message and throwable as a warning.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void warning(String message, Throwable throwable, Object... arguments) {
+    public static void warning(CharSequence message, Throwable throwable, Object... arguments) {
         Logger.log(Level.WARNING, message, throwable);
     }
     
     /**
      * Logs the given message as a warning.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void warning(String message, Object... arguments) {
+    public static void warning(CharSequence message, Object... arguments) {
         Logger.log(Level.WARNING, message, null);
     }
     
@@ -43,15 +47,17 @@ public final class Log {
     
     /**
      * Logs the given message and throwable as information.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void information(String message, Throwable throwable, Object... arguments) {
+    public static void information(CharSequence message, Throwable throwable, Object... arguments) {
         Logger.log(Level.INFORMATION, message, throwable);
     }
     
     /**
      * Logs the given message as information.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void information(String message, Object... arguments) {
+    public static void information(CharSequence message, Object... arguments) {
         Logger.log(Level.INFORMATION, message, null);
     }
     
@@ -59,15 +65,17 @@ public final class Log {
     
     /**
      * Logs the given message and throwable for debugging.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void debugging(String message, Throwable throwable, Object... arguments) {
+    public static void debugging(CharSequence message, Throwable throwable, Object... arguments) {
         Logger.log(Level.DEBUGGING, message, throwable);
     }
     
     /**
      * Logs the given message for debugging.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void debugging(String message, Object... arguments) {
+    public static void debugging(CharSequence message, Object... arguments) {
         Logger.log(Level.DEBUGGING, message, null);
     }
     
@@ -75,15 +83,17 @@ public final class Log {
     
     /**
      * Logs the given message and throwable only in verbose mode.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void verbose(String message, Throwable throwable, Object... arguments) {
+    public static void verbose(CharSequence message, Throwable throwable, Object... arguments) {
         Logger.log(Level.VERBOSE, message, throwable);
     }
     
     /**
      * Logs the given message only in verbose mode.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void verbose(String message, Object... arguments) {
+    public static void verbose(CharSequence message, Object... arguments) {
         Logger.log(Level.VERBOSE, message, null);
     }
     

@@ -6,6 +6,7 @@ import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.Version;
+import net.digitalid.utility.string.FormatString;
 
 /**
  * The logger logs messages of various {@link Level levels}.
@@ -41,15 +42,17 @@ public abstract class Logger {
     
     /**
      * Logs the given message and throwable if the given level is greater or equal to the configured level.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      * 
      * @require level != null : "The level may not be null.";
      */
-    public static void log(Level level, String message, Throwable throwable) {
+    public static void log(Level level, CharSequence message, Throwable throwable, Object... arguments) {
         Require.that(level != null).orThrow("The level may not be null.");
         
         if (level.getValue() >= Level.threshold.get().getValue()) {
-            final boolean addNoPeriod = message.endsWith(".") || message.endsWith(":") || message.endsWith("\n");
-            logger.get().log(level, Caller.get(), addNoPeriod ? message : message + ".", throwable);
+            final String originalMessage = message.toString();
+            final boolean addNoPeriod = originalMessage.endsWith(".") || originalMessage.endsWith(":") || originalMessage.endsWith("\n");
+            logger.get().log(level, Caller.get(), FormatString.format(originalMessage, arguments) + (addNoPeriod ? "" : "."), throwable);
         }
     }
     

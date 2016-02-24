@@ -14,18 +14,19 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.util.ElementFilter;
 
+import net.digitalid.utility.functional.string.NonNullableElementConverter;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.string.QuoteString;
-import net.digitalid.utility.functional.string.NonNullableElementConverter;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -58,15 +59,22 @@ public class ProcessingUtility {
     /* -------------------------------------------------- Annotation Mirror -------------------------------------------------- */
     
     /**
+     * Returns the qualified name of the annotation type of the given annotation mirror.
+     */
+    @Pure
+    public static @Nonnull String getQualifiedName(@Nonnull AnnotationMirror annotationMirror) {
+        return ((QualifiedNameable) annotationMirror.getAnnotationType().asElement()).getQualifiedName().toString();
+    }
+    
+    /**
      * Returns the annotation mirror corresponding to the given annotation type of the given element or null if not found.
      */
     @Pure
     public static @Nullable AnnotationMirror getAnnotationMirror(@Nonnull Element element, @Nonnull Class<? extends Annotation> annotationType) {
-        for (@Nonnull AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
-            final @Nonnull TypeElement annotationElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
-            AnnotationLog.verbose("Found the annotation '@" + annotationElement.getSimpleName() + "' on", SourcePosition.of(element));
-            if (annotationElement.getQualifiedName().contentEquals(annotationType.getCanonicalName())) { return annotationMirror; }
+        for (@Nonnull AnnotationMirror annotationMirror : AnnotationProcessing.getElementUtils().getAllAnnotationMirrors(element)) {
+            if (getQualifiedName(annotationMirror).equals(annotationType.getCanonicalName())) { return annotationMirror; }
         }
+        AnnotationLog.debugging("Found no $ annotation on", SourcePosition.of(element), "@" + annotationType.getSimpleName());
         return null;
     }
     
@@ -101,7 +109,8 @@ public class ProcessingUtility {
         final @Nonnull @NonNullableElements Map<AnnotationMirror, G> result = new LinkedHashMap<>();
         for (@Nonnull AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
             final @Nonnull TypeElement annotationElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
-            AnnotationLog.verbose("Found the annotation '@" + annotationElement.getSimpleName() + "' on", SourcePosition.of(element));
+            final @Nonnull String annotationName = "@" + annotationElement.getSimpleName();
+            AnnotationLog.verbose("Found the annotation $ on", SourcePosition.of(element), annotationName);
             final @Nullable AnnotationMirror metaAnnotationMirror = getAnnotationMirror(annotationElement, metaAnnotationType);
             if (metaAnnotationMirror != null) {
                 for (@Nonnull Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> metaAnnotationEntry : metaAnnotationMirror.getElementValues().entrySet()) {
@@ -118,12 +127,12 @@ public class ProcessingUtility {
                                 final @Nonnull G codeGenerator = (G) codeGeneratorImplementationClass.newInstance();
                                 codeGenerator.checkUsage(element, annotationMirror);
                                 result.put(annotationMirror, codeGenerator);
-                                AnnotationLog.debugging("Found the code generator '@" + annotationElement.getSimpleName() + "' for", SourcePosition.of(element));
+                                AnnotationLog.debugging("Found the code generator $ for", SourcePosition.of(element), annotationName);
                             } else {
-                                AnnotationLog.error("The code generator '@" + annotationElement.getSimpleName() + "' is not assignable to '" + codeGeneratorImplementationClass.getCanonicalName() + "':", SourcePosition.of(element));
+                                AnnotationLog.error("The code generator $ is not assignable to $:", SourcePosition.of(element), annotationName, codeGeneratorImplementationClass.getCanonicalName());
                             }
                         } catch (@Nonnull ClassNotFoundException | InstantiationException | IllegalAccessException exception) {
-                            AnnotationLog.error("Could not instantiate the code generator " + QuoteString.inSingle(codeGeneratorImplementationBinaryName) + " for", SourcePosition.of(element));
+                            AnnotationLog.error("Could not instantiate the code generator $ for", SourcePosition.of(element), codeGeneratorImplementationBinaryName);
                             Log.error("Problem:", exception);
                         }
                     } else {
@@ -153,7 +162,7 @@ public class ProcessingUtility {
         final @Nonnull List<VariableElement> fields = new LinkedList<>();
         for (@Nonnull VariableElement field : ElementFilter.fieldsIn(classElement.getEnclosedElements())) {
             final @Nonnull String fieldTypeName = AnnotationProcessing.getTypeUtils().erasure(field.asType()).toString();
-            AnnotationLog.verbose("Found with the type '" + fieldTypeName + "' the field", SourcePosition.of(field));
+            AnnotationLog.verbose("Found with the type $ the field", SourcePosition.of(field), fieldTypeName);
             if (fieldTypeName.equals(fieldType.getCanonicalName())) { fields.add(field); }
         }
         return fields;
@@ -167,13 +176,13 @@ public class ProcessingUtility {
     public static @Nullable VariableElement getUniquePublicStaticFieldOfType(@Nonnull TypeElement classElement, @Nonnull Class<?> fieldType) {
         final @Nonnull List<VariableElement> fields = getFieldsOfType(classElement, fieldType);
         if (fields.size() != 1) {
-            AnnotationLog.warning("There is not exactly one field of type '" + fieldType.getCanonicalName()+ "' in the class", SourcePosition.of(classElement));
+            AnnotationLog.warning("There is not exactly one field of type $ in the class", SourcePosition.of(classElement), fieldType.getCanonicalName());
         } else {
             final @Nonnull VariableElement field = fields.get(0);
             if (!fields.get(0).getModifiers().contains(Modifier.PUBLIC)) {
-                AnnotationLog.warning("The field of type '" + fieldType.getCanonicalName()+ "' has to be public:", SourcePosition.of(field));
+                AnnotationLog.warning("The field of type $ has to be public:", SourcePosition.of(field), fieldType.getCanonicalName());
             } else if (!fields.get(0).getModifiers().contains(Modifier.STATIC)) {
-                AnnotationLog.warning("The field of type '" + fieldType.getCanonicalName()+ "' has to be static:", SourcePosition.of(field));
+                AnnotationLog.warning("The field of type $ has to be static:", SourcePosition.of(field), fieldType.getCanonicalName());
             } else {
                 return field;
             }

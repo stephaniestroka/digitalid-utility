@@ -8,7 +8,7 @@ public class FormatString {
     /**
      * Formats the given non-nullable message by replacing each dollar sign with the corresponding argument surrounded by the given quotation marks.
      */
-    public static String format(String message, QuoteString.Mark mark, Object... arguments) {
+    public static String format(CharSequence message, QuoteString.Mark mark, Object... arguments) {
         final StringBuilder string = new StringBuilder(message);
         int stringIndex = 0;
         int argumentIndex = 0;
@@ -38,7 +38,7 @@ public class FormatString {
     /**
      * Formats the given non-nullable message by replacing each dollar sign with the corresponding argument in single quotes.
      */
-    public static String format(String message, Object... arguments) {
+    public static String format(CharSequence message, Object... arguments) {
         return format(message, QuoteString.Mark.SINGLE, arguments);
     }
     

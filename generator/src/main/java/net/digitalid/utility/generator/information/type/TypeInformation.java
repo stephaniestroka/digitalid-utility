@@ -9,12 +9,10 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
@@ -26,74 +24,65 @@ import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
-import net.digitalid.utility.processor.ProcessingUtility;
-import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
- * This class collects the relevant information about a type for generating a subclass and builder.
- * 
- * @see SubclassGenerator
- * @see BuilderGenerator
+ * This class collects the relevant information about a type for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  */
 public class TypeInformation extends ElementInformationImplementation implements NonFieldInformation {
     
-    /* -------------------------------------------------- Type -------------------------------------------------- */
-    
-    public final @Nonnull TypeElement element;
-    
-    public final @Nonnull DeclaredType type;
-    
-    public final @Nonnull String name;
+    /* -------------------------------------------------- Element -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Nonnull String toString() {
-        return QuoteString.inSingle(name);
+    public @Nonnull TypeElement getElement() {
+        return (TypeElement) super.getElement();
     }
     
-    /* -------------------------------------------------- Package -------------------------------------------------- */
+    /* -------------------------------------------------- Type -------------------------------------------------- */
     
-    public final @Nonnull PackageElement packageElement;
-    
-    public final @Nonnull String packageName;
+    @Pure
+    @Override
+    public @Nonnull DeclaredType getType() {
+        return (DeclaredType) super.getType();
+    }
     
     /* -------------------------------------------------- Subclass -------------------------------------------------- */
     
     @Pure
     public @Nonnull String getSimpleNameOfGeneratedSubclass() {
-        return "Generated" + name;
+        return "Generated" + getName();
     }
     
     @Pure
     public @Nonnull String getQualifiedNameOfGeneratedSubclass() {
-        return packageName + "." + getSimpleNameOfGeneratedSubclass();
+        return getPackageName() + "." + getSimpleNameOfGeneratedSubclass();
     }
     
     /* -------------------------------------------------- Builder -------------------------------------------------- */
     
     @Pure
     public @Nonnull String getSimpleNameOfGeneratedBuilder() {
-        return name + "Builder";
+        return getName() + "Builder";
     }
     
     @Pure
     public @Nonnull String getQualifiedNameOfGeneratedBuilder() {
-        return packageName + "." + getSimpleNameOfGeneratedBuilder();
+        return getPackageName() + "." + getSimpleNameOfGeneratedBuilder();
     }
-    
-    /* -------------------------------------------------- Validators -------------------------------------------------- */
-    
-    /**
-     * Stores the validators that validate the type.
-     */
-    public final @Nonnull @NonNullableElements Map<AnnotationMirror, AnnotationValidator> validators;
     
     /* -------------------------------------------------- Generatable -------------------------------------------------- */
     
-    public final boolean generatable;
+    private final boolean generatable;
+    
+    /**
+     * Returns whether a subclass can be generated for this type.
+     */
+    @Pure
+    public boolean isGeneratable() {
+        return generatable;
+    }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
@@ -139,12 +128,7 @@ public class TypeInformation extends ElementInformationImplementation implements
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     protected TypeInformation(@Nonnull TypeElement element) {
-        this.element = element;
-        this.type = (DeclaredType) element.asType();
-        this.name = element.getSimpleName().toString();
-        this.packageElement = (PackageElement) element.getEnclosingElement();
-        this.packageName = packageElement.getQualifiedName().toString();
-        this.validators = ProcessingUtility.getAnnotationValidators(element);
+        super(element, element.asType());
         
         boolean generatable = true;
         
@@ -294,10 +278,10 @@ public class TypeInformation extends ElementInformationImplementation implements
     }
     
     /**
-     * Returns the type information for the given type element.
+     * Returns the type information of the given type element.
      */
     @Pure
-    public static @Nonnull TypeInformation forType(@Nonnull TypeElement element) {
+    public static @Nonnull TypeInformation of(@Nonnull TypeElement element) {
         return new TypeInformation(element);
     }
     
