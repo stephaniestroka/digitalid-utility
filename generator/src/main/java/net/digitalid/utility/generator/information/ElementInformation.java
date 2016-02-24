@@ -21,11 +21,10 @@ import net.digitalid.utility.validation.annotations.state.Unmodifiable;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
- * This class collects the relevant information about an element for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
+ * This type collects the relevant information about an element for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  * 
  * @see ElementInformationImplementation
- * @see NonFieldInformation
- * @see NonTypeInformation
+ * @see FieldInformation
  */
 public interface ElementInformation {
     
@@ -153,5 +152,7 @@ public interface ElementInformation {
      */
     @Pure
     public boolean hasAnnotation(@Nonnull Class<? extends Annotation> annotationType);
+    
+    // TODO: Implement method to retrieve all annotations including their values as a string. (Determine if there is already somewhere a utility method for that or implement one in ProcessingUtility otherwise.)
     
 }

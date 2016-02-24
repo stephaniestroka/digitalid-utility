@@ -25,9 +25,7 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
 import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
- * This class collects the relevant information about a method for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
- * 
- * @see SubclassGenerator
+ * This type collects the relevant information about a method for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  */
 public class MethodInformation extends ExecutableInformation {
     
@@ -93,7 +91,7 @@ public class MethodInformation extends ExecutableInformation {
      * @require isGetter() || isSetter() : "The method is neither a getter nor a setter.";
      */
     @Pure
-    protected @Nonnull String getFieldName() {
+    public @Nonnull String getFieldName() {
         Require.that(isGetter() || isSetter()).orThrow("The method $ is neither a getter nor a setter.", getName());
         
         return StringCase.lowerCaseFirstCharacter(getName().substring(getName().startsWith("is") ? 2 : 3));

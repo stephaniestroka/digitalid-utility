@@ -15,6 +15,7 @@ import javax.lang.model.element.PackageElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
+import net.digitalid.utility.generator.information.field.FieldInformationImplementation;
 import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
@@ -27,6 +28,7 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
 /**
  * This class implements the {@link ElementInformation} interface.
  * 
+ * @see FieldInformationImplementation
  * @see ExecutableInformation
  * @see TypeInformation
  */

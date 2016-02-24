@@ -10,7 +10,7 @@ import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
- * This class collects the relevant information about a constructor for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
+ * This type collects the relevant information about a constructor for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  */
 public class ConstructorInformation extends ExecutableInformation {
     
