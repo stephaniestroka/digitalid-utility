@@ -25,7 +25,7 @@ import net.digitalid.utility.validation.annotations.type.Utiliy;
 /**
  * The Builder Generator generates a builder class for a given type (through the type information). 
  * For each required field, an interface is generated which holds the setter for the required field. 
- * The setter method is the field name prefixed with "with".
+ * The setter method is the field's name prefixed with "with".
  * An inner class, which represents the builder, implements all interfaces and therefore also implements
  * all setters of the required fields. Optional fields are added to the inner class only. 
  * A static method of one of the required fields, or an optional field if no required fields exist, is created
@@ -48,12 +48,12 @@ public class BuilderGenerator extends JavaFileGenerator {
      * Returns the name of the field builder interface for a given field.
      */
     private @Nonnull String getNameOfFieldBuilder(@Nonnull FieldInformation field) {
-        return StringCase.capitalizeFirstLetters(field.name) + typeInformation.getSimpleNameOfGeneratedBuilder();
+        return StringCase.capitalizeFirstLetters(field.getName()) + typeInformation.getSimpleNameOfGeneratedBuilder();
     }
     
     /**
      * Creates an interface for a given required field. The only declared method is a setter
-     * for the field. The name is generated through the fieldName prefixed with "with".
+     * for the field. The name is generated through the field name prefixed with "with".
      * 
      * @param nextInterface The field setter returns an object with this type, which is the interface
      *                      of the next required field. If no further required field must be set, the 
@@ -63,10 +63,10 @@ public class BuilderGenerator extends JavaFileGenerator {
      */
     private @Nonnull String createInterfaceForField(@Nonnull FieldInformation field, @Nullable String nextInterface) {
         final @Nonnull String interfaceName = getNameOfFieldBuilder(field);
-        final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.name);
-        beginInterface("interface " + interfaceName + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeInformation.type.getTypeArguments()));
+        final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.getName());
+        beginInterface("interface " + interfaceName + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeInformation.getType().getTypeArguments()));
         addAnnotation("@" + importIfPossible(Chainable.class));
-        addMethodDeclaration("public @" + importIfPossible(Nonnull.class) + " " + nextInterface + " " + methodName + "(" + field.type + " " + field.name + ")");
+        addMethodDeclaration("public @" + importIfPossible(Nonnull.class) + " " + nextInterface + " " + methodName + "(" + field.getType() + " " + field.getName() + ")");
         endInterface();
         return interfaceName;
     }
@@ -96,9 +96,9 @@ public class BuilderGenerator extends JavaFileGenerator {
      * Declares and implements the setter for the given field with the given return type and the given returned instance.
      */
     private void addSetterForField(@Nonnull FieldInformation field, @Nonnull String returnType, @Nonnull String returnedInstance) {
-        final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.name);
-        beginMethod("public static " + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeInformation.type.getTypeArguments()) + returnType + " " + methodName + "(" + field.type + " " + field.name + ")");
-        addStatement("return new " + returnedInstance + "()." + methodName + "(" + field.name + ")");
+        final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.getName());
+        beginMethod("public static " + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeInformation.getType().getTypeArguments()) + returnType + " " + methodName + "(" + field.getType() + " " + field.getName() + ")");
+        addStatement("return new " + returnedInstance + "()." + methodName + "(" + field.getName() + ")");
         endMethod();
     }
     
@@ -119,43 +119,41 @@ public class BuilderGenerator extends JavaFileGenerator {
     
     /**
      * Creates a builder that collects all fields and provides a build() method, which returns an instance of the type that the builder builds.
-     * @param nameOfBuilder
-     * @param interfacesForRequiredFields
      */
     protected void createInnerClassForFields(@Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) {
         
         AnnotationLog.debugging("createInnerClassForFields()");
         
-        final List<? extends TypeMirror> typeArguments = typeInformation.type.getTypeArguments();
+        final List<? extends TypeMirror> typeArguments = typeInformation.getType().getTypeArguments();
         
         beginClass("static class " + nameOfBuilder + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeArguments) + (interfacesForRequiredFields.size() == 0 ? "" : " implements " + IterableConverter.toString(interfacesForRequiredFields) + importingTypeVisitor.getTypeVariablesWithoutBounds(typeArguments, false)));
         
         for (@Nonnull FieldInformation field : typeInformation.representingFields) {
             field.getAnnotations();
-            addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize(field.name)));
+            addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize(field.getName())));
             // TODO: Add annotations.
-            addField("private " + field.type + " " + field.name);
-            final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.name);
+            addField("private " + field.getType() + " " + field.getName());
+            final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.getName());
             if (isFieldRequired(field)) {
                 addAnnotation("@" + importIfPossible(Override.class));
             }
             addAnnotation("@" + importIfPossible(Chainable.class));
-            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + nameOfBuilder + " " + methodName + "(" + field.type + " " + field.name + ")");
-            addStatement("this." + field.name + " = " + field.name);
+            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + nameOfBuilder + " " + methodName + "(" + field.getType() + " " + field.getName() + ")");
+            addStatement("this." + field.getName() + " = " + field.getName());
             addStatement("return this");
             endMethod();
         }
         
         addSection("Build");
-        beginMethod("public " + typeInformation.name + " build()");
+        beginMethod("public " + typeInformation.getName() + " build()");
         
-        final @Nonnull @NonNullableElements List<ExecutableElement> constructors = ElementFilter.constructorsIn(typeInformation.element.getEnclosedElements());
+        final @Nonnull @NonNullableElements List<ExecutableElement> constructors = ElementFilter.constructorsIn(typeInformation.getElement().getEnclosedElements());
         if (constructors.size() != 1) {
             AnnotationLog.error("Expected one constructor in generated type:");
         }
         final @Nonnull ExecutableElement constructor = constructors.get(0);
         
-        final @Nonnull ExecutableType type = (ExecutableType) AnnotationProcessing.getTypeUtils().asMemberOf(typeInformation.type, constructor);
+        final @Nonnull ExecutableType type = (ExecutableType) AnnotationProcessing.getTypeUtils().asMemberOf(typeInformation.getType(), constructor);
         addStatement("return new " + typeInformation.getQualifiedNameOfGeneratedSubclass() + importingTypeVisitor.reduceParametersDeclarationToString(type, constructor));
         
         endMethod();
@@ -172,7 +170,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      * a static "get()" method is created, which returns the new builder instance without calling any additional builder setters.
      */
     protected void createStaticEntryMethod(@Nonnull FieldInformation entryField, @Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) {
-        final List<? extends TypeMirror> typeArguments = typeInformation.type.getTypeArguments();
+        final List<? extends TypeMirror> typeArguments = typeInformation.getType().getTypeArguments();
         
         if (interfacesForRequiredFields.size() > 0) {
             final @Nonnull String secondInterface;
@@ -200,12 +198,12 @@ public class BuilderGenerator extends JavaFileGenerator {
      * is generated 
      */
     protected BuilderGenerator(@Nonnull TypeInformation typeInformation) {
-        super(typeInformation.getQualifiedNameOfGeneratedBuilder(), typeInformation.element);
+        super(typeInformation.getQualifiedNameOfGeneratedBuilder(), typeInformation.getElement());
         AnnotationLog.debugging("BuilderGenerator(" + typeInformation + ")");
     
         this.typeInformation = typeInformation;
     
-        beginClass("public class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeInformation.type.getTypeArguments()));
+        beginClass("public class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeInformation.getType().getTypeArguments()));
     
         final @Nonnull @NonNullableElements List<FieldInformation> requiredFields = getRequiredFields();
         final @Nonnull String nameOfBuilder = "Inner" + typeInformation.getSimpleNameOfGeneratedBuilder();
@@ -223,7 +221,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      * Generates a new builder class for the given type information.
      */
     public static void generateBuilderFor(@Nonnull TypeInformation typeInformation) {
-        Require.that(typeInformation.generatable).orThrow("No subclass can be generated for " + typeInformation);
+        Require.that(typeInformation.isGeneratable()).orThrow("No subclass can be generated for " + typeInformation);
         
         AnnotationLog.debugging("generateBuilderFor(" + typeInformation + ")");
         new BuilderGenerator(typeInformation).write();
