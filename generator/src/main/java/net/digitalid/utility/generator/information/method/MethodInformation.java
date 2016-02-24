@@ -16,7 +16,6 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.annotations.Interceptor;
 import net.digitalid.utility.generator.annotations.Recover;
-import net.digitalid.utility.generator.information.NonFieldInformation;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
@@ -30,7 +29,7 @@ import net.digitalid.utility.validation.annotations.method.Pure;
  * 
  * @see SubclassGenerator
  */
-public class MethodInformation extends ExecutableInformation implements NonFieldInformation {
+public class MethodInformation extends ExecutableInformation {
     
     /* -------------------------------------------------- Type -------------------------------------------------- */
     
@@ -101,12 +100,6 @@ public class MethodInformation extends ExecutableInformation implements NonField
     }
     
     /* -------------------------------------------------- Modifiers -------------------------------------------------- */
-    
-    @Pure
-    @Override
-    public boolean isAbstract() {
-        return getModifiers().contains(Modifier.ABSTRACT);
-    }
     
     /**
      * Returns whether the represented {@link #getElement() element} is synchronized.

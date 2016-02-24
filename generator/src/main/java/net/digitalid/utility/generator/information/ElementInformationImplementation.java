@@ -12,19 +12,22 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
+import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.processor.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.state.Unmodifiable;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
  * This class implements the {@link ElementInformation} interface.
  * 
- * @see NonTypeInformationImplementation
+ * @see ExecutableInformation
  * @see TypeInformation
  */
 public abstract class ElementInformationImplementation implements ElementInformation {
@@ -55,6 +58,16 @@ public abstract class ElementInformationImplementation implements ElementInforma
     @Override
     public @Nonnull TypeMirror getType() {
         return type;
+    }
+    
+    /* -------------------------------------------------- Containing Type -------------------------------------------------- */
+    
+    private final @Nonnull DeclaredType containingType;
+    
+    @Pure
+    @Override
+    public @Nonnull DeclaredType getContainingType() {
+        return containingType;
     }
     
     /* -------------------------------------------------- Package -------------------------------------------------- */
@@ -90,11 +103,11 @@ public abstract class ElementInformationImplementation implements ElementInforma
     
     /* -------------------------------------------------- Modifiers -------------------------------------------------- */
     
-    private final @Nonnull @NonNullableElements Set<Modifier> modifiers;
+    private final @Unmodifiable @Nonnull @NonNullableElements Set<Modifier> modifiers;
     
     @Pure
     @Override
-    public @Nonnull @NonNullableElements Set<Modifier> getModifiers() {
+    public @Unmodifiable @Nonnull @NonNullableElements Set<Modifier> getModifiers() {
         return modifiers;
     }
     
@@ -122,6 +135,18 @@ public abstract class ElementInformationImplementation implements ElementInforma
         return getModifiers().contains(Modifier.FINAL);
     }
     
+    @Pure
+    @Override
+    public boolean isStatic() {
+        return getModifiers().contains(Modifier.STATIC);
+    }
+    
+    @Pure
+    @Override
+    public boolean isAbstract() {
+        return getModifiers().contains(Modifier.ABSTRACT);
+    }
+    
     /* -------------------------------------------------- Validators -------------------------------------------------- */
     
     private final @Nonnull @NonNullableElements Map<AnnotationMirror, AnnotationValidator> validators;
@@ -134,11 +159,11 @@ public abstract class ElementInformationImplementation implements ElementInforma
     
     /* -------------------------------------------------- Annotations -------------------------------------------------- */
     
-    private final @Nonnull @NonNullableElements Map<String, AnnotationMirror> annotations;
+    private final @Unmodifiable @Nonnull @NonNullableElements Map<String, AnnotationMirror> annotations;
     
     @Pure
     @Override
-    public @Nonnull @NonNullableElements Collection<AnnotationMirror> getAnnotations() {
+    public @Unmodifiable @Nonnull @NonNullableElements Collection<AnnotationMirror> getAnnotations() {
         return annotations.values();
     }
     
@@ -150,10 +175,11 @@ public abstract class ElementInformationImplementation implements ElementInforma
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ElementInformationImplementation(@Nonnull Element element, @Nonnull TypeMirror type) {
+    protected ElementInformationImplementation(@Nonnull Element element, @Nonnull TypeMirror type, @Nonnull DeclaredType containingType) {
         this.element = element;
         this.name = element.getSimpleName().toString();
         this.type = type;
+        this.containingType = containingType;
         this.packageElement = AnnotationProcessing.getElementUtils().getPackageOf(element);
         this.packageName = packageElement.getQualifiedName().toString();
         this.modifiers = Collections.unmodifiableSet(element.getModifiers());

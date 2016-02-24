@@ -10,12 +10,14 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.state.Unmodifiable;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
@@ -49,6 +51,15 @@ public interface ElementInformation {
     @Pure
     public @Nonnull TypeMirror getType();
     
+    /* -------------------------------------------------- Containing Type -------------------------------------------------- */
+    
+    /**
+     * Returns the type that contains the (potentially inherited) {@link #getElement() element}.
+     * (In case of top-level types, this method returns the {@link #getType() type} itself.)
+     */
+    @Pure
+    public @Nonnull DeclaredType getContainingType();
+    
     /* -------------------------------------------------- Package -------------------------------------------------- */
     
     /**
@@ -81,7 +92,7 @@ public interface ElementInformation {
      * Returns the modifiers of the represented {@link #getElement() element}.
      */
     @Pure
-    public @Nonnull @NonNullableElements Set<Modifier> getModifiers();
+    public @Unmodifiable @Nonnull @NonNullableElements Set<Modifier> getModifiers();
     
     /**
      * Returns whether the represented {@link #getElement() element} is public.
@@ -107,13 +118,27 @@ public interface ElementInformation {
     @Pure
     public boolean isFinal();
     
+    /**
+     * Returns whether the represented {@link #getElement() element} is static.
+     * (Constructors and top-level types cannot be static.)
+     */
+    @Pure
+    public boolean isStatic();
+    
+    /**
+     * Returns whether the represented {@link #getElement() element} is abstract.
+     * (Fields cannot be abstract.)
+     */
+    @Pure
+    public boolean isAbstract();
+    
     /* -------------------------------------------------- Validators -------------------------------------------------- */
     
     /**
      * Returns the validators declared on the represented {@link #getElement() element}.
      */
     @Pure
-    public @Nonnull @NonNullableElements Map<AnnotationMirror, AnnotationValidator> getValidators();
+    public @Unmodifiable @Nonnull @NonNullableElements Map<AnnotationMirror, AnnotationValidator> getValidators();
     
     /* -------------------------------------------------- Annotations -------------------------------------------------- */
     
@@ -121,7 +146,7 @@ public interface ElementInformation {
      * Returns the annotations on the represented {@link #getElement() element}.
      */
     @Pure
-    public @Nonnull @NonNullableElements Collection<? extends AnnotationMirror> getAnnotations();
+    public @Unmodifiable @Nonnull @NonNullableElements Collection<? extends AnnotationMirror> getAnnotations();
     
     /**
      * Returns whether the represented {@link #getElement() element} has the given annotation.

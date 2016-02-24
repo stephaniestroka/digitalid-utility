@@ -17,7 +17,7 @@ import javax.lang.model.type.TypeMirror;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.annotations.DefaultValue;
-import net.digitalid.utility.generator.information.NonTypeInformation;
+import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
@@ -36,7 +36,15 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
  * @see SubclassGenerator
  * @see BuilderGenerator
  */
-public interface FieldInformation extends NonTypeInformation {
+public interface FieldInformation extends ElementInformation {
+    
+    /* -------------------------------------------------- Access -------------------------------------------------- */
+    
+    /**
+     * Returns the code to retrieve the value of this field.
+     */
+    @Pure
+    public @Nonnull String getAccessCode();
     
     /* -------------------------------------------------- Mutability -------------------------------------------------- */
     
@@ -46,6 +54,8 @@ public interface FieldInformation extends NonTypeInformation {
     @Pure
     public boolean isMutable();
     
+    // TODO: Remove the rest.
+    
     public final boolean generated;
     
     public final @Nonnull String name;
@@ -54,11 +64,7 @@ public interface FieldInformation extends NonTypeInformation {
     
     public final @Nullable String defaultValue;
     
-    public final @Nullable VariableElement field;
-    
     public final @Nullable MethodInformation getter;
-    
-    public final @Nullable MethodInformation setter;
     
     @Pure
     public boolean isMutable() {
@@ -86,13 +92,6 @@ public interface FieldInformation extends NonTypeInformation {
         AnnotationLog.debugging("getAnnotations() : " + annotations);
         return annotations;
     }
-    
-    /* -------------------------------------------------- Validators -------------------------------------------------- */
-    
-    /**
-     * Stores the validators that validate the field.
-     */
-    public final @Nonnull @NonNullableElements Map<AnnotationMirror, AnnotationValidator> validators;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     

@@ -16,9 +16,9 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
-import net.digitalid.utility.generator.information.NonFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
@@ -26,11 +26,12 @@ import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.state.Unmodifiable;
 
 /**
  * This class collects the relevant information about a type for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  */
-public class TypeInformation extends ElementInformationImplementation implements NonFieldInformation {
+public class TypeInformation extends ElementInformationImplementation {
     
     /* -------------------------------------------------- Element -------------------------------------------------- */
     
@@ -84,31 +85,25 @@ public class TypeInformation extends ElementInformationImplementation implements
         return generatable;
     }
     
-    /* -------------------------------------------------- Constructors -------------------------------------------------- */
-    
-    public final @Nonnull @NonNullableElements List<ExecutableElement> constructors;
-    
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
-    /**
-     * Stores the parameters of the constructor, which also represent the object.
-     */
-    public final @Nonnull @NonNullableElements List<FieldInformation> representingFields;
-    
-    /**
-     * Stores the accessible fields, which can be validated by the generated subclass.
-     */
-    public final @Nonnull @NonNullableElements List<FieldInformation> accessibleFields;
+    private final @Unmodifiable @Nonnull @NonNullableElements List<GeneratedFieldInformation> generatedFields;
     
     /* -------------------------------------------------- Overridden Methods -------------------------------------------------- */
     
+    private final @Unmodifiable @Nonnull @NonNullableElements List<MethodInformation> overriddenMethods;
+    
     /**
-     * Stores the non-static and non-final methods that are to be overridden.
+     * Returns the non-static and non-final methods that are (to be) overridden.
      */
-    public final @Nonnull @NonNullableElements List<MethodInformation> overriddenMethods;
+    @Pure
+    public @Unmodifiable @Nonnull @NonNullableElements List<MethodInformation> getOverriddenMethods() {
+        return overriddenMethods
+    }
     
     /* -------------------------------------------------- Generated Methods -------------------------------------------------- */
     
+    // Only possible for classes.
     public final @Nullable MethodInformation recoverMethod;
     
     public final @Nullable MethodInformation equalsMethod;
@@ -117,18 +112,19 @@ public class TypeInformation extends ElementInformationImplementation implements
     
     public final @Nullable MethodInformation toStringMethod;
     
-    public final @Nullable MethodInformation validateMethod;
-    
     public final @Nullable MethodInformation compareToMethod;
     
     public final @Nullable MethodInformation cloneMethod;
+    
+    // Only possible for classes (with fields to validate).
+    public final @Nullable MethodInformation validateMethod;
     
     // TODO: Include the freezable methods here!
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected TypeInformation(@Nonnull TypeElement element) {
-        super(element, element.asType());
+    protected TypeInformation(@Nonnull TypeElement element, @Nonnull DeclaredType containingType) {
+        super(element, element.asType(), containingType);
         
         boolean generatable = true;
         
@@ -150,6 +146,7 @@ public class TypeInformation extends ElementInformationImplementation implements
         final @Nonnull @NonNullableElements Map<String, MethodInformation> implementedGetters = new LinkedHashMap<>();
         
         final @Nonnull @NonNullableElements List<? extends Element> members = AnnotationProcessing.getElementUtils().getAllMembers(element);
+        final @Nonnull @NonNullableElements List<ExecutableElement> constructors = ElementFilter.constructorsIn(AnnotationProcessing.getElementUtils().getAllMembers(element));
         for (@Nonnull Element member : members) {
             
             if (member.getKind() == ElementKind.CONSTRUCTOR) {

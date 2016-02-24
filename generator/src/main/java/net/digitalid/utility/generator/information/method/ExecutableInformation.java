@@ -6,7 +6,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 
-import net.digitalid.utility.generator.information.NonTypeInformationImplementation;
+import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -17,7 +17,7 @@ import net.digitalid.utility.validation.annotations.method.Pure;
  * @see ConstructorInformation
  * @see MethodInformation
  */
-public abstract class ExecutableInformation extends NonTypeInformationImplementation {
+public abstract class ExecutableInformation extends ElementInformationImplementation {
     
     /* -------------------------------------------------- Element -------------------------------------------------- */
     

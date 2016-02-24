@@ -1,11 +1,17 @@
 package net.digitalid.utility.generator.information.field;
 
+import net.digitalid.utility.generator.information.ElementInformationImplementation;
+
 /**
  * Description.
  */
-public class NonDirectlyAccessibleFieldInformation {
+public class NonDirectlyAccessibleFieldInformation extends ElementInformationImplementation implements FieldInformation {
     
-    public NonDirectlyAccessibleFieldInformation() {
+    /* -------------------------------------------------- Getter -------------------------------------------------- */
+    
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
+    
+    protected NonDirectlyAccessibleFieldInformation() {
         
     }
     
