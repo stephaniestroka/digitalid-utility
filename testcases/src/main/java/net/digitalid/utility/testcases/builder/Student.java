@@ -20,6 +20,9 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 @Mutable
 public abstract class Student /* implements Convertible */ {
     
+    public interface AnInterface {
+    }
+    
     /**
      * Returns the name of this student.
      */

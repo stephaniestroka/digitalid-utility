@@ -160,7 +160,6 @@ public class JavaFileGenerator extends FileGenerator {
         Require.that(qualifiedName.contains(".")).orThrow("The name " + QuoteString.inSingle(qualifiedName) + " has to be qualified.");
         requireNotWritten();
         
-        // TODO: add precondition: The qualifiedName must be fully qualified.
         final @Nonnull String packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
         if (packageName.equals("java.lang") || packageName.equals(getPackageName())) { return false; }
         
@@ -327,6 +326,7 @@ public class JavaFileGenerator extends FileGenerator {
         requireNotWritten();
         
         if (codeBlocks.length == 0) {
+            // TODO: It is a bit scruffy that we're assuming that the caller is "addStatement", but well, at least it's documented.
             Require.that(getCurrentCodeBlock().allowsStatements()).orThrow("The current code block (" + getCurrentCodeBlock() + ") should allow statements but does not.");
         } else {
             Require.that(Arrays.asList(codeBlocks).contains(getCurrentCodeBlock())).orThrow("The current code block should have been one of " + Arrays.toString(codeBlocks) + " but was " + getCurrentCodeBlock());
@@ -415,9 +415,9 @@ public class JavaFileGenerator extends FileGenerator {
     /* -------------------------------------------------- Javadoc -------------------------------------------------- */
     
     @NonWrittenRecipient
-    @OnlyPossibleIn({NONE, CLASS})
+    @OnlyPossibleIn({NONE, CLASS, INTERFACE})
     public void beginJavadoc() {
-        requireCurrentCodeBlock(NONE, CLASS);
+        requireCurrentCodeBlock(NONE, CLASS, INTERFACE);
         
         addCodeLineWithIndentation("/**");
         codeBlocksStack.push(JAVADOC);
@@ -443,7 +443,7 @@ public class JavaFileGenerator extends FileGenerator {
     /* -------------------------------------------------- Annotation -------------------------------------------------- */
     
     @NonWrittenRecipient
-    @OnlyPossibleIn({NONE, CLASS})
+    @OnlyPossibleIn({NONE, CLASS, INTERFACE})
     // TODO: Pass the annotation type and support easier value formatting with FormatString.
     public void addAnnotation(@Nonnull String annotation) {
         requireCurrentCodeBlock(NONE, CLASS);
@@ -451,27 +451,63 @@ public class JavaFileGenerator extends FileGenerator {
         addCodeLineWithIndentation(annotation);
     }
     
+    /* -------------------------------------------------- Class or Interface -------------------------------------------------- */
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn({NONE, CLASS, INTERFACE})
+    private void beginClassOrInterface(@Nonnull String declaration, @Nonnull CodeBlock classOrInterface) {
+        requireCurrentCodeBlock(NONE, CLASS, INTERFACE);
+        
+        if (getCurrentCodeBlock() == CodeBlock.NONE) {
+            addAnnotation("@" + importIfPossible(SuppressWarnings.class) + "(\"null\")");
+            StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
+            final @Nonnull String generator = caller.getClassName();
+            final @Nonnull String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date());
+            addAnnotation("@" + importIfPossible(Generated.class) + "(value = {" + QuoteString.inDouble(generator) + "}, date = " + QuoteString.inDouble(date) + ")");
+        }
+        beginBlock(declaration, classOrInterface, NONE, CLASS, INTERFACE);
+        addEmptyLine();
+    }
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn({INTERFACE})
+    public void endClassOrInterface(@Nonnull CodeBlock classOrInterface) {
+        endBlock(classOrInterface);
+        if (getCurrentCodeBlock() != CodeBlock.NONE) {
+            addEmptyLine();
+        }
+    }
+    
+    /* -------------------------------------------------- Interface -------------------------------------------------- */
+    
+    /**
+     * Begins an interface block in a Java source file.
+     */
+    @NonWrittenRecipient
+    @OnlyPossibleIn({NONE, CLASS, INTERFACE})
+    public void beginInterface(@Nonnull String declaration) {
+        beginClassOrInterface(declaration, CodeBlock.INTERFACE);
+    }
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn({INTERFACE})
+    public void endInterface() {
+        endClassOrInterface(CodeBlock.INTERFACE);
+    }
+    
     /* -------------------------------------------------- Class -------------------------------------------------- */
     
     @NonWrittenRecipient
-    @OnlyPossibleIn({NONE, CLASS})
+    @OnlyPossibleIn({NONE, CLASS, INTERFACE})
     public void beginClass(@Nonnull String declaration) {
-        addAnnotation("@" + importIfPossible(SuppressWarnings.class) + "(\"null\")");
-        StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
-        final @Nonnull String generator = caller.getClassName();
-        final @Nonnull String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date());
-        addAnnotation("@" + importIfPossible(Generated.class) + "(value = {" + QuoteString.inDouble(generator) + "}, date = " + QuoteString.inDouble(date) + ")");
-        beginBlock(declaration, CLASS, NONE, CLASS);
-        addEmptyLine();
+        beginClassOrInterface(declaration, CodeBlock.CLASS);
     }
     
     @NonWrittenRecipient
     @OnlyPossibleIn({CLASS})
     public void endClass() {
-        endBlock(CLASS);
+        endClassOrInterface(CodeBlock.CLASS);
     }
-    
-    // TODO: Introduce methods to begin and end interfaces.
     
     /* -------------------------------------------------- Field -------------------------------------------------- */
     
@@ -513,6 +549,16 @@ public class JavaFileGenerator extends FileGenerator {
         addEmptyLine();
     }
     
+    /* -------------------------------------------------- Method Declaration -------------------------------------------------- */
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn({CLASS, INTERFACE})
+    public void addMethodDeclaration(@Nonnull String declaration) {
+        requireCurrentCodeBlock(CLASS, INTERFACE);
+        
+        addCodeLineWithIndentation(declaration + ";");
+    }
+    
     /* -------------------------------------------------- Method -------------------------------------------------- */
     
     @NonWrittenRecipient
@@ -526,14 +572,6 @@ public class JavaFileGenerator extends FileGenerator {
     public void endMethod() {
         endBlock(METHOD);
         addEmptyLine();
-    }
-    
-    @NonWrittenRecipient
-    @OnlyPossibleIn({CLASS, INTERFACE})
-    public void addMethodDeclaration(@Nonnull String declaration) {
-        requireCurrentCodeBlock(CLASS, INTERFACE);
-        
-        addCodeLineWithIndentation(declaration + ";");
     }
     
     /* -------------------------------------------------- If -------------------------------------------------- */

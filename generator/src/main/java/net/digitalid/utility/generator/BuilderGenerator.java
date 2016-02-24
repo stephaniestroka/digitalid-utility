@@ -24,32 +24,56 @@ import net.digitalid.utility.validation.annotations.type.Utiliy;
 
 /**
  * The Builder Generator generates a builder class for a given type (through the type information). 
- * Required fields of the type, which are those without a @DefaultValue annotation, are collected in the inner class "RequiredFields[name_of_the_type]Builder".
- * Once all required fields are set, an OptionalFields[name_of_the_type]Builder is returned, which allows to set optional fields and build an object of the type.
+ * For each required field, an interface is generated which holds the setter for the required field. 
+ * The setter method is the field name prefixed with "with".
+ * An inner class, which represents the builder, implements all interfaces and therefore also implements
+ * all setters of the required fields. Optional fields are added to the inner class only. 
+ * A static method of one of the required fields, or an optional field if no required fields exist, is created
+ * to provide an entrance method to the builder and sets the appropriate field in the builder. If neither required not optional fields exist, a static 
+ * get() method is generated, which returns the builder without calling any further methods.
  */
 @Utiliy
 public class BuilderGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Type Information -------------------------------------------------- */
     
+    /**
+     * Holds information about the type.
+     */
     private final @Nonnull TypeInformation typeInformation;
     
     /* -------------------------------------------------- Required Fields Builder -------------------------------------------------- */
     
+    /**
+     * Returns the name of the field builder interface for a given field.
+     */
     private @Nonnull String getNameOfFieldBuilder(@Nonnull FieldInformation field) {
         return StringCase.capitalizeFirstLetters(field.name) + typeInformation.getSimpleNameOfGeneratedBuilder();
     }
     
+    /**
+     * Creates an interface for a given required field. The only declared method is a setter
+     * for the field. The name is generated through the fieldName prefixed with "with".
+     * 
+     * @param nextInterface The field setter returns an object with this type, which is the interface
+     *                      of the next required field. If no further required field must be set, the 
+     *                      actual builder is returned. Thus, unless the caller casts the returned type
+     *                      away, this method allows to traverse through all required fields before being
+     *                      able to call "build()" on the builder.
+     */
     private @Nonnull String createInterfaceForField(@Nonnull FieldInformation field, @Nullable String nextInterface) {
         final @Nonnull String interfaceName = getNameOfFieldBuilder(field);
         final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.name);
-        beginClass("interface " + interfaceName + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeInformation.type.getTypeArguments()));
+        beginInterface("interface " + interfaceName + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeInformation.type.getTypeArguments()));
         addAnnotation("@" + importIfPossible(Chainable.class));
         addMethodDeclaration("public @" + importIfPossible(Nonnull.class) + " " + nextInterface + " " + methodName + "(" + field.type + " " + field.name + ")");
-        endClass();
+        endInterface();
         return interfaceName;
     }
     
+    /**
+     * Returns true if the field is required, false otherwise.
+     */
     private boolean isFieldRequired(@Nonnull FieldInformation fieldInformation) {
         // TODO: nullable fields are not required. Non-final fields are also not required (and probably not representing).
         return fieldInformation.defaultValue == null;
@@ -68,6 +92,9 @@ public class BuilderGenerator extends JavaFileGenerator {
         return requiredFields;
     }
     
+    /**
+     * Declares and implements the setter for the given field with the given return type and the given returned instance.
+     */
     private void addSetterForField(@Nonnull FieldInformation field, @Nonnull String returnType, @Nonnull String returnedInstance) {
         final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.name);
         beginMethod("public static " + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeInformation.type.getTypeArguments()) + returnType + " " + methodName + "(" + field.type + " " + field.name + ")");
@@ -75,15 +102,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         endMethod();
     }
     
-    /**
-     * Creates an inner class for required fields that returns an OptionalFields_Builder once all required fields are set.
-     */
-    protected void createInnerClassForFields() {
-        
-        AnnotationLog.debugging("createInnerClassForFields()");
-        
-        @Nonnull @NonNullableElements List<FieldInformation> requiredFields = getRequiredFields();
-        final @Nonnull String nameOfInnerClass = "Inner" + typeInformation.getSimpleNameOfGeneratedBuilder();
+    protected final @Nonnull @NonNullableElements List<String> createInterfacesForRequiredFields(@Nonnull @NonNullableElements List<FieldInformation> requiredFields, @Nonnull String nameOfInnerClass) {
         final @Nonnull List<String> listOfInterfaces = new ArrayList<>();
         
         for (int i = 0; i < requiredFields.size(); i++) {
@@ -95,10 +114,21 @@ public class BuilderGenerator extends JavaFileGenerator {
             }
             listOfInterfaces.add(createInterfaceForField(requiredField, nextInterface));
         }
+        return listOfInterfaces;
+    }
+    
+    /**
+     * Creates a builder that collects all fields and provides a build() method, which returns an instance of the type that the builder builds.
+     * @param nameOfBuilder
+     * @param interfacesForRequiredFields
+     */
+    protected void createInnerClassForFields(@Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) {
+        
+        AnnotationLog.debugging("createInnerClassForFields()");
         
         final List<? extends TypeMirror> typeArguments = typeInformation.type.getTypeArguments();
         
-        beginClass("static class " + nameOfInnerClass + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeArguments) + (listOfInterfaces.size() == 0 ? "" : " implements " + IterableConverter.toString(listOfInterfaces) + importingTypeVisitor.getTypeVariablesWithoutBounds(typeArguments, false)));
+        beginClass("static class " + nameOfBuilder + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeArguments) + (interfacesForRequiredFields.size() == 0 ? "" : " implements " + IterableConverter.toString(interfacesForRequiredFields) + importingTypeVisitor.getTypeVariablesWithoutBounds(typeArguments, false)));
         
         for (@Nonnull FieldInformation field : typeInformation.representingFields) {
             field.getAnnotations();
@@ -110,7 +140,7 @@ public class BuilderGenerator extends JavaFileGenerator {
                 addAnnotation("@" + importIfPossible(Override.class));
             }
             addAnnotation("@" + importIfPossible(Chainable.class));
-            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + nameOfInnerClass + " " + methodName + "(" + field.type + " " + field.name + ")");
+            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + nameOfBuilder + " " + methodName + "(" + field.type + " " + field.name + ")");
             addStatement("this." + field.name + " = " + field.name);
             addStatement("return this");
             endMethod();
@@ -131,26 +161,36 @@ public class BuilderGenerator extends JavaFileGenerator {
         endMethod();
         
         endClass();
+    }
+    
+    /**
+     * Creates a static method that serves as an entry to the builder. If required fields exist,
+     * the static method returns the builder and sets the required field. It returns the interface
+     * of the next required field, if another one exists. If it is the only required field, the 
+     * return type is the builder, which makes calling "build()" possible.
+     * If no required fields exits, static entry methods for all optional fields are created. Additionally,
+     * a static "get()" method is created, which returns the new builder instance without calling any additional builder setters.
+     */
+    protected void createStaticEntryMethod(@Nonnull FieldInformation entryField, @Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) {
+        final List<? extends TypeMirror> typeArguments = typeInformation.type.getTypeArguments();
         
-        if (listOfInterfaces.size() > 0) {
+        if (interfacesForRequiredFields.size() > 0) {
             final @Nonnull String secondInterface;
-            if (listOfInterfaces.size() > 1) {
-                secondInterface = listOfInterfaces.get(1);
+            if (interfacesForRequiredFields.size() > 1) {
+                secondInterface = interfacesForRequiredFields.get(1);
             } else {
-                secondInterface = nameOfInnerClass;
+                secondInterface = nameOfBuilder;
             }
-            final @Nonnull FieldInformation field = requiredFields.get(0);
-            addSetterForField(field, secondInterface, nameOfInnerClass);
+            addSetterForField(entryField, secondInterface, nameOfBuilder);
         } else {
-            if (typeInformation.representingFields.size() > 0) {
-                final @Nonnull FieldInformation field = typeInformation.representingFields.get(0);
-                addSetterForField(field, nameOfInnerClass, nameOfInnerClass);
+            for (@Nonnull FieldInformation optionalField : typeInformation.representingFields) {
+                addSetterForField(optionalField, nameOfBuilder, nameOfBuilder);
             }
-            beginMethod("public static " + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeArguments) + nameOfInnerClass + " get()");
-            addStatement("return new " + nameOfInnerClass + "()");
+            beginMethod("public static " + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeArguments) + nameOfBuilder + " get()");
+            addStatement("return new " + nameOfBuilder + "()");
             endMethod();
         }
-        
+ 
     }
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
@@ -166,8 +206,14 @@ public class BuilderGenerator extends JavaFileGenerator {
         this.typeInformation = typeInformation;
     
         beginClass("public class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeInformation.type.getTypeArguments()));
+    
+        final @Nonnull @NonNullableElements List<FieldInformation> requiredFields = getRequiredFields();
+        final @Nonnull String nameOfBuilder = "Inner" + typeInformation.getSimpleNameOfGeneratedBuilder();
         
-        createInnerClassForFields();
+        final @Nonnull @NonNullableElements List<String> interfacesForRequiredFields = createInterfacesForRequiredFields(requiredFields, nameOfBuilder);
+        createInnerClassForFields(nameOfBuilder, interfacesForRequiredFields);
+        final @Nonnull FieldInformation entryField = requiredFields.get(0);
+        createStaticEntryMethod(entryField, nameOfBuilder, interfacesForRequiredFields);
         
         endClass();
         AnnotationLog.debugging("endClass()");
