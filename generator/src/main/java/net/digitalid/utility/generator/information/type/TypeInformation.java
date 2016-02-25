@@ -30,8 +30,11 @@ import net.digitalid.utility.validation.annotations.state.Unmodifiable;
 
 /**
  * This type collects the relevant information about a type for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
+ * 
+ * @see InterfaceInformation
+ * @see ClassInformation
  */
-public class TypeInformation extends ElementInformationImplementation {
+public abstract class TypeInformation extends ElementInformationImplementation {
     
     /* -------------------------------------------------- Element -------------------------------------------------- */
     

@@ -14,8 +14,11 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This class implements the {@link FieldInformation} interface.
+ * 
+ * @see NonDirectlyAccessibleFieldInformation
+ * @see DirectlyAccessibleFieldInformation
  */
-public class FieldInformationImplementation extends ElementInformationImplementation {
+public abstract class FieldInformationImplementation extends ElementInformationImplementation implements FieldInformation {
     
     /* -------------------------------------------------- Default Value -------------------------------------------------- */
     

@@ -10,10 +10,8 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 /**
  * This type collects the relevant information about a field for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  * 
- * @see NonDirectlyAccessibleFieldInformation
- * @see DirectlyAccessibleFieldInformation
- * @see FieldInformationImplementation
- * @see NonGeneratedFieldInformation
+ * @see PotentiallyInheritedFieldInformation
+ * @see RepresentingFieldInformation
  */
 public interface FieldInformation extends ElementInformation {
     

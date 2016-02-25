@@ -7,7 +7,6 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -18,7 +17,7 @@ import net.digitalid.utility.validation.annotations.method.Pure;
  * @see NonDirectlyAccessibleParameterBasedFieldInformation
  * @see GeneratedFieldInformation
  */
-public class NonDirectlyAccessibleFieldInformation extends ElementInformationImplementation implements FieldInformation {
+public abstract class NonDirectlyAccessibleFieldInformation extends FieldInformationImplementation {
     
     /* -------------------------------------------------- Getter -------------------------------------------------- */
     
