@@ -15,6 +15,22 @@ import net.digitalid.utility.validation.annotations.method.Pure;
  */
 public interface FieldInformation extends ElementInformation {
     
+    /* -------------------------------------------------- Default Value -------------------------------------------------- */
+    
+    /**
+     * Returns whether this field has a default value.
+     */
+    @Pure
+    public boolean hasDefaultValue();
+    
+    /**
+     * Returns the default value of this field.
+     * 
+     * @require hasDefaultValue() : "This field has to have a default value.";
+     */
+    @Pure
+    public @Nonnull String getDefaultValue();
+    
     /* -------------------------------------------------- Access -------------------------------------------------- */
     
     /**

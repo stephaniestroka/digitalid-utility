@@ -24,20 +24,14 @@ public abstract class FieldInformationImplementation extends ElementInformationI
     
     private final @Nullable String defaultValue;
     
-    /**
-     * Returns whether this field has a default value.
-     */
     @Pure
+    @Override
     public boolean hasDefaultValue() {
         return defaultValue != null;
     }
     
-    /**
-     * Returns the default value of this field.
-     * 
-     * @require hasDefaultValue() : "This field has to have a default value.";
-     */
     @Pure
+    @Override
     @SuppressWarnings("null")
     public @Nonnull String getDefaultValue() {
         Require.that(hasDefaultValue()).orThrow("This field has to have a default value.");
