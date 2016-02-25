@@ -19,7 +19,7 @@ import net.digitalid.utility.generator.annotations.Recover;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
-import net.digitalid.utility.processor.ProcessingUtility;
+import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;

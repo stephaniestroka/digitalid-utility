@@ -1,4 +1,4 @@
-package net.digitalid.utility.processor.visitor;
+package net.digitalid.utility.processor.generator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +18,10 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor7;
 
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.functional.string.Brackets;
 import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.functional.string.NonNullableElementConverter;
+import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
@@ -29,6 +29,8 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * Description.
+ * 
+ * TODO: Transform into an inner, non-static class of JavaFileGenerator.
  */
 @Immutable
 public class ImportingTypeVisitor extends SimpleTypeVisitor7<StringBuilder, StringBuilder> {

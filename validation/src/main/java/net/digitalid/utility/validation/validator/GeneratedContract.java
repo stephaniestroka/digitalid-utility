@@ -1,9 +1,17 @@
 package net.digitalid.utility.validation.validator;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import javax.annotation.Nonnull;
+import javax.lang.model.element.Element;
 
 import net.digitalid.utility.contracts.exceptions.ContractViolationException;
+import net.digitalid.utility.string.FormatString;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.state.Unmodifiable;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -39,24 +47,42 @@ public class GeneratedContract {
         return message;
     }
     
+    /* -------------------------------------------------- Arguments -------------------------------------------------- */
+    
+    private final @Unmodifiable @Nonnull @NonNullableElements List<String> arguments;
+    
+    /**
+     * Returns the arguments with which the {@link #getMessage() message} is {@link FormatString#format(java.lang.CharSequence, java.lang.Object...) formatted}.
+     */
     @Pure
-    public @Nonnull String getMessageInDoubleQuotes() {
-        return "\"" + getMessage() + "\"";
+    public @Unmodifiable @Nonnull @NonNullableElements List<String> getArguments() {
+        return arguments;
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected GeneratedContract(@Nonnull @JavaExpression String condition, @Nonnull String message) {
+    protected GeneratedContract(@Nonnull @JavaExpression String condition, @Nonnull String message, @Nonnull String... arguments) {
         this.condition = condition;
         this.message = message;
+        this.arguments = Collections.unmodifiableList(Arrays.asList(arguments));
     }
     
     /**
-     * Returns an object that wraps the given {@link #getCondition() condition} and {@link #getMessage() message}.
+     * Returns an object that wraps the given {@link #getCondition() condition}, {@link #getMessage() message} and {@link #getArguments() arguments}.
      */
     @Pure
-    public static @Nonnull GeneratedContract with(@Nonnull @JavaExpression String condition, @Nonnull String message) {
-        return new GeneratedContract(condition, message);
+    public static @Nonnull GeneratedContract with(@Nonnull @JavaExpression String condition, @Nonnull String message, @Nonnull String... arguments) {
+        return new GeneratedContract(condition, message, arguments);
+    }
+    
+    /**
+     * Returns an object that wraps the given {@link #getCondition() condition} and {@link #getMessage() message} and {@link #getArguments() arguments}.
+     * Each number sign in the condition and the message is replaced with the {@link AnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
+     */
+    @Pure
+    public static @Nonnull GeneratedContract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element) {
+        final @Nonnull String name = AnnotationValidator.getName(element);
+        return new GeneratedContract(condition.replace("#", name), message.replace("#", name), name);
     }
     
 }

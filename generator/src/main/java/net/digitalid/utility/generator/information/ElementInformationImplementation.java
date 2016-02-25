@@ -19,7 +19,7 @@ import net.digitalid.utility.generator.information.field.FieldInformationImpleme
 import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
-import net.digitalid.utility.processor.ProcessingUtility;
+import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.state.Unmodifiable;

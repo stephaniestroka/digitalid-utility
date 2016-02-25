@@ -1,7 +1,8 @@
-package net.digitalid.utility.processor;
+package net.digitalid.utility.validation.processing;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,14 +20,14 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
-import net.digitalid.utility.functional.string.NonNullableElementConverter;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
-import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -56,7 +57,7 @@ public class ProcessingUtility {
         return false;
     }
     
-    /* -------------------------------------------------- Annotation Mirror -------------------------------------------------- */
+    /* -------------------------------------------------- Annotation Mirrors -------------------------------------------------- */
     
     /**
      * Returns the qualified name of the annotation type of the given annotation mirror.
@@ -79,26 +80,74 @@ public class ProcessingUtility {
     }
     
     /**
+     * Returns the annotation value for the given method name of the given annotation type on the given element or null if not found.
+     */
+    @Pure
+    public static @Nullable AnnotationValue getAnnotationValue(@Nonnull Element element, @Nonnull Class<? extends Annotation> annotationType, @Nonnull String methodName) {
+        final @Nullable AnnotationMirror annotationMirror = getAnnotationMirror(element, annotationType);
+        if (annotationMirror != null) {
+            for (@Nonnull Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationEntry : AnnotationProcessing.getElementUtils().getElementValuesWithDefaults(annotationMirror).entrySet()) {
+                if (annotationEntry.getKey().getSimpleName().contentEquals(methodName)) {
+                    return annotationEntry.getValue();
+                }
+            }
+            AnnotationLog.error("Found no value $ for the annotation $ on", SourcePosition.of(element, annotationMirror), methodName, "@" + annotationType.getSimpleName());
+        }
+        return null;
+    }
+    
+    /**
+     * Returns the annotation value for the default value method of the given annotation type on the given element or null if not found.
+     */
+    @Pure
+    public static @Nullable AnnotationValue getAnnotationValue(@Nonnull Element element, @Nonnull Class<? extends Annotation> annotationType) {
+        return getAnnotationValue(element, annotationType, "value");
+    }
+    
+    /**
      * Returns the value of the given annotation type on the given element or null if not found.
      */
     @Pure
     public static @Nullable String getStringValue(@Nonnull Element element, @Nonnull Class<? extends Annotation> annotationType) {
-        final @Nullable AnnotationMirror annotationMirror = getAnnotationMirror(element, annotationType);
-        if (annotationMirror != null) {
-            for (@Nonnull Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationEntry : annotationMirror.getElementValues().entrySet()) {
-                if (annotationEntry.getKey().getSimpleName().contentEquals("value")) {
-                    final @Nonnull AnnotationValue annotationValue = annotationEntry.getValue();
-                    final @Nonnull Object object = annotationValue.getValue();
-                    if (object instanceof String) {
-                        return (String) object;
-                    } else {
-                        AnnotationLog.error("The value is not a string:", SourcePosition.of(element, annotationMirror, annotationValue));
-                    }
-                }
+        final @Nullable AnnotationValue annotationValue = getAnnotationValue(element, annotationType);
+        if (annotationValue != null) {
+            final @Nonnull Object object = annotationValue.getValue();
+            if (object instanceof String) {
+                return (String) object;
+            } else {
+                AnnotationLog.error("The value is not a string:", SourcePosition.of(element, getAnnotationMirror(element, annotationType), annotationValue));
             }
         }
         return null;
     }
+    
+    /* -------------------------------------------------- Assignability -------------------------------------------------- */
+    
+    /**
+     * Returns whether the given declared type is assignable to the given desired type.
+     */
+    @Pure
+    public static boolean isAssignable(@Nonnull TypeMirror declaredType, @Nonnull Class<?> desiredType) {
+        final @Nullable TypeElement desiredTypeElement = AnnotationProcessing.getElementUtils().getTypeElement(desiredType.getCanonicalName());
+        if (desiredTypeElement == null) { AnnotationLog.error("Could not retrieve the element for the type $.", desiredType); return false; }
+        final @Nonnull TypeMirror subtype;
+        if (declaredType.getKind() == TypeKind.EXECUTABLE) { subtype = ((ExecutableType) declaredType).getReturnType(); } else { subtype = declaredType; }
+        final @Nonnull TypeMirror supertype = desiredTypeElement.asType();
+        // TODO: Check whether this works with upper bounds of generic parameters and raw types.
+        return AnnotationProcessing.getTypeUtils().isAssignable(subtype, supertype);
+    }
+    
+    /**
+     * Returns whether the given element is assignable to the given type.
+     */
+    @Pure
+    public static boolean isAssignable(@Nonnull Element element, @Nonnull Class<?> type) {
+        return isAssignable(element.asType(), type);
+    }
+    
+    /* -------------------------------------------------- Code Generators -------------------------------------------------- */
+    
+    private static final @Nonnull @NonNullableElements Map<String, CodeGenerator> cachedCodeGenerators = new HashMap<>();
     
     /**
      * Returns the code generators of the given type which are found with the given meta-annotation type on the annotations of the given element.
@@ -107,36 +156,35 @@ public class ProcessingUtility {
     @SuppressWarnings("unchecked")
     public static @Nonnull @NonNullableElements <G extends CodeGenerator> Map<AnnotationMirror, G> getCodeGenerators(@Nonnull Element element, @Nonnull Class<? extends Annotation> metaAnnotationType, @Nonnull Class<G> codeGeneratorType) {
         final @Nonnull @NonNullableElements Map<AnnotationMirror, G> result = new LinkedHashMap<>();
-        for (@Nonnull AnnotationMirror annotationMirror : element.getAnnotationMirrors()) {
-            final @Nonnull TypeElement annotationElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
-            final @Nonnull String annotationName = "@" + annotationElement.getSimpleName();
-            AnnotationLog.verbose("Found the annotation $ on", SourcePosition.of(element), annotationName);
-            final @Nullable AnnotationMirror metaAnnotationMirror = getAnnotationMirror(annotationElement, metaAnnotationType);
-            if (metaAnnotationMirror != null) {
-                for (@Nonnull Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> metaAnnotationEntry : metaAnnotationMirror.getElementValues().entrySet()) {
-                    if (metaAnnotationEntry.getKey().getSimpleName().contentEquals("value")) {
-                        final @Nonnull AnnotationValue metaAnnotationValue = metaAnnotationEntry.getValue();
-                        final @Nonnull DeclaredType codeGeneratorImplementationType = (DeclaredType) metaAnnotationValue.getValue();
-                        AnnotationLog.verbose("The declared generator type is " + QuoteString.inSingle(codeGeneratorImplementationType));
-                        final @Nonnull TypeElement codeGeneratorImplementationElement = (TypeElement) codeGeneratorImplementationType.asElement();
-                        final @Nonnull String codeGeneratorImplementationBinaryName = AnnotationProcessing.getElementUtils().getBinaryName(codeGeneratorImplementationElement).toString();
-                        try {
-                            final @Nonnull Class<?> codeGeneratorImplementationClass = Class.forName(codeGeneratorImplementationBinaryName);
-                            if (codeGeneratorType.isAssignableFrom(codeGeneratorImplementationClass)) {
-                                // TODO: Cache the new generator instance!
-                                final @Nonnull G codeGenerator = (G) codeGeneratorImplementationClass.newInstance();
-                                codeGenerator.checkUsage(element, annotationMirror);
-                                result.put(annotationMirror, codeGenerator);
-                                AnnotationLog.debugging("Found the code generator $ for", SourcePosition.of(element), annotationName);
-                            } else {
-                                AnnotationLog.error("The code generator $ is not assignable to $:", SourcePosition.of(element), annotationName, codeGeneratorImplementationClass.getCanonicalName());
-                            }
-                        } catch (@Nonnull ClassNotFoundException | InstantiationException | IllegalAccessException exception) {
-                            AnnotationLog.error("Could not instantiate the code generator $ for", SourcePosition.of(element), codeGeneratorImplementationBinaryName);
-                            Log.error("Problem:", exception);
+        for (@Nonnull AnnotationMirror annotationMirror : AnnotationProcessing.getElementUtils().getAllAnnotationMirrors(element)) {
+            final @Nonnull String qualifiedAnnotationName = getQualifiedName(annotationMirror);
+            final @Nullable CodeGenerator cachedCodeGenerator = cachedCodeGenerators.get(qualifiedAnnotationName);
+            if (cachedCodeGenerator != null) {
+                cachedCodeGenerator.checkUsage(element, annotationMirror);
+                result.put(annotationMirror, (G) cachedCodeGenerator);
+            } else {
+                final @Nonnull TypeElement annotationElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
+                final @Nonnull String annotationName = "@" + annotationElement.getSimpleName();
+                final @Nullable AnnotationValue metaAnnotationValue = getAnnotationValue(annotationElement, metaAnnotationType);
+                if (metaAnnotationValue != null) {
+                    final @Nonnull DeclaredType codeGeneratorImplementationType = (DeclaredType) metaAnnotationValue.getValue();
+                    AnnotationLog.verbose("The declared generator type is $.", codeGeneratorImplementationType);
+                    final @Nonnull TypeElement codeGeneratorImplementationElement = (TypeElement) codeGeneratorImplementationType.asElement();
+                    final @Nonnull String codeGeneratorImplementationBinaryName = AnnotationProcessing.getElementUtils().getBinaryName(codeGeneratorImplementationElement).toString();
+                    try {
+                        final @Nonnull Class<?> codeGeneratorImplementationClass = Class.forName(codeGeneratorImplementationBinaryName);
+                        if (codeGeneratorType.isAssignableFrom(codeGeneratorImplementationClass)) {
+                            final @Nonnull G codeGenerator = (G) codeGeneratorImplementationClass.newInstance();
+                            cachedCodeGenerators.put(qualifiedAnnotationName, codeGenerator);
+                            codeGenerator.checkUsage(element, annotationMirror);
+                            result.put(annotationMirror, codeGenerator);
+                            AnnotationLog.debugging("Found the code generator $ for", SourcePosition.of(element), annotationName);
+                        } else {
+                            AnnotationLog.error("The code generator $ is not assignable to $:", SourcePosition.of(element), annotationName, codeGeneratorImplementationClass.getCanonicalName());
                         }
-                    } else {
-                        AnnotationLog.error("The meta-annotation may only have a single method named 'value':", SourcePosition.of(metaAnnotationMirror.getAnnotationType().asElement()));
+                    } catch (@Nonnull ClassNotFoundException | InstantiationException | IllegalAccessException exception) {
+                        AnnotationLog.error("Could not instantiate the code generator $ for", SourcePosition.of(element), codeGeneratorImplementationBinaryName);
+                        Log.error("Problem:", exception);
                     }
                 }
             }
@@ -189,25 +237,5 @@ public class ProcessingUtility {
         }
         return null;
     }
-    
-    /* -------------------------------------------------- Converters -------------------------------------------------- */
-    
-    /**
-     * @deprecated Use {@link net.digitalid.utility.processor.visitor.ImportingTypeVisitor#getParameterDeclaration(ExecutableType, ExecutableElement)} instead.
-     */
-    @Deprecated
-    public static final @Nonnull NonNullableElementConverter<VariableElement> DECLARATION_CONVERTER = new NonNullableElementConverter<VariableElement>() {
-        @Override
-        public String toString(@Nonnull VariableElement element) {
-            return element.asType() + " " + element.getSimpleName();
-        }
-    };
-    
-    public static final @Nonnull NonNullableElementConverter<VariableElement> CALL_CONVERTER = new NonNullableElementConverter<VariableElement>() {
-        @Override
-        public String toString(@Nonnull VariableElement element) {
-            return element.getSimpleName().toString();
-        }
-    };
     
 }

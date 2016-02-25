@@ -13,21 +13,21 @@ import javax.lang.model.type.ExecutableType;
 
 import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.functional.string.Brackets;
+import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
-import net.digitalid.utility.processor.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.string.StringCase;
-import net.digitalid.utility.functional.string.Brackets;
-import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
+import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
 import net.digitalid.utility.validation.validator.GeneratedContract;
 
@@ -51,7 +51,7 @@ public class SubclassGenerator extends JavaFileGenerator {
             if (field.generated) {
                 AnnotationLog.verbose("Generating the field " + QuoteString.inSingle(field.name));
                 addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize(field.name)));
-                addField("private " + (field.isMutable() ? "" : "final ") + importIfPossible(field.type) + " " + field.name);
+                addField("private " + (field.isMutable() ? "" : "final ") + importIfPossible(field.getElement()) + " " + field.name);
                 
                 final @Nullable MethodInformation getter = field.getter;
                 assert getter != null : "If the field is generated, the getter was provided.";

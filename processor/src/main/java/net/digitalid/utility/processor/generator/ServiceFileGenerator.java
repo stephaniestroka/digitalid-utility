@@ -20,11 +20,11 @@ import javax.tools.StandardLocation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.logging.processing.SourcePosition;
-import net.digitalid.utility.processor.ProcessingUtility;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
+import net.digitalid.utility.validation.processing.ProcessingUtility;
 
 /**
  * This class generates files in the "META-INF/services" directory.

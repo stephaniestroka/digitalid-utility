@@ -19,16 +19,17 @@ public class QuoteString {
     /**
      * Returns the given object surrounded by the given quotation mark.
      */
+    @SuppressWarnings("NestedAssignment")
     public static String in(Mark mark, Object object) {
-        final String string;
+        final String left, right;
         switch (mark) {
-            case NONE: string = ""; break;
-            case SINGLE: string = "\'"; break;
-            case DOUBLE: string = "\""; break;
-            case CODE: string = object instanceof CharSequence ? "\"" : ""; break;
-            default: string = "";
+            case NONE: left = right = ""; break;
+            case SINGLE: left = right = "'"; break;
+            case DOUBLE: left = right = "\""; break;
+            case CODE: left = right = object instanceof CharSequence ? "\"" : ""; break;
+            default: left = right = "";
         }
-        return string + String.valueOf(object) + string;
+        return left + String.valueOf(object) + right;
     }
     
     /* -------------------------------------------------- Single Quotes -------------------------------------------------- */

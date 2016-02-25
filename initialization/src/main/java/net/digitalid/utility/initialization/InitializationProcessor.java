@@ -25,7 +25,7 @@ import net.digitalid.utility.configuration.Initializer;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.processor.CustomProcessor;
-import net.digitalid.utility.processor.ProcessingUtility;
+import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.processor.generator.ServiceFileGenerator;
