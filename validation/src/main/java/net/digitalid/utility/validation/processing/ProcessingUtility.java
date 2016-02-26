@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.QualifiedNameable;
@@ -24,6 +25,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
@@ -41,6 +43,21 @@ import net.digitalid.utility.validation.validator.CodeGenerator;
  */
 @Utiliy
 public class ProcessingUtility {
+    
+    /* -------------------------------------------------- Surrounding Type -------------------------------------------------- */
+    
+    /**
+     * Returns the type in which the given element is declared.
+     * 
+     * @require element.getKind() != ElementKind.PACKAGE : "The element may not be a package.";
+     */
+    @Pure
+    public static @Nonnull TypeElement getSurroundingType(@Nonnull Element element) {
+        Require.that(element.getKind() != ElementKind.PACKAGE).orThrow("The element $ may not be a package.", SourcePosition.of(element));
+        
+        if (element.getKind().isClass() || element.getKind().isInterface()) { return (TypeElement) element; }
+        return getSurroundingType(element.getEnclosingElement());
+    }
     
     /* -------------------------------------------------- Default Constructor -------------------------------------------------- */
     
@@ -80,20 +97,34 @@ public class ProcessingUtility {
     }
     
     /**
+     * Returns the annotation value for the given method name of the given annotation mirror or null if not found.
+     */
+    @Pure
+    public static @Nullable AnnotationValue getAnnotationValue(@Nonnull AnnotationMirror annotationMirror, @Nonnull String methodName) {
+        for (@Nonnull Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationEntry : AnnotationProcessing.getElementUtils().getElementValuesWithDefaults(annotationMirror).entrySet()) {
+            if (annotationEntry.getKey().getSimpleName().contentEquals(methodName)) {
+                return annotationEntry.getValue();
+            }
+        }
+        AnnotationLog.error("Found no value $ for the annotation $.", methodName, "@" + annotationMirror.getAnnotationType().asElement().getSimpleName());
+        return null;
+    }
+    
+    /**
+     * Returns the annotation value for the value method of the given annotation mirror or null if not found.
+     */
+    @Pure
+    public static @Nullable AnnotationValue getAnnotationValue(@Nonnull AnnotationMirror annotationMirror) {
+        return getAnnotationValue(annotationMirror, "value");
+    }
+    
+    /**
      * Returns the annotation value for the given method name of the given annotation type on the given element or null if not found.
      */
     @Pure
     public static @Nullable AnnotationValue getAnnotationValue(@Nonnull Element element, @Nonnull Class<? extends Annotation> annotationType, @Nonnull String methodName) {
         final @Nullable AnnotationMirror annotationMirror = getAnnotationMirror(element, annotationType);
-        if (annotationMirror != null) {
-            for (@Nonnull Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationEntry : AnnotationProcessing.getElementUtils().getElementValuesWithDefaults(annotationMirror).entrySet()) {
-                if (annotationEntry.getKey().getSimpleName().contentEquals(methodName)) {
-                    return annotationEntry.getValue();
-                }
-            }
-            AnnotationLog.error("Found no value $ for the annotation $ on", SourcePosition.of(element, annotationMirror), methodName, "@" + annotationType.getSimpleName());
-        }
-        return null;
+        return annotationMirror != null ? getAnnotationValue(annotationMirror, methodName) : null;
     }
     
     /**
@@ -236,6 +267,41 @@ public class ProcessingUtility {
             }
         }
         return null;
+    }
+    
+    /* -------------------------------------------------- Methods -------------------------------------------------- */
+    
+    /**
+     * Returns the method with the given name, return type, parameter types and no thrown types in the given type element or null if no such method is found.
+     */
+    @Pure
+    public static @Nullable ExecutableElement getMethod(@Nonnull TypeElement typeElement, @Nonnull String methodName, @Nonnull Class<?> returnType, @Nonnull Class<?>... parameterTypes) {
+        final @Nonnull DeclaredType surroundingType = (DeclaredType) typeElement.asType();
+        for (@Nonnull ExecutableElement inheritedMethod : ElementFilter.methodsIn(AnnotationProcessing.getElementUtils().getAllMembers(typeElement))) {
+            final @Nonnull ExecutableElement method = (ExecutableElement) AnnotationProcessing.getTypeUtils().asMemberOf(surroundingType, inheritedMethod);
+            if (method.getSimpleName().contentEquals(methodName) && method.getThrownTypes().isEmpty()) {
+                final @Nonnull ExecutableType methodType = (ExecutableType) method.asType();
+                if (isAssignable(method.getReturnType(), returnType)) {
+                    if (methodType.getParameterTypes().size() == parameterTypes.length) {
+                        boolean isAssignable = true;
+                        for (int i = 0; i < parameterTypes.length; i++) {
+                            final @Nonnull TypeMirror parameterType = methodType.getParameterTypes().get(i);
+                            if (parameterType.getKind() == TypeKind.TYPEVAR || !parameterType.toString().equals(parameterTypes[i].getCanonicalName())) { isAssignable = false; }
+                        }
+                        if (isAssignable) { return method; }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Returns whether the given type element contains a method with the given name, return type, parameter types and no thrown types.
+     */
+    @Pure
+    public static boolean hasMethod(@Nonnull TypeElement typeElement, @Nonnull String methodName, @Nonnull Class<?> returnType, @Nonnull Class<?>... parameterTypes) {
+        return getMethod(typeElement, methodName, returnType, parameterTypes) != null;
     }
     
 }

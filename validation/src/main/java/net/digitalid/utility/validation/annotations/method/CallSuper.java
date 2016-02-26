@@ -6,8 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.digitalid.utility.validation.annotations.meta.Validator;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
 
 /**
  * This annotation indicates that when you override such a method you have to call the overridden method.
@@ -15,16 +13,4 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(CallSuper.Validator.class)
-public @interface CallSuper {
-    
-    /* -------------------------------------------------- Validator -------------------------------------------------- */
-    
-    /**
-     * This class checks the use of and generates the contract for the surrounding annotation.
-     */
-    public static class Validator extends AnnotationValidator {
-        // TODO: Generate the contract.
-    }
-    
-}
+public @interface CallSuper {}

@@ -11,7 +11,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ExecutableType;
 
-import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.string.Brackets;
 import net.digitalid.utility.functional.string.IterableConverter;
@@ -29,7 +28,6 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.validation.validator.AnnotationValidator;
-import net.digitalid.utility.validation.validator.GeneratedContract;
 
 /**
  * This class generates a subclass with the provided type information.
@@ -49,20 +47,19 @@ public class SubclassGenerator extends JavaFileGenerator {
     protected void generateFields() {
         for (@Nonnull FieldInformation field : typeInformation.representingFields) {
             if (field.generated) {
-                AnnotationLog.verbose("Generating the field " + QuoteString.inSingle(field.name));
-                addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize(field.name)));
-                addField("private " + (field.isMutable() ? "" : "final ") + importIfPossible(field.getElement()) + " " + field.name);
+                AnnotationLog.verbose("Generating the field $.", field.getName());
+                addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize(field.getName())));
+                addField("private " + (field.isMutable() ? "" : "final ") + importIfPossible(field.getElement()) + " " + field.getName());
                 
                 final @Nullable MethodInformation getter = field.getter;
                 assert getter != null : "If the field is generated, the getter was provided.";
                 // TODO: Support method interceptors!
-                addAnnotation("@Override");
-                beginMethod(getter.getModifiersForOverridingMethod() + importIfPossible(getter.type) + " " + getter.name + "()");
+                addAnnotation(Override.class);
+                beginMethod(getter.getModifiersForOverridingMethod() + importIfPossible(getter.getType()) + " " + getter.getName() + "()");
                 addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + getter + " was called.") + ")");
-                addStatement("final " + importIfPossible(getter.type.getReturnType()) + " result = " + field.name);
-                for (@Nonnull Map.Entry<AnnotationMirror, AnnotationValidator> entry : getter.validators.entrySet()) {
-                    final @Nonnull GeneratedContract generatedContract = entry.getValue().generateContract(getter.element, entry.getKey());
-                    addStatement(importIfPossible(Ensure.class) + ".that(" + generatedContract.getCondition() + ").orThrow(" + generatedContract.getMessageInDoubleQuotes() + ")");
+                addStatement("final " + importIfPossible(getter.getType().getReturnType()) + " result = " + field.getName());
+                for (@Nonnull Map.Entry<AnnotationMirror, AnnotationValidator> entry : getter.getValidators().entrySet()) {
+                    addPostcondition(entry.getValue().generateContract(getter.getElement(), entry.getKey(), this));
                 }
                 addStatement("return result");
                 endMethod();
@@ -70,13 +67,12 @@ public class SubclassGenerator extends JavaFileGenerator {
                 final @Nullable MethodInformation setter = field.setter;
                 // TODO: Support method interceptors!
                 if (setter != null) {
-                    addAnnotation("@Override");
+                    addAnnotation(Override.class);
                     beginMethod(setter.getModifiersForOverridingMethod() + "void " + setter.name + importingTypeVisitor.reduceParametersDeclarationToString(setter.type, setter.element));
                     addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + setter + " was called.") + ")");
                     for (@Nonnull VariableElement parameter : setter.element.getParameters()) {
                         for (@Nonnull Map.Entry<AnnotationMirror, AnnotationValidator> entry : ProcessingUtility.getAnnotationValidators(parameter).entrySet()) {
-                            final @Nonnull GeneratedContract generatedContract = entry.getValue().generateContract(parameter, entry.getKey());
-                            addStatement(importIfPossible(Require.class) + ".that(" + generatedContract.getCondition() + ").orThrow(" + generatedContract.getMessageInDoubleQuotes() + ")");
+                            addPrecondition(entry.getValue().generateContract(parameter, entry.getKey(), this));
                         }
                         addStatement("this." + field.name + " = " + parameter.getSimpleName());
                     }
@@ -113,7 +109,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         if (!typeInformation.overriddenMethods.isEmpty()) { addSection("Overridden Methods"); }
         for (@Nonnull MethodInformation method : typeInformation.overriddenMethods) {
             AnnotationLog.verbose("Overriding the method " + QuoteString.inSingle(method.name));
-            addAnnotation("@Override");
+            addAnnotation(Override.class);
             beginMethod(method.getModifiersForOverridingMethod() + importIfPossible(method.type) + " " + method.name + importingTypeVisitor.reduceParametersDeclarationToString(method.type, method.element) + (method.element.getThrownTypes().isEmpty() ? "" : " throws " + IterableConverter.toString(method.element.getThrownTypes(), importingTypeVisitor.TYPE_MAPPER)));
             addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + method.name + " was called.") + ")");
             addStatement((method.hasReturnType() ? "return " : "") + "super." + method.name + IterableConverter.toString(method.element.getParameters(), ProcessingUtility.CALL_CONVERTER, Brackets.ROUND));

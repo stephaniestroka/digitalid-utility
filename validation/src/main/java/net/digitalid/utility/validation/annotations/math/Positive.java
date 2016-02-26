@@ -39,7 +39,7 @@ public @interface Positive {
         @Override
         public @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
             if (ProcessingUtility.isAssignable(element, BigInteger.class)) {
-                return GeneratedContract.with("# == null || #.compareTo(" + typeImporter.importIfPossible(BigInteger.class) + ".ZERO) == 1", "The # has to be null or positive but was $.", element);
+                return GeneratedContract.with("# == null || #.compareTo(" + typeImporter.importIfPossible(BigInteger.class) + ".ZERO) > 0", "The # has to be null or positive but was $.", element);
             } else {
                 return GeneratedContract.with("# > 0", "The # has to be positive but was $.", element);
             }

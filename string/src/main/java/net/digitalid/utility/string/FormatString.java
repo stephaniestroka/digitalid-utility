@@ -36,6 +36,13 @@ public class FormatString {
     }
     
     /**
+     * Formats the given non-nullable message by replacing each dollar sign with the corresponding argument surrounded by the given quotation marks.
+     */
+    public static String format(CharSequence message, QuoteString.Mark mark, Object... arguments) {
+        return format(message, '$', mark, arguments);
+    }
+    
+    /**
      * Formats the given non-nullable message by replacing each dollar sign with the corresponding argument in single quotes.
      */
     public static String format(CharSequence message, Object... arguments) {

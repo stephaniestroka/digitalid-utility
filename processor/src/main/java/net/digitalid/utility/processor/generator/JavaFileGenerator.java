@@ -3,6 +3,7 @@ package net.digitalid.utility.processor.generator;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.lang.annotation.Annotation;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,24 +17,31 @@ import java.util.Stack;
 
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 
+import net.digitalid.utility.contracts.Contract;
+import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.exceptions.UnexpectedValueException;
+import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 import net.digitalid.utility.processor.generator.annotations.OnlyPossibleIn;
+import net.digitalid.utility.string.FormatString;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.validation.validator.GeneratedContract;
 
 import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.*;
 
@@ -182,6 +190,10 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     protected boolean addStaticImport(@Nonnull String qualifiedMemberName) {
         return addImport("static " + qualifiedMemberName);
     }
+    
+    /* -------------------------------------------------- Type Visitor -------------------------------------------------- */
+    
+    // TODO: Implement the type visitor here as an inner class.
     
     /* -------------------------------------------------- Type Importer -------------------------------------------------- */
     
@@ -428,11 +440,16 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     @NonWrittenRecipient
     @OnlyPossibleIn({NONE, CLASS, INTERFACE})
-    // TODO: Pass the annotation type and support easier value formatting with FormatString.
-    public void addAnnotation(@Nonnull String annotation) {
+    public void addAnnotation(@Nonnull Class<? extends Annotation> annotationType, @Nullable String optionalValues, @Nonnull Object... optionalArguments) {
         requireCurrentCodeBlock(NONE, CLASS);
         
-        addCodeLineWithIndentation(annotation);
+        addCodeLineWithIndentation("@" + importIfPossible(annotationType) + (optionalValues != null ? "(" + FormatString.format(optionalValues, QuoteString.Mark.CODE, optionalArguments) + ")" : ""));
+    }
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn({NONE, CLASS, INTERFACE})
+    public void addAnnotation(@Nonnull Class<? extends Annotation> annotationType) {
+        addAnnotation(annotationType, null);
     }
     
     /* -------------------------------------------------- Class or Interface -------------------------------------------------- */
@@ -443,18 +460,19 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         requireCurrentCodeBlock(NONE, CLASS, INTERFACE);
         
         if (getCurrentCodeBlock() == CodeBlock.NONE) {
-            addAnnotation("@" + importIfPossible(SuppressWarnings.class) + "(\"null\")");
+            addAnnotation(SuppressWarnings.class, "$", "null");
             StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
             final @Nonnull String generator = caller.getClassName();
             final @Nonnull String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date());
-            addAnnotation("@" + importIfPossible(Generated.class) + "(value = {" + QuoteString.inDouble(generator) + "}, date = " + QuoteString.inDouble(date) + ")");
+            addAnnotation(Generated.class, "value = $, date = $)", generator, date);
         }
+        
         beginBlock(declaration, classOrInterface, NONE, CLASS, INTERFACE);
         addEmptyLine();
     }
     
     @NonWrittenRecipient
-    @OnlyPossibleIn({INTERFACE})
+    @OnlyPossibleIn({CLASS, INTERFACE})
     public void endClassOrInterface(@Nonnull CodeBlock classOrInterface) {
         endBlock(classOrInterface);
         if (getCurrentCodeBlock() != CodeBlock.NONE) {
@@ -642,6 +660,32 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         requireCurrentCodeBlock();
         
         addCodeLineWithIndentation(statement + ";");
+    }
+    
+    /* -------------------------------------------------- Contracts -------------------------------------------------- */
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn()
+    protected void addContract(@Nonnull Class<? extends Contract> contractType, @Nonnull GeneratedContract generatedContract) {
+        addStatement(importIfPossible(contractType) + ".that(" + generatedContract.getCondition() + ").orThrow(" + QuoteString.inDouble(generatedContract.getMessage()) + ", " + IterableConverter.toString(generatedContract.getArguments()) + ")");
+    }
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn()
+    public void addPrecondition(@Nonnull GeneratedContract generatedContract) {
+        addContract(Require.class, generatedContract);
+    }
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn()
+    public void addPostcondition(@Nonnull GeneratedContract generatedContract) {
+        addContract(Ensure.class, generatedContract);
+    }
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn()
+    public void addInvariant(@Nonnull GeneratedContract generatedContract) {
+        addContract(Validate.class, generatedContract);
     }
     
     /* -------------------------------------------------- Writing -------------------------------------------------- */

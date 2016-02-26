@@ -5,15 +5,20 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 
 import net.digitalid.utility.contracts.exceptions.ContractViolationException;
 import net.digitalid.utility.string.FormatString;
+import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.state.Unmodifiable;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
 import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.processing.ProcessingUtility;
 
 /**
  * This class wraps a {@link #getCondition() condition} and {@link #getMessage() message} for annotation processing.
@@ -76,13 +81,26 @@ public class GeneratedContract {
     }
     
     /**
-     * Returns an object that wraps the given {@link #getCondition() condition} and {@link #getMessage() message} and {@link #getArguments() arguments}.
+     * Returns an object that wraps the given {@link #getCondition() condition} and {@link #getMessage() message} with the element name as {@link #getArguments() argument}.
      * Each number sign in the condition and the message is replaced with the {@link AnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
      */
     @Pure
     public static @Nonnull GeneratedContract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element) {
         final @Nonnull String name = AnnotationValidator.getName(element);
         return new GeneratedContract(condition.replace("#", name), message.replace("#", name), name);
+    }
+    
+    /**
+     * Returns an object that wraps the given {@link #getCondition() condition} and {@link #getMessage() message} with the element name as {@link #getArguments() argument}.
+     * Each number sign in the condition and the message is replaced with the {@link AnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
+     * Each at sign in the condition and the message is replaced with the {@link AnnotationValue#getValue() value} of the given annotation mirror.
+     */
+    @Pure
+    public static @Nonnull GeneratedContract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
+        final @Nonnull String name = AnnotationValidator.getName(element);
+        final @Nullable AnnotationValue annotationValue = ProcessingUtility.getAnnotationValue(annotationMirror);
+        final @Nonnull String value = QuoteString.inCode(annotationValue != null ? annotationValue.getValue() : null);
+        return new GeneratedContract(condition.replace("#", name).replace("@", value), message.replace("#", name).replace("@", value), name);
     }
     
 }
