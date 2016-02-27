@@ -49,7 +49,7 @@ public @interface IndexForInsertion {
         @Pure
         @Override
         public @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
-            return GeneratedContract.with("# >= 0 && # <= size()", "The # may not negative or greater than the size of this collection but was $.", element);
+            return GeneratedContract.with("# >= 0 && # <= size()", "The # may not be negative or greater than the size of this collection but was $.", element);
         }
         
     }

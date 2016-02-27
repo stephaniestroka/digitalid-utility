@@ -34,7 +34,7 @@ public @interface UniqueElements {
     public static class Validator extends AnnotationValidator {
         
         @Pure
-        public boolean validate(@Nullable Iterable<?> iterable) {
+        public static boolean validate(@Nullable Iterable<?> iterable) {
             if (iterable == null) { return true; }
             final @Nonnull HashSet<Object> set = new HashSet<>();
             for (@Nullable Object element : iterable) {
@@ -45,7 +45,7 @@ public @interface UniqueElements {
         }
         
         @Pure
-        public boolean validate(@Nullable Object[] array) {
+        public static boolean validate(@Nullable Object[] array) {
             if (array == null) { return true; }
             final @Nonnull HashSet<Object> set = new HashSet<>();
             for (@Nullable Object element : array) {
@@ -58,8 +58,7 @@ public @interface UniqueElements {
         @Pure
         @Override
         public @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
-            typeImporter.importIfPossible(UniqueElements.class);
-            return GeneratedContract.with("UniqueElements.Validator.validate(#)", "The # may not contain duplicates.", element);
+            return GeneratedContract.with(typeImporter.importIfPossible(UniqueElements.class) + ".Validator.validate(#)", "The # may not contain duplicates.", element);
         }
         
     }

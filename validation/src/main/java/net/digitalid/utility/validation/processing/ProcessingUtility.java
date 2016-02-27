@@ -155,17 +155,30 @@ public class ProcessingUtility {
     /* -------------------------------------------------- Assignability -------------------------------------------------- */
     
     /**
+     * Returns the given type or the return type if the given type is an executable type.
+     */
+    @Pure
+    public static @Nonnull TypeMirror getType(@Nonnull TypeMirror type) {
+        return type.getKind() == TypeKind.EXECUTABLE ? ((ExecutableType) type).getReturnType() : type;
+    }
+    
+    /**
+     * Returns the type of the given element or the return type if the given element is an executable element.
+     */
+    @Pure
+    public static @Nonnull TypeMirror getType(@Nonnull Element element) {
+        return getType(element.asType());
+    }
+    
+    /**
      * Returns whether the given declared type is assignable to the given desired type.
      */
     @Pure
     public static boolean isAssignable(@Nonnull TypeMirror declaredType, @Nonnull Class<?> desiredType) {
         final @Nullable TypeElement desiredTypeElement = AnnotationProcessing.getElementUtils().getTypeElement(desiredType.getCanonicalName());
         if (desiredTypeElement == null) { AnnotationLog.error("Could not retrieve the element for the type $.", desiredType); return false; }
-        final @Nonnull TypeMirror subtype;
-        if (declaredType.getKind() == TypeKind.EXECUTABLE) { subtype = ((ExecutableType) declaredType).getReturnType(); } else { subtype = declaredType; }
-        final @Nonnull TypeMirror supertype = desiredTypeElement.asType();
         // TODO: Check whether this works with upper bounds of generic parameters and raw types.
-        return AnnotationProcessing.getTypeUtils().isAssignable(subtype, supertype);
+        return AnnotationProcessing.getTypeUtils().isAssignable(getType(declaredType), desiredTypeElement.asType());
     }
     
     /**

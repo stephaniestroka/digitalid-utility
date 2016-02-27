@@ -8,7 +8,9 @@ import java.lang.annotation.Target;
 
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
 import net.digitalid.utility.validation.annotations.meta.Validator;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
+import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.validators.OrderingValidator;
 
 /**
  * This annotation indicates that the elements of an {@link Iterable iterable} are descending.
@@ -24,13 +26,21 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface Descending {
     
-    /* -------------------------------------------------- Validator -------------------------------------------------- */
-    
-    /**
-     * This class checks the use of and generates the contract for the surrounding annotation.
-     */
-    public static class Validator extends AnnotationValidator {
-        // TODO: Generate the contract. Maybe try to check that the elements of the annotated iterable are comparable.
+    @Stateless
+    public static class Validator extends OrderingValidator {
+        
+        @Pure
+        @Override
+        protected boolean isStrictly() {
+            return false;
+        }
+        
+        @Pure
+        @Override
+        protected boolean isAscending() {
+            return false;
+        }
+        
     }
     
 }
