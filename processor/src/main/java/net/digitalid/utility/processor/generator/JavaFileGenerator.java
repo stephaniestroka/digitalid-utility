@@ -25,7 +25,7 @@ import javax.tools.JavaFileObject;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.UnexpectedValueException;
 import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessing;
+import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 import net.digitalid.utility.processor.generator.annotations.OnlyPossibleIn;
 import net.digitalid.utility.processor.visitor.ImportingTypeVisitor;
@@ -667,7 +667,7 @@ public class JavaFileGenerator extends FileGenerator {
     protected void writeOnce() throws IOException {
         requireCurrentCodeBlock(NONE);
         
-        final @Nonnull JavaFileObject javaFileObject = AnnotationProcessing.environment.get().getFiler().createSourceFile(qualifiedClassName, sourceClassElement);
+        final @Nonnull JavaFileObject javaFileObject = AnnotationProcessingEnvironment.environment.get().getFiler().createSourceFile(qualifiedClassName, sourceClassElement);
         try (@Nonnull Writer writer = javaFileObject.openWriter(); @Nonnull PrintWriter printWriter = new PrintWriter(writer)) {
             printPackage(printWriter);
             printImports(printWriter);

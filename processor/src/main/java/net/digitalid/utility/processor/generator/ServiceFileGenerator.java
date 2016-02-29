@@ -18,7 +18,7 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessing;
+import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.processor.ProcessingUtility;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
@@ -66,7 +66,7 @@ public class ServiceFileGenerator extends FileGenerator {
     
     protected ServiceFileGenerator(@Nonnull Class<?> service) {
         this.service = service;
-        this.serviceMirror = AnnotationProcessing.getElementUtils().getTypeElement(service.getCanonicalName()).asType();
+        this.serviceMirror = AnnotationProcessingEnvironment.getElementUtils().getTypeElement(service.getCanonicalName()).asType();
         AnnotationLog.verbose("Created the service loader file for the service " + QuoteString.inSingle(service.getName()));
     }
     
@@ -107,10 +107,10 @@ public class ServiceFileGenerator extends FileGenerator {
         if (providerElement.getKind() != ElementKind.CLASS) { errorMessage = "Only a class can implement a service:"; }
         else if (providerElement.getModifiers().contains(Modifier.ABSTRACT)) { errorMessage = "Only a non-abstract class can implement a service:"; }
         else if (!ProcessingUtility.hasPublicDefaultConstructor(providerElement)) { errorMessage = "The annotated class does not have a public default constructor:"; }
-        else if (!AnnotationProcessing.getTypeUtils().isSubtype(providerElement.asType(), serviceMirror)) { errorMessage = "The annotated class does not implement the specified service:"; }
+        else if (!AnnotationProcessingEnvironment.getTypeUtils().isSubtype(providerElement.asType(), serviceMirror)) { errorMessage = "The annotated class does not implement the specified service:"; }
         
         if (errorMessage == null) {
-            addProvider(AnnotationProcessing.getElementUtils().getBinaryName((TypeElement) providerElement).toString());
+            addProvider(AnnotationProcessingEnvironment.getElementUtils().getBinaryName((TypeElement) providerElement).toString());
         } else {
             AnnotationLog.error(errorMessage, SourcePosition.of(providerElement));
         }
@@ -122,7 +122,7 @@ public class ServiceFileGenerator extends FileGenerator {
     @NonWrittenRecipient
     protected void writeOnce() throws IOException {
         Collections.sort(qualifiedProviderNames);
-        final @Nonnull FileObject fileObject = AnnotationProcessing.environment.get().getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", getJarRelativeFilePath());
+        final @Nonnull FileObject fileObject = AnnotationProcessingEnvironment.environment.get().getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", getJarRelativeFilePath());
         try (@Nonnull Writer writer = fileObject.openWriter()) {
             for (@Nonnull String qualifiedProviderName : qualifiedProviderNames) {
                 writer.write(qualifiedProviderName + "\n");

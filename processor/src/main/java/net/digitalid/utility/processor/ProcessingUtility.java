@@ -24,7 +24,7 @@ import javax.lang.model.util.ElementFilter;
 import net.digitalid.utility.functional.string.NonNullableElementConverter;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessing;
+import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -71,7 +71,7 @@ public class ProcessingUtility {
      */
     @Pure
     public static @Nullable AnnotationMirror getAnnotationMirror(@Nonnull Element element, @Nonnull Class<? extends Annotation> annotationType) {
-        for (@Nonnull AnnotationMirror annotationMirror : AnnotationProcessing.getElementUtils().getAllAnnotationMirrors(element)) {
+        for (@Nonnull AnnotationMirror annotationMirror : AnnotationProcessingEnvironment.getElementUtils().getAllAnnotationMirrors(element)) {
             if (getQualifiedName(annotationMirror).equals(annotationType.getCanonicalName())) { return annotationMirror; }
         }
         AnnotationLog.debugging("Found no $ annotation on", SourcePosition.of(element), "@" + annotationType.getSimpleName());
@@ -119,7 +119,7 @@ public class ProcessingUtility {
                         final @Nonnull DeclaredType codeGeneratorImplementationType = (DeclaredType) metaAnnotationValue.getValue();
                         AnnotationLog.verbose("The declared generator type is " + QuoteString.inSingle(codeGeneratorImplementationType));
                         final @Nonnull TypeElement codeGeneratorImplementationElement = (TypeElement) codeGeneratorImplementationType.asElement();
-                        final @Nonnull String codeGeneratorImplementationBinaryName = AnnotationProcessing.getElementUtils().getBinaryName(codeGeneratorImplementationElement).toString();
+                        final @Nonnull String codeGeneratorImplementationBinaryName = AnnotationProcessingEnvironment.getElementUtils().getBinaryName(codeGeneratorImplementationElement).toString();
                         try {
                             final @Nonnull Class<?> codeGeneratorImplementationClass = Class.forName(codeGeneratorImplementationBinaryName);
                             if (codeGeneratorType.isAssignableFrom(codeGeneratorImplementationClass)) {
@@ -161,7 +161,7 @@ public class ProcessingUtility {
     public static @Capturable @Nonnull List<VariableElement> getFieldsOfType(@Nonnull TypeElement classElement, @Nonnull Class<?> fieldType) {
         final @Nonnull List<VariableElement> fields = new LinkedList<>();
         for (@Nonnull VariableElement field : ElementFilter.fieldsIn(classElement.getEnclosedElements())) {
-            final @Nonnull String fieldTypeName = AnnotationProcessing.getTypeUtils().erasure(field.asType()).toString();
+            final @Nonnull String fieldTypeName = AnnotationProcessingEnvironment.getTypeUtils().erasure(field.asType()).toString();
             AnnotationLog.verbose("Found with the type $ the field", SourcePosition.of(field), fieldTypeName);
             if (fieldTypeName.equals(fieldType.getCanonicalName())) { fields.add(field); }
         }

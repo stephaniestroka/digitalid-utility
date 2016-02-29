@@ -24,7 +24,7 @@ import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessing;
+import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.string.NumberString;
 import net.digitalid.utility.string.PrefixString;
@@ -44,7 +44,7 @@ public abstract class CustomProcessor implements Processor {
     
     @Override
     public void init(@Nonnull ProcessingEnvironment processingEnvironment) throws IllegalStateException {
-        AnnotationProcessing.environment.set(processingEnvironment);
+        AnnotationProcessingEnvironment.environment.set(processingEnvironment);
     }
     
     /* -------------------------------------------------- Utility -------------------------------------------------- */
