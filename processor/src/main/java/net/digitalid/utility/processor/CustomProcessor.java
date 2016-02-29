@@ -166,7 +166,7 @@ public abstract class CustomProcessor implements Processor {
             }
             return Collections.unmodifiableSet(result);
         } else {
-            AnnotationLog.error("No '@SupportedAnnotations' annotation found on " + QuoteString.inSingle(getClass().getName()));
+            AnnotationLog.error("No '@SupportedAnnotations' annotation found on $.", getClass().getName());
             return Collections.emptySet();
         }
     }

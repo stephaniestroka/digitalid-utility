@@ -18,15 +18,15 @@ public abstract class InternalException extends RuntimeException {
     
     /* -------------------------------------------------- Arguments -------------------------------------------------- */
     
-    private final Object[] arguments;
+    private final List<Object> arguments;
     
     /**
      * Returns the arguments with which the message is formatted.
      * 
-     * @see FormatString
+     * @see FormatString#format(java.lang.CharSequence, java.lang.Object...)
      */
     public List<Object> getArguments() {
-        return Collections.unmodifiableList(Arrays.asList(arguments));
+        return arguments;
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
@@ -34,7 +34,7 @@ public abstract class InternalException extends RuntimeException {
     protected InternalException(String message, Exception cause, Object... arguments) {
         super(message == null ? "An internal exception occurred." : FormatString.format(message, arguments), cause);
         
-        this.arguments = arguments;
+        this.arguments = Collections.unmodifiableList(Arrays.asList(arguments));
     }
     
     protected InternalException(String message, Object... arguments) {

@@ -3,7 +3,7 @@ package net.digitalid.utility.contracts;
 /**
  * This class stores whether a contract is fulfilled or violated based on a condition.
  */
-class Contract {
+public class Contract {
     
     /* -------------------------------------------------- Condition -------------------------------------------------- */
     

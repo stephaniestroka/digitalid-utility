@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.annotations.size;
+package net.digitalid.utility.validation.interfaces;
 
 /**
  * Objects that implement this interface have a size.

@@ -7,9 +7,9 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
 import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
+import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 
 /**
  * Subclasses of this class generate files during annotation processing.

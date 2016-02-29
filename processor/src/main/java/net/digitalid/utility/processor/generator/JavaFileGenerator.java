@@ -3,6 +3,7 @@ package net.digitalid.utility.processor.generator;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.lang.annotation.Annotation;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,24 +17,31 @@ import java.util.Stack;
 
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 
+import net.digitalid.utility.contracts.Contract;
+import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.exceptions.UnexpectedValueException;
+import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 import net.digitalid.utility.processor.generator.annotations.OnlyPossibleIn;
-import net.digitalid.utility.processor.visitor.ImportingTypeVisitor;
+import net.digitalid.utility.string.FormatString;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
+import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.validation.validator.GeneratedContract;
 
 import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.*;
 
@@ -41,7 +49,7 @@ import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBl
  * This class generates Java source files during annotation processing.
  */
 @Mutable
-public class JavaFileGenerator extends FileGenerator {
+public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Generated Class -------------------------------------------------- */
     
@@ -157,7 +165,7 @@ public class JavaFileGenerator extends FileGenerator {
      */
     @NonWrittenRecipient
     protected boolean addImport(@Nonnull String qualifiedName) {
-        Require.that(qualifiedName.contains(".")).orThrow("The name " + QuoteString.inSingle(qualifiedName) + " has to be qualified.");
+        Require.that(qualifiedName.contains(".")).orThrow("The name $ has to be qualified.", qualifiedName);
         requireNotWritten();
         
         final @Nonnull String packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
@@ -183,16 +191,18 @@ public class JavaFileGenerator extends FileGenerator {
         return addImport("static " + qualifiedMemberName);
     }
     
+    /* -------------------------------------------------- Type Visitor -------------------------------------------------- */
+    
+    // TODO: Implement the type visitor here as an inner class.
+    
+    /* -------------------------------------------------- Type Importer -------------------------------------------------- */
+    
     /**
      * Maps the non-qualified names that are currently imported to their fully qualified names.
      */
     private final @Nonnull @NonNullableElements Map<String, String> nameSpace = new HashMap<>();
     
-    /**
-     * Imports the given qualified type name if its simple name is not yet mapped to a different type.
-     * 
-     * @return the simple name of the given qualified type name if it could be imported without a naming conflict and the given qualified type name otherwise.
-     */
+    @Override
     @NonWrittenRecipient
     public @Nonnull String importIfPossible(@Nonnull String qualifiedTypeName) {
         final @Nonnull String simpleTypeName = qualifiedTypeName.substring(qualifiedTypeName.lastIndexOf('.') + 1);
@@ -207,43 +217,29 @@ public class JavaFileGenerator extends FileGenerator {
         }
     }
     
-    /**
-     * Imports the given type if its simple name is not yet mapped to a different type.
-     * 
-     * @return the simple name of the given type if it could be imported without a naming conflict and the qualified name of the given type otherwise.
-     */
+    @Override
     @NonWrittenRecipient
     public @Nonnull String importIfPossible(@Nonnull Class<?> type) {
         return importIfPossible(type.getCanonicalName());
     }
     
-    /**
-     * Imports the given element, which has to be qualified nameable, if its simple name is not yet mapped to a different type.
-     * 
-     * @return the simple name of the given element if it could be imported without a naming conflict and the qualified name of the given element otherwise.
-     */
+    @Override
     @NonWrittenRecipient
     public @Nonnull String importIfPossible(@Nonnull Element typeElement) {
+        Require.that(typeElement.getKind().isClass() || typeElement.getKind().isInterface()).orThrow("The element $ has to be a type.", typeElement);
+        
         return importIfPossible(((QualifiedNameable) typeElement).getQualifiedName().toString());
     }
     
     protected final @Nonnull ImportingTypeVisitor importingTypeVisitor = ImportingTypeVisitor.with(this);
     
-    /**
-     * Imports the given type mirror with its generic parameters if their simple names are not yet mapped to different types.
-     * 
-     * @return the simple name of the given type mirror if it could be imported without a naming conflict and the qualified name of the given type mirror otherwise.
-     */
+    @Override
     @NonWrittenRecipient
     public @Nonnull String importIfPossible(@Nonnull TypeMirror typeMirror) {
         return importingTypeVisitor.visit(typeMirror).toString();
     }
     
-    /**
-     * Imports the given qualified type name if its simple name is not yet mapped to a different type.
-     * 
-     * @return the simple name of the given type if the qualified type name could be imported without a naming conflict and the given qualified type name otherwise.
-     */
+    @Override
     @NonWrittenRecipient
     public @Nonnull String importStaticallyIfPossible(@Nonnull String qualifiedMemberName) {
         final @Nonnull String simpleMemberName = qualifiedMemberName.substring(qualifiedMemberName.lastIndexOf('.') + 1);
@@ -444,11 +440,16 @@ public class JavaFileGenerator extends FileGenerator {
     
     @NonWrittenRecipient
     @OnlyPossibleIn({NONE, CLASS, INTERFACE})
-    // TODO: Pass the annotation type and support easier value formatting with FormatString.
-    public void addAnnotation(@Nonnull String annotation) {
+    public void addAnnotation(@Nonnull Class<? extends Annotation> annotationType, @Nullable String optionalValues, @Nonnull Object... optionalArguments) {
         requireCurrentCodeBlock(NONE, CLASS);
         
-        addCodeLineWithIndentation(annotation);
+        addCodeLineWithIndentation("@" + importIfPossible(annotationType) + (optionalValues != null ? "(" + FormatString.format(optionalValues, QuoteString.Mark.CODE, optionalArguments) + ")" : ""));
+    }
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn({NONE, CLASS, INTERFACE})
+    public void addAnnotation(@Nonnull Class<? extends Annotation> annotationType) {
+        addAnnotation(annotationType, null);
     }
     
     /* -------------------------------------------------- Class or Interface -------------------------------------------------- */
@@ -459,18 +460,19 @@ public class JavaFileGenerator extends FileGenerator {
         requireCurrentCodeBlock(NONE, CLASS, INTERFACE);
         
         if (getCurrentCodeBlock() == CodeBlock.NONE) {
-            addAnnotation("@" + importIfPossible(SuppressWarnings.class) + "(\"null\")");
+            addAnnotation(SuppressWarnings.class, "$", "null");
             StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
             final @Nonnull String generator = caller.getClassName();
             final @Nonnull String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date());
-            addAnnotation("@" + importIfPossible(Generated.class) + "(value = {" + QuoteString.inDouble(generator) + "}, date = " + QuoteString.inDouble(date) + ")");
+            addAnnotation(Generated.class, "value = $, date = $)", generator, date);
         }
+        
         beginBlock(declaration, classOrInterface, NONE, CLASS, INTERFACE);
         addEmptyLine();
     }
     
     @NonWrittenRecipient
-    @OnlyPossibleIn({INTERFACE})
+    @OnlyPossibleIn({CLASS, INTERFACE})
     public void endClassOrInterface(@Nonnull CodeBlock classOrInterface) {
         endBlock(classOrInterface);
         if (getCurrentCodeBlock() != CodeBlock.NONE) {
@@ -658,6 +660,32 @@ public class JavaFileGenerator extends FileGenerator {
         requireCurrentCodeBlock();
         
         addCodeLineWithIndentation(statement + ";");
+    }
+    
+    /* -------------------------------------------------- Contracts -------------------------------------------------- */
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn()
+    protected void addContract(@Nonnull Class<? extends Contract> contractType, @Nonnull GeneratedContract generatedContract) {
+        addStatement(importIfPossible(contractType) + ".that(" + generatedContract.getCondition() + ").orThrow(" + QuoteString.inDouble(generatedContract.getMessage()) + ", " + IterableConverter.toString(generatedContract.getArguments()) + ")");
+    }
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn()
+    public void addPrecondition(@Nonnull GeneratedContract generatedContract) {
+        addContract(Require.class, generatedContract);
+    }
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn()
+    public void addPostcondition(@Nonnull GeneratedContract generatedContract) {
+        addContract(Ensure.class, generatedContract);
+    }
+    
+    @NonWrittenRecipient
+    @OnlyPossibleIn()
+    public void addInvariant(@Nonnull GeneratedContract generatedContract) {
+        addContract(Validate.class, generatedContract);
     }
     
     /* -------------------------------------------------- Writing -------------------------------------------------- */
