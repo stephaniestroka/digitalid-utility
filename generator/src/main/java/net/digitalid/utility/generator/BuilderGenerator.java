@@ -15,7 +15,7 @@ import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessing;
+import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -76,7 +76,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      */
     private boolean isFieldRequired(@Nonnull FieldInformation fieldInformation) {
         // TODO: nullable fields are not required. Non-final fields are also not required (and probably not representing).
-        return fieldInformation.defaultValue == null;
+        return !fieldInformation.hasDefaultValue();
     }
     
     /**
@@ -84,7 +84,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      */
     private @Nonnull @NonNullableElements List<FieldInformation> getRequiredFields() {
         final @Nonnull @NonNullableElements List<FieldInformation> requiredFields = new ArrayList<>();
-        for (@Nonnull FieldInformation fieldInformation : typeInformation.representingFields) {
+        for (@Nonnull FieldInformation fieldInformation : typeInformation.getRepresentingFields()) {
             if (isFieldRequired(fieldInformation)) {
                 requiredFields.add(fieldInformation);
             }
@@ -128,7 +128,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         
         beginClass("static class " + nameOfBuilder + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeArguments) + (interfacesForRequiredFields.size() == 0 ? "" : " implements " + IterableConverter.toString(interfacesForRequiredFields) + importingTypeVisitor.getTypeVariablesWithoutBounds(typeArguments, false)));
         
-        for (@Nonnull FieldInformation field : typeInformation.representingFields) {
+        for (@Nonnull FieldInformation field : typeInformation.getRepresentingFields()) {
             field.getAnnotations();
             addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize(field.getName())));
             // TODO: Add annotations.
@@ -153,7 +153,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         }
         final @Nonnull ExecutableElement constructor = constructors.get(0);
         
-        final @Nonnull ExecutableType type = (ExecutableType) AnnotationProcessing.getTypeUtils().asMemberOf(typeInformation.getType(), constructor);
+        final @Nonnull ExecutableType type = (ExecutableType) AnnotationProcessingEnvironment.getTypeUtils().asMemberOf(typeInformation.getType(), constructor);
         addStatement("return new " + typeInformation.getQualifiedNameOfGeneratedSubclass() + importingTypeVisitor.reduceParametersDeclarationToString(type, constructor));
         
         endMethod();
@@ -181,7 +181,7 @@ public class BuilderGenerator extends JavaFileGenerator {
             }
             addSetterForField(entryField, secondInterface, nameOfBuilder);
         } else {
-            for (@Nonnull FieldInformation optionalField : typeInformation.representingFields) {
+            for (@Nonnull FieldInformation optionalField : typeInformation.getRepresentingFields()) {
                 addSetterForField(optionalField, nameOfBuilder, nameOfBuilder);
             }
             beginMethod("public static " + importingTypeVisitor.mapTypeVariablesWithBoundsToStrings(typeArguments) + nameOfBuilder + " get()");

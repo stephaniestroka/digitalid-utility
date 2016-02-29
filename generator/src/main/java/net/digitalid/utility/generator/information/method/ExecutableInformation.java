@@ -8,7 +8,7 @@ import javax.lang.model.type.ExecutableType;
 
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessing;
+import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
@@ -73,7 +73,7 @@ public abstract class ExecutableInformation extends ElementInformationImplementa
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     protected ExecutableInformation(@Nonnull Element element, @Nonnull DeclaredType containingType) {
-        super(element, AnnotationProcessing.getTypeUtils().asMemberOf(containingType, element), containingType);
+        super(element, AnnotationProcessingEnvironment.getTypeUtils().asMemberOf(containingType, element), containingType);
     }
     
 }

@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 
-import net.digitalid.utility.logging.processing.AnnotationProcessing;
+import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
@@ -15,7 +15,7 @@ public class DeclaredFieldInformation extends DirectlyAccessibleFieldInformation
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     protected DeclaredFieldInformation(@Nonnull VariableElement field, @Nonnull DeclaredType containingType) {
-        super(field, AnnotationProcessing.getTypeUtils().asMemberOf(containingType, field), containingType, field);
+        super(field, AnnotationProcessingEnvironment.getTypeUtils().asMemberOf(containingType, field), containingType, field);
     }
     
     /**
