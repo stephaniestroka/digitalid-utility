@@ -60,15 +60,15 @@ public class AnnotationLog {
         Require.that(message != null).orThrow("The message may not be null.");
         
         Logger.log(level, message + (position != null ? " " + position : ""), null, arguments);
-        if (level.getValue() >= Level.INFORMATION.getValue() && AnnotationProcessing.environment.isSet()) {
+        if (level.getValue() >= Level.INFORMATION.getValue() && AnnotationProcessingEnvironment.environment.isSet()) {
             if (position == null) {
-                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments));
+                AnnotationProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments));
             } else if (position.getAnnotationValue() != null) {
-                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement(), position.getAnnotationMirror(), position.getAnnotationValue());
+                AnnotationProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement(), position.getAnnotationMirror(), position.getAnnotationValue());
             } else if (position.getAnnotationMirror() != null) {
-                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement(), position.getAnnotationMirror());
+                AnnotationProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement(), position.getAnnotationMirror());
             } else {
-                AnnotationProcessing.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement());
+                AnnotationProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement());
             }
         }
     }
