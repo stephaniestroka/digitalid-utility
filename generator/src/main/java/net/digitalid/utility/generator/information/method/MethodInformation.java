@@ -17,7 +17,7 @@ import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.annotations.Interceptor;
 import net.digitalid.utility.generator.annotations.Recover;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
-import net.digitalid.utility.logging.processing.AnnotationLog;
+import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.string.StringCase;
@@ -47,7 +47,7 @@ public class MethodInformation extends ExecutableInformation {
     @Pure
     public boolean hasReturnType(@Nonnull String desiredTypeName) {
         final @Nonnull String returnTypeName = getElement().getReturnType().toString();
-        AnnotationLog.verbose("Return type: $, desired type: $", returnTypeName, desiredTypeName);
+        ProcessingLog.verbose("Return type: $, desired type: $", returnTypeName, desiredTypeName);
         return returnTypeName.equals(desiredTypeName);
     }
     
@@ -151,8 +151,8 @@ public class MethodInformation extends ExecutableInformation {
         this.interceptors = ProcessingUtility.getCodeGenerators(element, Interceptor.class, MethodInterceptor.class);
         
         if (isDeclaredInDigitalIDLibrary()) {
-            if (isGetter() && !hasAnnotation(Pure.class)) { AnnotationLog.error("A getter has to be '@Pure':", SourcePosition.of(element)); }
-            if (isSetter() && hasAnnotation(Pure.class)) { AnnotationLog.error("A setter may not be '@Pure':", SourcePosition.of(element)); }
+            if (isGetter() && !hasAnnotation(Pure.class)) { ProcessingLog.error("A getter has to be '@Pure':", SourcePosition.of(element)); }
+            if (isSetter() && hasAnnotation(Pure.class)) { ProcessingLog.error("A setter may not be '@Pure':", SourcePosition.of(element)); }
         }
         
         if (isRecover()) {
@@ -162,8 +162,8 @@ public class MethodInformation extends ExecutableInformation {
             final @Nonnull String qualifiedReturnTypeName = ((QualifiedNameable) ((DeclaredType) element.getReturnType()).asElement()).getQualifiedName().toString();
             final @Nonnull String qualifiedEnclosingClassName = ((QualifiedNameable) element.getEnclosingElement()).getQualifiedName().toString();
             if (!qualifiedReturnTypeName.equals(qualifiedEnclosingClassName)) { errorMessage = "The return type has to be the enclosing class:"; }
-            if (errorMessage != null) { AnnotationLog.error(errorMessage, SourcePosition.of(element)); }
-            AnnotationLog.verbose("Found the recover method", SourcePosition.of(element));
+            if (errorMessage != null) { ProcessingLog.error(errorMessage, SourcePosition.of(element)); }
+            ProcessingLog.verbose("Found the recover method", SourcePosition.of(element));
         }
     }
     

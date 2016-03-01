@@ -30,7 +30,7 @@ import net.digitalid.utility.generator.information.type.filter.FieldNameExtracto
 import net.digitalid.utility.generator.information.type.filter.ImplementedGetterMatcher;
 import net.digitalid.utility.generator.information.type.filter.ParameterBasedFieldInformationTransformer;
 import net.digitalid.utility.generator.information.type.filter.RecoverMethodMatcher;
-import net.digitalid.utility.logging.processing.AnnotationLog;
+import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -168,7 +168,7 @@ public class ClassInformation extends TypeInformation {
             final @Nonnull @NonNullableElements List<MethodInformation> recoverMethods = getRecoverMethods();
             if (recoverMethods.size() > 0) {
                 if (recoverMethods.size() > 1) {
-                    AnnotationLog.information("Cannot determine the representing fields with multiple recover methods:", SourcePosition.of(typeElement));
+                    ProcessingLog.information("Cannot determine the representing fields with multiple recover methods:", SourcePosition.of(typeElement));
                     generatable = false;
                 } else {
                     return recoverMethods.get(0);
@@ -190,7 +190,7 @@ public class ClassInformation extends TypeInformation {
                     final @Nonnull @NonNullableElements List<ConstructorInformation> constructors = getConstructors();
                     // we always have at least one constructor in a class. (TODO: check if this is true for abstract classes as well)
                     if (constructors.size() > 1) {
-                        AnnotationLog.information("Cannot determine the representing fields with several constructors and no recover method:", SourcePosition.of(typeElement));
+                        ProcessingLog.information("Cannot determine the representing fields with several constructors and no recover method:", SourcePosition.of(typeElement));
                         generatable = false;
                     } else {
                         recoverExecutable = constructors.get(0).getElement();
@@ -225,12 +225,12 @@ public class ClassInformation extends TypeInformation {
                             final @Nullable ParameterBasedFieldInformation parameterBasedFieldInformation = getParameterBasedFieldInformation(typeElement, recoveryParameter);
                             parameterBasedFieldInformations.add(parameterBasedFieldInformation);
                         } catch (InvalidRecoveryParameterException e) {
-                            AnnotationLog.information(e.getMessage());
+                            ProcessingLog.information(e.getMessage());
                             generatable = false;
                         }
                     }
                 } else {
-                    AnnotationLog.information("Failed to retrieve the constructor or recover method", SourcePosition.of(typeElement));
+                    ProcessingLog.information("Failed to retrieve the constructor or recover method", SourcePosition.of(typeElement));
                     generatable = false;
                 }
             }

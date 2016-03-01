@@ -10,8 +10,7 @@ import net.digitalid.utility.configuration.Configuration;
 /**
  * This class provides the environment for annotation processing.
  */
-// TODO: Rename to ProcessingEnvironment eventually.
-public class AnnotationProcessingEnvironment {
+public class StaticProcessingEnvironment {
     
     /* -------------------------------------------------- Environment -------------------------------------------------- */
     

@@ -13,8 +13,8 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
-import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
+import net.digitalid.utility.logging.processing.ProcessingLog;
+import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -39,9 +39,9 @@ public @interface Utility {
         @Pure
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
-            for (@Nonnull Element member : AnnotationProcessingEnvironment.getElementUtils().getAllMembers((TypeElement) element)) {
+            for (@Nonnull Element member : StaticProcessingEnvironment.getElementUtils().getAllMembers((TypeElement) element)) {
                 if (ProcessingUtility.isDeclaredInDigitalIDLibrary(member) && !member.getModifiers().contains(Modifier.STATIC)) {
-                    AnnotationLog.error("The utility type $ may only have static fields and methods.", SourcePosition.of(member), element);
+                    ProcessingLog.error("The utility type $ may only have static fields and methods.", SourcePosition.of(member), element);
                 }
             }
         }

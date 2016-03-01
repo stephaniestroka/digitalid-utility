@@ -7,8 +7,8 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
-import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
+import net.digitalid.utility.logging.processing.ProcessingLog;
+import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
@@ -51,7 +51,7 @@ public abstract class ExecutableInformation extends ElementInformationImplementa
     public boolean hasSingleParameter(@Nonnull String desiredTypeName) {
         if (hasSingleParameter()) {
             final @Nonnull String parameterTypeName = getElement().getParameters().get(0).asType().toString();
-            AnnotationLog.verbose("Parameter type: $, desired type: $", parameterTypeName, desiredTypeName);
+            ProcessingLog.verbose("Parameter type: $, desired type: $", parameterTypeName, desiredTypeName);
             return parameterTypeName.equals(desiredTypeName);
         } else {
             return false;
@@ -73,7 +73,7 @@ public abstract class ExecutableInformation extends ElementInformationImplementa
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     protected ExecutableInformation(@Nonnull Element element, @Nonnull DeclaredType containingType) {
-        super(element, AnnotationProcessingEnvironment.getTypeUtils().asMemberOf(containingType, element), containingType);
+        super(element, StaticProcessingEnvironment.getTypeUtils().asMemberOf(containingType, element), containingType);
     }
     
 }

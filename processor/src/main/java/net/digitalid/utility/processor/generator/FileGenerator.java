@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
-import net.digitalid.utility.logging.processing.AnnotationLog;
+import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
@@ -73,11 +73,11 @@ public abstract class FileGenerator {
         try {
             writeOnce();
         } catch (@Nonnull IOException exception) {
-            AnnotationLog.error("A problem occurred while generating the file " + this + ": " + exception);
+            ProcessingLog.error("A problem occurred while generating the file " + this + ": " + exception);
             return false;
         }
         
-        AnnotationLog.information("Generated the file " + this);
+        ProcessingLog.information("Generated the file " + this);
         this.written = true;
         return true;
     }

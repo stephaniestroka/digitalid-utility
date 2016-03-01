@@ -22,7 +22,7 @@ import javax.lang.model.type.TypeKind;
 
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.Initializer;
-import net.digitalid.utility.logging.processing.AnnotationLog;
+import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
@@ -63,7 +63,7 @@ public class InitializationProcessor extends CustomProcessor {
     @Pure
     protected @Nullable VariableElement getConfigurationField(@Nonnull AnnotationValue annotationValue) {
         final @Nonnull DeclaredType declaredType = (DeclaredType) annotationValue.getValue();
-        AnnotationLog.debugging("The declared type is " + QuoteString.inSingle(declaredType));
+        ProcessingLog.debugging("The declared type is " + QuoteString.inSingle(declaredType));
         final @Nonnull TypeElement typeElement = (TypeElement) declaredType.asElement();
         return ProcessingUtility.getUniquePublicStaticFieldOfType(typeElement, Configuration.class);
     }
@@ -119,10 +119,10 @@ public class InitializationProcessor extends CustomProcessor {
             final @Nonnull ExecutableElement annotatedMethod = (ExecutableElement) annotatedElement;
             
             final @Nullable String errorMessage = checkRequirements(annotatedMethod);
-            if (errorMessage != null) { AnnotationLog.error(errorMessage, SourcePosition.of(annotatedMethod)); continue; }
+            if (errorMessage != null) { ProcessingLog.error(errorMessage, SourcePosition.of(annotatedMethod)); continue; }
             
             final @Nullable AnnotationMirror annotationMirror = ProcessingUtility.getAnnotationMirror(annotatedMethod, Initialize.class);
-            if (annotationMirror == null) { AnnotationLog.error("Found no annotation '@Initialize' on", SourcePosition.of(annotatedMethod)); continue; }
+            if (annotationMirror == null) { ProcessingLog.error("Found no annotation '@Initialize' on", SourcePosition.of(annotatedMethod)); continue; }
             
             // TODO: It should be possible to ensure during compile-time that there are no cyclic dependencies.
             
@@ -133,7 +133,7 @@ public class InitializationProcessor extends CustomProcessor {
                 if (entry.getKey().getSimpleName().contentEquals("target")) {
                     targetConfigurationField = getConfigurationField(entry.getValue());
                     if (targetConfigurationField == null) {
-                        AnnotationLog.error("The referenced class does not have a unique, public and static configuration field:", SourcePosition.of(annotatedMethod, annotationMirror, entry.getValue()));
+                        ProcessingLog.error("The referenced class does not have a unique, public and static configuration field:", SourcePosition.of(annotatedMethod, annotationMirror, entry.getValue()));
                     }
                 } else if (entry.getKey().getSimpleName().contentEquals("dependencies")) {
                     @SuppressWarnings("unchecked") final @Nonnull List<? extends AnnotationValue> dependencyClassValues = (List<? extends AnnotationValue>) entry.getValue().getValue();
@@ -141,7 +141,7 @@ public class InitializationProcessor extends CustomProcessor {
                     for (@Nonnull AnnotationValue dependencyClassValue : dependencyClassValues) {
                         final @Nullable VariableElement dependencyConfigurationField = getConfigurationField(dependencyClassValue);
                         if (dependencyConfigurationField == null) {
-                            AnnotationLog.error("The referenced class does not have a unique, public and static configuration field:", SourcePosition.of(annotatedMethod, annotationMirror, dependencyClassValue));
+                            ProcessingLog.error("The referenced class does not have a unique, public and static configuration field:", SourcePosition.of(annotatedMethod, annotationMirror, dependencyClassValue));
                         } else {
                             dependencyConfigurationFields.add(dependencyConfigurationField);
                         }

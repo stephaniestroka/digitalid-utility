@@ -19,7 +19,7 @@ import net.digitalid.utility.string.FormatString;
 /**
  * This class makes it easier to log messages during annotation processing.
  */
-public class AnnotationLog {
+public class ProcessingLog {
     
     /* -------------------------------------------------- Setup -------------------------------------------------- */
     
@@ -60,15 +60,15 @@ public class AnnotationLog {
         Require.that(message != null).orThrow("The message may not be null.");
         
         Logger.log(level, message + (position != null ? " " + position : ""), null, arguments);
-        if (level.getValue() >= Level.INFORMATION.getValue() && AnnotationProcessingEnvironment.environment.isSet()) {
+        if (level.getValue() >= Level.INFORMATION.getValue() && StaticProcessingEnvironment.environment.isSet()) {
             if (position == null) {
-                AnnotationProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments));
+                StaticProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments));
             } else if (position.getAnnotationValue() != null) {
-                AnnotationProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement(), position.getAnnotationMirror(), position.getAnnotationValue());
+                StaticProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement(), position.getAnnotationMirror(), position.getAnnotationValue());
             } else if (position.getAnnotationMirror() != null) {
-                AnnotationProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement(), position.getAnnotationMirror());
+                StaticProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement(), position.getAnnotationMirror());
             } else {
-                AnnotationProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement());
+                StaticProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement());
             }
         }
     }
@@ -177,7 +177,7 @@ public class AnnotationLog {
         
         for (TypeElement annotation : annotations) {
             for (Element element : roundEnvironment.getElementsAnnotatedWith(annotation)) {
-                AnnotationLog.information("Found $ on", SourcePosition.of(element), "@" + annotation.getSimpleName());
+                ProcessingLog.information("Found $ on", SourcePosition.of(element), "@" + annotation.getSimpleName());
             }
         }
     }
@@ -191,7 +191,7 @@ public class AnnotationLog {
         Require.that(roundEnvironment != null).orThrow("The round environment may not be null.");
         
         for (Element rootElement : roundEnvironment.getRootElements()) {
-            AnnotationLog.information("Found the " + rootElement.getKind().toString().toLowerCase() + " $.", rootElement.asType());
+            ProcessingLog.information("Found the " + rootElement.getKind().toString().toLowerCase() + " $.", rootElement.asType());
         }
     }
     

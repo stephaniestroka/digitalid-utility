@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.logging.processing.AnnotationLog;
+import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.validation.annotations.meta.Generator;
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
@@ -42,7 +42,7 @@ public @interface Index {
             super.checkUsage(element, annotationMirror);
             
             if (!ProcessingUtility.hasMethod(ProcessingUtility.getSurroundingType(element), "size", int.class)) {
-                AnnotationLog.error("The annotation '@Index' may only be used in types with an 'int size()' method:", SourcePosition.of(element, annotationMirror));
+                ProcessingLog.error("The annotation '@Index' may only be used in types with an 'int size()' method:", SourcePosition.of(element, annotationMirror));
             }
         }
         

@@ -7,7 +7,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 
-import net.digitalid.utility.logging.processing.AnnotationLog;
+import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.validation.annotations.meta.Generator;
 import net.digitalid.utility.validation.annotations.meta.MethodAnnotation;
@@ -19,8 +19,8 @@ import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.validation.processing.TypeImporter;
 
 /**
- * A contract generator {@link #checkUsage(javax.lang.model.element.Element, javax.lang.model.type.DeclaredType) checks the use}
- * of and {@link #generateContract(javax.lang.model.element.Element, javax.lang.model.element.AnnotationMirror) generates the contract}
+ * A contract generator {@link #checkUsage(Element, AnnotationMirror) checks the use} of and
+ * {@link #generateContract(Element, AnnotationMirror, TypeImporter) generates the contract}
  * for an annotation during annotation processing.
  * 
  * @see Generator
@@ -47,16 +47,16 @@ public abstract class ContractGenerator extends CodeGenerator {
                 if (ProcessingUtility.isAssignable(element, targetType)) { elementAssignableToTargetType = true; }
             }
             if (!elementAssignableToTargetType) {
-                AnnotationLog.error("The element $ is not assignable to a target type of $.", SourcePosition.of(element, annotationMirror), element, annotationName);
+                ProcessingLog.error("The element $ is not assignable to a target type of $.", SourcePosition.of(element, annotationMirror), element, annotationName);
             }
         }
         
         final @Nullable MethodAnnotation methodAnnotation = getClass().getAnnotation(MethodAnnotation.class);
         if (methodAnnotation != null) {
             if (element.getKind() != ElementKind.METHOD) {
-                AnnotationLog.error("The method annotation $ may only be used on methods.", SourcePosition.of(element, annotationMirror), annotationName);
+                ProcessingLog.error("The method annotation $ may only be used on methods.", SourcePosition.of(element, annotationMirror), annotationName);
             } else if (!ProcessingUtility.isAssignable(((ExecutableElement) element).getReceiverType(), methodAnnotation.value())) {
-                AnnotationLog.error("The method annotation $ cannot be used on $.", SourcePosition.of(element, annotationMirror), annotationName, element);
+                ProcessingLog.error("The method annotation $ cannot be used on $.", SourcePosition.of(element, annotationMirror), annotationName, element);
             }
         }
     }

@@ -30,8 +30,8 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.exceptions.UnexpectedValueException;
 import net.digitalid.utility.functional.string.IterableConverter;
-import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
+import net.digitalid.utility.logging.processing.ProcessingLog;
+import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 import net.digitalid.utility.processor.generator.annotations.OnlyPossibleIn;
 import net.digitalid.utility.string.FormatString;
@@ -40,8 +40,8 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.processing.TypeImporter;
 import net.digitalid.utility.validation.contract.Contract;
+import net.digitalid.utility.validation.processing.TypeImporter;
 
 import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.*;
 
@@ -101,7 +101,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         this.qualifiedClassName = qualifiedClassName;
         this.sourceClassElement = sourceClassElement;
         this.packageName = qualifiedClassName.substring(0, qualifiedClassName.lastIndexOf('.'));
-        AnnotationLog.verbose("Generating the class " + this);
+        ProcessingLog.verbose("Generating the class " + this);
     }
     
     /**
@@ -695,7 +695,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     protected void writeOnce() throws IOException {
         requireCurrentCodeBlock(NONE);
         
-        final @Nonnull JavaFileObject javaFileObject = AnnotationProcessingEnvironment.environment.get().getFiler().createSourceFile(qualifiedClassName, sourceClassElement);
+        final @Nonnull JavaFileObject javaFileObject = StaticProcessingEnvironment.environment.get().getFiler().createSourceFile(qualifiedClassName, sourceClassElement);
         try (@Nonnull Writer writer = javaFileObject.openWriter(); @Nonnull PrintWriter printWriter = new PrintWriter(writer)) {
             printPackage(printWriter);
             printImports(printWriter);

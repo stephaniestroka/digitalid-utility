@@ -9,7 +9,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
-import net.digitalid.utility.logging.processing.AnnotationLog;
+import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -39,15 +39,15 @@ public abstract class OrderingContractGenerator extends ContractGenerator {
         if (type.getKind() == TypeKind.ARRAY) {
             final @Nonnull ArrayType arrayType = (ArrayType) type;
             if (!ProcessingUtility.isAssignable(arrayType.getComponentType(), Comparable.class)) {
-                AnnotationLog.error("The annotation $ may only be used on arrays whose component type is comparable:", SourcePosition.of(element, annotationMirror), annotationName);
+                ProcessingLog.error("The annotation $ may only be used on arrays whose component type is comparable:", SourcePosition.of(element, annotationMirror), annotationName);
             }
         } else if (type.getKind() == TypeKind.DECLARED) {
             final @Nonnull DeclaredType declaredType = (DeclaredType) type;
             if (declaredType.getTypeArguments().size() != 1 || !ProcessingUtility.isAssignable(declaredType.getTypeArguments().get(0), Comparable.class)) {
-                AnnotationLog.error("The annotation $ may only be used on iterables whose component type is comparable:", SourcePosition.of(element, annotationMirror), annotationName);
+                ProcessingLog.error("The annotation $ may only be used on iterables whose component type is comparable:", SourcePosition.of(element, annotationMirror), annotationName);
             }
         } else {
-            AnnotationLog.error("The annotation $ may only be used on arrays or declared types:", SourcePosition.of(element, annotationMirror), annotationName);
+            ProcessingLog.error("The annotation $ may only be used on arrays or declared types:", SourcePosition.of(element, annotationMirror), annotationName);
         }
     }
     

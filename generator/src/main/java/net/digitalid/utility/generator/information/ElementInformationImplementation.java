@@ -18,7 +18,7 @@ import javax.lang.model.type.TypeMirror;
 import net.digitalid.utility.generator.information.field.FieldInformationImplementation;
 import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
-import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
+import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.state.Unmodifiable;
@@ -182,13 +182,13 @@ public abstract class ElementInformationImplementation implements ElementInforma
         this.name = element.getSimpleName().toString();
         this.type = type;
         this.containingType = containingType;
-        this.packageElement = AnnotationProcessingEnvironment.getElementUtils().getPackageOf(element);
+        this.packageElement = StaticProcessingEnvironment.getElementUtils().getPackageOf(element);
         this.packageName = packageElement.getQualifiedName().toString();
         this.modifiers = Collections.unmodifiableSet(element.getModifiers());
         this.validators = ProcessingUtility.getContractGenerators(element);
         
         final @Nonnull @NonNullableElements Map<String, AnnotationMirror> annotations = new LinkedHashMap<>();
-        for (@Nonnull AnnotationMirror annotationMirror : AnnotationProcessingEnvironment.getElementUtils().getAllAnnotationMirrors(element)) {
+        for (@Nonnull AnnotationMirror annotationMirror : StaticProcessingEnvironment.getElementUtils().getAllAnnotationMirrors(element)) {
             annotations.put(ProcessingUtility.getQualifiedName(annotationMirror), annotationMirror);
         }
         this.annotations = Collections.unmodifiableMap(annotations);

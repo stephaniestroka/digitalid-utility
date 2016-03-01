@@ -11,7 +11,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.generator.information.type.TypeInformation;
-import net.digitalid.utility.logging.processing.AnnotationLog;
+import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.string.PrefixString;
@@ -72,11 +72,11 @@ public class GeneratorProcessor extends CustomProcessor {
             if (rootElement.getKind() == ElementKind.CLASS || rootElement.getKind() == ElementKind.INTERFACE) {
                 // TODO: In order to just generate a builder, the class can actually be final.
                 if (!rootElement.getModifiers().contains(Modifier.FINAL) && !PrefixString.startsWithAny(rootElement.getSimpleName().toString(), "ReadOnly", "Freezable") && !rootElement.getSimpleName().toString().endsWith("Test") && !rootElement.getSimpleName().toString().equals("ConverterAnnotations")) {
-                    AnnotationLog.debugging("Generate the classes for  " + QuoteString.inSingle(rootElement.getSimpleName()));
+                    ProcessingLog.debugging("Generate the classes for  " + QuoteString.inSingle(rootElement.getSimpleName()));
                     final long start = System.currentTimeMillis();
                     final boolean generated = generateClasses((TypeElement) rootElement);
                     final long end = System.currentTimeMillis();
-                    AnnotationLog.debugging("Generated " + (generated ? "the" : "no") + " classes for " + QuoteString.inSingle(rootElement.getSimpleName()) + " in " + (end - start) + " ms.\n");
+                    ProcessingLog.debugging("Generated " + (generated ? "the" : "no") + " classes for " + QuoteString.inSingle(rootElement.getSimpleName()) + " in " + (end - start) + " ms.\n");
                 }
             }
         }

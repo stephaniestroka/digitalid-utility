@@ -18,7 +18,7 @@ import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.logging.Log;
-import net.digitalid.utility.logging.processing.AnnotationLog;
+import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.AnnotationProcessing;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.QuoteString;
@@ -47,7 +47,7 @@ public class SubclassGenerator extends JavaFileGenerator {
     protected void generateFields() {
         for (@Nonnull FieldInformation field : typeInformation.representingFields) {
             if (field.generated) {
-                AnnotationLog.verbose("Generating the field $.", field.getName());
+                ProcessingLog.verbose("Generating the field $.", field.getName());
                 addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize(field.getName())));
                 addField("private " + (field.isMutable() ? "" : "final ") + importIfPossible(field.getElement()) + " " + field.getName());
                 
@@ -108,7 +108,7 @@ public class SubclassGenerator extends JavaFileGenerator {
     protected void overrideMethods() {
         if (!typeInformation.overriddenMethods.isEmpty()) { addSection("Overridden Methods"); }
         for (@Nonnull MethodInformation method : typeInformation.overriddenMethods) {
-            AnnotationLog.verbose("Overriding the method " + QuoteString.inSingle(method.name));
+            ProcessingLog.verbose("Overriding the method " + QuoteString.inSingle(method.name));
             addAnnotation(Override.class);
             beginMethod(method.getModifiersForOverridingMethod() + importIfPossible(method.type) + " " + method.name + importingTypeVisitor.reduceParametersDeclarationToString(method.type, method.element) + (method.element.getThrownTypes().isEmpty() ? "" : " throws " + IterableConverter.toString(method.element.getThrownTypes(), importingTypeVisitor.TYPE_MAPPER)));
             addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + method.name + " was called.") + ")");
