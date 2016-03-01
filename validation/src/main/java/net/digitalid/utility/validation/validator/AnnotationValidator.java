@@ -18,8 +18,8 @@ import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.validation.processing.TypeImporter;
 
 /**
- * An annotation validator {@link #checkUsage(javax.lang.model.element.Element, javax.lang.model.type.DeclaredType) checks the use}
- * of and {@link #generateContract(javax.lang.model.element.Element, javax.lang.model.element.AnnotationMirror) generates the contract}
+ * An annotation validator {@link #checkUsage(Element, AnnotationMirror)} checks the use}
+ * of and {@link #generateContract(Element, AnnotationMirror, TypeImporter)} generates the contract}
  * for an annotation during annotation processing. This class provides a default implementation for both of these validation phases.
  * 
  * @see Validator
@@ -54,7 +54,7 @@ public abstract class AnnotationValidator extends CodeGenerator {
         if (methodAnnotation != null) {
             if (element.getKind() != ElementKind.METHOD) {
                 AnnotationLog.error("The method annotation $ may only be used on methods.", SourcePosition.of(element, annotationMirror), annotationName);
-            } else if (!ProcessingUtility.isAssignable(((ExecutableElement) element).getReceiverType(), methodAnnotation.value())) {
+            } else if (!ProcessingUtility.isAssignable(((ExecutableElement) element).getReturnType(), methodAnnotation.value())) {
                 AnnotationLog.error("The method annotation $ cannot be used on $.", SourcePosition.of(element, annotationMirror), annotationName, element);
             }
         }
@@ -66,7 +66,9 @@ public abstract class AnnotationValidator extends CodeGenerator {
      * The type importer can be used to import referenced types.
      */
     @Pure
-    public abstract @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter);
+    public @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) { 
+        return GeneratedContract.with("true", "This condition is always true", element, annotationMirror); 
+    }
     
     /* -------------------------------------------------- Utility -------------------------------------------------- */
     

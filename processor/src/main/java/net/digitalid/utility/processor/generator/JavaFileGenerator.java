@@ -464,7 +464,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
             StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
             final @Nonnull String generator = caller.getClassName();
             final @Nonnull String date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date());
-            addAnnotation(Generated.class, "value = $, date = $)", generator, date);
+            addAnnotation(Generated.class, "value = $, date = $", generator, date);
         }
         
         beginBlock(declaration, classOrInterface, NONE, CLASS, INTERFACE);

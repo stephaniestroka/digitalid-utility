@@ -28,7 +28,7 @@ import javax.lang.model.util.ElementFilter;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessing;
+import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.meta.Validator;
@@ -89,7 +89,7 @@ public class ProcessingUtility {
      */
     @Pure
     public static @Nullable AnnotationMirror getAnnotationMirror(@Nonnull Element element, @Nonnull Class<? extends Annotation> annotationType) {
-        for (@Nonnull AnnotationMirror annotationMirror : AnnotationProcessing.getElementUtils().getAllAnnotationMirrors(element)) {
+        for (@Nonnull AnnotationMirror annotationMirror : AnnotationProcessingEnvironment.getElementUtils().getAllAnnotationMirrors(element)) {
             if (getQualifiedName(annotationMirror).equals(annotationType.getCanonicalName())) { return annotationMirror; }
         }
         AnnotationLog.debugging("Found no $ annotation on", SourcePosition.of(element), "@" + annotationType.getSimpleName());
@@ -101,7 +101,7 @@ public class ProcessingUtility {
      */
     @Pure
     public static @Nullable AnnotationValue getAnnotationValue(@Nonnull AnnotationMirror annotationMirror, @Nonnull String methodName) {
-        for (@Nonnull Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationEntry : AnnotationProcessing.getElementUtils().getElementValuesWithDefaults(annotationMirror).entrySet()) {
+        for (@Nonnull Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationEntry : AnnotationProcessingEnvironment.getElementUtils().getElementValuesWithDefaults(annotationMirror).entrySet()) {
             if (annotationEntry.getKey().getSimpleName().contentEquals(methodName)) {
                 return annotationEntry.getValue();
             }
@@ -175,10 +175,10 @@ public class ProcessingUtility {
      */
     @Pure
     public static boolean isAssignable(@Nonnull TypeMirror declaredType, @Nonnull Class<?> desiredType) {
-        final @Nullable TypeElement desiredTypeElement = AnnotationProcessing.getElementUtils().getTypeElement(desiredType.getCanonicalName());
+        final @Nullable TypeElement desiredTypeElement = AnnotationProcessingEnvironment.getElementUtils().getTypeElement(desiredType.getCanonicalName());
         if (desiredTypeElement == null) { AnnotationLog.error("Could not retrieve the element for the type $.", desiredType); return false; }
         // TODO: Check whether this works with upper bounds of generic parameters and raw types.
-        return AnnotationProcessing.getTypeUtils().isAssignable(getType(declaredType), desiredTypeElement.asType());
+        return AnnotationProcessingEnvironment.getTypeUtils().isAssignable(getType(declaredType), desiredTypeElement.asType());
     }
     
     /**
@@ -200,7 +200,7 @@ public class ProcessingUtility {
     @SuppressWarnings("unchecked")
     public static @Nonnull @NonNullableElements <G extends CodeGenerator> Map<AnnotationMirror, G> getCodeGenerators(@Nonnull Element element, @Nonnull Class<? extends Annotation> metaAnnotationType, @Nonnull Class<G> codeGeneratorType) {
         final @Nonnull @NonNullableElements Map<AnnotationMirror, G> result = new LinkedHashMap<>();
-        for (@Nonnull AnnotationMirror annotationMirror : AnnotationProcessing.getElementUtils().getAllAnnotationMirrors(element)) {
+        for (@Nonnull AnnotationMirror annotationMirror : AnnotationProcessingEnvironment.getElementUtils().getAllAnnotationMirrors(element)) {
             final @Nonnull String qualifiedAnnotationName = getQualifiedName(annotationMirror);
             final @Nullable CodeGenerator cachedCodeGenerator = cachedCodeGenerators.get(qualifiedAnnotationName);
             if (cachedCodeGenerator != null) {
@@ -214,7 +214,7 @@ public class ProcessingUtility {
                     final @Nonnull DeclaredType codeGeneratorImplementationType = (DeclaredType) metaAnnotationValue.getValue();
                     AnnotationLog.verbose("The declared generator type is $.", codeGeneratorImplementationType);
                     final @Nonnull TypeElement codeGeneratorImplementationElement = (TypeElement) codeGeneratorImplementationType.asElement();
-                    final @Nonnull String codeGeneratorImplementationBinaryName = AnnotationProcessing.getElementUtils().getBinaryName(codeGeneratorImplementationElement).toString();
+                    final @Nonnull String codeGeneratorImplementationBinaryName = AnnotationProcessingEnvironment.getElementUtils().getBinaryName(codeGeneratorImplementationElement).toString();
                     try {
                         final @Nonnull Class<?> codeGeneratorImplementationClass = Class.forName(codeGeneratorImplementationBinaryName);
                         if (codeGeneratorType.isAssignableFrom(codeGeneratorImplementationClass)) {
@@ -253,7 +253,7 @@ public class ProcessingUtility {
     public static @Capturable @Nonnull List<VariableElement> getFieldsOfType(@Nonnull TypeElement classElement, @Nonnull Class<?> fieldType) {
         final @Nonnull List<VariableElement> fields = new LinkedList<>();
         for (@Nonnull VariableElement field : ElementFilter.fieldsIn(classElement.getEnclosedElements())) {
-            final @Nonnull String fieldTypeName = AnnotationProcessing.getTypeUtils().erasure(field.asType()).toString();
+            final @Nonnull String fieldTypeName = AnnotationProcessingEnvironment.getTypeUtils().erasure(field.asType()).toString();
             AnnotationLog.verbose("Found with the type $ the field", SourcePosition.of(field), fieldTypeName);
             if (fieldTypeName.equals(fieldType.getCanonicalName())) { fields.add(field); }
         }
@@ -290,8 +290,8 @@ public class ProcessingUtility {
     @Pure
     public static @Nullable ExecutableElement getMethod(@Nonnull TypeElement typeElement, @Nonnull String methodName, @Nonnull Class<?> returnType, @Nonnull Class<?>... parameterTypes) {
         final @Nonnull DeclaredType surroundingType = (DeclaredType) typeElement.asType();
-        for (@Nonnull ExecutableElement inheritedMethod : ElementFilter.methodsIn(AnnotationProcessing.getElementUtils().getAllMembers(typeElement))) {
-            final @Nonnull ExecutableElement method = (ExecutableElement) AnnotationProcessing.getTypeUtils().asMemberOf(surroundingType, inheritedMethod);
+        for (@Nonnull ExecutableElement inheritedMethod : ElementFilter.methodsIn(AnnotationProcessingEnvironment.getElementUtils().getAllMembers(typeElement))) {
+            final @Nonnull ExecutableElement method = (ExecutableElement) AnnotationProcessingEnvironment.getTypeUtils().asMemberOf(surroundingType, inheritedMethod);
             if (method.getSimpleName().contentEquals(methodName) && method.getThrownTypes().isEmpty()) {
                 final @Nonnull ExecutableType methodType = (ExecutableType) method.asType();
                 if (isAssignable(method.getReturnType(), returnType)) {

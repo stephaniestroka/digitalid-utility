@@ -19,7 +19,7 @@ public class AbstractGetterMatcher extends GetterMatcher {
     
     @Override
     public boolean filter(@Nonnull MethodInformation methodInformation) {
-        return super.filter(methodInformation) && !methodInformation.isAbstract();
+        return super.filter(methodInformation) && methodInformation.isAbstract();
     }
     
 }

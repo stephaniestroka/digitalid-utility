@@ -7,8 +7,6 @@ import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.time.Time;
-import net.digitalid.utility.tuples.FreezablePair;
-import net.digitalid.utility.tuples.ReadOnlyPair;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
@@ -29,7 +27,7 @@ public final class PublicKeyChain extends KeyChain<PublicKeyChain, PublicKey> {
      * 
      * @require items.isStrictlyDescending() : "The list is strictly descending.";
      */
-    private PublicKeyChain(@Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<ReadOnlyPair<Time, PublicKey>> items) {
+    private PublicKeyChain(@Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<Pair<Time, PublicKey>> items) {
         super(items);
     }
     
@@ -43,7 +41,7 @@ public final class PublicKeyChain extends KeyChain<PublicKeyChain, PublicKey> {
      * @require items.isStrictlyDescending() : "The list is strictly descending.";
      */
     @Pure
-    public static @Nonnull PublicKeyChain get(@Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<ReadOnlyPair<Time, PublicKey>> items) {
+    public static @Nonnull PublicKeyChain get(@Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<Pair<Time, PublicKey>> items) {
         return new PublicKeyChain(items);
     }
     
@@ -61,8 +59,8 @@ public final class PublicKeyChain extends KeyChain<PublicKeyChain, PublicKey> {
     public static @Nonnull PublicKeyChain get(@Nonnull Time time, @Nonnull PublicKey key) {
         Require.that(time.isLessThanOrEqualTo(Time.getCurrent())).orThrow("The time lies in the past.");
         
-        final @Nonnull FreezableLinkedList<ReadOnlyPair<Time, PublicKey>> items = FreezableLinkedList.get();
-        items.add(FreezablePair.get(time, key).freeze());
+        final @Nonnull FreezableLinkedList<Pair<Time, PublicKey>> items = FreezableLinkedList.get();
+        items.add(Pair.get(time, key));
         return new PublicKeyChain(items.freeze());
     }
 
@@ -71,7 +69,7 @@ public final class PublicKeyChain extends KeyChain<PublicKeyChain, PublicKey> {
         return new KeyChainCreator<PublicKeyChain, PublicKey>() {
 
             @Override
-            protected @Nonnull PublicKeyChain createKeyChain(@Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<ReadOnlyPair<Time, PublicKey>> items) {
+            protected @Nonnull PublicKeyChain createKeyChain(@Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<Pair<Time, PublicKey>> items) {
                 return new PublicKeyChain(items);
             }
 

@@ -6,20 +6,16 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.freezable.Freezable;
-import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 
 /**
- * This class models a {@link Freezable freezable} triplet.
+ * This class models a triplet.
  * 
- * @see FreezableQuartet
+ * @see Quartet
  */
-public class FreezableTriplet<E0, E1, E2> extends FreezablePair<E0, E1> implements ReadOnlyTriplet<E0, E1, E2> {
+public class Triplet<E0, E1, E2> extends Pair<E0, E1> {
     
     /* -------------------------------------------------- Field -------------------------------------------------- */
     
@@ -37,7 +33,7 @@ public class FreezableTriplet<E0, E1, E2> extends FreezablePair<E0, E1> implemen
      * @param element1 the second element of this tuple.
      * @param element2 the third element of this tuple.
      */
-    protected FreezableTriplet(@Nullable E0 element0, @Nullable E1 element1, @Nullable E2 element2) {
+    protected Triplet(@Nullable E0 element0, @Nullable E1 element1, @Nullable E2 element2) {
         super(element0, element1);
         
         this.element2 = element2;
@@ -53,8 +49,8 @@ public class FreezableTriplet<E0, E1, E2> extends FreezablePair<E0, E1> implemen
      * @return a new triplet with the given elements.
      */
     @Pure
-    public static @Capturable @Nonnull @NonFrozen <E0, E1, E2> FreezableTriplet<E0, E1, E2> get(@Nullable E0 element0, @Nullable E1 element1, @Nullable E2 element2) {
-        return new FreezableTriplet<>(element0, element1, element2);
+    public static @Capturable @Nonnull <E0, E1, E2> Triplet<E0, E1, E2> get(@Nullable E0 element0, @Nullable E1 element1, @Nullable E2 element2) {
+        return new Triplet<>(element0, element1, element2);
     }
     
     /**
@@ -65,7 +61,7 @@ public class FreezableTriplet<E0, E1, E2> extends FreezablePair<E0, E1> implemen
      * @return a new triplet from the given triplet.
      */
     @Pure
-    public static @Capturable @Nonnull @NonFrozen <E0, E1, E2> FreezableTriplet<E0, E1, E2> getNonNullable(@Nonnull @NullableElements ReadOnlyTriplet<E0, E1, E2> triplet) {
+    public static @Capturable @Nonnull <E0, E1, E2> Triplet<E0, E1, E2> copy(@Nonnull @NullableElements Triplet<E0, E1, E2> triplet) {
         return get(triplet.getNullableElement0(), triplet.getNullableElement1(), triplet.getNullableElement2());
     }
     
@@ -77,54 +73,30 @@ public class FreezableTriplet<E0, E1, E2> extends FreezablePair<E0, E1> implemen
      * @return a new triplet from the given triplet.
      */
     @Pure
-    public static @Capturable @Nullable @NonFrozen <E0, E1, E2> FreezableTriplet<E0, E1, E2> getNullable(@Nullable @NullableElements ReadOnlyTriplet<E0, E1, E2> triplet) {
-        return triplet == null ? null : getNonNullable(triplet);
+    public static @Capturable @Nullable <E0, E1, E2> Triplet<E0, E1, E2> getNullable(@Nullable @NullableElements Triplet<E0, E1, E2> triplet) {
+        return triplet == null ? null : copy(triplet);
     }
     
     /* -------------------------------------------------- Getter -------------------------------------------------- */
     
     @Pure
-    @Override
     public final @Nullable E2 getNullableElement2() {
         return element2;
     }
     
     @Pure
-    @Override
     public final @Nonnull E2 getNonNullableElement2() {
         Require.that(element2 != null).orThrow("The element is not null.");
         
         return element2;
     }
     
-    /* -------------------------------------------------- Setter -------------------------------------------------- */
-    
-    /**
-     * Sets the third element of this tuple.
-     * 
-     * @param element2 the element to be set.
-     */
-    @NonFrozenRecipient
-    public final void setElement2(@Nullable E2 element2) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
-        this.element2 = element2;
-    }
-    
-    /* -------------------------------------------------- Freezable -------------------------------------------------- */
-    
-    @Override
-    public @Nonnull @Frozen ReadOnlyTriplet<E0, E1, E2> freeze() {
-        super.freeze();
-        return this;
-    }
-    
     /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Capturable @Nonnull @NonFrozen FreezableTriplet<E0, E1, E2> clone() {
-        return FreezableTriplet.getNonNullable(this);
+    public @Capturable @Nonnull Triplet<E0, E1, E2> clone() {
+        return Triplet.copy(this);
     }
     
     /* -------------------------------------------------- Object -------------------------------------------------- */
@@ -135,8 +107,8 @@ public class FreezableTriplet<E0, E1, E2> extends FreezablePair<E0, E1> implemen
     public boolean equals(@Nullable Object object) {
         if (object == this) { return true; }
         if (object == null) { return false; }
-        if (!(object instanceof FreezableTriplet)) { return object.equals(this); }
-        final @Nonnull FreezableTriplet other = (FreezableTriplet) object;
+        if (!(object instanceof Triplet)) { return object.equals(this); }
+        final @Nonnull Triplet other = (Triplet) object;
         return super.equals(object) && Objects.equals(this.element2, other.element2);
     }
     
