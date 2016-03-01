@@ -6,21 +6,16 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.freezable.Freezable;
-import net.digitalid.utility.freezable.FreezableObject;
-import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 
 /**
- * This class models a {@link Freezable freezable} pair.
+ * This class models a pair.
  * 
- * @see FreezableTriplet
+ * @see Triplet
  */
-public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPair<E0, E1> {
+public class Pair<E0, E1> {
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
@@ -42,7 +37,7 @@ public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPa
      * @param element0 the first element of this tuple.
      * @param element1 the second element of this tuple.
      */
-    protected FreezablePair(@Nullable E0 element0, @Nullable E1 element1) {
+    protected Pair(@Nullable E0 element0, @Nullable E1 element1) {
         this.element0 = element0;
         this.element1 = element1;
     }
@@ -56,8 +51,8 @@ public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPa
      * @return a new pair with the given elements.
      */
     @Pure
-    public static @Capturable @Nonnull @NonFrozen <E0, E1> FreezablePair<E0, E1> get(@Nullable E0 element0, @Nullable E1 element1) {
-        return new FreezablePair<>(element0, element1);
+    public static @Capturable @Nonnull <E0, E1> Pair<E0, E1> get(@Nullable E0 element0, @Nullable E1 element1) {
+        return new Pair<>(element0, element1);
     }
     
     /**
@@ -68,7 +63,7 @@ public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPa
      * @return a new pair from the given pair.
      */
     @Pure
-    public static @Capturable @Nonnull @NonFrozen <E0, E1> FreezablePair<E0, E1> getNonNullable(@Nonnull @NullableElements ReadOnlyPair<E0, E1> pair) {
+    public static @Capturable @Nonnull <E0, E1> Pair<E0, E1> copy(@Nonnull @NullableElements Pair<E0, E1> pair) {
         return get(pair.getNullableElement0(), pair.getNullableElement1());
     }
     
@@ -80,20 +75,18 @@ public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPa
      * @return a new pair from the given pair.
      */
     @Pure
-    public static @Capturable @Nullable @NonFrozen <E0, E1> FreezablePair<E0, E1> getNullable(@Nullable @NullableElements ReadOnlyPair<E0, E1> pair) {
-        return pair == null ? null : getNonNullable(pair);
+    public static @Capturable @Nullable <E0, E1> Pair<E0, E1> copyNullable(@Nullable @NullableElements Pair<E0, E1> pair) {
+        return pair == null ? null : copy(pair);
     }
     
     /* -------------------------------------------------- Getters -------------------------------------------------- */
     
     @Pure
-    @Override
     public final @Nullable E0 getNullableElement0() {
         return element0;
     }
     
     @Pure
-    @Override
     public final @Nonnull E0 getNonNullableElement0() {
         Require.that(element0 != null).orThrow("The element is not null.");
         
@@ -101,59 +94,15 @@ public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPa
     }
     
     @Pure
-    @Override
     public final @Nullable E1 getNullableElement1() {
         return element1;
     }
     
     @Pure
-    @Override
     public final @Nonnull E1 getNonNullableElement1() {
         Require.that(element1 != null).orThrow("The element is not null.");
         
         return element1;
-    }
-    
-    /* -------------------------------------------------- Setters -------------------------------------------------- */
-    
-    /**
-     * Sets the first element of this tuple.
-     * 
-     * @param element0 the element to be set.
-     */
-    @NonFrozenRecipient
-    public final void setElement0(@Nullable E0 element0) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
-        this.element0 = element0;
-    }
-    
-    /**
-     * Sets the second element of this tuple.
-     * 
-     * @param element1 the element to be set.
-     */
-    @NonFrozenRecipient
-    public final void setElement1(@Nullable E1 element1) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
-        this.element1 = element1;
-    }
-    
-    /* -------------------------------------------------- Freezable -------------------------------------------------- */
-    
-    @Override
-    public @Nonnull @Frozen ReadOnlyPair<E0, E1> freeze() {
-        super.freeze();
-        return this;
-    }
-    
-    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
-    
-    @Pure
-    @Override
-    public @Capturable @Nonnull @NonFrozen FreezablePair<E0, E1> clone() {
-        return FreezablePair.getNonNullable(this);
     }
     
     /* -------------------------------------------------- Object -------------------------------------------------- */
@@ -164,8 +113,8 @@ public class FreezablePair<E0, E1> extends FreezableObject implements ReadOnlyPa
     public boolean equals(@Nullable Object object) {
         if (object == this) { return true; }
         if (object == null) { return false; }
-        if (!(object instanceof FreezablePair)) { return object.equals(this); }
-        final @Nonnull FreezablePair other = (FreezablePair) object;
+        if (!(object instanceof Pair)) { return object.equals(this); }
+        final @Nonnull Pair other = (Pair) object;
         return Objects.equals(this.element0, other.element0) && Objects.equals(this.element1, other.element1);
     }
     

@@ -20,7 +20,7 @@ public class AbstractSetterMatcher implements FilterCondition<MethodInformation>
     
     @Override
     public boolean filter(@Nonnull MethodInformation methodInformation) {
-        return methodInformation.isSetter() && !methodInformation.isAbstract();
+        return methodInformation.isSetter() && methodInformation.isAbstract();
     }
     
 }

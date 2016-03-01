@@ -10,8 +10,6 @@ import net.digitalid.utility.cryptography.exceptions.InvalidParameterValueCombin
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.time.Time;
-import net.digitalid.utility.tuples.FreezablePair;
-import net.digitalid.utility.tuples.ReadOnlyPair;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
@@ -33,7 +31,7 @@ public abstract class KeyChain<C extends KeyChain<C, K>, K extends Convertible> 
      * 
      * @invariant items.isStrictlyDescending() : "The list is strictly descending.";
      */
-    private final @Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<ReadOnlyPair<Time, K>> items;
+    private final @Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<Pair<Time, K>> items;
     
     /**
      * Returns the items of this key chain in chronological order with the newest one first.
@@ -43,7 +41,7 @@ public abstract class KeyChain<C extends KeyChain<C, K>, K extends Convertible> 
      * @ensure items.isStrictlyDescending() : "The list is strictly descending.";
      */
     @Pure
-    public final @Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<ReadOnlyPair<Time, K>> getItems() {
+    public final @Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<Pair<Time, K>> getItems() {
         return items;
     }
     
@@ -58,7 +56,7 @@ public abstract class KeyChain<C extends KeyChain<C, K>, K extends Convertible> 
      */
     @Pure
     public final @Nonnull K getKey(@Nonnull Time time) throws InvalidParameterValueCombinationException {
-        for (final @Nonnull ReadOnlyPair<Time, K> item : items) {
+        for (final @Nonnull Pair<Time, K> item : items) {
             if (time.isGreaterThanOrEqualTo(item.getNonNullableElement0())) { return item.getNonNullableElement1(); }
         }
         throw InvalidParameterValueCombinationException.get("There is no key for the given time (" + time + ") in this key chain " + this + ".");
@@ -87,12 +85,12 @@ public abstract class KeyChain<C extends KeyChain<C, K>, K extends Convertible> 
         Require.that(time.isGreaterThan(getNewestTime())).orThrow("The time is greater than the newest time of this key chain.");
         Require.that(time.isGreaterThan(Time.getCurrent().add(Time.TROPICAL_YEAR))).orThrow("The time lies at least one year in the future.");
         
-        final @Nonnull FreezableList<ReadOnlyPair<Time, K>> copy = items.clone();
-        final @Nonnull ReadOnlyPair<Time, K> pair = FreezablePair.get(time, key).freeze();
+        final @Nonnull FreezableList<Pair<Time, K>> copy = items.clone();
+        final @Nonnull Pair<Time, K> pair = Pair.get(time, key);
         copy.add(0, pair);
         
         final @Nonnull Time cutoff = Time.TWO_YEARS.ago();
-        final @Nonnull FreezableIterator<ReadOnlyPair<Time, K>> iterator = copy.iterator();
+        final @Nonnull FreezableIterator<Pair<Time, K>> iterator = copy.iterator();
         while (iterator.hasNext()) {
             if (iterator.next().getNonNullableElement0().isLessThan(cutoff)) {
                 while (iterator.hasNext()) {
@@ -107,7 +105,7 @@ public abstract class KeyChain<C extends KeyChain<C, K>, K extends Convertible> 
     
     protected abstract class KeyChainCreator<C, K> {
         
-        protected abstract @Nonnull C createKeyChain(@Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<ReadOnlyPair<Time, K>> items);
+        protected abstract @Nonnull C createKeyChain(@Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<Pair<Time, K>> items);
         
     }
     
@@ -123,7 +121,7 @@ public abstract class KeyChain<C extends KeyChain<C, K>, K extends Convertible> 
      * 
      * @require items.isStrictlyDescending() : "The list is strictly descending.";
      */
-    protected KeyChain(@Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<ReadOnlyPair<Time, K>> items) {
+    protected KeyChain(@Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<Pair<Time, K>> items) {
         this.items = items;
     }
     

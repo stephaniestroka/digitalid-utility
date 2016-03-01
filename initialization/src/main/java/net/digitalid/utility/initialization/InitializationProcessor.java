@@ -100,7 +100,7 @@ public class InitializationProcessor extends CustomProcessor {
         javaSourceFile.addStatement("super(" + parameters + ")");
         javaSourceFile.endConstructor();
         
-        javaSourceFile.addAnnotation("@Override");
+        javaSourceFile.addAnnotation(Override.class);
         javaSourceFile.beginMethod("protected void executeWithoutLogging() throws Exception");
         javaSourceFile.addStatement(simpleSourceClassName + "." + annotatedMethod);
         javaSourceFile.endMethod();
