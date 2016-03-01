@@ -10,14 +10,14 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
+import net.digitalid.utility.validation.annotations.meta.Generator;
 import net.digitalid.utility.validation.annotations.meta.MethodAnnotation;
-import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.contract.Contract;
+import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.interfaces.Countable;
 import net.digitalid.utility.validation.processing.TypeImporter;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
-import net.digitalid.utility.validation.validator.GeneratedContract;
 
 /**
  * This annotation indicates that a method should only be invoked on {@link EmptyOrSingle empty or single} objects.
@@ -26,16 +26,16 @@ import net.digitalid.utility.validation.validator.GeneratedContract;
 @Target(ElementType.METHOD)
 @MethodAnnotation(Countable.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(EmptyOrSingleRecipient.Validator.class)
+@Generator(EmptyOrSingleRecipient.Generator.class)
 public @interface EmptyOrSingleRecipient {
     
     @Stateless
-    public static class Validator extends AnnotationValidator {
+    public static class Generator extends ContractGenerator {
         
         @Pure
         @Override
-        public @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
-            return GeneratedContract.with("size() <= 1", "The size of this countable has to be zero or one but was $.", element);
+        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+            return Contract.with("size() <= 1", "The size of this countable has to be zero or one but was $.", element);
         }
         
     }

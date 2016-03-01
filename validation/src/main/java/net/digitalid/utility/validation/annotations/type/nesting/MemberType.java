@@ -10,8 +10,8 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.NestingKind;
 
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.Validator;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
+import net.digitalid.utility.validation.annotations.meta.Generator;
+import net.digitalid.utility.validation.generator.ContractGenerator;
 
 /**
  * This annotation indicates that a class or element represents a member type.
@@ -20,7 +20,7 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(MemberType.Validator.class)
+@Generator(MemberType.Validator.class)
 @TargetTypes({Class.class, Element.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface MemberType {
@@ -30,7 +30,7 @@ public @interface MemberType {
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
-    public static class Validator extends AnnotationValidator {
+    public static class Validator extends ContractGenerator {
         // TODO: Generate the contract.
     }
     

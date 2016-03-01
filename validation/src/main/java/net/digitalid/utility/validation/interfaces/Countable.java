@@ -1,12 +1,12 @@
 package net.digitalid.utility.validation.interfaces;
 
 /**
- * Objects that implement this interface have a size.
+ * Classes that have a size are countable.
  */
 public interface Countable {
     
     /**
-     * Returns the number of elements in this collection.
+     * Returns the number of elements in this countable.
      */
     public int size();
     

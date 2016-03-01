@@ -9,12 +9,12 @@ import java.util.Collection;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.validation.annotations.meta.Generator;
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.generators.SizeContractGenerator;
 import net.digitalid.utility.validation.interfaces.Countable;
-import net.digitalid.utility.validation.validators.SizeValidator;
 
 /**
  * This annotation indicates that a {@link Collection collection}, array or string contains not a single element.
@@ -23,13 +23,13 @@ import net.digitalid.utility.validation.validators.SizeValidator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(NonSingle.Validator.class)
+@Generator(NonSingle.Generator.class)
 @TargetTypes({Collection.class, Countable.class, Object[].class, CharSequence.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface NonSingle {
     
     @Stateless
-    public static class Validator extends SizeValidator {
+    public static class Generator extends SizeContractGenerator {
         
         @Pure
         @Override

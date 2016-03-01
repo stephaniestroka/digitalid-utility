@@ -27,7 +27,7 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
+import net.digitalid.utility.validation.generator.ContractGenerator;
 
 /**
  * This class generates a subclass with the provided type information.
@@ -58,7 +58,7 @@ public class SubclassGenerator extends JavaFileGenerator {
                 beginMethod(getter.getModifiersForOverridingMethod() + importIfPossible(getter.getType()) + " " + getter.getName() + "()");
                 addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + getter + " was called.") + ")");
                 addStatement("final " + importIfPossible(getter.getType().getReturnType()) + " result = " + field.getName());
-                for (@Nonnull Map.Entry<AnnotationMirror, AnnotationValidator> entry : getter.getValidators().entrySet()) {
+                for (@Nonnull Map.Entry<AnnotationMirror, ContractGenerator> entry : getter.getValidators().entrySet()) {
                     addPostcondition(entry.getValue().generateContract(getter.getElement(), entry.getKey(), this));
                 }
                 addStatement("return result");
@@ -71,7 +71,7 @@ public class SubclassGenerator extends JavaFileGenerator {
                     beginMethod(setter.getModifiersForOverridingMethod() + "void " + setter.name + importingTypeVisitor.reduceParametersDeclarationToString(setter.type, setter.element));
                     addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + setter + " was called.") + ")");
                     for (@Nonnull VariableElement parameter : setter.element.getParameters()) {
-                        for (@Nonnull Map.Entry<AnnotationMirror, AnnotationValidator> entry : ProcessingUtility.getAnnotationValidators(parameter).entrySet()) {
+                        for (@Nonnull Map.Entry<AnnotationMirror, ContractGenerator> entry : ProcessingUtility.getContractGenerators(parameter).entrySet()) {
                             addPrecondition(entry.getValue().generateContract(parameter, entry.getKey(), this));
                         }
                         addStatement("this." + field.name + " = " + parameter.getSimpleName());

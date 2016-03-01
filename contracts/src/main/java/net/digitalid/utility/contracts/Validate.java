@@ -6,7 +6,7 @@ import net.digitalid.utility.contracts.exceptions.InvariantViolationException;
  * This class makes it easier to validate class invariants.
  * Usage: {@code Validate.that(condition).orThrow(message)}.
  */
-public final class Validate extends Contract {
+public final class Validate extends Constraint {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     

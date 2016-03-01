@@ -13,14 +13,14 @@ import javax.lang.model.element.Element;
 
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
+import net.digitalid.utility.validation.annotations.meta.Generator;
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.contract.Contract;
+import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.validation.processing.TypeImporter;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
-import net.digitalid.utility.validation.validator.GeneratedContract;
 
 /**
  * This annotation indicates that an index is valid for inserting an element in a {@link Collection collection}.
@@ -29,12 +29,12 @@ import net.digitalid.utility.validation.validator.GeneratedContract;
 @Documented
 @TargetTypes(int.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(IndexForInsertion.Validator.class)
+@Generator(IndexForInsertion.Generator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface IndexForInsertion {
     
     @Stateless
-    public static class Validator extends AnnotationValidator {
+    public static class Generator extends ContractGenerator {
         
         @Pure
         @Override
@@ -48,8 +48,8 @@ public @interface IndexForInsertion {
         
         @Pure
         @Override
-        public @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
-            return GeneratedContract.with("# >= 0 && # <= size()", "The # may not be negative or greater than the size of this collection but was $.", element);
+        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+            return Contract.with("# >= 0 && # <= size()", "The # may not be negative or greater than the size of this collection but was $.", element);
         }
         
     }

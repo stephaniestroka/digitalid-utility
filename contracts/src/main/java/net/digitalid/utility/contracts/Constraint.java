@@ -1,9 +1,9 @@
 package net.digitalid.utility.contracts;
 
 /**
- * This class stores whether a contract is fulfilled or violated based on a condition.
+ * This class stores whether a constraint is fulfilled or violated based on a condition.
  */
-public class Contract {
+public class Constraint {
     
     /* -------------------------------------------------- Condition -------------------------------------------------- */
     
@@ -19,7 +19,7 @@ public class Contract {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected Contract(boolean condition) {
+    protected Constraint(boolean condition) {
         this.condition = condition;
     }
     

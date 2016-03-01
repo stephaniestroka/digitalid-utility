@@ -8,17 +8,13 @@ import java.lang.annotation.Target;
 import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
 
+import net.digitalid.utility.validation.annotations.meta.Generator;
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
-import net.digitalid.utility.validation.processing.ProcessingUtility;
-import net.digitalid.utility.validation.processing.TypeImporter;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
-import net.digitalid.utility.validation.validator.GeneratedContract;
+import net.digitalid.utility.validation.generators.NumericalContractGenerator;
+import net.digitalid.utility.validation.interfaces.Numerical;
 
 /**
  * This annotation indicates that a numeric value is positive.
@@ -27,22 +23,18 @@ import net.digitalid.utility.validation.validator.GeneratedContract;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(Positive.Validator.class)
-@TargetTypes({long.class, int.class, short.class, byte.class, BigInteger.class})
+@Generator(Positive.Generator.class)
+@TargetTypes({long.class, int.class, short.class, byte.class, float.class, double.class, BigInteger.class, Numerical.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface Positive {
     
     @Stateless
-    public static class Validator extends AnnotationValidator {
+    public static class Generator extends NumericalContractGenerator {
         
         @Pure
         @Override
-        public @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
-            if (ProcessingUtility.isAssignable(element, BigInteger.class)) {
-                return GeneratedContract.with("# == null || #.compareTo(" + typeImporter.importIfPossible(BigInteger.class) + ".ZERO) > 0", "The # has to be null or positive but was $.", element);
-            } else {
-                return GeneratedContract.with("# > 0", "The # has to be positive but was $.", element);
-            }
+        public @Nonnull String getComparisonOperator() {
+            return ">";
         }
         
     }

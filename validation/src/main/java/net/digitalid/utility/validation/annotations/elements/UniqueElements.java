@@ -12,26 +12,26 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
+import net.digitalid.utility.validation.annotations.meta.Generator;
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.contract.Contract;
+import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.processing.TypeImporter;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
-import net.digitalid.utility.validation.validator.GeneratedContract;
 
 /**
  * This annotation indicates that an {@link Iterable iterable} does not contain duplicates.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(UniqueElements.Validator.class)
+@Generator(UniqueElements.Generator.class)
 @TargetTypes({Iterable.class, Object[].class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface UniqueElements {
     
     @Stateless
-    public static class Validator extends AnnotationValidator {
+    public static class Generator extends ContractGenerator {
         
         @Pure
         public static boolean validate(@Nullable Iterable<?> iterable) {
@@ -57,8 +57,8 @@ public @interface UniqueElements {
         
         @Pure
         @Override
-        public @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
-            return GeneratedContract.with(typeImporter.importIfPossible(UniqueElements.class) + ".Validator.validate(#)", "The # may not contain duplicates.", element);
+        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+            return Contract.with(typeImporter.importIfPossible(UniqueElements.class) + ".Generator.validate(#)", "The # may not contain duplicates.", element);
         }
         
     }

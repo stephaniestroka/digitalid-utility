@@ -7,8 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.Validator;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
+import net.digitalid.utility.validation.annotations.meta.Generator;
+import net.digitalid.utility.validation.generator.ContractGenerator;
 
 /**
  * This annotation indicates that a string is a valid Java expression.
@@ -16,7 +16,7 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
 @Documented
 @TargetTypes(CharSequence.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(JavaExpression.Validator.class)
+@Generator(JavaExpression.Validator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface JavaExpression {
     
@@ -25,7 +25,7 @@ public @interface JavaExpression {
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
-    public static class Validator extends AnnotationValidator {
+    public static class Validator extends ContractGenerator {
         // TODO: Generate the contract, which is left as an exercise for the reader.
     }
     

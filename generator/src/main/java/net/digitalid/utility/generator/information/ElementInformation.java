@@ -18,7 +18,7 @@ import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.state.Unmodifiable;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
+import net.digitalid.utility.validation.generator.ContractGenerator;
 
 /**
  * This type collects the relevant information about an element for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
@@ -137,7 +137,7 @@ public interface ElementInformation {
      * Returns the validators declared on the represented {@link #getElement() element}.
      */
     @Pure
-    public @Unmodifiable @Nonnull @NonNullableElements Map<AnnotationMirror, AnnotationValidator> getValidators();
+    public @Unmodifiable @Nonnull @NonNullableElements Map<AnnotationMirror, ContractGenerator> getValidators();
     
     /* -------------------------------------------------- Annotations -------------------------------------------------- */
     

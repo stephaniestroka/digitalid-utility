@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.validator;
+package net.digitalid.utility.validation.contract;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,15 +18,16 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.state.Unmodifiable;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
 import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
 
 /**
  * This class wraps a {@link #getCondition() condition} and {@link #getMessage() message} for annotation processing.
  * 
- * @see AnnotationValidator
+ * @see ContractGenerator
  */
 @Immutable
-public class GeneratedContract {
+public class Contract {
     
     /* -------------------------------------------------- Condition -------------------------------------------------- */
     
@@ -66,7 +67,7 @@ public class GeneratedContract {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected GeneratedContract(@Nonnull @JavaExpression String condition, @Nonnull String message, @Nonnull String... arguments) {
+    protected Contract(@Nonnull @JavaExpression String condition, @Nonnull String message, @Nonnull String... arguments) {
         this.condition = condition;
         this.message = message;
         this.arguments = Collections.unmodifiableList(Arrays.asList(arguments));
@@ -76,8 +77,20 @@ public class GeneratedContract {
      * Returns an object that wraps the given {@link #getCondition() condition}, {@link #getMessage() message} and {@link #getArguments() arguments}.
      */
     @Pure
-    public static @Nonnull GeneratedContract with(@Nonnull @JavaExpression String condition, @Nonnull String message, @Nonnull String... arguments) {
-        return new GeneratedContract(condition, message, arguments);
+    public static @Nonnull Contract with(@Nonnull @JavaExpression String condition, @Nonnull String message, @Nonnull String... arguments) {
+        return new Contract(condition, message, arguments);
+    }
+    
+    /* -------------------------------------------------- Constructors for Contracts that use the Element -------------------------------------------------- */
+    
+    /**
+     * Returns an object that wraps the given {@link #getCondition() condition} and {@link #getMessage() message} with the element name as {@link #getArguments() argument}.
+     * Each number sign in the condition and the message is replaced with the {@link AnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
+     */
+    @Pure
+    public static @Nonnull Contract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element, @Nonnull String suffix) {
+        final @Nonnull String name = ContractGenerator.getName(element);
+        return new Contract(condition.replace("#", name), message.replace("#", name), name + (suffix.isEmpty() ? "" : " == null ? null : " + name + suffix));
     }
     
     /**
@@ -85,31 +98,24 @@ public class GeneratedContract {
      * Each number sign in the condition and the message is replaced with the {@link AnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
      */
     @Pure
-    public static @Nonnull GeneratedContract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element, @Nonnull String suffix) {
-        final @Nonnull String name = AnnotationValidator.getName(element);
-        return new GeneratedContract(condition.replace("#", name), message.replace("#", name), name + (suffix.isEmpty() ? "" : " == null ? null : " + name + suffix));
-    }
-    
-    /**
-     * Returns an object that wraps the given {@link #getCondition() condition} and {@link #getMessage() message} with the element name as {@link #getArguments() argument}.
-     * Each number sign in the condition and the message is replaced with the {@link AnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
-     */
-    @Pure
-    public static @Nonnull GeneratedContract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element) {
+    public static @Nonnull Contract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element) {
         return with(condition, message, element, "");
     }
     
+    /* -------------------------------------------------- Constructors for Contracts that use the Element and Annotation Value -------------------------------------------------- */
+    
+    /**
     /**
      * Returns an object that wraps the given {@link #getCondition() condition} and {@link #getMessage() message} with the element name as {@link #getArguments() argument}.
      * Each number sign in the condition and the message is replaced with the {@link AnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
      * Each at sign in the condition and the message is replaced with the {@link AnnotationValue#getValue() value} of the given annotation mirror.
      */
     @Pure
-    public static @Nonnull GeneratedContract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull String suffix) {
-        final @Nonnull String name = AnnotationValidator.getName(element);
+    public static @Nonnull Contract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull String suffix) {
+        final @Nonnull String name = ContractGenerator.getName(element);
         final @Nullable AnnotationValue annotationValue = ProcessingUtility.getAnnotationValue(annotationMirror);
         final @Nonnull String value = QuoteString.inCode(annotationValue != null ? annotationValue.getValue() : null);
-        return new GeneratedContract(condition.replace("#", name).replace("@", value), message.replace("#", name).replace("@", value), name + (suffix.isEmpty() ? "" : " == null ? null : " + name + suffix));
+        return new Contract(condition.replace("#", name).replace("@", value), message.replace("#", name).replace("@", value), name + (suffix.isEmpty() ? "" : " == null ? null : " + name + suffix));
     }
     
     /**
@@ -118,7 +124,7 @@ public class GeneratedContract {
      * Each at sign in the condition and the message is replaced with the {@link AnnotationValue#getValue() value} of the given annotation mirror.
      */
     @Pure
-    public static @Nonnull GeneratedContract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
+    public static @Nonnull Contract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
         return with(condition, message, element, annotationMirror, "");
     }
     

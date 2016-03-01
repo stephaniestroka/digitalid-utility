@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 import javax.lang.model.element.Element;
 
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.Validator;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
+import net.digitalid.utility.validation.annotations.meta.Generator;
+import net.digitalid.utility.validation.generator.ContractGenerator;
 
 /**
  * This annotation indicates that a class or element represents an interface.
@@ -19,7 +19,7 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(InterfaceType.Validator.class)
+@Generator(InterfaceType.Validator.class)
 @TargetTypes({Class.class, Element.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface InterfaceType {
@@ -29,7 +29,7 @@ public @interface InterfaceType {
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
-    public static class Validator extends AnnotationValidator {
+    public static class Validator extends ContractGenerator {
         // TODO: Generate the contract.
     }
     

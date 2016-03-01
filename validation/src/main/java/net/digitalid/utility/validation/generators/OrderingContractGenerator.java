@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.validators;
+package net.digitalid.utility.validation.generators;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,18 +13,20 @@ import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.contract.Contract;
+import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.validation.processing.TypeImporter;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
-import net.digitalid.utility.validation.validator.GeneratedContract;
 
 /**
- * This class implements common methods for all ordering validators.
+ * This class implements common methods for all ordering-related contract generators.
  * 
  * @see net.digitalid.utility.validation.annotations.order
  */
 @Stateless
-public abstract class OrderingValidator extends AnnotationValidator {
+public abstract class OrderingContractGenerator extends ContractGenerator {
+    
+    /* -------------------------------------------------- Usage Check -------------------------------------------------- */
     
     @Pure
     @Override
@@ -48,6 +50,8 @@ public abstract class OrderingValidator extends AnnotationValidator {
             AnnotationLog.error("The annotation $ may only be used on arrays or declared types:", SourcePosition.of(element, annotationMirror), annotationName);
         }
     }
+    
+    /* -------------------------------------------------- Validation -------------------------------------------------- */
     
     /**
      * Returns whether the elements in the given iterable are ordered (excluding null values).
@@ -99,16 +103,20 @@ public abstract class OrderingValidator extends AnnotationValidator {
         return true;
     }
     
+    /* -------------------------------------------------- Abstract Methods -------------------------------------------------- */
+    
     @Pure
     protected abstract boolean isStrictly();
     
     @Pure
     protected abstract boolean isAscending();
     
+    /* -------------------------------------------------- Contract Generation -------------------------------------------------- */
+    
     @Pure
     @Override
-    public @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
-        return GeneratedContract.with(typeImporter.importIfPossible(OrderingValidator.class) + ".validate(#, " + isStrictly() + ", " + isAscending() + ")", "The # has to be ordered.", element);
+    public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+        return Contract.with(typeImporter.importIfPossible(OrderingContractGenerator.class) + ".validate(#, " + isStrictly() + ", " + isAscending() + ")", "The # has to be ordered.", element);
     }
     
 }

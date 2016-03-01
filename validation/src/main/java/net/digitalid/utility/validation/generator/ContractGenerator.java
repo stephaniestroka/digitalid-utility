@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.validator;
+package net.digitalid.utility.validation.generator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -9,24 +9,25 @@ import javax.lang.model.element.ExecutableElement;
 
 import net.digitalid.utility.logging.processing.AnnotationLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
+import net.digitalid.utility.validation.annotations.meta.Generator;
 import net.digitalid.utility.validation.annotations.meta.MethodAnnotation;
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.validation.processing.TypeImporter;
 
 /**
- * An annotation validator {@link #checkUsage(javax.lang.model.element.Element, javax.lang.model.type.DeclaredType) checks the use}
+ * A contract generator {@link #checkUsage(javax.lang.model.element.Element, javax.lang.model.type.DeclaredType) checks the use}
  * of and {@link #generateContract(javax.lang.model.element.Element, javax.lang.model.element.AnnotationMirror) generates the contract}
- * for an annotation during annotation processing. This class provides a default implementation for both of these validation phases.
+ * for an annotation during annotation processing.
  * 
- * @see Validator
- * @see GeneratedContract
+ * @see Generator
+ * @see Contract
  */
 @Stateless
-public abstract class AnnotationValidator extends CodeGenerator {
+public abstract class ContractGenerator extends CodeGenerator {
     
     /* -------------------------------------------------- Processing -------------------------------------------------- */
     
@@ -66,7 +67,7 @@ public abstract class AnnotationValidator extends CodeGenerator {
      * The type importer can be used to import referenced types.
      */
     @Pure
-    public abstract @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter);
+    public abstract @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter);
     
     /* -------------------------------------------------- Utility -------------------------------------------------- */
     

@@ -2,12 +2,12 @@ package net.digitalid.utility.testcases.builder;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.validation.annotations.type.Utiliy;
+import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
  * Description.
  */
-@Utiliy
+@Utility
 public class StudentCaller {
     
     public static void main(String[] args) {
