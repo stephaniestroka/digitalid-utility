@@ -32,11 +32,19 @@ import net.digitalid.utility.validation.processing.TypeImporter;
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface NonNullableElements {
     
+    /* -------------------------------------------------- Generator -------------------------------------------------- */
+    
+    /**
+     * This class checks the use of and generates the contract for the surrounding annotation.
+     */
     @Stateless
     public static class Generator extends ContractGenerator {
         
+        /**
+         * Returns whether all elements in the given iterable are non-null.
+         */
         @Pure
-        public boolean validate(@Nullable Iterable<?> iterable) {
+        public static boolean validate(@Nullable Iterable<?> iterable) {
             if (iterable == null) { return true; }
             for (@Nullable Object element : iterable) {
                 if (element == null) { return false; }
@@ -44,8 +52,11 @@ public @interface NonNullableElements {
             return true;
         }
         
+        /**
+         * Returns whether all elements in the given array are non-null.
+         */
         @Pure
-        public boolean validate(@Nullable Object[] array) {
+        public static boolean validate(@Nullable Object[] array) {
             if (array == null) { return true; }
             for (@Nullable Object element : array) {
                 if (element == null) { return false; }

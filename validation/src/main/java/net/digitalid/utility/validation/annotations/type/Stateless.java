@@ -35,6 +35,11 @@ import net.digitalid.utility.validation.generator.TypeValidator;
 @Validator(Stateless.Validator.class)
 public @interface Stateless {
     
+    /* -------------------------------------------------- Validator -------------------------------------------------- */
+    
+    /**
+     * This class checks the use of the surrounding annotation.
+     */
     @Stateless
     public static class Validator extends TypeValidator {
         

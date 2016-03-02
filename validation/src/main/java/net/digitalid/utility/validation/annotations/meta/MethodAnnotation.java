@@ -16,6 +16,8 @@ import javax.annotation.Nonnull;
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface MethodAnnotation {
     
+    /* -------------------------------------------------- Value -------------------------------------------------- */
+    
     /**
      * Returns the type to whose methods the annotated annotation can be applied.
      */

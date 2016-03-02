@@ -6,9 +6,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.digitalid.utility.validation.annotations.meta.TargetTypes;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+
 import net.digitalid.utility.validation.annotations.meta.Generator;
+import net.digitalid.utility.validation.annotations.meta.TargetTypes;
+import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.generator.ContractGenerator;
+import net.digitalid.utility.validation.processing.TypeImporter;
 
 /**
  * This annotation indicates that a string is a valid Java expression.
@@ -16,17 +25,34 @@ import net.digitalid.utility.validation.generator.ContractGenerator;
 @Documented
 @TargetTypes(CharSequence.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Generator(JavaExpression.Validator.class)
+@Generator(JavaExpression.Generator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface JavaExpression {
     
-    /* -------------------------------------------------- Validator -------------------------------------------------- */
+    /* -------------------------------------------------- Generator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
-    public static class Validator extends ContractGenerator {
-        // TODO: Generate the contract, which is left as an exercise for the reader.
+    @Stateless
+    public static class Generator extends ContractGenerator {
+        
+        /**
+         * Returns whether the given string is a valid Java expression.
+         */
+        @Pure
+        public static boolean validate(@Nullable String string) {
+            if (string == null) { return true; }
+            // TODO: Do some reasonable checks here.
+            return true;
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+            return Contract.with(typeImporter.importIfPossible(JavaExpression.class) + ".Generator.validate(#)", "The # has to be a valid Java expression but was $.", element);
+        }
+        
     }
     
 }

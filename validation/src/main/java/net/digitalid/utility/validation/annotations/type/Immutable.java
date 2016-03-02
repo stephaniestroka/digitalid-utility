@@ -43,6 +43,11 @@ import net.digitalid.utility.validation.processing.ProcessingUtility;
 @Validator(Immutable.Validator.class)
 public @interface Immutable {
     
+    /* -------------------------------------------------- Validator -------------------------------------------------- */
+    
+    /**
+     * This class checks the use of the surrounding annotation.
+     */
     @Stateless
     public static class Validator extends TypeValidator {
         

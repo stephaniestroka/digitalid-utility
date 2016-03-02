@@ -30,9 +30,17 @@ import net.digitalid.utility.validation.processing.TypeImporter;
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface UniqueElements {
     
+    /* -------------------------------------------------- Generator -------------------------------------------------- */
+    
+    /**
+     * This class checks the use of and generates the contract for the surrounding annotation.
+     */
     @Stateless
     public static class Generator extends ContractGenerator {
         
+        /**
+         * Returns whether all elements in the given iterable are unique.
+         */
         @Pure
         public static boolean validate(@Nullable Iterable<?> iterable) {
             if (iterable == null) { return true; }
@@ -44,6 +52,9 @@ public @interface UniqueElements {
             return true;
         }
         
+        /**
+         * Returns whether all elements in the given array are unique.
+         */
         @Pure
         public static boolean validate(@Nullable Object[] array) {
             if (array == null) { return true; }

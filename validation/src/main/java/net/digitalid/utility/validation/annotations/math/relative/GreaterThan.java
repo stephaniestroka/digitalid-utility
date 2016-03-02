@@ -30,12 +30,14 @@ import net.digitalid.utility.validation.interfaces.Numerical;
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface GreaterThan {
     
+    /* -------------------------------------------------- Value -------------------------------------------------- */
+    
     /**
      * Returns the value which the annotated numeric value is greater than.
      */
     long value();
     
-    /* -------------------------------------------------- Validator -------------------------------------------------- */
+    /* -------------------------------------------------- Generator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.

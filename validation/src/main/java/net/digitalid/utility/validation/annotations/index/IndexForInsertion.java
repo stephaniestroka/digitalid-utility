@@ -33,6 +33,11 @@ import net.digitalid.utility.validation.processing.TypeImporter;
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface IndexForInsertion {
     
+    /* -------------------------------------------------- Generator -------------------------------------------------- */
+    
+    /**
+     * This class checks the use of and generates the contract for the surrounding annotation.
+     */
     @Stateless
     public static class Generator extends ContractGenerator {
         

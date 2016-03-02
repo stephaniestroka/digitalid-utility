@@ -18,6 +18,8 @@ import net.digitalid.utility.validation.generator.TypeValidator;
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface Validator {
     
+    /* -------------------------------------------------- Value -------------------------------------------------- */
+    
     /**
      * Returns the type validator that validates the annotations on the members of the type annotated with the annotated annotation.
      */

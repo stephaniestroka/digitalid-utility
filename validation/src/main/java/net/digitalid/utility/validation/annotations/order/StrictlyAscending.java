@@ -26,6 +26,11 @@ import net.digitalid.utility.validation.generators.OrderingContractGenerator;
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface StrictlyAscending {
     
+    /* -------------------------------------------------- Generator -------------------------------------------------- */
+    
+    /**
+     * This class checks the use of and generates the contract for the surrounding annotation.
+     */
     @Stateless
     public static class Generator extends OrderingContractGenerator {
         

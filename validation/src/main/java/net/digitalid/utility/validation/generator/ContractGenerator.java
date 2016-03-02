@@ -67,9 +67,7 @@ public abstract class ContractGenerator extends CodeGenerator {
      * The type importer can be used to import referenced types.
      */
     @Pure
-    public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
-        return Contract.with("true", ""); // TODO: Make this method abstract again!
-    }
+    public abstract @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter);
     
     /* -------------------------------------------------- Utility -------------------------------------------------- */
     

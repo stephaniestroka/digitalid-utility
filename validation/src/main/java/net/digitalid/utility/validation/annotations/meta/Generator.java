@@ -18,6 +18,8 @@ import net.digitalid.utility.validation.generator.ContractGenerator;
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface Generator {
     
+    /* -------------------------------------------------- Value -------------------------------------------------- */
+    
     /**
      * Returns the contract generator that generates contracts to validate the values annotated with the annotated annotation.
      */

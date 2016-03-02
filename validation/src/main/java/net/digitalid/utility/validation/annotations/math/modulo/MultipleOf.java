@@ -38,7 +38,7 @@ public @interface MultipleOf {
      */
     long value();
     
-    /* -------------------------------------------------- Validator -------------------------------------------------- */
+    /* -------------------------------------------------- Generator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.

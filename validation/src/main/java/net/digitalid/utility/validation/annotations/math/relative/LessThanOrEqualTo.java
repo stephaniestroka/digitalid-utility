@@ -30,12 +30,14 @@ import net.digitalid.utility.validation.interfaces.Numerical;
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface LessThanOrEqualTo {
     
+    /* -------------------------------------------------- Value -------------------------------------------------- */
+    
     /**
      * Returns the value which the annotated numeric value is less than or equal to.
      */
     long value();
     
-    /* -------------------------------------------------- Validator -------------------------------------------------- */
+    /* -------------------------------------------------- Generator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.

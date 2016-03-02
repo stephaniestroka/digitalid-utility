@@ -19,6 +19,8 @@ import net.digitalid.utility.validation.annotations.elements.UniqueElements;
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface TargetTypes {
     
+    /* -------------------------------------------------- Value -------------------------------------------------- */
+    
     /**
      * Returns the types of values to which the annotated annotation can be applied.
      */
