@@ -9,12 +9,12 @@ import java.util.Collection;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.validation.annotations.meta.Generator;
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.generators.SizeContractGenerator;
 import net.digitalid.utility.validation.interfaces.Countable;
-import net.digitalid.utility.validation.validators.SizeValidator;
 
 /**
  * This annotation indicates that a collection, array or string contains at least the given number of elements.
@@ -25,23 +25,25 @@ import net.digitalid.utility.validation.validators.SizeValidator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(MinSize.Validator.class)
+@Generator(MinSize.Generator.class)
 @TargetTypes({Collection.class, Countable.class, Object[].class, CharSequence.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface MinSize {
+    
+    /* -------------------------------------------------- Value -------------------------------------------------- */
     
     /**
      * Returns the minimum number of elements that the annotated collection, array or string contains.
      */
     int value();
     
-    /* -------------------------------------------------- Validator -------------------------------------------------- */
+    /* -------------------------------------------------- Generator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends SizeValidator {
+    public static class Generator extends SizeContractGenerator {
         
         @Pure
         @Override

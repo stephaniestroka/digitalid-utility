@@ -6,7 +6,7 @@ import net.digitalid.utility.contracts.exceptions.PreconditionViolationException
  * This class makes it easier to validate preconditions.
  * Usage: {@code Require.that(condition).orThrow(message)}.
  */
-public final class Require extends Contract {
+public final class Require extends Constraint {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     

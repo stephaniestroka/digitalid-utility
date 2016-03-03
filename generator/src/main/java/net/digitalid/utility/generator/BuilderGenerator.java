@@ -14,13 +14,13 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
-import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
+import net.digitalid.utility.logging.processing.ProcessingLog;
+import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.reference.Chainable;
-import net.digitalid.utility.validation.annotations.type.Utiliy;
+import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
  * The Builder Generator generates a builder class for a given type (through the type information). 
@@ -32,7 +32,7 @@ import net.digitalid.utility.validation.annotations.type.Utiliy;
  * to provide an entrance method to the builder and sets the appropriate field in the builder. If neither required not optional fields exist, a static 
  * get() method is generated, which returns the builder without calling any further methods.
  */
-@Utiliy
+@Utility
 public class BuilderGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Type Information -------------------------------------------------- */
@@ -122,7 +122,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      */
     protected void createInnerClassForFields(@Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) {
         
-        AnnotationLog.debugging("createInnerClassForFields()");
+        ProcessingLog.debugging("createInnerClassForFields()");
         
         final List<? extends TypeMirror> typeArguments = typeInformation.getType().getTypeArguments();
         
@@ -149,11 +149,11 @@ public class BuilderGenerator extends JavaFileGenerator {
         
         final @Nonnull @NonNullableElements List<ExecutableElement> constructors = ElementFilter.constructorsIn(typeInformation.getElement().getEnclosedElements());
         if (constructors.size() != 1) {
-            AnnotationLog.error("Expected one constructor in generated type:");
+            ProcessingLog.error("Expected one constructor in generated type:");
         }
         final @Nonnull ExecutableElement constructor = constructors.get(0);
         
-        final @Nonnull ExecutableType type = (ExecutableType) AnnotationProcessingEnvironment.getTypeUtils().asMemberOf(typeInformation.getType(), constructor);
+        final @Nonnull ExecutableType type = (ExecutableType) StaticProcessingEnvironment.getTypeUtils().asMemberOf(typeInformation.getType(), constructor);
         addStatement("return new " + typeInformation.getQualifiedNameOfGeneratedSubclass() + importingTypeVisitor.reduceParametersDeclarationToString(type, constructor));
         
         endMethod();
@@ -199,7 +199,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      */
     protected BuilderGenerator(@Nonnull TypeInformation typeInformation) {
         super(typeInformation.getQualifiedNameOfGeneratedBuilder(), typeInformation.getElement());
-        AnnotationLog.debugging("BuilderGenerator(" + typeInformation + ")");
+        ProcessingLog.debugging("BuilderGenerator(" + typeInformation + ")");
     
         this.typeInformation = typeInformation;
     
@@ -214,7 +214,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         createStaticEntryMethod(entryField, nameOfBuilder, interfacesForRequiredFields);
         
         endClass();
-        AnnotationLog.debugging("endClass()");
+        ProcessingLog.debugging("endClass()");
     }
     
     /**
@@ -223,7 +223,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     public static void generateBuilderFor(@Nonnull TypeInformation typeInformation) {
         Require.that(typeInformation.isGeneratable()).orThrow("No subclass can be generated for " + typeInformation);
         
-        AnnotationLog.debugging("generateBuilderFor(" + typeInformation + ")");
+        ProcessingLog.debugging("generateBuilderFor(" + typeInformation + ")");
         new BuilderGenerator(typeInformation).write();
     }
     

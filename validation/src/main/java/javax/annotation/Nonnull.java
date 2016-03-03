@@ -9,12 +9,12 @@ import java.lang.annotation.Target;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.validation.annotations.meta.Validator;
+import net.digitalid.utility.validation.annotations.meta.Generator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.contract.Contract;
+import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.processing.TypeImporter;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
-import net.digitalid.utility.validation.validator.GeneratedContract;
 
 /**
  * This annotation indicates that the annotated reference is not null.
@@ -26,17 +26,22 @@ import net.digitalid.utility.validation.validator.GeneratedContract;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(Nonnull.Validator.class)
+@Generator(Nonnull.Generator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface Nonnull {
     
+    /* -------------------------------------------------- Generator -------------------------------------------------- */
+    
+    /**
+     * This class checks the use of and generates the contract for the surrounding annotation.
+     */
     @Stateless
-    public static class Validator extends AnnotationValidator {
+    public static class Generator extends ContractGenerator {
         
         @Pure
         @Override
-        public @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
-            return GeneratedContract.with("# != null", "The # may not be null.", element);
+        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+            return Contract.with("# != null", "The # may not be null.", element);
         }
         
     }

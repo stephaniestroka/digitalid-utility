@@ -16,7 +16,7 @@ import javax.lang.model.type.DeclaredType;
 
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
-import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
+import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 
 /**
@@ -31,7 +31,7 @@ public class ElementFilter {
     
     public static @Nonnull @NonNullableElements List<Element> filterKind(@Nonnull TypeElement typeElement, @Nonnull ElementKind elementKind) {
         final @Nonnull @NonNullableElements List<Element> filteredElements = new ArrayList<>();
-        final @Nonnull @NonNullableElements List<? extends Element> elementsOfType = AnnotationProcessingEnvironment.getElementUtils().getAllMembers(typeElement);
+        final @Nonnull @NonNullableElements List<? extends Element> elementsOfType = StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement);
         for (@Nonnull Element element : elementsOfType) {
             if (element.getKind() == elementKind) {
                 filteredElements.add(element);
@@ -84,7 +84,7 @@ public class ElementFilter {
     
     public static @Nonnull @NonNullableElements <T> List<T> filterMethods(@Nonnull TypeElement typeElement, @Nonnull FilterCondition<T> filterCondition, @Nonnull Transformer<Element, T> elementTransformer) {
         final @Nonnull @NonNullableElements List<T> filteredMethods = new ArrayList<>();
-        final @Nonnull @NonNullableElements List<? extends Element> elementsOfType = AnnotationProcessingEnvironment.getElementUtils().getAllMembers(typeElement);
+        final @Nonnull @NonNullableElements List<? extends Element> elementsOfType = StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement);
         for (@Nonnull Element element : elementsOfType) {
             if (element.getKind() == ElementKind.METHOD) {
                 T transformedElement = elementTransformer.transformNonNullable(element);
@@ -98,7 +98,7 @@ public class ElementFilter {
     
     public static @Nonnull @NonNullableElements <T> Map<String, T> filterMethods(@Nonnull TypeElement typeElement, @Nonnull FilterCondition<T> filterCondition, @Nonnull Transformer<Element, T> elementTransformer, @Nonnull KeyExtractor<String, T> keyExtractor) {
         final @Nonnull @NonNullableElements Map<String, T> filteredMethods = new HashMap<>();
-        final @Nonnull @NonNullableElements List<? extends Element> elementsOfType = AnnotationProcessingEnvironment.getElementUtils().getAllMembers(typeElement);
+        final @Nonnull @NonNullableElements List<? extends Element> elementsOfType = StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement);
         for (@Nonnull Element element : elementsOfType) {
             if (element.getKind() == ElementKind.METHOD) {
                 final @Nonnull T transformedElement = elementTransformer.transformNonNullable( element);
@@ -118,7 +118,7 @@ public class ElementFilter {
     
     public static @Nonnull @NonNullableElements List<ConstructorInformation> filterConstructors(@Nonnull TypeElement typeElement, @Nonnull FilterCondition<Element> filterCondition) {
         final @Nonnull @NonNullableElements List<ConstructorInformation> constructorInformations = new ArrayList<>();
-        final @Nonnull @NonNullableElements List<ExecutableElement> constructors = javax.lang.model.util.ElementFilter.constructorsIn(AnnotationProcessingEnvironment.getElementUtils().getAllMembers(typeElement));
+        final @Nonnull @NonNullableElements List<ExecutableElement> constructors = javax.lang.model.util.ElementFilter.constructorsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement));
         for (@Nonnull Element element : constructors) {
             if (filterCondition.filter(element)) {
                 constructorInformations.add(ConstructorInformation.of((ExecutableElement) element, getDeclaredType(typeElement)));
@@ -140,7 +140,7 @@ public class ElementFilter {
     }
     
     public static @Nonnull @NonNullableElements <T> List<T> filterFields(@Nonnull TypeElement typeElement, @Nonnull FilterCondition<T> filterCondition, @Nonnull Transformer<Element, T> elementTransformer) {
-        final @Nonnull @NonNullableElements List<VariableElement> fields = javax.lang.model.util.ElementFilter.fieldsIn(AnnotationProcessingEnvironment.getElementUtils().getAllMembers(typeElement));
+        final @Nonnull @NonNullableElements List<VariableElement> fields = javax.lang.model.util.ElementFilter.fieldsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement));
         final @Nonnull @NonNullableElements List<T> fieldElements = new ArrayList<>();
         for (@Nonnull VariableElement field : fields) {
             T transformedElement = elementTransformer.transformNonNullable(field);

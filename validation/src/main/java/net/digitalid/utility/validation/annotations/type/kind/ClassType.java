@@ -6,11 +6,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.annotation.Nonnull;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 
+import net.digitalid.utility.validation.annotations.meta.Generator;
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.Validator;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
+import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.generators.ElementKindContractGenerator;
 
 /**
  * This annotation indicates that a class or element represents a class.
@@ -19,18 +23,25 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(ClassType.Validator.class)
+@Generator(ClassType.Generator.class)
 @TargetTypes({Class.class, Element.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface ClassType {
     
-    /* -------------------------------------------------- Validator -------------------------------------------------- */
+    /* -------------------------------------------------- Generator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
-    public static class Validator extends AnnotationValidator {
-        // TODO: Generate the contract.
+    @Stateless
+    public static class Generator extends ElementKindContractGenerator {
+        
+        @Pure
+        @Override
+        public @Nonnull ElementKind getKind() {
+            return ElementKind.CLASS;
+        }
+        
     }
     
 }

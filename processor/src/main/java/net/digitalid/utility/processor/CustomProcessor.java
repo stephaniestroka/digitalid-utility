@@ -23,8 +23,8 @@ import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.logging.Log;
-import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
+import net.digitalid.utility.logging.processing.ProcessingLog;
+import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.string.NumberString;
 import net.digitalid.utility.string.PrefixString;
@@ -44,7 +44,7 @@ public abstract class CustomProcessor implements Processor {
     
     @Override
     public void init(@Nonnull ProcessingEnvironment processingEnvironment) throws IllegalStateException {
-        AnnotationProcessingEnvironment.environment.set(processingEnvironment);
+        StaticProcessingEnvironment.environment.set(processingEnvironment);
     }
     
     /* -------------------------------------------------- Utility -------------------------------------------------- */
@@ -73,7 +73,7 @@ public abstract class CustomProcessor implements Processor {
      * @see #process(java.util.Set, javax.annotation.processing.RoundEnvironment)
      */
     protected void processFirstRound(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
-        AnnotationLog.annotatedElements(annotations, roundEnvironment);
+        ProcessingLog.annotatedElements(annotations, roundEnvironment);
     }
     
     /**
@@ -108,22 +108,22 @@ public abstract class CustomProcessor implements Processor {
     
     @Override
     public final boolean process(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
-        AnnotationLog.setUp(getClass().getSimpleName());
+        ProcessingLog.setUp(getClass().getSimpleName());
         
         if (round == 0) {
             final @Nonnull String projectName = getProjectName(roundEnvironment);
-            AnnotationLog.information(getClass().getSimpleName() + " invoked" + (projectName.isEmpty() ? "" : " for project " + QuoteString.inSingle(projectName)) + ":\n");
+            ProcessingLog.information(getClass().getSimpleName() + " invoked" + (projectName.isEmpty() ? "" : " for project " + QuoteString.inSingle(projectName)) + ":\n");
         }
         
         if (round == 0 || !onlyInterestedInFirstRound) {
-            AnnotationLog.information("Process " + annotations + " in the " + NumberString.getOrdinal(round + 1) + " round.");
+            ProcessingLog.information("Process " + annotations + " in the " + NumberString.getOrdinal(round + 1) + " round.");
             try {
                 process(annotations, roundEnvironment, round++);
             } catch (@Nonnull Throwable throwable) {
                 Log.error("The compilation failed due to the following problem:", throwable);
                 throw throwable;
             }
-            AnnotationLog.information("Finish " + (consumeAnnotations(annotations, roundEnvironment) ? "with" : "without") + " claiming the annotations.\n" + (roundEnvironment.processingOver() || onlyInterestedInFirstRound ? "\n" : ""));
+            ProcessingLog.information("Finish " + (consumeAnnotations(annotations, roundEnvironment) ? "with" : "without") + " claiming the annotations.\n" + (roundEnvironment.processingOver() || onlyInterestedInFirstRound ? "\n" : ""));
         }
         
         return consumeAnnotations(annotations, roundEnvironment);
@@ -166,7 +166,7 @@ public abstract class CustomProcessor implements Processor {
             }
             return Collections.unmodifiableSet(result);
         } else {
-            AnnotationLog.error("No '@SupportedAnnotations' annotation found on $.", getClass().getName());
+            ProcessingLog.error("No '@SupportedAnnotations' annotation found on $.", getClass().getName());
             return Collections.emptySet();
         }
     }

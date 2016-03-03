@@ -6,10 +6,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class allows the created threads to be named.
  */
+@Immutable
 public class NamedThreadFactory implements ThreadFactory {
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
@@ -24,13 +26,8 @@ public class NamedThreadFactory implements ThreadFactory {
      */
     private final @Nonnull AtomicInteger number = new AtomicInteger(1);
     
-    /* -------------------------------------------------- Constructor -------------------------------------------------- */
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    /**
-     * Creates a new thread factory with the given name prefix.
-     * 
-     * @param prefix the prefix of the threads created by this factory.
-     */
     protected NamedThreadFactory(@Nonnull String prefix) {
         this.prefix = prefix + "-";
     }
@@ -39,11 +36,9 @@ public class NamedThreadFactory implements ThreadFactory {
      * Returns a new thread factory with the given name prefix.
      * 
      * @param prefix the prefix of the threads created by this factory.
-     * 
-     * @return a new thread factory with the given name prefix.
      */
     @Pure
-    public static @Nonnull NamedThreadFactory get(@Nonnull String prefix) {
+    public static @Nonnull NamedThreadFactory with(@Nonnull String prefix) {
         return new NamedThreadFactory(prefix);
     }
     

@@ -5,8 +5,9 @@ import java.math.BigInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.math.Number;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * A number has a value.
@@ -14,8 +15,9 @@ import net.digitalid.utility.validation.annotations.method.Pure;
  * @see Element
  * @see Exponent
  */
+// TODO: Remove this class as everything can and will be generated anyway.
 @Immutable
-public abstract class Number<N extends Number<N, E>, E> {
+public abstract class Number {
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
@@ -62,7 +64,7 @@ public abstract class Number<N extends Number<N, E>, E> {
     public final boolean equals(@Nullable Object object) {
         if (object == this) { return true; }
         if (object == null || !(object instanceof Number)) { return false; }
-        final @Nonnull Number<?, ?> other = (Number) object;
+        final @Nonnull Number other = (Number) object;
         return value.equals(other.value);
     }
     

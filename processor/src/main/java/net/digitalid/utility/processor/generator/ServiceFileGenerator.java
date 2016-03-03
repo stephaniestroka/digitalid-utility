@@ -17,9 +17,9 @@ import javax.lang.model.type.TypeMirror;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
-import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
+import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
+import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -66,8 +66,8 @@ public class ServiceFileGenerator extends FileGenerator {
     
     protected ServiceFileGenerator(@Nonnull Class<?> service) {
         this.service = service;
-        this.serviceMirror = AnnotationProcessingEnvironment.getElementUtils().getTypeElement(service.getCanonicalName()).asType();
-        AnnotationLog.verbose("Created the service loader file for the service " + QuoteString.inSingle(service.getName()));
+        this.serviceMirror = StaticProcessingEnvironment.getElementUtils().getTypeElement(service.getCanonicalName()).asType();
+        ProcessingLog.verbose("Created the service loader file for the service " + QuoteString.inSingle(service.getName()));
     }
     
     /**
@@ -95,7 +95,7 @@ public class ServiceFileGenerator extends FileGenerator {
         requireNotWritten();
         
         qualifiedProviderNames.add(qualifiedProviderName);
-        AnnotationLog.information("Added the provider " + QuoteString.inSingle(qualifiedProviderName) + " for the service " + QuoteString.inSingle(service.getName()));
+        ProcessingLog.information("Added the provider " + QuoteString.inSingle(qualifiedProviderName) + " for the service " + QuoteString.inSingle(service.getName()));
     }
     
     /**
@@ -107,12 +107,12 @@ public class ServiceFileGenerator extends FileGenerator {
         if (providerElement.getKind() != ElementKind.CLASS) { errorMessage = "Only a class can implement a service:"; }
         else if (providerElement.getModifiers().contains(Modifier.ABSTRACT)) { errorMessage = "Only a non-abstract class can implement a service:"; }
         else if (!ProcessingUtility.hasPublicDefaultConstructor(providerElement)) { errorMessage = "The annotated class does not have a public default constructor:"; }
-        else if (!AnnotationProcessingEnvironment.getTypeUtils().isSubtype(providerElement.asType(), serviceMirror)) { errorMessage = "The annotated class does not implement the specified service:"; }
+        else if (!StaticProcessingEnvironment.getTypeUtils().isSubtype(providerElement.asType(), serviceMirror)) { errorMessage = "The annotated class does not implement the specified service:"; }
         
         if (errorMessage == null) {
-            addProvider(AnnotationProcessingEnvironment.getElementUtils().getBinaryName((TypeElement) providerElement).toString());
+            addProvider(StaticProcessingEnvironment.getElementUtils().getBinaryName((TypeElement) providerElement).toString());
         } else {
-            AnnotationLog.error(errorMessage, SourcePosition.of(providerElement));
+            ProcessingLog.error(errorMessage, SourcePosition.of(providerElement));
         }
     }
     
@@ -122,7 +122,7 @@ public class ServiceFileGenerator extends FileGenerator {
     @NonWrittenRecipient
     protected void writeOnce() throws IOException {
         Collections.sort(qualifiedProviderNames);
-        final @Nonnull FileObject fileObject = AnnotationProcessingEnvironment.environment.get().getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", getJarRelativeFilePath());
+        final @Nonnull FileObject fileObject = StaticProcessingEnvironment.environment.get().getFiler().createResource(StandardLocation.CLASS_OUTPUT, "", getJarRelativeFilePath());
         try (@Nonnull Writer writer = fileObject.openWriter()) {
             for (@Nonnull String qualifiedProviderName : qualifiedProviderNames) {
                 writer.write(qualifiedProviderName + "\n");

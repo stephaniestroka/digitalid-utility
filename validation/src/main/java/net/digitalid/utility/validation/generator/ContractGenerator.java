@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.validator;
+package net.digitalid.utility.validation.generator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -7,26 +7,27 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 
-import net.digitalid.utility.logging.processing.AnnotationLog;
+import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
+import net.digitalid.utility.validation.annotations.meta.Generator;
 import net.digitalid.utility.validation.annotations.meta.MethodAnnotation;
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.validation.processing.TypeImporter;
 
 /**
- * An annotation validator {@link #checkUsage(Element, AnnotationMirror)} checks the use}
- * of and {@link #generateContract(Element, AnnotationMirror, TypeImporter)} generates the contract}
- * for an annotation during annotation processing. This class provides a default implementation for both of these validation phases.
+ * A contract generator {@link #checkUsage(Element, AnnotationMirror) checks the use} of and
+ * {@link #generateContract(Element, AnnotationMirror, TypeImporter) generates the contract}
+ * for an annotation during annotation processing.
  * 
- * @see Validator
- * @see GeneratedContract
+ * @see Generator
+ * @see Contract
  */
 @Stateless
-public abstract class AnnotationValidator extends CodeGenerator {
+public abstract class ContractGenerator extends CodeGenerator {
     
     /* -------------------------------------------------- Processing -------------------------------------------------- */
     
@@ -46,16 +47,16 @@ public abstract class AnnotationValidator extends CodeGenerator {
                 if (ProcessingUtility.isAssignable(element, targetType)) { elementAssignableToTargetType = true; }
             }
             if (!elementAssignableToTargetType) {
-                AnnotationLog.error("The element $ is not assignable to a target type of $.", SourcePosition.of(element, annotationMirror), element, annotationName);
+                ProcessingLog.error("The element $ is not assignable to a target type of $.", SourcePosition.of(element, annotationMirror), element, annotationName);
             }
         }
         
         final @Nullable MethodAnnotation methodAnnotation = getClass().getAnnotation(MethodAnnotation.class);
         if (methodAnnotation != null) {
             if (element.getKind() != ElementKind.METHOD) {
-                AnnotationLog.error("The method annotation $ may only be used on methods.", SourcePosition.of(element, annotationMirror), annotationName);
-            } else if (!ProcessingUtility.isAssignable(((ExecutableElement) element).getReturnType(), methodAnnotation.value())) {
-                AnnotationLog.error("The method annotation $ cannot be used on $.", SourcePosition.of(element, annotationMirror), annotationName, element);
+                ProcessingLog.error("The method annotation $ may only be used on methods.", SourcePosition.of(element, annotationMirror), annotationName);
+            } else if (!ProcessingUtility.isAssignable(((ExecutableElement) element).getReceiverType(), methodAnnotation.value())) {
+                ProcessingLog.error("The method annotation $ cannot be used on $.", SourcePosition.of(element, annotationMirror), annotationName, element);
             }
         }
     }
@@ -66,9 +67,7 @@ public abstract class AnnotationValidator extends CodeGenerator {
      * The type importer can be used to import referenced types.
      */
     @Pure
-    public @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) { 
-        return GeneratedContract.with("true", "This condition is always true", element, annotationMirror); 
-    }
+    public abstract @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter);
     
     /* -------------------------------------------------- Utility -------------------------------------------------- */
     

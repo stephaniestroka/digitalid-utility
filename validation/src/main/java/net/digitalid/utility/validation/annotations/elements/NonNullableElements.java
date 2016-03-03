@@ -11,13 +11,13 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
+import net.digitalid.utility.validation.annotations.meta.Generator;
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.Validator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.contract.Contract;
+import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.processing.TypeImporter;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
-import net.digitalid.utility.validation.validator.GeneratedContract;
 
 /**
  * This annotation indicates that the elements of an {@link Iterable iterable} are {@link Nonnull non-nullable}.
@@ -28,15 +28,23 @@ import net.digitalid.utility.validation.validator.GeneratedContract;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @TargetTypes({Iterable.class, Object[].class})
-@Validator(NonNullableElements.Validator.class)
+@Generator(NonNullableElements.Generator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface NonNullableElements {
     
+    /* -------------------------------------------------- Generator -------------------------------------------------- */
+    
+    /**
+     * This class checks the use of and generates the contract for the surrounding annotation.
+     */
     @Stateless
-    public static class Validator extends AnnotationValidator {
+    public static class Generator extends ContractGenerator {
         
+        /**
+         * Returns whether all elements in the given iterable are non-null.
+         */
         @Pure
-        public boolean validate(@Nullable Iterable<?> iterable) {
+        public static boolean validate(@Nullable Iterable<?> iterable) {
             if (iterable == null) { return true; }
             for (@Nullable Object element : iterable) {
                 if (element == null) { return false; }
@@ -44,8 +52,11 @@ public @interface NonNullableElements {
             return true;
         }
         
+        /**
+         * Returns whether all elements in the given array are non-null.
+         */
         @Pure
-        public boolean validate(@Nullable Object[] array) {
+        public static boolean validate(@Nullable Object[] array) {
             if (array == null) { return true; }
             for (@Nullable Object element : array) {
                 if (element == null) { return false; }
@@ -55,8 +66,8 @@ public @interface NonNullableElements {
         
         @Pure
         @Override
-        public @Nonnull GeneratedContract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
-            return GeneratedContract.with(typeImporter.importIfPossible(NonNullableElements.class) + ".Validator.validate(#)", "The # may not contain null.", element);
+        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+            return Contract.with(typeImporter.importIfPossible(NonNullableElements.class) + ".Generator.validate(#)", "The # may not contain null.", element);
         }
         
     }

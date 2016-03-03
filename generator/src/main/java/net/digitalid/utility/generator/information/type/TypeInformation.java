@@ -1,5 +1,6 @@
 package net.digitalid.utility.generator.information.type;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -7,7 +8,6 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 
-import net.digitalid.utility.functional.Predicate;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
@@ -19,7 +19,6 @@ import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.type.filter.AbstractGetterMatcher;
 import net.digitalid.utility.generator.information.type.filter.AbstractSetterMatcher;
 import net.digitalid.utility.generator.information.type.filter.FieldNameExtractor;
-import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
@@ -42,11 +41,17 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         return null; // TODO: implement
     }
     
-    public @Nonnull @NonNullableElements List<GeneratedFieldInformation> getGeneratedFieldsInformation(){
-        return null; // TODO: implement
+    public @Nonnull @NonNullableElements List<GeneratedFieldInformation> getGeneratedFieldsInformation(@Nonnull DeclaredType containingType) {
+        List<GeneratedFieldInformation> generatedFieldInformations = new ArrayList<>(getAbstractGetters().size());
+        for (@Nonnull Map.Entry<String, MethodInformation> abstractGetter : getAbstractGetters().entrySet()) {
+            generatedFieldInformations.add(GeneratedFieldInformation.of(containingType, abstractGetter.getValue(), getAbstractSetters().get(abstractGetter.getKey())));
+        }
+        return generatedFieldInformations;
     }
     
-    public abstract @Nonnull @NonNullableElements List<RepresentingFieldInformation> getRepresentingFieldInformation() throws UnexpectedTypeContentException;
+    /* -------------------------------------------------- Abstract Methods -------------------------------------------------- */
+    
+    public abstract @Nonnull @NonNullableElements List<RepresentingFieldInformation> getRepresentingFieldInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) throws UnexpectedTypeContentException;
     
     /**
      * Either the method declarations of an interface, or the abstract methods of an implemented class.
@@ -107,21 +112,12 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     
     public final @Nonnull @NonNullableElements List<GeneratedFieldInformation> generatedFieldInformations;
     
-    public final @Nonnull @NonNullableElements List<RepresentingFieldInformation> representingFieldInformations;
-    
-    public @Nonnull @NonNullableElements List<RepresentingFieldInformation> getRepresentingFields() {
-        return representingFieldInformations;
-    }
-    
-    private static final Predicate<MethodInformation> abstractGetterPredicate = new Predicate {
-        
-    }
-    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     protected TypeInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
-        super(element, element.asType(), containingType);
+        super(typeElement, typeElement.asType(), containingType);
         
+        // TODO: implement using classes and methods from the functional package.
         final @Nonnull Iterable<MethodInformation> methodInformations = ElementFilter.allMethodInformation(typeElement);
         
         FluentIterable fluentIterable = new FluentIterable(javax.lang.model.util.ElementFilter.methodsIn(AnnotationProcessingEnvironment.getElementUtils().getAllMembers(typeElement));

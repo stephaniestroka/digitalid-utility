@@ -16,7 +16,6 @@ import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.information.exceptions.InvalidRecoveryParameterException;
 import net.digitalid.utility.generator.information.exceptions.UnexpectedTypeContentException;
 import net.digitalid.utility.generator.information.field.DeclaredFieldInformation;
-import net.digitalid.utility.generator.information.field.GeneratedFieldInformation;
 import net.digitalid.utility.generator.information.field.ParameterBasedFieldInformation;
 import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
 import net.digitalid.utility.generator.information.filter.ElementFilter;
@@ -24,14 +23,12 @@ import net.digitalid.utility.generator.information.filter.ElementInformationName
 import net.digitalid.utility.generator.information.filter.FilterCondition;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
-import net.digitalid.utility.generator.information.type.filter.AbstractGetterMatcher;
-import net.digitalid.utility.generator.information.type.filter.AbstractSetterMatcher;
 import net.digitalid.utility.generator.information.type.filter.AccessibleFieldInformationTransformer;
 import net.digitalid.utility.generator.information.type.filter.FieldNameExtractor;
 import net.digitalid.utility.generator.information.type.filter.ImplementedGetterMatcher;
 import net.digitalid.utility.generator.information.type.filter.ParameterBasedFieldInformationTransformer;
 import net.digitalid.utility.generator.information.type.filter.RecoverMethodMatcher;
-import net.digitalid.utility.logging.processing.AnnotationLog;
+import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -41,150 +38,6 @@ import net.digitalid.utility.validation.annotations.state.Unmodifiable;
  * This type collects the relevant information about a class for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  */
 public class ClassInformation extends TypeInformation {
-    
-    /**
-     * The class information builder collects information relevant for creating a class information object.
-     */
-    private static class ClassInformationBuilder implements TypeInformationBuilder {
-        
-        /* -------------------------------------------------- Final Fields -------------------------------------------------- */
-        
-        /**
-         * The type element.
-         */
-        private final @Nonnull TypeElement typeElement;
-        
-        /**
-         * The containing type.
-         */
-        private final @Nonnull DeclaredType containingType;
-        
-        /* -------------------------------------------------- Constructor -------------------------------------------------- */
-        
-        public ClassInformationBuilder(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
-            this.typeElement = typeElement;
-            this.containingType = containingType;
-            this.generatable = true;
-        }
-        
-        /* -------------------------------------------------- Generatable -------------------------------------------------- */
-        
-        private boolean generatable;
-        
-        public boolean isGeneratable() {
-            return generatable;
-        }
-        
-        /* -------------------------------------------------- Equals Method -------------------------------------------------- */
-        
-        public @Nullable MethodInformation getEqualsMethod() {
-            return ;
-        }
-        
-        /* -------------------------------------------------- Hash Code Method -------------------------------------------------- */
-        
-        public @Nullable MethodInformation getHashCodeMethod() {
-            return ;
-        }
-        
-        /* -------------------------------------------------- To String Method -------------------------------------------------- */
-        
-        public @Nullable MethodInformation getToStringMethod() {
-            return ;
-        }
-        
-        /* -------------------------------------------------- Compare To Method -------------------------------------------------- */
-        
-        public @Nullable MethodInformation getCompareToMethod() {
-            return ;
-        }
-        
-        /* -------------------------------------------------- Clone Method  -------------------------------------------------- */
-        
-        public @Nullable MethodInformation getCloneMethod() {
-            return ;
-        }
-        
-        /* -------------------------------------------------- Validate Method -------------------------------------------------- */
-        
-        public @Nullable MethodInformation getValidateMethod() {
-            return ;
-        }
-        
-        /* -------------------------------------------------- Implemented Getters -------------------------------------------------- */
-        
-        public @Nonnull @NonNullableElements Map<String, MethodInformation> getImplementedGetters() {
-            return ;
-        }
-        
-        /* -------------------------------------------------- Abstract Getters -------------------------------------------------- */
-        
-        public @Nonnull @NonNullableElements Map<String, MethodInformation> getAbstractGetters() {
-            return 
-        }
-        
-        /* -------------------------------------------------- Abstract Setters -------------------------------------------------- */
-        
-        public @Nonnull @NonNullableElements Map<String, MethodInformation> getAbstractSetters() {
-            return ;
-        }
-        
-        /* -------------------------------------------------- Overriden Methods -------------------------------------------------- */
-        
-        public @Nonnull @NonNullableElements List<MethodInformation> getOverridenMethods() {
-            return ;
-        }
-        
-        public @Nonnull @NonNullableElements List<DeclaredFieldInformation> getAccessibleFields() {
-            return ElementFilter.filterFields(typeElement, FilterCondition.AcceptAll.<DeclaredFieldInformation>get(), AccessibleFieldInformationTransformer.of(containingType));
-        }
-        
-        /* -------------------------------------------------- Constructors -------------------------------------------------- */
-        
-        private @Nullable @NonNullableElements List<ConstructorInformation> constructors;
-        
-        public @Nonnull @NonNullableElements List<ConstructorInformation> getConstructors() {
-            if (constructors == null) {
-                constructors = ;
-            }
-            return constructors;
-        }
-        
-        /* -------------------------------------------------- Recover Methods -------------------------------------------------- */
-        
-        private @Nullable @NonNullableElements List<MethodInformation> recoverMethods;
-        
-       
-
-        
-       
-        /* -------------------------------------------------- Generated Field Information -------------------------------------------------- */
-        
-        private @Nullable @NonNullableElements List<GeneratedFieldInformation> generatedFieldInformations;
-        
-        public @Nonnull @NonNullableElements List<GeneratedFieldInformation> getGeneratedFieldsInformation() {
-            if (generatedFieldInformations == null) {
-                 generatedFieldInformations = new ArrayList<>(getAbstractGetters().size());
-                for (@Nonnull Map.Entry<String, MethodInformation> abstractGetter : getAbstractGetters().entrySet()) {
-                    generatedFieldInformations.add(GeneratedFieldInformation.of(containingType, abstractGetter.getValue(), getAbstractSetters().get(abstractGetter.getKey())));
-                }
-            }
-            return generatedFieldInformations;
-        }
-        
-        /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
-        
-        /**
-         * Combines and returns the parameter-based fields and the generated fields of the type.
-         */
-        public @Nonnull @NonNullableElements List<RepresentingFieldInformation> getRepresentingFieldInformation() {
-            final @Nonnull @NonNullableElements List<RepresentingFieldInformation> representingFieldInformations = new ArrayList<>(getGeneratedFieldsInformation().size() + getParameterBasedFieldInformations().size());
-            representingFieldInformations.addAll(getParameterBasedFieldInformations());
-            representingFieldInformations.addAll(getGeneratedFieldsInformation());
-            return representingFieldInformations;
-        }
-        
-    }
     
     /* -------------------------------------------------- Generated Methods -------------------------------------------------- */
     
@@ -282,34 +135,45 @@ public class ClassInformation extends TypeInformation {
             @Nonnull @NonNullableElements List<? extends VariableElement> recoveryParameters = recoverExecutable.getParameters();
             @Nullable @NonNullableElements List<ParameterBasedFieldInformation> parameterBasedFieldInformations = new ArrayList<>(recoveryParameters.size());
             for (@Nonnull VariableElement recoveryParameter : recoveryParameters) {
-                try {
-                    final @Nullable ParameterBasedFieldInformation parameterBasedFieldInformation = getParameterBasedFieldInformation(typeElement, recoveryParameter);
-                    parameterBasedFieldInformations.add(parameterBasedFieldInformation);
-                } catch (InvalidRecoveryParameterException e) {
-                    AnnotationLog.information(e.getMessage());
-                    generatable = false;
-                }
+                final @Nullable ParameterBasedFieldInformation parameterBasedFieldInformation = getParameterBasedFieldInformation(typeElement, recoveryParameter);
+                parameterBasedFieldInformations.add(parameterBasedFieldInformation);
             }
+            return parameterBasedFieldInformations;
         } else {
-            AnnotationLog.information("Failed to retrieve the constructor or recover method", SourcePosition.of(typeElement));
-            generatable = false;
+            throw UnexpectedTypeContentException.get("Failed to retrieve the constructor or recover method");
         }
+    }
+    
+    /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
+    
+    /**
+     * Combines and returns the parameter-based fields and the generated fields of the type.
+     */
+    public @Nonnull @NonNullableElements List<RepresentingFieldInformation> getRepresentingFieldInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) throws UnexpectedTypeContentException {
+        final @Nonnull @NonNullableElements List<RepresentingFieldInformation> representingFieldInformations = new ArrayList<>(getGeneratedFieldsInformation(containingType).size() + getParameterBasedFieldInformations(typeElement).size());
+        representingFieldInformations.addAll(getParameterBasedFieldInformations(typeElement));
+        representingFieldInformations.addAll(getGeneratedFieldsInformation(containingType));
+        return representingFieldInformations;
     }
     
     /* -------------------------------------------------- Generatable -------------------------------------------------- */
     
-    public boolean hasOneRecoverMethodOrOneConstructor() {
-        
+    private final boolean generatable;
+    
+    @Override public boolean isGeneratable() {
+        return generatable;
     }
     
-    /* -------------------------------------------------- Constructors -------------------------------------------------- */
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a class information object with the help of the given class information helper.
      */
-    protected ClassInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType, @Nonnull ClassInformationBuilder builder) {
-        super(typeElement, containingType, builder);
+    protected ClassInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
+        super(typeElement, containingType);
     
+        boolean generatable = true;
+        
         this.equalsMethod = ElementFilter.filterMethodInformation(typeElement, ElementInformationNameMatcher.<MethodInformation>withNames("equals"));
         this.hashCodeMethod = ElementFilter.filterMethodInformation(typeElement, ElementInformationNameMatcher.<MethodInformation>withNames("hashCode"));
         this.toStringMethod = ElementFilter.filterMethodInformation(typeElement, ElementInformationNameMatcher.<MethodInformation>withNames("toString"));
@@ -324,14 +188,24 @@ public class ClassInformation extends TypeInformation {
             }
         });
         this.constructors = ElementFilter.filterConstructors(typeElement);
+        
+        @Nullable MethodInformation recoverMethod = null;
+        @Nullable List<ParameterBasedFieldInformation> parameterBasedFieldInformations = null;
         try {
-            this.recoverMethod = getRecoverMethod(typeElement);
+            recoverMethod = getRecoverMethod(typeElement);
+            parameterBasedFieldInformations = getParameterBasedFieldInformations(typeElement);
         } catch (UnexpectedTypeContentException e) {
-            AnnotationLog.information(e.getMessage(), SourcePosition.of(typeElement));
+            ProcessingLog.information(e.getMessage(), SourcePosition.of(typeElement));
             generatable = false;
         }
-        this.parameterBasedFieldInformations = builder.getParameterBasedFieldInformations();
-        this.accessibleFields = builder.getAccessibleFields();
+        this.recoverMethod = recoverMethod;
+        if (parameterBasedFieldInformations != null) {
+            this.parameterBasedFieldInformations = parameterBasedFieldInformations;
+        } else {
+            this.parameterBasedFieldInformations = new ArrayList<>();
+        }
+        
+        this.accessibleFields = ElementFilter.filterFields(typeElement, FilterCondition.AcceptAll.<DeclaredFieldInformation>get(), AccessibleFieldInformationTransformer.of(containingType));
         
         this.generatable = generatable;
     }
@@ -340,9 +214,7 @@ public class ClassInformation extends TypeInformation {
      * Returns a class information object of the given type typeElement and containing type.
      */
     public static @Nonnull ClassInformation of(@Nonnull TypeElement element, @Nonnull DeclaredType containingType) {
-        final @Nonnull ClassInformationBuilder builder = new ClassInformationBuilder(element, containingType);
-        
-        return new ClassInformation(element, containingType, builder);
+        return new ClassInformation(element, containingType);
     }
      
 }

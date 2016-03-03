@@ -3,12 +3,12 @@ package net.digitalid.utility.threading;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.validation.annotations.method.Pure;
-import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
  * This class facilitates the handling of threads.
  */
-@Stateless
+@Utility
 public final class Threading {
     
     /* -------------------------------------------------- Main Thread -------------------------------------------------- */
@@ -20,8 +20,6 @@ public final class Threading {
     
     /**
      * Returns whether the current thread is the main thread.
-     * 
-     * @return whether the current thread is the main thread.
      */
     @Pure
     public static final boolean isMainThread() {

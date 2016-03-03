@@ -6,12 +6,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.lang.model.element.Element;
+import javax.annotation.Nonnull;
 import javax.lang.model.element.NestingKind;
+import javax.lang.model.element.TypeElement;
 
+import net.digitalid.utility.validation.annotations.meta.Generator;
 import net.digitalid.utility.validation.annotations.meta.TargetTypes;
-import net.digitalid.utility.validation.annotations.meta.Validator;
-import net.digitalid.utility.validation.validator.AnnotationValidator;
+import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.generators.NestingKindContractGenerator;
 
 /**
  * This annotation indicates that a class or element represents a local type.
@@ -20,18 +23,25 @@ import net.digitalid.utility.validation.validator.AnnotationValidator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(LocalType.Validator.class)
-@TargetTypes({Class.class, Element.class})
+@Generator(LocalType.Generator.class)
+@TargetTypes({Class.class, TypeElement.class})
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface LocalType {
     
-    /* -------------------------------------------------- Validator -------------------------------------------------- */
+    /* -------------------------------------------------- Generator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
-    public static class Validator extends AnnotationValidator {
-        // TODO: Generate the contract.
+    @Stateless
+    public static class Generator extends NestingKindContractGenerator {
+        
+        @Pure
+        @Override
+        public @Nonnull NestingKind getKind() {
+            return NestingKind.LOCAL;
+        }
+        
     }
     
 }

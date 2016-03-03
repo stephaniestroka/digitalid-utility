@@ -1,7 +1,7 @@
 package net.digitalid.utility.validation.math;
 
 import net.digitalid.utility.testing.CustomTest;
-import net.digitalid.utility.validation.annotations.math.MultipleOf;
+import net.digitalid.utility.validation.annotations.math.modulo.MultipleOf;
 
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;

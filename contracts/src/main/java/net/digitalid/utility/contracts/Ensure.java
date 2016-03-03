@@ -6,7 +6,7 @@ import net.digitalid.utility.contracts.exceptions.PostconditionViolationExceptio
  * This class makes it easier to validate postconditions.
  * Usage: {@code Ensure.that(condition).orThrow(message)}.
  */
-public final class Ensure extends Contract {
+public final class Ensure extends Constraint {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     

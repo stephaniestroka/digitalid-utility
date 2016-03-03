@@ -24,14 +24,14 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 
-import net.digitalid.utility.contracts.Contract;
+import net.digitalid.utility.contracts.Constraint;
 import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.exceptions.UnexpectedValueException;
 import net.digitalid.utility.functional.string.IterableConverter;
-import net.digitalid.utility.logging.processing.AnnotationLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
+import net.digitalid.utility.logging.processing.ProcessingLog;
+import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 import net.digitalid.utility.processor.generator.annotations.OnlyPossibleIn;
 import net.digitalid.utility.string.FormatString;
@@ -40,8 +40,8 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
+import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.processing.TypeImporter;
-import net.digitalid.utility.validation.validator.GeneratedContract;
 
 import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.*;
 
@@ -101,7 +101,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         this.qualifiedClassName = qualifiedClassName;
         this.sourceClassElement = sourceClassElement;
         this.packageName = qualifiedClassName.substring(0, qualifiedClassName.lastIndexOf('.'));
-        AnnotationLog.verbose("Generating the class " + this);
+        ProcessingLog.verbose("Generating the class " + this);
     }
     
     /**
@@ -666,25 +666,25 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     @NonWrittenRecipient
     @OnlyPossibleIn()
-    protected void addContract(@Nonnull Class<? extends Contract> contractType, @Nonnull GeneratedContract generatedContract) {
+    protected void addContract(@Nonnull Class<? extends Constraint> contractType, @Nonnull Contract generatedContract) {
         addStatement(importIfPossible(contractType) + ".that(" + generatedContract.getCondition() + ").orThrow(" + QuoteString.inDouble(generatedContract.getMessage()) + ", " + IterableConverter.toString(generatedContract.getArguments()) + ")");
     }
     
     @NonWrittenRecipient
     @OnlyPossibleIn()
-    public void addPrecondition(@Nonnull GeneratedContract generatedContract) {
+    public void addPrecondition(@Nonnull Contract generatedContract) {
         addContract(Require.class, generatedContract);
     }
     
     @NonWrittenRecipient
     @OnlyPossibleIn()
-    public void addPostcondition(@Nonnull GeneratedContract generatedContract) {
+    public void addPostcondition(@Nonnull Contract generatedContract) {
         addContract(Ensure.class, generatedContract);
     }
     
     @NonWrittenRecipient
     @OnlyPossibleIn()
-    public void addInvariant(@Nonnull GeneratedContract generatedContract) {
+    public void addInvariant(@Nonnull Contract generatedContract) {
         addContract(Validate.class, generatedContract);
     }
     
@@ -695,7 +695,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     protected void writeOnce() throws IOException {
         requireCurrentCodeBlock(NONE);
         
-        final @Nonnull JavaFileObject javaFileObject = AnnotationProcessingEnvironment.environment.get().getFiler().createSourceFile(qualifiedClassName, sourceClassElement);
+        final @Nonnull JavaFileObject javaFileObject = StaticProcessingEnvironment.environment.get().getFiler().createSourceFile(qualifiedClassName, sourceClassElement);
         try (@Nonnull Writer writer = javaFileObject.openWriter(); @Nonnull PrintWriter printWriter = new PrintWriter(writer)) {
             printPackage(printWriter);
             printImports(printWriter);
