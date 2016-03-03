@@ -14,6 +14,7 @@ import javax.lang.model.type.DeclaredType;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.information.exceptions.InvalidRecoveryParameterException;
+import net.digitalid.utility.generator.information.exceptions.UnexpectedTypeContentException;
 import net.digitalid.utility.generator.information.field.DeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedFieldInformation;
 import net.digitalid.utility.generator.information.field.ParameterBasedFieldInformation;
@@ -77,65 +78,61 @@ public class ClassInformation extends TypeInformation {
         /* -------------------------------------------------- Equals Method -------------------------------------------------- */
         
         public @Nullable MethodInformation getEqualsMethod() {
-            return ElementFilter.filterMethodInformation(typeElement, ElementInformationNameMatcher.<MethodInformation>withNames("equals"));
+            return ;
         }
         
         /* -------------------------------------------------- Hash Code Method -------------------------------------------------- */
         
         public @Nullable MethodInformation getHashCodeMethod() {
-            return ElementFilter.filterMethodInformation(typeElement, ElementInformationNameMatcher.<MethodInformation>withNames("hashCode"));
+            return ;
         }
         
         /* -------------------------------------------------- To String Method -------------------------------------------------- */
         
         public @Nullable MethodInformation getToStringMethod() {
-            return ElementFilter.filterMethodInformation(typeElement, ElementInformationNameMatcher.<MethodInformation>withNames("toString"));
+            return ;
         }
         
         /* -------------------------------------------------- Compare To Method -------------------------------------------------- */
         
         public @Nullable MethodInformation getCompareToMethod() {
-            return ElementFilter.filterMethodInformation(typeElement, ElementInformationNameMatcher.<MethodInformation>withNames("compareTo"));
+            return ;
         }
         
         /* -------------------------------------------------- Clone Method  -------------------------------------------------- */
         
         public @Nullable MethodInformation getCloneMethod() {
-            return ElementFilter.filterMethodInformation(typeElement, ElementInformationNameMatcher.<MethodInformation>withNames("clone"));
+            return ;
         }
         
         /* -------------------------------------------------- Validate Method -------------------------------------------------- */
         
         public @Nullable MethodInformation getValidateMethod() {
-            return ElementFilter.filterMethodInformation(typeElement, ElementInformationNameMatcher.<MethodInformation>withNames("validate"));
+            return ;
         }
         
         /* -------------------------------------------------- Implemented Getters -------------------------------------------------- */
         
         public @Nonnull @NonNullableElements Map<String, MethodInformation> getImplementedGetters() {
-            return ElementFilter.filterMethodInformations(typeElement, ImplementedGetterMatcher.get(), FieldNameExtractor.get());
+            return ;
         }
         
         /* -------------------------------------------------- Abstract Getters -------------------------------------------------- */
         
         public @Nonnull @NonNullableElements Map<String, MethodInformation> getAbstractGetters() {
-            return ElementFilter.filterMethodInformations(typeElement, AbstractGetterMatcher.get(), FieldNameExtractor.get());
+            return 
         }
         
         /* -------------------------------------------------- Abstract Setters -------------------------------------------------- */
         
         public @Nonnull @NonNullableElements Map<String, MethodInformation> getAbstractSetters() {
-            return ElementFilter.filterMethodInformations(typeElement, AbstractSetterMatcher.get(), FieldNameExtractor.get());
+            return ;
         }
         
         /* -------------------------------------------------- Overriden Methods -------------------------------------------------- */
         
         public @Nonnull @NonNullableElements List<MethodInformation> getOverridenMethods() {
-            return ElementFilter.filterMethodInformations(typeElement, new FilterCondition<MethodInformation>() {
-                    @Override public boolean filter(@Nonnull MethodInformation methodInformation) {
-                        return !methodInformation.isDeclaredInRuntimeEnvironment();
-                    }
-                });
+            return ;
         }
         
         public @Nonnull @NonNullableElements List<DeclaredFieldInformation> getAccessibleFields() {
@@ -148,7 +145,7 @@ public class ClassInformation extends TypeInformation {
         
         public @Nonnull @NonNullableElements List<ConstructorInformation> getConstructors() {
             if (constructors == null) {
-                constructors = ElementFilter.filterConstructors(typeElement);
+                constructors = ;
             }
             return constructors;
         }
@@ -157,86 +154,10 @@ public class ClassInformation extends TypeInformation {
         
         private @Nullable @NonNullableElements List<MethodInformation> recoverMethods;
         
-        private @Nonnull @NonNullableElements List<MethodInformation> getRecoverMethods() {
-            if (recoverMethods == null) {
-                recoverMethods = ElementFilter.filterMethodInformations(typeElement, RecoverMethodMatcher.get());
-            }
-            return recoverMethods;
-        }
+       
+
         
-        public @Nullable @NonNullableElements MethodInformation getRecoverMethod() {
-            final @Nonnull @NonNullableElements List<MethodInformation> recoverMethods = getRecoverMethods();
-            if (recoverMethods.size() > 0) {
-                if (recoverMethods.size() > 1) {
-                    AnnotationLog.information("Cannot determine the representing fields with multiple recover methods:", SourcePosition.of(typeElement));
-                    generatable = false;
-                } else {
-                    return recoverMethods.get(0);
-                }
-            }
-            return null;
-        }
-        
-        /* -------------------------------------------------- Recover Executable -------------------------------------------------- */
-        
-        private @Nullable ExecutableElement recoverExecutable;
-        
-        private @Nullable ExecutableElement getRecoverExecutable() {
-            if (recoverExecutable == null) {
-                final @Nullable MethodInformation recoverMethod = getRecoverMethod();
-                if (recoverMethod != null) {
-                    recoverExecutable = recoverMethod.getElement();
-                } else {
-                    final @Nonnull @NonNullableElements List<ConstructorInformation> constructors = getConstructors();
-                    // we always have at least one constructor in a class. (TODO: check if this is true for abstract classes as well)
-                    if (constructors.size() > 1) {
-                        AnnotationLog.information("Cannot determine the representing fields with several constructors and no recover method:", SourcePosition.of(typeElement));
-                        generatable = false;
-                    } else {
-                        recoverExecutable = constructors.get(0).getElement();
-                    }
-                }
-            }
-            return recoverExecutable;
-        }
-        
-        /* -------------------------------------------------- Parameter-based Field Information  -------------------------------------------------- */
-        
-        private @Nonnull ParameterBasedFieldInformation getParameterBasedFieldInformation(@Nonnull TypeElement typeElement, @Nonnull VariableElement variableElement) throws InvalidRecoveryParameterException {
-            final @Nonnull String parameterName = variableElement.getSimpleName().toString();
-            final @Nullable ParameterBasedFieldInformation parameterBasedFieldInformation = ElementFilter.filterField(typeElement, ElementInformationNameMatcher.<ParameterBasedFieldInformation>withNames(parameterName), ParameterBasedFieldInformationTransformer.with(typeElement));
-            
-            if (parameterBasedFieldInformation == null) {
-                throw InvalidRecoveryParameterException.with(parameterName);
-            }
-            return parameterBasedFieldInformation;
-        }
-        
-        private @Nullable @NonNullableElements List<ParameterBasedFieldInformation> parameterBasedFieldInformations;
-        
-        public @Nonnull @NonNullableElements List<ParameterBasedFieldInformation> getParameterBasedFieldInformations() {
-            if (parameterBasedFieldInformations == null) {
-                final @Nullable ExecutableElement recoverExecutable = getRecoverExecutable();
-                if (recoverExecutable != null) {
-                    @Nonnull @NonNullableElements List<? extends VariableElement> recoveryParameters = recoverExecutable.getParameters();
-                    parameterBasedFieldInformations = new ArrayList<>(recoveryParameters.size());
-                    for (@Nonnull VariableElement recoveryParameter : recoveryParameters) {
-                        try {
-                            final @Nullable ParameterBasedFieldInformation parameterBasedFieldInformation = getParameterBasedFieldInformation(typeElement, recoveryParameter);
-                            parameterBasedFieldInformations.add(parameterBasedFieldInformation);
-                        } catch (InvalidRecoveryParameterException e) {
-                            AnnotationLog.information(e.getMessage());
-                            generatable = false;
-                        }
-                    }
-                } else {
-                    AnnotationLog.information("Failed to retrieve the constructor or recover method", SourcePosition.of(typeElement));
-                    generatable = false;
-                }
-            }
-            return parameterBasedFieldInformations;
-        }
-        
+       
         /* -------------------------------------------------- Generated Field Information -------------------------------------------------- */
         
         private @Nullable @NonNullableElements List<GeneratedFieldInformation> generatedFieldInformations;
@@ -312,27 +233,107 @@ public class ClassInformation extends TypeInformation {
      */
     public final @Nonnull @NonNullableElements Map<String, MethodInformation> implementedGetters;
     
+    private @Nullable @NonNullableElements MethodInformation getRecoverMethod(@Nonnull TypeElement typeElement) throws UnexpectedTypeContentException {
+        final @Nonnull @NonNullableElements List<MethodInformation> recoverMethods = ElementFilter.filterMethodInformations(typeElement, RecoverMethodMatcher.get());
+        if (recoverMethods.size() > 0) {
+            if (recoverMethods.size() > 1) {
+                throw UnexpectedTypeContentException.get("Cannot determine the representing fields with multiple recover methods.");
+            } else {
+                return recoverMethods.get(0);
+            }
+        }
+        return null;
+    }
+    
+    /* -------------------------------------------------- Recover Executable -------------------------------------------------- */
+    
+    private @Nullable ExecutableElement getRecoverExecutable(@Nonnull TypeElement typeElement) throws UnexpectedTypeContentException {
+        final @Nonnull ExecutableElement recoverExecutable;
+        final @Nullable MethodInformation recoverMethod = getRecoverMethod(typeElement);
+        if (recoverMethod != null) {
+            recoverExecutable = recoverMethod.getElement();
+        } else {
+            final @Nonnull @NonNullableElements List<ConstructorInformation> constructors = getConstructors();
+            // we always have at least one constructor in a class. (TODO: check if this is true for abstract classes as well)
+            if (constructors.size() > 1) {
+                throw UnexpectedTypeContentException.get("Cannot determine the representing fields with several constructors and no recover method:");
+            } else {
+                recoverExecutable = constructors.get(0).getElement();
+            }
+        }
+        return recoverExecutable;
+    }
+    
+    /* -------------------------------------------------- Parameter-based Field Information  -------------------------------------------------- */
+    
+    private @Nonnull ParameterBasedFieldInformation getParameterBasedFieldInformation(@Nonnull TypeElement typeElement, @Nonnull VariableElement variableElement) throws InvalidRecoveryParameterException {
+        final @Nonnull String parameterName = variableElement.getSimpleName().toString();
+        final @Nullable ParameterBasedFieldInformation parameterBasedFieldInformation = ElementFilter.filterField(typeElement, ElementInformationNameMatcher.<ParameterBasedFieldInformation>withNames(parameterName), ParameterBasedFieldInformationTransformer.with(typeElement));
+        
+        if (parameterBasedFieldInformation == null) {
+            throw InvalidRecoveryParameterException.with(parameterName);
+        }
+        return parameterBasedFieldInformation;
+    }
+    
+    public @Nonnull @NonNullableElements List<ParameterBasedFieldInformation> getParameterBasedFieldInformations(@Nonnull TypeElement typeElement) throws UnexpectedTypeContentException {
+        final @Nullable ExecutableElement recoverExecutable = getRecoverExecutable(typeElement);
+        if (recoverExecutable != null) {
+            @Nonnull @NonNullableElements List<? extends VariableElement> recoveryParameters = recoverExecutable.getParameters();
+            @Nullable @NonNullableElements List<ParameterBasedFieldInformation> parameterBasedFieldInformations = new ArrayList<>(recoveryParameters.size());
+            for (@Nonnull VariableElement recoveryParameter : recoveryParameters) {
+                try {
+                    final @Nullable ParameterBasedFieldInformation parameterBasedFieldInformation = getParameterBasedFieldInformation(typeElement, recoveryParameter);
+                    parameterBasedFieldInformations.add(parameterBasedFieldInformation);
+                } catch (InvalidRecoveryParameterException e) {
+                    AnnotationLog.information(e.getMessage());
+                    generatable = false;
+                }
+            }
+        } else {
+            AnnotationLog.information("Failed to retrieve the constructor or recover method", SourcePosition.of(typeElement));
+            generatable = false;
+        }
+    }
+    
+    /* -------------------------------------------------- Generatable -------------------------------------------------- */
+    
+    public boolean hasOneRecoverMethodOrOneConstructor() {
+        
+    }
+    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
      * Creates a class information object with the help of the given class information helper.
      */
-    protected ClassInformation(@Nonnull TypeElement element, @Nonnull DeclaredType containingType, @Nonnull ClassInformationBuilder builder) {
-        super(element, containingType, builder);
+    protected ClassInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType, @Nonnull ClassInformationBuilder builder) {
+        super(typeElement, containingType, builder);
+    
+        this.equalsMethod = ElementFilter.filterMethodInformation(typeElement, ElementInformationNameMatcher.<MethodInformation>withNames("equals"));
+        this.hashCodeMethod = ElementFilter.filterMethodInformation(typeElement, ElementInformationNameMatcher.<MethodInformation>withNames("hashCode"));
+        this.toStringMethod = ElementFilter.filterMethodInformation(typeElement, ElementInformationNameMatcher.<MethodInformation>withNames("toString"));
+        this.compareToMethod = ElementFilter.filterMethodInformation(typeElement, ElementInformationNameMatcher.<MethodInformation>withNames("compareTo"));
+        this.cloneMethod = ElementFilter.filterMethodInformation(typeElement, ElementInformationNameMatcher.<MethodInformation>withNames("clone"));
+        this.validateMethod = ElementFilter.filterMethodInformation(typeElement, ElementInformationNameMatcher.<MethodInformation>withNames("validate"));
         
-        this.equalsMethod = builder.getEqualsMethod();
-        this.hashCodeMethod = builder.getHashCodeMethod();
-        this.toStringMethod= builder.getToStringMethod();
-        this.compareToMethod = builder.getCompareToMethod();
-        this.cloneMethod = builder.getCloneMethod();
-        this.validateMethod = builder.getValidateMethod();
-        
-        this.implementedGetters = builder.getImplementedGetters();
-        this.overriddenMethods = builder.getOverridenMethods();
-        this.constructors = builder.getConstructors();
-        this.recoverMethod = builder.getRecoverMethod();
+        this.implementedGetters = ElementFilter.filterMethodInformations(typeElement, ImplementedGetterMatcher.get(), FieldNameExtractor.get());
+        this.overriddenMethods = ElementFilter.filterMethodInformations(typeElement, new FilterCondition<MethodInformation>() {
+            @Override public boolean filter(@Nonnull MethodInformation methodInformation) {
+                return !methodInformation.isDeclaredInRuntimeEnvironment();
+            }
+        });
+        this.constructors = ElementFilter.filterConstructors(typeElement);
+        try {
+            this.recoverMethod = getRecoverMethod(typeElement);
+        } catch (UnexpectedTypeContentException e) {
+            AnnotationLog.information(e.getMessage(), SourcePosition.of(typeElement));
+            generatable = false;
+        }
         this.parameterBasedFieldInformations = builder.getParameterBasedFieldInformations();
         this.accessibleFields = builder.getAccessibleFields();
+        
+        this.generatable = generatable;
     }
     
     /**

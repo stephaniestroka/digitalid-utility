@@ -7,12 +7,19 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 
+import net.digitalid.utility.functional.Predicate;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
+import net.digitalid.utility.generator.information.exceptions.UnexpectedTypeContentException;
 import net.digitalid.utility.generator.information.field.GeneratedFieldInformation;
 import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
+import net.digitalid.utility.generator.information.filter.ElementFilter;
 import net.digitalid.utility.generator.information.method.MethodInformation;
+import net.digitalid.utility.generator.information.type.filter.AbstractGetterMatcher;
+import net.digitalid.utility.generator.information.type.filter.AbstractSetterMatcher;
+import net.digitalid.utility.generator.information.type.filter.FieldNameExtractor;
+import net.digitalid.utility.logging.processing.AnnotationProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
@@ -24,20 +31,22 @@ import net.digitalid.utility.validation.annotations.method.Pure;
  */
 public abstract class TypeInformation extends ElementInformationImplementation {
     
-    /* -------------------------------------------------- Type Information Builder -------------------------------------------------- */
+    // TODO: get all method information by iterating through java's ElementFilter.methodsIn(..) and transforming them into MethodInformation object.
+    // TODO: Implement getAbstractGetters() and getAbstractSetters() by filtering the available MethodInformation iterable.
     
-    protected interface TypeInformationBuilder {
-        
-        public boolean isGeneratable();
-        
-        public @Nonnull @NonNullableElements Map<String, MethodInformation> getAbstractGetters();
-        
-        public @Nonnull @NonNullableElements Map<String, MethodInformation> getAbstractSetters();
-    
-        public @Nonnull @NonNullableElements List<GeneratedFieldInformation> getGeneratedFieldsInformation();
-    
-        public @Nonnull @NonNullableElements List<RepresentingFieldInformation> getRepresentingFieldInformation();
+    public @Nonnull @NonNullableElements Map<String, MethodInformation> getAbstractGetters() {
+        return null; // TODO: implement
     }
+    
+    public @Nonnull @NonNullableElements Map<String, MethodInformation> getAbstractSetters() {
+        return null; // TODO: implement
+    }
+    
+    public @Nonnull @NonNullableElements List<GeneratedFieldInformation> getGeneratedFieldsInformation(){
+        return null; // TODO: implement
+    }
+    
+    public abstract @Nonnull @NonNullableElements List<RepresentingFieldInformation> getRepresentingFieldInformation() throws UnexpectedTypeContentException;
     
     /**
      * Either the method declarations of an interface, or the abstract methods of an implemented class.
@@ -88,15 +97,11 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     
     /* -------------------------------------------------- Generatable -------------------------------------------------- */
     
-    private final boolean generatable;
-    
     /**
      * Returns whether a subclass can be generated for this type.
      */
     @Pure
-    public boolean isGeneratable() {
-        return generatable;
-    }
+    public abstract boolean isGeneratable();
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
@@ -108,17 +113,29 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         return representingFieldInformations;
     }
     
+    private static final Predicate<MethodInformation> abstractGetterPredicate = new Predicate {
+        
+    }
+    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected TypeInformation(@Nonnull TypeElement element, @Nonnull DeclaredType containingType, @Nonnull TypeInformationBuilder builder) {
+    protected TypeInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
         super(element, element.asType(), containingType);
         
-        this.abstractGetters = builder.getAbstractGetters();
-        this.abstractSetters = builder.getAbstractSetters();
-        this.generatable = builder.isGeneratable();
+        final @Nonnull Iterable<MethodInformation> methodInformations = ElementFilter.allMethodInformation(typeElement);
         
-        this.generatedFieldInformations = builder.getGeneratedFieldsInformation();
-        this.representingFieldInformations = builder.getRepresentingFieldInformation();
+        FluentIterable fluentIterable = new FluentIterable(javax.lang.model.util.ElementFilter.methodsIn(AnnotationProcessingEnvironment.getElementUtils().getAllMembers(typeElement));
+        
+        this.abstractGetters = fluentIterable.map(methodInformationFunction).filter(AbstractGetterMatcher.get()).map(FieldNameExtractor.get());
+        
+        this.abstractSetters = ElementFilter.filterMethodInformations(methodInformations, AbstractSetterMatcher.get(), FieldNameExtractor.get());
+        
+        this.generatedFieldInformations = getGeneratedFieldsInformation();
+        try {
+            this.representingFieldInformations = getRepresentingFieldInformation();
+        } catch (UnexpectedTypeContentException e) {
+            e.printStackTrace();
+        }
     }
     
 }
