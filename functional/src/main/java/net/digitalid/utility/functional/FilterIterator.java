@@ -1,15 +1,17 @@
 package net.digitalid.utility.functional;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 
 /**
  * Cannot be shared among multiple threads. 
  */
-public class MapStreamIterator<T, E> implements Iterator<E> {
+public class FilterIterator<E> implements Iterator<E> {
     
     private static class Consumable<E> {
         
@@ -27,22 +29,33 @@ public class MapStreamIterator<T, E> implements Iterator<E> {
         
     }
     
-    private final @Nonnull Function<T, E> function;
+    private final Predicate<E> predicate;
     
-    private final Iterator<T> iterator;
+    private final Iterator<E> iterator;
     
     private Consumable<E> next;
     
-    MapStreamIterator(@Nonnull Function<T, E> function, @Nonnull @NonNullableElements Iterator<T> iterator) {
-        this.function = function;
+    FilterIterator(@Nonnull @NonNullableElements Iterator<E> iterator, @Nonnull Predicate<E> predicate) {
+        this.predicate = predicate;
         this.iterator = iterator;
+    }
+    
+    private @Nullable E computeNext() {
+        @Nullable E nextElement;
+        while (iterator.hasNext()) {
+            nextElement = iterator.next();
+            if (predicate.apply(nextElement)) {
+                return nextElement;
+            }
+        }
+        return null;
     }
     
     @Override
     public boolean hasNext() {
         if (next.consumed) {
             if (iterator.hasNext()) {
-                next = new Consumable<>(function.apply(iterator.next()));
+                next = new Consumable<>(computeNext());
             }
         }
         return !next.consumed;
@@ -53,8 +66,8 @@ public class MapStreamIterator<T, E> implements Iterator<E> {
         if (hasNext()) {
             return next.consume();
         }
-        // TODO: should we throw an out-of-range exception here?
-        return null;
+        // TODO: msg
+        throw new NoSuchElementException("TODO: msg");
     }
     
 }
