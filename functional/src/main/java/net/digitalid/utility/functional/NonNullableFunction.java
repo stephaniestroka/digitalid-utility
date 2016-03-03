@@ -1,12 +1,12 @@
 package net.digitalid.utility.functional;
 
+import javax.annotation.Nonnull;
+
 /**
  * Description.
  */
-public class NonNullableFunction {
+public interface NonNullableFunction<E1, E2> extends Function<E1, E2> {
     
-    public NonNullableFunction() {
-        
-    }
+    public @Nonnull E2 apply(@Nonnull E1 element);
     
 }

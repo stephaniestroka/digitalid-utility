@@ -3,5 +3,9 @@ package net.digitalid.utility.functional;
 /**
  *
  */
-public class Reaction {
+public interface Reaction<T> {
+    
+    public boolean skipFunctions();
+    
+    public T react();
 }

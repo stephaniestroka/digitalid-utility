@@ -27,13 +27,13 @@ public class MapStreamIterator<T, E> implements Iterator<E> {
         
     }
     
-    private final @Nonnull NonNullableFunction<T, E> function;
+    private final @Nonnull Function<T, E> function;
     
     private final Iterator<T> iterator;
     
     private Consumable<E> next;
     
-    MapStreamIterator(@Nonnull NonNullableFunction<T, E> function, @Nonnull @NonNullableElements Iterator<T> iterator) {
+    MapStreamIterator(@Nonnull Function<T, E> function, @Nonnull @NonNullableElements Iterator<T> iterator) {
         this.function = function;
         this.iterator = iterator;
     }

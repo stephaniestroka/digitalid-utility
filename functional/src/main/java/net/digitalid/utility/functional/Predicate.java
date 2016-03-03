@@ -1,12 +1,12 @@
 package net.digitalid.utility.functional;
 
+import javax.annotation.Nullable;
+
 /**
  * Description.
  */
-public class Predicate {
+public interface Predicate<T> {
     
-    public Predicate() {
-        
-    }
+    public boolean apply(@Nullable T object);
     
 }
