@@ -3,5 +3,5 @@ package net.digitalid.utility.functional;
 /**
  *
  */
-public class Function {
+public class NullableFunction {
 }
