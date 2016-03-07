@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.functional.iterable.filter.predicate.NonNullPredicate;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
@@ -44,6 +45,7 @@ public class FilterIterator<E> implements Iterator<E> {
      * Finds the next element, wraps it into the {@link Consumable} type and returns it.
      * If no further element, that satisfies the predicate, could be found, null is returned.
      */
+    @Pure
     private @Nullable Consumable<E> findNext() {
         @Nullable E nextElement;
         while (iterator.hasNext()) {
@@ -80,7 +82,7 @@ public class FilterIterator<E> implements Iterator<E> {
         if (hasNext()) {
             return next.consume();
         }
-        throw new NoSuchElementException("There are no more elements in this filter iterator. This exception could have been prevented by calling 'hasNext()' before calling 'next()' on this iterator");
+        throw new NoSuchElementException("There are no more elements in this filter iterator. This exception could have been prevented by calling 'hasNext()' before calling 'next()' on this iterator.");
     }
     
 }
