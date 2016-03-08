@@ -8,10 +8,13 @@ import net.digitalid.utility.functional.iterable.map.function.NonNullToNonNullFu
 import net.digitalid.utility.functional.iterable.map.function.NonNullToNullableFunction;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
+import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
- *
+ * The fluent non-null iterable has the same properties as the fluent iterable, but only
+ * holds and retrieves non-nullable elements.
  */
+@Stateless
 abstract class FluentNonNullIterable<T> extends FluentIterable<T> {
     
     /* -------------------------------------------------- Filter -------------------------------------------------- */
@@ -77,4 +80,5 @@ abstract class FluentNonNullIterable<T> extends FluentIterable<T> {
         return result;
     }
     
+    // TODO: implements zip and combine. The only difference to the FluentIterable.zip() and FluentIterable.combine() is that the FluentNonNullIterable may return a FluentNonNullIterable if the given iterables are also non-null iterables.
 }

@@ -2,15 +2,21 @@ package net.digitalid.utility.functional.iterable.filter.predicate;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Stateless;
+
 /**
  * A predicate that can only be applied on non-nullable objects.
  */
-public abstract class NonNullPredicate<T> {
+@Stateless
+public abstract class NonNullPredicate<T> implements Predicate<T> {
     
     /**
      * Combines two predicates using an AND operator.
+     * Since the first predicate is non-null, the second predicate must also be non-null.
      */
-     public NonNullPredicate<T> and(@Nonnull final NonNullPredicate<T> predicate) {
+    @Pure
+    public NonNullPredicate<T> and(@Nonnull final NonNullPredicate<T> predicate) {
         final @Nonnull NonNullPredicate<T> self = this;
         return new NonNullPredicate<T>() {
             
@@ -25,6 +31,7 @@ public abstract class NonNullPredicate<T> {
     /**
      * Combines two predicates using an OR operator.
      */
+    @Pure
     public NonNullPredicate<T> or(@Nonnull final NonNullPredicate<T> predicate) {
         final @Nonnull NonNullPredicate<T> self = this;
         return new NonNullPredicate<T>() {
@@ -40,6 +47,7 @@ public abstract class NonNullPredicate<T> {
     /**
      * Combines two predicates using an OR operator.
      */
+    @Pure
     public NonNullPredicate<T> negate() {
         final @Nonnull NonNullPredicate<T> self = this;
         return new NonNullPredicate<T>() {
@@ -54,8 +62,10 @@ public abstract class NonNullPredicate<T> {
     /* -------------------------------------------------- Apply -------------------------------------------------- */
     
     /**
-     * Applies the predicate on a given object and returns the boolean result.
+     * Applies the predicate on a given non-null object and returns the boolean result.
      */
+    @Pure
+    @Override
     public abstract boolean apply(@Nonnull T object);
     
 }
