@@ -1,9 +1,6 @@
 package net.digitalid.utility.exceptions;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import net.digitalid.utility.immutable.collections.ImmutableList;
 import net.digitalid.utility.string.FormatString;
 
 /**
@@ -18,14 +15,14 @@ public abstract class InternalException extends RuntimeException {
     
     /* -------------------------------------------------- Arguments -------------------------------------------------- */
     
-    private final List<Object> arguments;
+    private final ImmutableList<Object> arguments;
     
     /**
      * Returns the arguments with which the message is formatted.
      * 
      * @see FormatString#format(java.lang.CharSequence, java.lang.Object...)
      */
-    public List<Object> getArguments() {
+    public ImmutableList<Object> getArguments() {
         return arguments;
     }
     
@@ -34,7 +31,7 @@ public abstract class InternalException extends RuntimeException {
     protected InternalException(String message, Exception cause, Object... arguments) {
         super(message == null ? "An internal exception occurred." : FormatString.format(message, arguments), cause);
         
-        this.arguments = Collections.unmodifiableList(Arrays.asList(arguments));
+        this.arguments = ImmutableList.with(arguments);
     }
     
     protected InternalException(String message, Object... arguments) {

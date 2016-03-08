@@ -19,7 +19,7 @@ import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.reference.Chainable;
+import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**

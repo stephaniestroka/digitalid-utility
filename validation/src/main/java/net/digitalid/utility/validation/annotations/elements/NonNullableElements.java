@@ -11,13 +11,12 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.validation.annotations.meta.Generator;
-import net.digitalid.utility.validation.annotations.meta.TargetTypes;
+import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.validation.validators.IterableValidator;
 
 /**
  * This annotation indicates that the elements of an {@link Iterable iterable} are {@link Nonnull non-nullable}.
@@ -27,18 +26,17 @@ import net.digitalid.utility.validation.processing.TypeImporter;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@TargetTypes({Iterable.class, Object[].class})
-@Generator(NonNullableElements.Generator.class)
+@ValueValidator(NonNullableElements.Validator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface NonNullableElements {
     
-    /* -------------------------------------------------- Generator -------------------------------------------------- */
+    /* -------------------------------------------------- Validator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Generator extends ContractGenerator {
+    public static class Validator extends IterableValidator {
         
         /**
          * Returns whether all elements in the given iterable are non-null.

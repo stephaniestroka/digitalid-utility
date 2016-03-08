@@ -8,19 +8,21 @@ import java.lang.annotation.Target;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
+
 /**
- * This meta-annotation indicates the type to whose methods the annotated annotation can be applied.
+ * This meta-annotation indicates the type validator that validates the annotations on the members of the type annotated with the annotated annotation.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
-public @interface MethodAnnotation {
+public @interface TypeValidator {
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
     /**
-     * Returns the type to whose methods the annotated annotation can be applied.
+     * Returns the type validator that validates the annotations on the members of the type annotated with the annotated annotation.
      */
-    @Nonnull Class<?> value();
+    @Nonnull Class<? extends TypeAnnotationValidator> value();
     
 }

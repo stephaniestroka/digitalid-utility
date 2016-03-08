@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.collections.readonly.ReadOnlyArray;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.Freezable;
-import net.digitalid.utility.freezable.FreezableObject;
+import net.digitalid.utility.generator.FreezableObject;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;

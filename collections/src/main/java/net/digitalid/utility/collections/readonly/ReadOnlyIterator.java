@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.collections.freezable.FreezableIterator;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.readonly.ReadOnly;
+import net.digitalid.utility.freezable.ReadOnly;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.method.Pure;

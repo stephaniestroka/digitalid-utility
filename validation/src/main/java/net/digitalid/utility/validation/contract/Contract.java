@@ -13,13 +13,15 @@ import javax.lang.model.element.Element;
 import net.digitalid.utility.contracts.exceptions.ContractViolationException;
 import net.digitalid.utility.string.FormatString;
 import net.digitalid.utility.string.QuoteString;
+import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.state.Unmodifiable;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
+import net.digitalid.utility.validation.validator.ContractGenerator;
+import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
  * This class wraps a {@link #getCondition() condition} and {@link #getMessage() message} for annotation processing.
@@ -89,8 +91,8 @@ public class Contract {
      */
     @Pure
     public static @Nonnull Contract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element, @Nonnull String suffix) {
-        final @Nonnull String name = ContractGenerator.getName(element);
-        return new Contract(condition.replace("#", name), message.replace("#", name), name + (suffix.isEmpty() ? "" : " == null ? null : " + name + suffix));
+        final @Nonnull String name = ValueAnnotationValidator.getName(element);
+        return new Contract(condition.replace("#", name), message.replace("#", StringCase.decamelize(name)), name + (suffix.isEmpty() ? "" : " == null ? null : " + name + suffix));
     }
     
     /**
@@ -105,17 +107,16 @@ public class Contract {
     /* -------------------------------------------------- Constructors for Contracts that use the Element and Annotation Value -------------------------------------------------- */
     
     /**
-    /**
      * Returns an object that wraps the given {@link #getCondition() condition} and {@link #getMessage() message} with the element name as {@link #getArguments() argument}.
      * Each number sign in the condition and the message is replaced with the {@link AnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
      * Each at sign in the condition and the message is replaced with the {@link AnnotationValue#getValue() value} of the given annotation mirror.
      */
     @Pure
     public static @Nonnull Contract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull String suffix) {
-        final @Nonnull String name = ContractGenerator.getName(element);
+        final @Nonnull String name = ValueAnnotationValidator.getName(element);
         final @Nullable AnnotationValue annotationValue = ProcessingUtility.getAnnotationValue(annotationMirror);
         final @Nonnull String value = QuoteString.inCode(annotationValue != null ? annotationValue.getValue() : null);
-        return new Contract(condition.replace("#", name).replace("@", value), message.replace("#", name).replace("@", value), name + (suffix.isEmpty() ? "" : " == null ? null : " + name + suffix));
+        return new Contract(condition.replace("#", name).replace("@", value), message.replace("#", StringCase.decamelize(name)).replace("@", value), name + (suffix.isEmpty() ? "" : " == null ? null : " + name + suffix));
     }
     
     /**

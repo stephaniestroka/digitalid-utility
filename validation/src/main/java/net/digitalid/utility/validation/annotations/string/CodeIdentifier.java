@@ -12,31 +12,29 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.validation.annotations.meta.Generator;
-import net.digitalid.utility.validation.annotations.meta.TargetTypes;
+import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.validation.validators.StringValidator;
 
 /**
  * This annotation indicates that a string is a valid identifier in most languages like Java or SQL.
  */
 @Documented
-@TargetTypes(CharSequence.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Generator(CodeIdentifier.Generator.class)
+@ValueValidator(CodeIdentifier.Validator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface CodeIdentifier {
     
-    /* -------------------------------------------------- Generator -------------------------------------------------- */
+    /* -------------------------------------------------- Validator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Generator extends ContractGenerator {
+    public static class Validator extends StringValidator {
         
         private static final @Nonnull Pattern PATTERN = Pattern.compile("[a-z_$][a-z0-9_$]*", Pattern.CASE_INSENSITIVE);
         
@@ -52,7 +50,7 @@ public @interface CodeIdentifier {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
-            return Contract.with(typeImporter.importIfPossible(CodeIdentifier.class) + ".Generator.validate(#)", "The # has to be a valid code identifier but was $.", element);
+            return Contract.with(typeImporter.importIfPossible(CodeIdentifier.class) + ".Validator.validate(#)", "The # has to be a valid code identifier but was $.", element);
         }
         
     }

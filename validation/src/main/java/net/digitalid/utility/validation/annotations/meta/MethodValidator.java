@@ -8,21 +8,21 @@ import java.lang.annotation.Target;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.validation.generator.ContractGenerator;
+import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 
 /**
- * This meta-annotation indicates the contract generator that generates contracts to validate the values annotated with the annotated annotation.
+ * This meta-annotation indicates the method validator that validates the state in which the annotated method is called.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
-public @interface Generator {
+public @interface MethodValidator {
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
     /**
-     * Returns the contract generator that generates contracts to validate the values annotated with the annotated annotation.
+     * Returns the method validator that validates the state in which the annotated method is called.
      */
-    @Nonnull Class<? extends ContractGenerator> value();
+    @Nonnull Class<? extends MethodAnnotationValidator> value();
     
 }

@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.generators;
+package net.digitalid.utility.validation.validators;
 
 import java.math.BigInteger;
 
@@ -19,7 +19,7 @@ import net.digitalid.utility.validation.processing.TypeImporter;
  * @see net.digitalid.utility.validation.annotations.math.relative
  */
 @Stateless
-public abstract class ValueRelativeNumericalContractGenerator extends NumericalContractGenerator {
+public abstract class ValueRelativeNumericalValueValidator extends NumericalValueValidator {
     
     /* -------------------------------------------------- Contract Generation -------------------------------------------------- */
     
@@ -27,11 +27,11 @@ public abstract class ValueRelativeNumericalContractGenerator extends NumericalC
     @Override
     public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
         if (ProcessingUtility.isAssignable(element, Numerical.class)) {
-            return Contract.with("# == null || #.getValue().compareTo(" + typeImporter.importIfPossible(BigInteger.class) + ".valueOf(@)) " + getComparisonOperator() + " 0", "The # has to be null or " + getDecamelizedName() + " @ but was $.", element, annotationMirror);
+            return Contract.with("# == null || #.getValue().compareTo(" + typeImporter.importIfPossible(BigInteger.class) + ".valueOf(@)) " + getComparisonOperator() + " 0", "The # has to be null or " + getDecamelizedAnnotationName() + " @ but was $.", element, annotationMirror);
         } else if (ProcessingUtility.isAssignable(element, BigInteger.class)) {
-            return Contract.with("# == null || #.compareTo(" + typeImporter.importIfPossible(BigInteger.class) + ".valueOf(@)) " + getComparisonOperator() + " 0", "The # has to be null or " + getDecamelizedName() + " @ but was $.", element, annotationMirror);
+            return Contract.with("# == null || #.compareTo(" + typeImporter.importIfPossible(BigInteger.class) + ".valueOf(@)) " + getComparisonOperator() + " 0", "The # has to be null or " + getDecamelizedAnnotationName() + " @ but was $.", element, annotationMirror);
         } else {
-            return Contract.with("# " + getComparisonOperator() + " @", "The # has to be " + getDecamelizedName() + " @ but was $.", element, annotationMirror);
+            return Contract.with("# " + getComparisonOperator() + " @", "The # has to be " + getDecamelizedAnnotationName() + " @ but was $.", element, annotationMirror);
         }
     }
     

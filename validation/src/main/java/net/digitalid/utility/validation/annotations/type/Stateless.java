@@ -18,9 +18,9 @@ import javax.lang.model.util.ElementFilter;
 import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
-import net.digitalid.utility.validation.annotations.meta.Validator;
+import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 import net.digitalid.utility.validation.annotations.method.Pure;
-import net.digitalid.utility.validation.generator.TypeValidator;
+import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
 
 /**
  * This annotation indicates that the objects of the annotated class are stateless (have no non-static fields).
@@ -32,7 +32,7 @@ import net.digitalid.utility.validation.generator.TypeValidator;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(Stateless.Validator.class)
+@TypeValidator(Stateless.Validator.class)
 public @interface Stateless {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
@@ -41,7 +41,7 @@ public @interface Stateless {
      * This class checks the use of the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends TypeValidator {
+    public static class Validator extends TypeAnnotationValidator {
         
         @Pure
         @Override

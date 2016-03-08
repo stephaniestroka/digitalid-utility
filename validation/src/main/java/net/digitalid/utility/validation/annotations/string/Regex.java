@@ -13,20 +13,18 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.validation.annotations.meta.Generator;
-import net.digitalid.utility.validation.annotations.meta.TargetTypes;
+import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.validation.validators.StringValidator;
 
 /**
  * This annotation indicates that a string matches the given regular expression.
  */
 @Documented
-@TargetTypes(CharSequence.class)
-@Generator(Regex.Generator.class)
+@ValueValidator(Regex.Validator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface Regex {
@@ -38,13 +36,13 @@ public @interface Regex {
      */
     @Nonnull String value();
     
-    /* -------------------------------------------------- Generator -------------------------------------------------- */
+    /* -------------------------------------------------- Validator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Generator extends ContractGenerator {
+    public static class Validator extends StringValidator {
         
         /**
          * Returns whether the given string is a valid regular expression.
@@ -63,7 +61,7 @@ public @interface Regex {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
-            return Contract.with(typeImporter.importIfPossible(Regex.class) + ".Generator.validate(#)", "The # has to be a valid regular expression but was $.", element);
+            return Contract.with(typeImporter.importIfPossible(Regex.class) + ".Validator.validate(#)", "The # has to be a valid regular expression but was $.", element);
         }
         
     }

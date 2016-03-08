@@ -4,10 +4,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import net.digitalid.utility.immutable.iterators.ImmutableIterator;
-
-
 
 /**
  * This class implements an immutable map of non-nullable elements.
@@ -50,13 +49,13 @@ public class ImmutableMap<K, V> extends LinkedHashMap<K, V> {
     
     @Override
     public final ImmutableSet<K> keySet() {
-        // Copies the keys of this immutable map, thus preventing memory leaks.
+        // Copies the keys of this immutable map, which leads to some overhead but also prevents memory leaks.
         return ImmutableSet.with(super.keySet());
     }
     
     @Override
     public final ImmutableList<V> values() {
-        // Copies the values of this immutable map, thus preventing memory leaks.
+        // Copies the values of this immutable map, which leads to some overhead but also prevents memory leaks.
         return ImmutableList.with(super.values());
     }
     
@@ -126,7 +125,7 @@ public class ImmutableMap<K, V> extends LinkedHashMap<K, V> {
     
     @Override
     public final ImmutableSet<Map.Entry<K, V>> entrySet() {
-        // Copies the values of this immutable map, thus preventing memory leaks.
+        // Copies the values of this immutable map, which leads to some overhead but also prevents memory leaks.
         return new ImmutableEntrySet<>(super.entrySet());
     }
     
@@ -154,17 +153,42 @@ public class ImmutableMap<K, V> extends LinkedHashMap<K, V> {
     
     /* -------------------------------------------------- Builder -------------------------------------------------- */
     
-    // TODO: Implement a builder here!
+    /**
+     * This class implements a builder for the immutable map.
+     */
+    public static class ImmutableMapBuilder<K, V> extends LinkedHashMap<K, V> {
+        
+        /**
+         * Adds the given key-value pair to this builder and returns itself.
+         */
+        public ImmutableMapBuilder<K, V> with(K key, V value) {
+            put(Objects.requireNonNull(key), Objects.requireNonNull(value));
+            return this;
+        }
+        
+        /**
+         * Returns an immutable map with the key-value pairs of this builder.
+         */
+        public ImmutableMap<K, V> build() {
+            return ImmutableMap.with(this);
+        }
+        
+    }
     
     /**
-     * Returns an immutable set with the elements of the given array.
-     * The given array is not captured as its elements are copied to the immutable set.
+     * Returns an immutable map builder with the given key-value pair.
      * 
-     * @throws NullPointerException if any of the elements of the given array is null.
+     * @throws NullPointerException if the given key or value is null.
      */
-//    @SafeVarargs
-//    public static <K, V> ImmutableMap<K, V> with(E... elements) {
-//        return new ImmutableMap<>(Arrays.asList(elements));
-//    }
+    public static <K, V> ImmutableMapBuilder<K, V> with(K key, V value) {
+        return new ImmutableMapBuilder<K, V>().with(key, value);
+    }
+    
+    /**
+     * Returns an immutable map with no entries in it.
+     */
+    public static <K, V> ImmutableMap<K, V> withNoEntries() {
+        return new ImmutableMapBuilder<K, V>().build();
+    }
     
 }

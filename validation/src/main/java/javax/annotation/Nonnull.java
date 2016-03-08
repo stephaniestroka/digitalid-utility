@@ -9,12 +9,13 @@ import java.lang.annotation.Target;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.validation.annotations.meta.Generator;
+import net.digitalid.utility.immutable.collections.ImmutableSet;
+import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
  * This annotation indicates that the annotated reference is not null.
@@ -26,17 +27,25 @@ import net.digitalid.utility.validation.processing.TypeImporter;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Generator(Nonnull.Generator.class)
+@ValueValidator(Nonnull.Validator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface Nonnull {
     
-    /* -------------------------------------------------- Generator -------------------------------------------------- */
+    /* -------------------------------------------------- Validator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Generator extends ContractGenerator {
+    public static class Validator extends ValueAnnotationValidator {
+        
+        private static final @Nonnull ImmutableSet<Class<?>> targetTypes = ImmutableSet.<Class<?>>with(Object.class);
+        
+        @Pure
+        @Override
+        public @Nonnull ImmutableSet<Class<?>> getTargetTypes() {
+            return targetTypes;
+        }
         
         @Pure
         @Override

@@ -11,7 +11,7 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Captured;
-import net.digitalid.utility.validation.annotations.reference.Chainable;
+import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 

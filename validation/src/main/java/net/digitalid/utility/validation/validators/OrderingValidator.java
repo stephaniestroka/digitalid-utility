@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.generators;
+package net.digitalid.utility.validation.validators;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,17 +14,16 @@ import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.validation.processing.TypeImporter;
 
 /**
- * This class implements common methods for all ordering-related contract generators.
+ * This class implements common methods for all ordering-related validators.
  * 
  * @see net.digitalid.utility.validation.annotations.order
  */
 @Stateless
-public abstract class OrderingContractGenerator extends ContractGenerator {
+public abstract class OrderingValidator extends IterableValidator {
     
     /* -------------------------------------------------- Usage Check -------------------------------------------------- */
     
@@ -33,21 +32,19 @@ public abstract class OrderingContractGenerator extends ContractGenerator {
     public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
         super.checkUsage(element, annotationMirror);
         
-        final @Nonnull String annotationName = "@" + annotationMirror.getAnnotationType().asElement().getSimpleName();
-        
         final @Nonnull TypeMirror type = ProcessingUtility.getType(element);
         if (type.getKind() == TypeKind.ARRAY) {
             final @Nonnull ArrayType arrayType = (ArrayType) type;
             if (!ProcessingUtility.isAssignable(arrayType.getComponentType(), Comparable.class)) {
-                ProcessingLog.error("The annotation $ may only be used on arrays whose component type is comparable:", SourcePosition.of(element, annotationMirror), annotationName);
+                ProcessingLog.error("The annotation $ may only be used on arrays whose component type is comparable:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
             }
         } else if (type.getKind() == TypeKind.DECLARED) {
             final @Nonnull DeclaredType declaredType = (DeclaredType) type;
             if (declaredType.getTypeArguments().size() != 1 || !ProcessingUtility.isAssignable(declaredType.getTypeArguments().get(0), Comparable.class)) {
-                ProcessingLog.error("The annotation $ may only be used on iterables whose component type is comparable:", SourcePosition.of(element, annotationMirror), annotationName);
+                ProcessingLog.error("The annotation $ may only be used on iterables whose component type is comparable:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
             }
         } else {
-            ProcessingLog.error("The annotation $ may only be used on arrays or declared types:", SourcePosition.of(element, annotationMirror), annotationName);
+            ProcessingLog.error("The annotation $ may only be used on arrays or declared types:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
         }
     }
     
@@ -116,7 +113,7 @@ public abstract class OrderingContractGenerator extends ContractGenerator {
     @Pure
     @Override
     public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
-        return Contract.with(typeImporter.importIfPossible(OrderingContractGenerator.class) + ".validate(#, " + isStrictly() + ", " + isAscending() + ")", "The # has to be ordered.", element);
+        return Contract.with(typeImporter.importIfPossible(OrderingValidator.class) + ".validate(#, " + isStrictly() + ", " + isAscending() + ")", "The # has to be ordered.", element);
     }
     
 }

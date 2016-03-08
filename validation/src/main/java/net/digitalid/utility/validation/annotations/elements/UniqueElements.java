@@ -12,31 +12,29 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.validation.annotations.meta.Generator;
-import net.digitalid.utility.validation.annotations.meta.TargetTypes;
+import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.validation.validators.IterableValidator;
 
 /**
  * This annotation indicates that an {@link Iterable iterable} does not contain duplicates.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Generator(UniqueElements.Generator.class)
-@TargetTypes({Iterable.class, Object[].class})
+@ValueValidator(UniqueElements.Validator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface UniqueElements {
     
-    /* -------------------------------------------------- Generator -------------------------------------------------- */
+    /* -------------------------------------------------- Validator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Generator extends ContractGenerator {
+    public static class Validator extends IterableValidator {
         
         /**
          * Returns whether all elements in the given iterable are unique.

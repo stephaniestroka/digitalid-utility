@@ -1,16 +1,18 @@
-package net.digitalid.utility.freezable;
+package net.digitalid.utility.generator;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.freezable.Freezable;
+import net.digitalid.utility.freezable.ReadOnly;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.readonly.ReadOnly;
-import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.reference.Capturable;
 
 /**
  * This class implements the freezing mechanism which can be reused with inheritance.
  */
+@Deprecated // TODO: Generate this implementation instead.
 public class FreezableObject implements Freezable {
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */

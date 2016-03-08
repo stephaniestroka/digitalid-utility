@@ -1,6 +1,7 @@
 package net.digitalid.utility.string;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 
 
 /**
@@ -22,12 +23,9 @@ public class ObjectString {
      * @require object != null : "The object may not be null.;
      */
     private static Object getFieldValueOrErrorMessage(Field field, Object object) {
-        assert field != null : "The field may not be null.";
-        assert object != null : "The object may not be null.";
-        
         field.setAccessible(true);
         try {
-            return field.get(object);
+            return field.get(Objects.requireNonNull(object));
         } catch (IllegalAccessException exception) {
             return "<access failure>";
         }
@@ -54,14 +52,10 @@ public class ObjectString {
      * @require style != null : "The style may not be null.;
      */
     public static void toString(Object object, StringBuilder string, RepresentationStyle style) {
-        assert object != null : "The object may not be null.";
-        assert string != null : "The string may not be null.";
-        assert style != null : "The style may not be null.";
-        
         final Class<?> type = object.getClass();
         final String typeName = type.getSimpleName();
         final Field[] fields = type.getDeclaredFields();
-        switch (style) {
+        switch (Objects.requireNonNull(style)) {
             case DEFAULT:
                 string.append(typeName).append("(");
                 for (int i = 0; i < fields.length; i++) {

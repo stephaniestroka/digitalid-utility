@@ -31,14 +31,16 @@ import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.meta.Generator;
-import net.digitalid.utility.validation.annotations.meta.Validator;
+import net.digitalid.utility.validation.annotations.meta.MethodValidator;
+import net.digitalid.utility.validation.annotations.meta.TypeValidator;
+import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Utility;
-import net.digitalid.utility.validation.generator.CodeGenerator;
-import net.digitalid.utility.validation.generator.ContractGenerator;
-import net.digitalid.utility.validation.generator.TypeValidator;
+import net.digitalid.utility.validation.validator.AnnotationHandler;
+import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
+import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
+import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
  * This class provides useful methods for annotation processing.
@@ -226,45 +228,45 @@ public class ProcessingUtility {
         return isAssignable(element.asType(), type);
     }
     
-    /* -------------------------------------------------- Code Generators -------------------------------------------------- */
+    /* -------------------------------------------------- Annotation Handlers -------------------------------------------------- */
     
-    private static final @Nonnull @NonNullableElements Map<String, CodeGenerator> cachedCodeGenerators = new HashMap<>();
+    private static final @Nonnull @NonNullableElements Map<String, AnnotationHandler> cachedAnnotationHandlers = new HashMap<>();
     
     /**
-     * Returns the code generators of the given type which are found with the given meta-annotation type on the annotations of the given element.
+     * Returns the annotation handlers of the given type which are found with the given meta-annotation type on the annotations of the given element.
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public static @Nonnull @NonNullableElements <G extends CodeGenerator> Map<AnnotationMirror, G> getCodeGenerators(@Nonnull Element element, @Nonnull Class<? extends Annotation> metaAnnotationType, @Nonnull Class<G> codeGeneratorType) {
+    public static @Nonnull @NonNullableElements <G extends AnnotationHandler> Map<AnnotationMirror, G> getCodeGenerators(@Nonnull Element element, @Nonnull Class<? extends Annotation> metaAnnotationType, @Nonnull Class<G> annotationHandlerType) {
         final @Nonnull @NonNullableElements Map<AnnotationMirror, G> result = new LinkedHashMap<>();
         for (@Nonnull AnnotationMirror annotationMirror : StaticProcessingEnvironment.getElementUtils().getAllAnnotationMirrors(element)) {
             final @Nonnull String qualifiedAnnotationName = getQualifiedName(annotationMirror);
-            final @Nullable CodeGenerator cachedCodeGenerator = cachedCodeGenerators.get(qualifiedAnnotationName);
-            if (cachedCodeGenerator != null) {
-                cachedCodeGenerator.checkUsage(element, annotationMirror);
-                result.put(annotationMirror, (G) cachedCodeGenerator);
+            final @Nullable AnnotationHandler cachedAnnotationHandler = cachedAnnotationHandlers.get(qualifiedAnnotationName);
+            if (cachedAnnotationHandler != null) {
+                cachedAnnotationHandler.checkUsage(element, annotationMirror);
+                result.put(annotationMirror, (G) cachedAnnotationHandler);
             } else {
                 final @Nonnull TypeElement annotationElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
                 final @Nonnull String annotationName = "@" + annotationElement.getSimpleName();
                 final @Nullable AnnotationValue metaAnnotationValue = getAnnotationValue(annotationElement, metaAnnotationType);
                 if (metaAnnotationValue != null) {
-                    final @Nonnull DeclaredType codeGeneratorImplementationType = (DeclaredType) metaAnnotationValue.getValue();
-                    ProcessingLog.verbose("The declared generator type is $.", codeGeneratorImplementationType);
-                    final @Nonnull TypeElement codeGeneratorImplementationElement = (TypeElement) codeGeneratorImplementationType.asElement();
-                    final @Nonnull String codeGeneratorImplementationBinaryName = StaticProcessingEnvironment.getElementUtils().getBinaryName(codeGeneratorImplementationElement).toString();
+                    final @Nonnull DeclaredType annotationHandlerImplementationType = (DeclaredType) metaAnnotationValue.getValue();
+                    ProcessingLog.verbose("The declared annotation handler type is $.", annotationHandlerImplementationType);
+                    final @Nonnull TypeElement annotationHandlerImplementationElement = (TypeElement) annotationHandlerImplementationType.asElement();
+                    final @Nonnull String annotationHandlerImplementationBinaryName = StaticProcessingEnvironment.getElementUtils().getBinaryName(annotationHandlerImplementationElement).toString();
                     try {
-                        final @Nonnull Class<?> codeGeneratorImplementationClass = Class.forName(codeGeneratorImplementationBinaryName);
-                        if (codeGeneratorType.isAssignableFrom(codeGeneratorImplementationClass)) {
-                            final @Nonnull G codeGenerator = (G) codeGeneratorImplementationClass.newInstance();
-                            cachedCodeGenerators.put(qualifiedAnnotationName, codeGenerator);
-                            codeGenerator.checkUsage(element, annotationMirror);
-                            result.put(annotationMirror, codeGenerator);
-                            ProcessingLog.debugging("Found the code generator $ for", SourcePosition.of(element), annotationName);
+                        final @Nonnull Class<?> annotationHandlerImplementationClass = Class.forName(annotationHandlerImplementationBinaryName);
+                        if (annotationHandlerType.isAssignableFrom(annotationHandlerImplementationClass)) {
+                            final @Nonnull G annotationHandler = (G) annotationHandlerImplementationClass.newInstance();
+                            cachedAnnotationHandlers.put(qualifiedAnnotationName, annotationHandler);
+                            annotationHandler.checkUsage(element, annotationMirror);
+                            result.put(annotationMirror, annotationHandler);
+                            ProcessingLog.debugging("Found the annotation handler $ for", SourcePosition.of(element), annotationName);
                         } else {
-                            ProcessingLog.error("The code generator $ is not assignable to $:", SourcePosition.of(element), annotationName, codeGeneratorImplementationClass.getCanonicalName());
+                            ProcessingLog.error("The annotation handler $ is not assignable to $:", SourcePosition.of(element), annotationName, annotationHandlerImplementationClass.getCanonicalName());
                         }
                     } catch (@Nonnull ClassNotFoundException | InstantiationException | IllegalAccessException exception) {
-                        ProcessingLog.error("Could not instantiate the code generator $ for", SourcePosition.of(element), codeGeneratorImplementationBinaryName);
+                        ProcessingLog.error("Could not instantiate the annotation handler $ for", SourcePosition.of(element), annotationHandlerImplementationBinaryName);
                         Log.error("Problem:", exception);
                     }
                 }
@@ -274,19 +276,27 @@ public class ProcessingUtility {
     }
     
     /**
-     * Returns the contract generators mapped from their corresponding annotation mirror with which the given element is annotated.
+     * Returns the method validators mapped from their corresponding annotation mirror with which the given element is annotated.
      */
     @Pure
-    public static @Nonnull @NonNullableElements Map<AnnotationMirror, ContractGenerator> getContractGenerators(@Nonnull Element element) {
-        return getCodeGenerators(element, Generator.class, ContractGenerator.class);
+    public static @Nonnull @NonNullableElements Map<AnnotationMirror, MethodAnnotationValidator> getMethodValidators(@Nonnull Element element) {
+        return getCodeGenerators(element, MethodValidator.class, MethodAnnotationValidator.class);
+    }
+    
+    /**
+     * Returns the value validators mapped from their corresponding annotation mirror with which the given element is annotated.
+     */
+    @Pure
+    public static @Nonnull @NonNullableElements Map<AnnotationMirror, ValueAnnotationValidator> getValueValidators(@Nonnull Element element) {
+        return getCodeGenerators(element, ValueValidator.class, ValueAnnotationValidator.class);
     }
     
     /**
      * Returns the type validators mapped from their corresponding annotation mirror with which the given type element is annotated.
      */
     @Pure
-    public static @Nonnull @NonNullableElements Map<AnnotationMirror, TypeValidator> getTypeValidators(@Nonnull TypeElement element) {
-        return getCodeGenerators(element, Validator.class, TypeValidator.class);
+    public static @Nonnull @NonNullableElements Map<AnnotationMirror, TypeAnnotationValidator> getTypeValidators(@Nonnull TypeElement element) {
+        return getCodeGenerators(element, TypeValidator.class, TypeAnnotationValidator.class);
     }
     
     /* -------------------------------------------------- Fields of Type -------------------------------------------------- */

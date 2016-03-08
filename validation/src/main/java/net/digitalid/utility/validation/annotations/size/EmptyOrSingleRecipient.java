@@ -10,32 +10,36 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.validation.annotations.meta.Generator;
-import net.digitalid.utility.validation.annotations.meta.MethodAnnotation;
+import net.digitalid.utility.validation.annotations.meta.MethodValidator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.interfaces.Countable;
 import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 
 /**
  * This annotation indicates that a method should only be invoked on {@link EmptyOrSingle empty or single} objects.
  */
 @Documented
 @Target(ElementType.METHOD)
-@MethodAnnotation(Countable.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Generator(EmptyOrSingleRecipient.Generator.class)
+@MethodValidator(EmptyOrSingleRecipient.Validator.class)
 public @interface EmptyOrSingleRecipient {
     
-    /* -------------------------------------------------- Generator -------------------------------------------------- */
+    /* -------------------------------------------------- Validator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Generator extends ContractGenerator {
+    public static class Validator extends MethodAnnotationValidator {
+        
+        @Pure
+        @Override
+        public @Nonnull Class<?> getReceiverType() {
+            return Countable.class;
+        }
         
         @Pure
         @Override

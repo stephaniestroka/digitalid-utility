@@ -1,23 +1,37 @@
-package net.digitalid.utility.validation.generators;
+package net.digitalid.utility.validation.validators;
+
+import java.util.Collection;
 
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
+import net.digitalid.utility.immutable.collections.ImmutableSet;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.generator.ContractGenerator;
+import net.digitalid.utility.validation.interfaces.Countable;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
- * This class implements common methods for all size-related contractor generators.
+ * This class implements common methods for all size-related validators.
  * 
  * @see net.digitalid.utility.validation.annotations.size
  */
 @Stateless
-public abstract class SizeContractGenerator extends ContractGenerator {
+public abstract class SizeValidator extends ValueAnnotationValidator {
+    
+    /* -------------------------------------------------- Target Types -------------------------------------------------- */
+    
+    private static final @Nonnull ImmutableSet<Class<?>> targetTypes = ImmutableSet.with(Collection.class, Countable.class, Object[].class, CharSequence.class);
+    
+    @Pure
+    @Override
+    public @Nonnull ImmutableSet<Class<?>> getTargetTypes() {
+        return targetTypes;
+    }
     
     /* -------------------------------------------------- Abstract Methods -------------------------------------------------- */
     

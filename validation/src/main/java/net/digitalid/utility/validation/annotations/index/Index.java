@@ -11,45 +11,30 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.logging.processing.ProcessingLog;
-import net.digitalid.utility.logging.processing.SourcePosition;
-import net.digitalid.utility.validation.annotations.meta.Generator;
-import net.digitalid.utility.validation.annotations.meta.TargetTypes;
+import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.generator.ContractGenerator;
-import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.validation.validators.IndexValidator;
 
 /**
  * This annotation indicates that an index is valid for retrieving or removing an element of a {@link Collection collection}.
  * Such an index is valid if it is greater or equal to zero and less than the number of elements (usually given by {@link Collection#size()}).
  */
 @Documented
-@TargetTypes(int.class)
-@Generator(Index.Generator.class)
+@ValueValidator(Index.Validator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface Index {
     
-    /* -------------------------------------------------- Generator -------------------------------------------------- */
+    /* -------------------------------------------------- Validator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Generator extends ContractGenerator {
-        
-        @Pure
-        @Override
-        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
-            super.checkUsage(element, annotationMirror);
-            
-            if (!ProcessingUtility.hasMethod(ProcessingUtility.getSurroundingType(element), "size", int.class)) {
-                ProcessingLog.error("The annotation '@Index' may only be used in types with an 'int size()' method:", SourcePosition.of(element, annotationMirror));
-            }
-        }
+    public static class Validator extends IndexValidator {
         
         @Pure
         @Override

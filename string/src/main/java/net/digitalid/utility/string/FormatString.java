@@ -6,7 +6,7 @@ package net.digitalid.utility.string;
 public class FormatString {
     
     /**
-     * Formats the given non-nullable message by replacing each given symbol with the corresponding argument surrounded by the given quotation marks.
+     * Formats the given non-nullable message by replacing each given symbol with the corresponding argument surrounded by the given quotation mark.
      */
     public static String format(CharSequence message, char symbol, QuoteString.Mark mark, Object... arguments) {
         final StringBuilder string = new StringBuilder(message);
@@ -36,7 +36,7 @@ public class FormatString {
     }
     
     /**
-     * Formats the given non-nullable message by replacing each dollar sign with the corresponding argument surrounded by the given quotation marks.
+     * Formats the given non-nullable message by replacing each dollar sign with the corresponding argument surrounded by the given quotation mark.
      */
     public static String format(CharSequence message, QuoteString.Mark mark, Object... arguments) {
         return format(message, '$', mark, arguments);

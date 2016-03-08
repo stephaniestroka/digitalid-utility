@@ -8,21 +8,21 @@ import java.lang.annotation.Target;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.validation.generator.TypeValidator;
+import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
- * This meta-annotation indicates the type validator that validates the annotations on the members of the type annotated with the annotated annotation.
+ * This meta-annotation indicates the value validator that validates the (return) value of the annotated variable (or method).
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
-public @interface Validator {
+public @interface ValueValidator {
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
     /**
-     * Returns the type validator that validates the annotations on the members of the type annotated with the annotated annotation.
+     * Returns the value validator that validates the (return) value of the annotated variable (or method).
      */
-    @Nonnull Class<? extends TypeValidator> value();
+    @Nonnull Class<? extends ValueAnnotationValidator> value();
     
 }

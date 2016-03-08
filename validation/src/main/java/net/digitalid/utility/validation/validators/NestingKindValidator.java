@@ -1,16 +1,18 @@
-package net.digitalid.utility.validation.generators;
+package net.digitalid.utility.validation.validators;
 
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.NestingKind;
+import javax.lang.model.element.TypeElement;
 
+import net.digitalid.utility.immutable.collections.ImmutableSet;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
  * This class generates the contracts for the kinds of nesting.
@@ -18,7 +20,17 @@ import net.digitalid.utility.validation.processing.TypeImporter;
  * @see net.digitalid.utility.validation.annotations.type.nesting
  */
 @Stateless
-public abstract class NestingKindContractGenerator extends ContractGenerator {
+public abstract class NestingKindValidator extends ValueAnnotationValidator {
+    
+    /* -------------------------------------------------- Target Types -------------------------------------------------- */
+    
+    private static final @Nonnull ImmutableSet<Class<?>> targetTypes = ImmutableSet.with(Class.class, TypeElement.class);
+    
+    @Pure
+    @Override
+    public @Nonnull ImmutableSet<Class<?>> getTargetTypes() {
+        return targetTypes;
+    }
     
     /* -------------------------------------------------- Kind -------------------------------------------------- */
     

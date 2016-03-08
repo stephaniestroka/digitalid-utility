@@ -13,7 +13,7 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 
 import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.meta.MethodAnnotation;
+import net.digitalid.utility.validation.annotations.meta.MethodValidator;
 
 /**
  * This annotation indicates what annotation types an annotation processor supports.
@@ -22,7 +22,7 @@ import net.digitalid.utility.validation.annotations.meta.MethodAnnotation;
  */
 @Documented
 @Target(ElementType.TYPE)
-@MethodAnnotation(Processor.class)
+@MethodValidator(Processor.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SupportedAnnotations {
     
