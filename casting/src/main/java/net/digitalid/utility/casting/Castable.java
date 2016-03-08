@@ -1,8 +1,9 @@
-package net.digitalid.utility.castable;
+package net.digitalid.utility.casting;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.castable.exceptions.InvalidClassCastException;
+import net.digitalid.utility.casting.exceptions.InvalidClassCastException;
+import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
@@ -15,15 +16,9 @@ public interface Castable {
     /**
      * Casts this object to the given target class, if possible.
      * 
-     * @param targetClass the class to which the object should be casted.
-     * 
-     * @return this object casted to the given target class.
-     * 
      * @throws InvalidClassCastException if this object cannot be cast to the given target class.
-     * 
-     * @ensure return == this : "This object is returned.";
      */
     @Pure
-    public @Nonnull <T> T castTo(@Nonnull Class<T> targetClass) throws InvalidClassCastException;
+    public @Chainable @Nonnull <T> T castTo(@Nonnull Class<T> targetClass) throws InvalidClassCastException;
     
 }

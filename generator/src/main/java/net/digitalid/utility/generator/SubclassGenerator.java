@@ -19,7 +19,7 @@ import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.processing.ProcessingLog;
-import net.digitalid.utility.logging.processing.AnnotationProcessing;
+import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.string.StringCase;
@@ -86,7 +86,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         addSection("Constructors");
         for (@Nonnull ExecutableElement constructor : typeInformation.constructors) {
             final @Nonnull @NonNullableElements List<? extends VariableElement> parameters = constructor.getParameters();
-            final @Nonnull ExecutableType type = (ExecutableType) AnnotationProcessing.getTypeUtils().asMemberOf(typeInformation.type, constructor);
+            final @Nonnull ExecutableType type = (ExecutableType) StaticProcessingEnvironment.getTypeUtils().asMemberOf(typeInformation.type, constructor);
             final @Nonnull @NonNullableElements List<String> parameterDeclarations = importingTypeVisitor.mapParametersDeclarationToStrings(type, constructor);
             for (@Nonnull FieldInformation field : typeInformation.representingFields) {
                 if (field.generated) {
@@ -120,6 +120,61 @@ public class SubclassGenerator extends JavaFileGenerator {
     protected void generateMethods() {
         addSection("Generated Methods");
     }
+    
+/* Copied from the former root class. */
+    
+//    /**
+//     * Returns false if the given object is not equal to the current object, using the heuristics that fields of a class,
+//     * which are handed to the class via the recovery method or the constructor, must be equal to each other so that the objects are considered equal.
+//     */
+//    @Pure
+//    @Override
+//    public boolean equals(@Nullable Object other) {
+//        if (other == null || !other.getClass().equals(this.getClass())) {
+//            return false;
+//        }
+//        try {
+//            for (@Nonnull Field field : classFields) {
+//                field.setAccessible(true);
+//                @Nullable Object fieldValueThis = field.get(this);
+//                @Nullable Object fieldValueOther = field.get(other);
+//                if (fieldValueThis == null && fieldValueOther == null) {
+//                    continue;
+//                } else if (fieldValueThis == null || fieldValueOther == null) {
+//                    return false;
+//                } else if (!fieldValueThis.equals(fieldValueOther)) {
+//                    return false;
+//                }
+//            }
+//            return true;
+//        } catch (IllegalAccessException e) {
+//            return super.equals(other);
+//        }
+//    }
+//    
+//    /**
+//     * Computes and returns the hash code of this object, using the fields of the class which are handed to the class via the recovery method or the constructor.
+//     */
+//    @Pure
+//    @Override
+//    public int hashCode() {
+//        try {
+//            int prime = 92821;
+//            int result = 46411;
+//            for (@Nonnull Field field : classFields) {
+//                     field.setAccessible(true);
+//                int c = 0;
+//                @Nullable Object fieldValue = field.get(this);
+//                if (fieldValue != null) {
+//                    c = fieldValue.hashCode();
+//                }
+//                result = prime * result + c;
+//            }
+//            return result;
+//        } catch (IllegalAccessException e) {
+//            return super.hashCode();
+//        }
+//    }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
