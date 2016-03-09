@@ -59,11 +59,11 @@ public class GeneratorProcessor extends CustomProcessor {
      */
     protected boolean generateClasses(@Nonnull TypeElement typeElement) {
         final @Nonnull TypeInformation typeInformation = TypeInformation.forType(typeElement);
-        if (typeInformation.generatable) {
+        if (typeInformation.isGeneratable()) {
             SubclassGenerator.generateSubclassOf(typeInformation);
             BuilderGenerator.generateBuilderFor(typeInformation);
         }
-        return typeInformation.generatable;
+        return typeInformation.isGeneratable();
     }
     
     @Override
