@@ -30,7 +30,7 @@ import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
-import net.digitalid.net.root.RootClass;
+import net.digitalid.utility.rootclass.RootClass;
 
 /**
  * Symmetric keys are used to encrypt and decrypt byte arrays with the Advanced Encryption Standard (AES).

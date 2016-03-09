@@ -1,20 +1,24 @@
 package net.digitalid.utility.string;
 
+import java.util.Map;
+
+import net.digitalid.utility.immutable.collections.ImmutableMap;
+
 /**
  * This class provides useful operations to form the plural of words.
  */
 public class StringPlural {
     
+    private static final ImmutableMap<String, String> rules = ImmutableMap.with("a", "ae").with("an", "en").with("ch", "ches").with("ex", "ices").with("f", "ves").with("fe", "ves").with("is", "es").with("ix", "ices").with("s", "ses").with("sh", "shes").with("um", "a").with("x", "xes").with("y", "ies").build();
+    
     /**
      * Forms the plural of the given non-nullable word in singular based on simple heuristics.
      */
     public static String pluralize(String word) {
-        final String[][] rules = { { "a", "ae" }, { "an", "en" }, { "ch", "ches" }, { "ex", "ices" }, { "f", "ves" }, { "fe", "ves" }, { "is", "es" }, { "ix", "ices" }, { "s", "ses" }, { "sh", "shes" }, { "um", "a" }, { "x", "xes" }, { "y", "ies" } };
-        
         if (word.contains("oo") && !word.equals("book")) { return word.replace("oo", "ee"); }
-        for (final String[] rule : rules) {
-            if (word.endsWith(rule[0])) {
-                return word.substring(0, word.length() - rule[0].length()) + rule[1];
+        for (Map.Entry<String, String> rule : rules.entrySet()) {
+            if (word.endsWith(rule.getKey())) {
+                return word.substring(0, word.length() - rule.getKey().length()) + rule.getValue();
             }
         }
         return word + "s";

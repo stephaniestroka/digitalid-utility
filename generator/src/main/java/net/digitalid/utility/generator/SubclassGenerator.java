@@ -28,8 +28,8 @@ import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.generator.ContractGenerator;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
+import net.digitalid.utility.validation.validator.ContractGenerator;
 
 /**
  * This class generates a subclass with the provided type information.
@@ -115,6 +115,60 @@ public class SubclassGenerator extends JavaFileGenerator {
     protected void generateMethods() {
         addSection("Generated Methods");
     }
+    /* Copied from the former root class. */
+    
+//    /**
+//     * Returns false if the given object is not equal to the current object, using the heuristics that fields of a class,
+//     * which are handed to the class via the recovery method or the constructor, must be equal to each other so that the objects are considered equal.
+//     */
+//    @Pure
+//    @Override
+//    public boolean equals(@Nullable Object other) {
+//        if (other == null || !other.getClass().equals(this.getClass())) {
+//            return false;
+//        }
+//        try {
+//            for (@Nonnull Field field : classFields) {
+//                field.setAccessible(true);
+//                @Nullable Object fieldValueThis = field.get(this);
+//                @Nullable Object fieldValueOther = field.get(other);
+//                if (fieldValueThis == null && fieldValueOther == null) {
+//                    continue;
+//                } else if (fieldValueThis == null || fieldValueOther == null) {
+//                    return false;
+//                } else if (!fieldValueThis.equals(fieldValueOther)) {
+//                    return false;
+//                }
+//            }
+//            return true;
+//        } catch (IllegalAccessException e) {
+//            return super.equals(other);
+//        }
+//    }
+//    
+//    /**
+//     * Computes and returns the hash code of this object, using the fields of the class which are handed to the class via the recovery method or the constructor.
+//     */
+//    @Pure
+//    @Override
+//    public int hashCode() {
+//        try {
+//            int prime = 92821;
+//            int result = 46411;
+//            for (@Nonnull Field field : classFields) {
+//                     field.setAccessible(true);
+//                int c = 0;
+//                @Nullable Object fieldValue = field.get(this);
+//                if (fieldValue != null) {
+//                    c = fieldValue.hashCode();
+//                }
+//                result = prime * result + c;
+//            }
+//            return result;
+//        } catch (IllegalAccessException e) {
+//            return super.hashCode();
+//        }
+//    }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     

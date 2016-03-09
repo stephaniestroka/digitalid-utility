@@ -16,10 +16,10 @@ import javax.lang.model.element.TypeElement;
 import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
-import net.digitalid.utility.validation.annotations.meta.Validator;
+import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 import net.digitalid.utility.validation.annotations.method.Pure;
-import net.digitalid.utility.validation.generator.TypeValidator;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
+import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
 
 /**
  * This annotation indicates that the annotated class has only static fields and methods.
@@ -30,7 +30,7 @@ import net.digitalid.utility.validation.processing.ProcessingUtility;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(Utility.Validator.class)
+@TypeValidator(Utility.Validator.class)
 public @interface Utility {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
@@ -39,7 +39,7 @@ public @interface Utility {
      * This class checks the use of the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends TypeValidator {
+    public static class Validator extends TypeAnnotationValidator {
         
         @Pure
         @Override

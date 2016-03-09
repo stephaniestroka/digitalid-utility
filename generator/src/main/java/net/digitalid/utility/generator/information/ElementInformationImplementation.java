@@ -22,7 +22,7 @@ import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.state.Unmodifiable;
-import net.digitalid.utility.validation.generator.ContractGenerator;
+import net.digitalid.utility.validation.validator.ContractGenerator;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
 
 /**
@@ -185,7 +185,7 @@ public abstract class ElementInformationImplementation implements ElementInforma
         this.packageElement = StaticProcessingEnvironment.getElementUtils().getPackageOf(element);
         this.packageName = packageElement.getQualifiedName().toString();
         this.modifiers = Collections.unmodifiableSet(element.getModifiers());
-        this.validators = ProcessingUtility.getContractGenerators(element);
+        this.validators = ProcessingUtility.getValueValidators(element);
         
         final @Nonnull @NonNullableElements Map<String, AnnotationMirror> annotations = new LinkedHashMap<>();
         for (@Nonnull AnnotationMirror annotationMirror : StaticProcessingEnvironment.getElementUtils().getAllAnnotationMirrors(element)) {

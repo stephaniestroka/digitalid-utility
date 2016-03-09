@@ -6,11 +6,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.digitalid.utility.validation.annotations.meta.Generator;
-import net.digitalid.utility.validation.annotations.meta.TargetTypes;
+import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
-import net.digitalid.utility.validation.generators.OrderingContractGenerator;
+import net.digitalid.utility.validation.validators.OrderingValidator;
 
 /**
  * This annotation indicates that the elements of an {@link Iterable iterable} are ascending.
@@ -21,18 +20,17 @@ import net.digitalid.utility.validation.generators.OrderingContractGenerator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Generator(Ascending.Generator.class)
-@TargetTypes({Iterable.class, Object[].class})
+@ValueValidator(Ascending.Validator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface Ascending {
     
-    /* -------------------------------------------------- Generator -------------------------------------------------- */
+    /* -------------------------------------------------- Validator -------------------------------------------------- */
     
     /**
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Generator extends OrderingContractGenerator {
+    public static class Validator extends OrderingValidator {
         
         @Pure
         @Override

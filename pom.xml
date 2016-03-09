@@ -35,6 +35,7 @@
     
     <modules>
         <module>taglets</module>
+        <module>immutable</module>
         <module>string</module>
         <module>exceptions</module>
         <module>contracts</module>

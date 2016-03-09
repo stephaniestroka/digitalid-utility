@@ -1,7 +1,5 @@
 package net.digitalid.utility.logging.processing;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.RoundEnvironment;
@@ -10,6 +8,7 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.immutable.collections.ImmutableMap;
 import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.logger.FileLogger;
@@ -39,15 +38,7 @@ public class ProcessingLog {
     /**
      * Stores a mapping from this library's logging levels to the corresponding diagnostic kind.
      */
-    private static final Map<Level, Diagnostic.Kind> levelToKind = new HashMap<>(5);
-    
-    static {
-        levelToKind.put(Level.VERBOSE, Diagnostic.Kind.OTHER);
-        levelToKind.put(Level.DEBUGGING, Diagnostic.Kind.OTHER);
-        levelToKind.put(Level.INFORMATION, Diagnostic.Kind.NOTE);
-        levelToKind.put(Level.WARNING, Diagnostic.Kind.WARNING);
-        levelToKind.put(Level.ERROR, Diagnostic.Kind.ERROR);
-    }
+    private static final ImmutableMap<Level, Diagnostic.Kind> levelToKind = ImmutableMap.with(Level.VERBOSE, Diagnostic.Kind.OTHER).with(Level.DEBUGGING, Diagnostic.Kind.OTHER).with(Level.INFORMATION, Diagnostic.Kind.NOTE).with(Level.WARNING, Diagnostic.Kind.WARNING).with(Level.ERROR, Diagnostic.Kind.ERROR).build();
     
     /* -------------------------------------------------- Logging -------------------------------------------------- */
     

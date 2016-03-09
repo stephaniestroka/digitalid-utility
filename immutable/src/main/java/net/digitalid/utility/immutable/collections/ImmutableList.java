@@ -74,7 +74,7 @@ public class ImmutableList<E> extends ArrayList<E> {
     
     @Override
     public ImmutableList<E> subList(int fromIndex, int toIndex) {
-        // Copies the elements of this immutable list, thus preventing memory leaks.
+        // Copies the elements of this immutable list, which leads to some overhead but also prevents memory leaks.
         return ImmutableList.with(super.subList(fromIndex, toIndex));
     }
     

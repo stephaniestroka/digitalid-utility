@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import net.digitalid.utility.processor.generator.FileGenerator;
-import net.digitalid.utility.validation.annotations.meta.MethodAnnotation;
+import net.digitalid.utility.validation.annotations.meta.MethodValidator;
 
 /**
  * This annotation indicates that a method may only be invoked on a {@link GeneratedFile#isWritten() non-written} file.
@@ -17,5 +17,5 @@ import net.digitalid.utility.validation.annotations.meta.MethodAnnotation;
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@MethodAnnotation(FileGenerator.class)
+@MethodValidator(FileGenerator.class)
 public @interface NonWrittenRecipient {}

@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-taglets</artifactId>
+            <artifactId>utility-immutable</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

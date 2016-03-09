@@ -18,10 +18,10 @@ import javax.lang.model.util.ElementFilter;
 import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
-import net.digitalid.utility.validation.annotations.meta.Validator;
+import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 import net.digitalid.utility.validation.annotations.method.Pure;
-import net.digitalid.utility.validation.generator.TypeValidator;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
+import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
 
 /**
  * This annotation indicates that the objects of the annotated class are immutable.
@@ -40,7 +40,7 @@ import net.digitalid.utility.validation.processing.ProcessingUtility;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(Immutable.Validator.class)
+@TypeValidator(Immutable.Validator.class)
 public @interface Immutable {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
@@ -49,7 +49,7 @@ public @interface Immutable {
      * This class checks the use of the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends TypeValidator {
+    public static class Validator extends TypeAnnotationValidator {
         
         @Pure
         @Override

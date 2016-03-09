@@ -113,7 +113,7 @@ public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList
      * @return a new freezable array list with the given elements.
      */
     @Pure
-    @SuppressWarnings("unchecked")
+    @SafeVarargs
     public static @Capturable @Nonnull @NonFrozen <E> FreezableArrayList<E> get(@Nonnull E... elements) {
         final @Nonnull FreezableArrayList<E> list = getWithCapacity(elements.length);
         list.addAll(Arrays.asList(elements));

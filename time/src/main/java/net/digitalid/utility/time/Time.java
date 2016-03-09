@@ -10,7 +10,7 @@ import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
-import net.digitalid.net.root.RootComparable;
+import net.digitalid.utility.rootclass.RootComparable;
 
 /**
  * This class models time in milliseconds for both dates and intervals.
