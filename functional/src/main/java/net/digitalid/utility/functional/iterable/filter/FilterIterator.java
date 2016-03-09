@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.functional.iterable.filter.predicate.NonNullPredicate;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -16,27 +16,30 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * Cannot be shared among multiple threads. 
  */
 @Mutable
-public class FilterIterator<E> implements Iterator<E> {
+public class FilterIterator<E, A> implements Iterator<E> {
     
     /**
      * The predicate which is used to filter elements from an iterator. Only the elements that
      * satisfy the predicate are returned by this iterator.
      */
-    private final NonNullPredicate<E> predicate;
+    private final @Nonnull NonNullPredicate<E, A> predicate;
     
     /**
      * The iterator which serves as a source for the elements.
      */
-    private final Iterator<E> iterator;
+    private final @Nonnull @NullableElements Iterator<E> iterator;
+    
+    private final @Nullable A additionalInformation;
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a new filter iterator with a given source iterator and a given predicate.
      */
-    public FilterIterator(@Nonnull @NonNullableElements Iterator<E> iterator, @Nonnull NonNullPredicate<E> predicate) {
+    public FilterIterator(@Nonnull @NullableElements Iterator<E> iterator, @Nonnull NonNullPredicate<E, A> predicate, @Nullable A additionalInformation) {
         this.predicate = predicate;
         this.iterator = iterator;
+        this.additionalInformation = additionalInformation;
     }
     
     /* -------------------------------------------------- Find Next -------------------------------------------------- */
@@ -50,7 +53,7 @@ public class FilterIterator<E> implements Iterator<E> {
         @Nullable E nextElement;
         while (iterator.hasNext()) {
             nextElement = iterator.next();
-            if (predicate.apply(nextElement)) {
+            if (predicate.apply(nextElement, additionalInformation)) {
                 return new Consumable<>(nextElement);
             }
         }

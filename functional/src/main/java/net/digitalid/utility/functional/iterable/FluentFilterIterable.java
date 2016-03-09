@@ -3,6 +3,7 @@ package net.digitalid.utility.functional.iterable;
 import java.util.Iterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.digitalid.utility.functional.iterable.filter.FilterIterator;
 import net.digitalid.utility.functional.iterable.filter.predicate.NullablePredicate;
@@ -14,7 +15,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * a given predicate.
  */
 @Immutable
-class FluentFilterIterable<T> extends FluentIterable<T> {
+class FluentFilterIterable<T, A> extends FluentIterable<T> {
     
     /* -------------------------------------------------- Final Fields -------------------------------------------------- */
     
@@ -22,28 +23,31 @@ class FluentFilterIterable<T> extends FluentIterable<T> {
      * The predicate which is used to filter elements from an iterator. Only the elements that
      * satisfy the predicate are returned by this iterator.
      */
-    private final @Nonnull NullablePredicate<T> predicate;
+    private final @Nonnull NullablePredicate<T, A> predicate;
     
     /**
      * The iterator which serves as a source for the elements.
      */
     private final @Nonnull @NullableElements FluentIterable<T> iterable;
     
+    private final @Nullable A additionalInformation;
+    
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a new fluent filter iterable, which implements a filter with the given predicate on the iterator.
      */
-    protected FluentFilterIterable(@Nonnull @NullableElements FluentIterable<T> iterable, @Nonnull NullablePredicate<T> predicate) {
+    protected FluentFilterIterable(@Nonnull @NullableElements FluentIterable<T> iterable, @Nonnull NullablePredicate<T, A> predicate, @Nullable A additionalInformation) {
         this.iterable = iterable;
         this.predicate = predicate;
+        this.additionalInformation = additionalInformation;
     }
     
     /* -------------------------------------------------- Iterable -------------------------------------------------- */
     
     @Override
     public @Nonnull @NullableElements Iterator<T> iterator() {
-        return new FilterIterator<>(iterable.iterator(), predicate);
+        return new FilterIterator<>(iterable.iterator(), predicate, additionalInformation);
     }
     
 }

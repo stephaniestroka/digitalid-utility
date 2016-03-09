@@ -3,8 +3,10 @@ package net.digitalid.utility.functional.iterable;
 import java.util.Iterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.digitalid.utility.functional.iterable.filter.FilterIterator;
+import net.digitalid.utility.functional.iterable.filter.predicate.FilterNonNullPredicate;
 import net.digitalid.utility.functional.iterable.filter.predicate.NonNullPredicate;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
@@ -17,7 +19,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * The filtered elements are non-nullable.
  */
 @Immutable
-class FluentNonNullFilterIterable<T> extends FluentNonNullIterable<T> {
+class FluentNonNullFilterIterable<T, A> extends FluentNonNullIterable<T> {
     
     /**
      * The iterator which serves as a source for the elements.
@@ -28,21 +30,33 @@ class FluentNonNullFilterIterable<T> extends FluentNonNullIterable<T> {
      * The predicate which is used to filter elements from an iterator. Only the elements that
      * satisfy the predicate are returned by this iterator.
      */
-    private final @Nonnull NonNullPredicate<T> predicate;
+    private final @Nonnull NonNullPredicate<T, A> predicate;
+    
+    private final @Nullable A additionalInformation;
     
     /**
      * Creates a new fluent filter iterable, which implements a filter with the given predicate on the iterator.
      * The filtered elements are non-nullable.
      */
-    protected FluentNonNullFilterIterable(@Nonnull @NullableElements FluentIterable<T> iterable, @Nonnull NonNullPredicate<T> predicate) {
+    protected FluentNonNullFilterIterable(@Nonnull @NonNullableElements FluentNonNullIterable<T> iterable, @Nonnull NonNullPredicate<T, A> predicate, @Nullable A additionalInformation) {
         this.iterable = iterable;
         this.predicate = predicate;
+        this.additionalInformation = additionalInformation;
+    }
+    
+    /**
+     * Creates a new fluent filter iterable with non-null elements on a fluent iterable with potential nullable elements and a predicate that filters non-null elements.
+     */
+    protected FluentNonNullFilterIterable(@Nonnull @NonNullableElements FluentIterable<T> iterable, @Nonnull FilterNonNullPredicate<T, A> predicate, @Nullable A additionalInformation) {
+        this.iterable = iterable;
+        this.predicate = predicate;
+        this.additionalInformation = additionalInformation;
     }
     
     @Pure
     @Override
     public @Nonnull @NonNullableElements Iterator<T> iterator() {
-        return new FilterIterator<>(iterable.iterator(), predicate);
+        return new FilterIterator<>(iterable.iterator(), predicate, additionalInformation);
     }
     
 }

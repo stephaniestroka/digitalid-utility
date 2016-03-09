@@ -10,7 +10,7 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  * A predicate that can be applied on nullable objects.
  */
 @Stateless
-public abstract class NullablePredicate<T> extends NonNullPredicate<T> {
+public abstract class NullablePredicate<T, A> extends NonNullPredicate<T, A> {
     
     /* -------------------------------------------------- Combinations of Predicates -------------------------------------------------- */
     
@@ -19,12 +19,12 @@ public abstract class NullablePredicate<T> extends NonNullPredicate<T> {
      * Since the first predicate is a nullable predicate, the second must also accept null values and the returned predicate is another nullable predicate.
      */
     @Pure
-     public NullablePredicate<T> and(@Nonnull final NullablePredicate<T> predicate) {
-        final @Nonnull NullablePredicate<T> self = this;
-        return new NullablePredicate<T>() {
+     public NullablePredicate<T, A> and(@Nonnull final NullablePredicate<T, A> predicate) {
+        final @Nonnull NullablePredicate<T, A> self = this;
+        return new NullablePredicate<T, A>() {
             
-            @Override public boolean apply(@Nullable T object) {
-                return self.apply(object) && predicate.apply(object);
+            @Override public boolean apply(@Nullable T object, @Nullable A additionalInformation) {
+                return self.apply(object, additionalInformation) && predicate.apply(object, additionalInformation);
             }
             
         };
@@ -34,12 +34,12 @@ public abstract class NullablePredicate<T> extends NonNullPredicate<T> {
      * Combines two predicates using an OR operator.
      */
     @Pure
-    public NullablePredicate<T> or(@Nonnull final NullablePredicate<T> predicate) {
-        final @Nonnull NullablePredicate<T> self = this;
-        return new NullablePredicate<T>() {
+    public NullablePredicate<T, A> or(@Nonnull final NullablePredicate<T, A> predicate) {
+        final @Nonnull NullablePredicate<T, A> self = this;
+        return new NullablePredicate<T, A>() {
             
-            @Override public boolean apply(@Nullable T object) {
-                return self.apply(object) || predicate.apply(object);
+            @Override public boolean apply(@Nullable T object, @Nullable A additionalInformation) {
+                return self.apply(object, additionalInformation) || predicate.apply(object, additionalInformation);
             }
             
         };
@@ -49,12 +49,12 @@ public abstract class NullablePredicate<T> extends NonNullPredicate<T> {
      * Combines two predicates using an OR operator.
      */
     @Pure
-    public NullablePredicate<T> negate() {
-        final @Nonnull NullablePredicate<T> self = this;
-        return new NullablePredicate<T>() {
+    public NullablePredicate<T, A> negate() {
+        final @Nonnull NullablePredicate<T, A> self = this;
+        return new NullablePredicate<T, A>() {
             
-            @Override public boolean apply(@Nullable T object) {
-                return !self.apply(object);
+            @Override public boolean apply(@Nullable T object, @Nullable A additionalInformation) {
+                return !self.apply(object, additionalInformation);
             }
             
         };
@@ -67,6 +67,6 @@ public abstract class NullablePredicate<T> extends NonNullPredicate<T> {
      */
     @Pure
     @Override
-    public abstract boolean apply(@Nullable T object);
+    public abstract boolean apply(@Nullable T object, @Nullable A additionalInformation);
     
 }
