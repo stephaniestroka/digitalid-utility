@@ -19,7 +19,7 @@ public class NullableQuartet<E0, E1, E2, E3> extends NullableTriplet<E0, E1, E2>
     
     @Pure
     @Override
-    public @Nonnull NullableQuartet<E0, E1, E2, E3> set0(@Nullable E0 element0) {
+    public @Nonnull NullableQuartet<E0, E1, E2, E3> setNullable0(@Nullable E0 element0) {
         return with(element0, element1, element2, element3);
     }
     
@@ -27,7 +27,7 @@ public class NullableQuartet<E0, E1, E2, E3> extends NullableTriplet<E0, E1, E2>
     
     @Pure
     @Override
-    public @Nonnull NullableQuartet<E0, E1, E2, E3> set1(@Nullable E1 element1) {
+    public @Nonnull NullableQuartet<E0, E1, E2, E3> setNullable1(@Nullable E1 element1) {
         return with(element0, element1, element2, element3);
     }
     
@@ -35,7 +35,7 @@ public class NullableQuartet<E0, E1, E2, E3> extends NullableTriplet<E0, E1, E2>
     
     @Pure
     @Override
-    public @Nonnull NullableQuartet<E0, E1, E2, E3> set2(@Nullable E2 element2) {
+    public @Nonnull NullableQuartet<E0, E1, E2, E3> setNullable2(@Nullable E2 element2) {
         return with(element0, element1, element2, element3);
     }
     
@@ -55,7 +55,7 @@ public class NullableQuartet<E0, E1, E2, E3> extends NullableTriplet<E0, E1, E2>
      * Returns a new tuple with the fourth element set to the given object.
      */
     @Pure
-    public @Nonnull NullableQuartet<E0, E1, E2, E3> set3(@Nullable E3 element3) {
+    public @Nonnull NullableQuartet<E0, E1, E2, E3> setNullable3(@Nullable E3 element3) {
         return with(element0, element1, element2, element3);
     }
     

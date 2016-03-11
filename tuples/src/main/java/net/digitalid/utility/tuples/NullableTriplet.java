@@ -21,7 +21,7 @@ public class NullableTriplet<E0, E1, E2> extends NullablePair<E0, E1> {
     
     @Pure
     @Override
-    public @Nonnull NullableTriplet<E0, E1, E2> set0(@Nullable E0 element0) {
+    public @Nonnull NullableTriplet<E0, E1, E2> setNullable0(@Nullable E0 element0) {
         return with(element0, element1, element2);
     }
     
@@ -29,7 +29,7 @@ public class NullableTriplet<E0, E1, E2> extends NullablePair<E0, E1> {
     
     @Pure
     @Override
-    public @Nonnull NullableTriplet<E0, E1, E2> set1(@Nullable E1 element1) {
+    public @Nonnull NullableTriplet<E0, E1, E2> setNullable1(@Nullable E1 element1) {
         return with(element0, element1, element2);
     }
     
@@ -49,7 +49,7 @@ public class NullableTriplet<E0, E1, E2> extends NullablePair<E0, E1> {
      * Returns a new tuple with the third element set to the given object.
      */
     @Pure
-    public @Nonnull NullableTriplet<E0, E1, E2> set2(@Nullable E2 element2) {
+    public @Nonnull NullableTriplet<E0, E1, E2> setNullable2(@Nullable E2 element2) {
         return with(element0, element1, element2);
     }
     

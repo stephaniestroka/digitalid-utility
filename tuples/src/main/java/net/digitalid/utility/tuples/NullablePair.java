@@ -34,7 +34,7 @@ public class NullablePair<E0, E1> extends RootClass {
      * Returns a new tuple with the first element set to the given object.
      */
     @Pure
-    public @Nonnull NullablePair<E0, E1> set0(@Nullable E0 element0) {
+    public @Nonnull NullablePair<E0, E1> setNullable0(@Nullable E0 element0) {
         return with(element0, element1);
     }
     
@@ -54,7 +54,7 @@ public class NullablePair<E0, E1> extends RootClass {
      * Returns a new tuple with the second element set to the given object.
      */
     @Pure
-    public @Nonnull NullablePair<E0, E1> set1(@Nullable E1 element1) {
+    public @Nonnull NullablePair<E0, E1> setNullable1(@Nullable E1 element1) {
         return with(element0, element1);
     }
     
