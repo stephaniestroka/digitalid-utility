@@ -237,7 +237,7 @@ public class ProcessingUtility {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public static @Nonnull @NonNullableElements <G extends AnnotationHandler> Map<AnnotationMirror, G> getCodeGenerators(@Nonnull Element element, @Nonnull Class<? extends Annotation> metaAnnotationType, @Nonnull Class<G> annotationHandlerType) {
+    public static @Nonnull @NonNullableElements <G extends AnnotationHandler> Map<AnnotationMirror, G> getAnnotationHandlers(@Nonnull Element element, @Nonnull Class<? extends Annotation> metaAnnotationType, @Nonnull Class<G> annotationHandlerType) {
         final @Nonnull @NonNullableElements Map<AnnotationMirror, G> result = new LinkedHashMap<>();
         for (@Nonnull AnnotationMirror annotationMirror : StaticProcessingEnvironment.getElementUtils().getAllAnnotationMirrors(element)) {
             final @Nonnull String qualifiedAnnotationName = getQualifiedName(annotationMirror);
@@ -280,7 +280,7 @@ public class ProcessingUtility {
      */
     @Pure
     public static @Nonnull @NonNullableElements Map<AnnotationMirror, MethodAnnotationValidator> getMethodValidators(@Nonnull Element element) {
-        return getCodeGenerators(element, MethodValidator.class, MethodAnnotationValidator.class);
+        return getAnnotationHandlers(element, MethodValidator.class, MethodAnnotationValidator.class);
     }
     
     /**
@@ -288,7 +288,7 @@ public class ProcessingUtility {
      */
     @Pure
     public static @Nonnull @NonNullableElements Map<AnnotationMirror, ValueAnnotationValidator> getValueValidators(@Nonnull Element element) {
-        return getCodeGenerators(element, ValueValidator.class, ValueAnnotationValidator.class);
+        return getAnnotationHandlers(element, ValueValidator.class, ValueAnnotationValidator.class);
     }
     
     /**
@@ -296,7 +296,7 @@ public class ProcessingUtility {
      */
     @Pure
     public static @Nonnull @NonNullableElements Map<AnnotationMirror, TypeAnnotationValidator> getTypeValidators(@Nonnull TypeElement element) {
-        return getCodeGenerators(element, TypeValidator.class, TypeAnnotationValidator.class);
+        return getAnnotationHandlers(element, TypeValidator.class, TypeAnnotationValidator.class);
     }
     
     /* -------------------------------------------------- Fields of Type -------------------------------------------------- */

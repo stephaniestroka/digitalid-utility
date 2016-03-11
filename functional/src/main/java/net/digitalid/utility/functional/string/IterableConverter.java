@@ -20,6 +20,8 @@ public final class IterableConverter {
     /**
      * Converts the given iterable to a string.
      * 
+     * @deprecated because the converter should be replaced with the map function of the functional package.
+     * 
      * @param iterable the iterable to convert to a string.
      * @param converter the converter applied to each element.
      * @param brackets the brackets used to embrace the list.
@@ -28,6 +30,7 @@ public final class IterableConverter {
      * @return the given iterable as a string.
      */
     @Pure
+    @Deprecated
     public static @Nonnull <E> String toString(@Nonnull Iterable<E> iterable, @Nonnull NonNullableElementConverter<? super E> converter, @Nullable Brackets brackets, @Nonnull String delimiter) {
         final @Nonnull StringBuilder string = new StringBuilder();
         if (brackets != null) { string.append(brackets.getOpening()); }
@@ -41,6 +44,9 @@ public final class IterableConverter {
     
     /**
      * Converts the given iterable to a string.
+     *
+     * @deprecated because the converter should be replaced with the map function of the functional package.
+     * 
      * 
      * @param iterable the iterable to convert to a string.
      * @param converter the converter applied to each element.
@@ -49,12 +55,15 @@ public final class IterableConverter {
      * @return the given iterable as a string.
      */
     @Pure
+    @Deprecated
     public static @Nonnull <E> String toString(@Nonnull Iterable<E> iterable, @Nonnull NonNullableElementConverter<? super E> converter, @Nullable Brackets brackets) {
         return toString(iterable, converter, brackets, ", ");
     }
     
     /**
      * Converts the given iterable to a string.
+     *
+     * @deprecated because the converter should be replaced with the map function of the functional package.
      * 
      * @param iterable the iterable to convert to a string.
      * @param converter the converter applied to each element.
@@ -62,25 +71,13 @@ public final class IterableConverter {
      * @return the given iterable as a string.
      */
     @Pure
+    @Deprecated
     public static @Nonnull <E> String toString(@Nonnull Iterable<E> iterable, @Nonnull NonNullableElementConverter<? super E> converter) {
         return toString(iterable, converter, null);
     }
     
     /**
      * Converts the given iterable to a string.
-     * 
-     * @param iterable the iterable to convert to a string.
-     * @param brackets the brackets used to embrace the list.
-     * 
-     * @return the given iterable as a string.
-     */
-    @Pure
-    public static @Nonnull <E> String toString(@Nonnull Iterable<E> iterable, @Nullable Brackets brackets) {
-        return toString(iterable, ElementConverter.DEFAULT, brackets);
-    }
-    
-    /**
-     * Converts the given iterable to a string.
      *
      * @param iterable the iterable to convert to a string.
      * @param brackets the brackets used to embrace the list.
@@ -89,8 +86,28 @@ public final class IterableConverter {
      * @return the given iterable as a string.
      */
     @Pure
-    public static @Nonnull <E> String toString(@Nonnull Iterable<E> iterable, @Nullable Brackets brackets, @Nonnull String delimiter) {
-        return toString(iterable, ElementConverter.DEFAULT, brackets, delimiter);
+    public static @Nonnull String toString(@Nonnull Iterable<String> iterable, @Nullable Brackets brackets, @Nonnull String delimiter) {
+        final @Nonnull StringBuilder string = new StringBuilder();
+        if (brackets != null) { string.append(brackets.getOpening()); }
+        for (final @Nonnull String element : iterable) {
+            if (brackets == null && string.length() > 0 || brackets != null && string.length() > 1) { string.append(delimiter); }
+            string.append(element);
+        }
+        if (brackets != null) { string.append(brackets.getClosing()); }
+        return string.toString();
+    }
+    
+    /**
+     * Converts the given iterable to a string.
+     * 
+     * @param iterable the iterable to convert to a string.
+     * @param brackets the brackets used to embrace the list.
+     * 
+     * @return the given iterable as a string.
+     */
+    @Pure
+    public static @Nonnull String toString(@Nonnull Iterable<String> iterable, @Nullable Brackets brackets) {
+        return toString(iterable, brackets, ", ");
     }
     
     /**
@@ -102,8 +119,8 @@ public final class IterableConverter {
      * @return the given iterable as a string.
      */
     @Pure
-    public static @Nonnull <E> String toString(@Nonnull Iterable<E> iterable, @Nonnull String delimiter) {
-        return toString(iterable, ElementConverter.DEFAULT, null, delimiter);
+    public static @Nonnull String toString(@Nonnull Iterable<String> iterable, @Nonnull String delimiter) {
+        return toString(iterable, null, delimiter);
     }
     
     /**
@@ -114,7 +131,7 @@ public final class IterableConverter {
      * @return the given iterable as a string.
      */
     @Pure
-    public static @Nonnull <E> String toString(@Nonnull Iterable<E> iterable) {
+    public static @Nonnull String toString(@Nonnull Iterable<String> iterable) {
         return toString(iterable, (Brackets) null);
     }
     

@@ -12,11 +12,11 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  *
  */
 @Immutable
-class WrappingFluentNonNullIterable<T> extends FluentNonNullIterable<T> {
+class WrappingNonNullIterable<T> extends NonNullIterable<T> {
     
     private final @Nonnull @NonNullableElements Iterable<T> iterable;
     
-    WrappingFluentNonNullIterable(@Nonnull @NonNullableElements Iterable<T> iterable) {
+    WrappingNonNullIterable(@Nonnull @NonNullableElements Iterable<T> iterable) {
         this.iterable = iterable;
     }
     

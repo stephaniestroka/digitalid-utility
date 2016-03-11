@@ -22,7 +22,6 @@ import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.state.Unmodifiable;
-import net.digitalid.utility.validation.validator.ContractGenerator;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
 
 /**
@@ -149,15 +148,15 @@ public abstract class ElementInformationImplementation implements ElementInforma
         return getModifiers().contains(Modifier.ABSTRACT);
     }
     
-    /* -------------------------------------------------- Validators -------------------------------------------------- */
+    /* -------------------------------------------------- Contract Generators -------------------------------------------------- */
     
-    private final @Nonnull @NonNullableElements Map<AnnotationMirror, ContractGenerator> validators;
-    
-    @Pure
-    @Override
-    public @Nonnull @NonNullableElements Map<AnnotationMirror, ContractGenerator> getValidators() {
-        return validators;
-    }
+//    private final @Nonnull @NonNullableElements Map<AnnotationMirror, ContractGenerator> contractGenerators;
+//    
+//    @Pure
+//    @Override
+//    public @Nonnull @NonNullableElements Map<AnnotationMirror, ContractGenerator> getContractGenerators() {
+//        return contractGenerators;
+//    }
     
     /* -------------------------------------------------- Annotations -------------------------------------------------- */
     
@@ -185,7 +184,7 @@ public abstract class ElementInformationImplementation implements ElementInforma
         this.packageElement = StaticProcessingEnvironment.getElementUtils().getPackageOf(element);
         this.packageName = packageElement.getQualifiedName().toString();
         this.modifiers = Collections.unmodifiableSet(element.getModifiers());
-        this.validators = ProcessingUtility.getValueValidators(element);
+//        this.validators = ProcessingUtility.getAnnotationHandlers(element);
         
         final @Nonnull @NonNullableElements Map<String, AnnotationMirror> annotations = new LinkedHashMap<>();
         for (@Nonnull AnnotationMirror annotationMirror : StaticProcessingEnvironment.getElementUtils().getAllAnnotationMirrors(element)) {

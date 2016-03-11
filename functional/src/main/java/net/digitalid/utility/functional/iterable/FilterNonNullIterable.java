@@ -19,12 +19,12 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * The filtered elements are non-nullable.
  */
 @Immutable
-class FluentNonNullFilterIterable<T, A> extends FluentNonNullIterable<T> {
+class FilterNonNullIterable<T, A> extends NonNullIterable<T> {
     
     /**
      * The iterator which serves as a source for the elements.
      */
-    private final @Nonnull @NullableElements FluentIterable<T> iterable;
+    private final @Nonnull @NullableElements NullableIterable<T> iterable;
     
     /**
      * The predicate which is used to filter elements from an iterator. Only the elements that
@@ -38,7 +38,7 @@ class FluentNonNullFilterIterable<T, A> extends FluentNonNullIterable<T> {
      * Creates a new fluent filter iterable, which implements a filter with the given predicate on the iterator.
      * The filtered elements are non-nullable.
      */
-    protected FluentNonNullFilterIterable(@Nonnull @NonNullableElements FluentNonNullIterable<T> iterable, @Nonnull NonNullPredicate<T, A> predicate, @Nullable A additionalInformation) {
+    protected FilterNonNullIterable(@Nonnull @NonNullableElements NonNullIterable<T> iterable, @Nonnull NonNullPredicate<T, A> predicate, @Nullable A additionalInformation) {
         this.iterable = iterable;
         this.predicate = predicate;
         this.additionalInformation = additionalInformation;
@@ -47,7 +47,7 @@ class FluentNonNullFilterIterable<T, A> extends FluentNonNullIterable<T> {
     /**
      * Creates a new fluent filter iterable with non-null elements on a fluent iterable with potential nullable elements and a predicate that filters non-null elements.
      */
-    protected FluentNonNullFilterIterable(@Nonnull @NonNullableElements FluentIterable<T> iterable, @Nonnull FilterNonNullPredicate<T, A> predicate, @Nullable A additionalInformation) {
+    protected FilterNonNullIterable(@Nonnull @NonNullableElements NullableIterable<T> iterable, @Nonnull FilterNonNullPredicate<T, A> predicate, @Nullable A additionalInformation) {
         this.iterable = iterable;
         this.predicate = predicate;
         this.additionalInformation = additionalInformation;

@@ -15,12 +15,12 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * A fluent map iterable implements the iterable that transforms its elements into other elements using a provided function.
  */
 @Immutable
-class FluentMapIterable<T, I, A> extends FluentIterable<I> {
+class MapNullableIterable<T, I, A> extends NullableIterable<I> {
     
     /**
      * The original iterable.
      */
-    private final FluentIterable<T> iterable;
+    private final NullableIterable<T> iterable;
     
     /**
      * The function that is applied to the elements of the original iterable.
@@ -35,7 +35,7 @@ class FluentMapIterable<T, I, A> extends FluentIterable<I> {
     /**
      * Creates a new map iterable with a given fluent iterable and a given function.
      */
-    protected FluentMapIterable(FluentIterable<T> iterable, ToNullableUnaryFunction<T, I, A> function, @Nullable A additionalInformation) {
+    protected MapNullableIterable(NullableIterable<T> iterable, ToNullableUnaryFunction<T, I, A> function, @Nullable A additionalInformation) {
         this.iterable = iterable;
         this.function = function;
         this.additionalInformation = additionalInformation;

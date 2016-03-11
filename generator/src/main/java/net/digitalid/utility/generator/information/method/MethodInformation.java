@@ -23,11 +23,18 @@ import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 
 /**
  * This type collects the relevant information about a method for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  */
 public class MethodInformation extends ExecutableInformation {
+    
+    private final @Nonnull Map<AnnotationMirror, MethodAnnotationValidator> methodValidators;
+    
+    public Map<AnnotationMirror, MethodAnnotationValidator> getMethodValidators() {
+        return methodValidators;
+    }
     
     /* -------------------------------------------------- Type -------------------------------------------------- */
     
@@ -148,7 +155,7 @@ public class MethodInformation extends ExecutableInformation {
         
         Require.that(element.getKind() == ElementKind.METHOD).orThrow("The element $ has to be a method.", SourcePosition.of(element));
         
-        this.interceptors = ProcessingUtility.getCodeGenerators(element, Interceptor.class, MethodInterceptor.class);
+        this.interceptors = ProcessingUtility.getAnnotationHandlers(element, Interceptor.class, MethodInterceptor.class);
         
         if (isDeclaredInDigitalIDLibrary()) {
             if (isGetter() && !hasAnnotation(Pure.class)) { ProcessingLog.error("A getter has to be '@Pure':", SourcePosition.of(element)); }
@@ -165,6 +172,7 @@ public class MethodInformation extends ExecutableInformation {
             if (errorMessage != null) { ProcessingLog.error(errorMessage, SourcePosition.of(element)); }
             ProcessingLog.verbose("Found the recover method", SourcePosition.of(element));
         }
+        this.methodValidators = ProcessingUtility.getMethodValidators(this.getElement());
     }
     
     /**

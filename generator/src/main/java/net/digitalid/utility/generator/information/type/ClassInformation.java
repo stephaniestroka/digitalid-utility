@@ -14,8 +14,8 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
-import net.digitalid.utility.functional.iterable.FluentIterable;
-import net.digitalid.utility.functional.iterable.FluentNonNullIterable;
+import net.digitalid.utility.functional.iterable.NonNullIterable;
+import net.digitalid.utility.functional.iterable.NullableIterable;
 import net.digitalid.utility.functional.iterable.exceptions.UnexpectedResultException;
 import net.digitalid.utility.functional.iterable.filter.predicate.NonNullPredicate;
 import net.digitalid.utility.functional.iterable.map.function.NonNullToNonNullUnaryFunction;
@@ -112,22 +112,13 @@ public class ClassInformation extends TypeInformation {
     
     /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
     
-    private static @Nonnull NonNullToNonNullUnaryFunction<? super RepresentingFieldInformation, RepresentingFieldInformation, Object> castToRepresentingFieldInformation = new NonNullToNonNullUnaryFunction<RepresentingFieldInformation, RepresentingFieldInformation, Object>() {
-        
-        @Override 
-        public @Nonnull RepresentingFieldInformation apply(@Nonnull RepresentingFieldInformation element, @Nullable Object additionalInformation) {
-            return element;
-        }
-        
-    };
- 
     /**
      * Combines and returns the parameter-based fields and the generated fields of the type.
      */
     @Override
     @SuppressWarnings("unchecked")
     public @Nonnull @NonNullableElements List<RepresentingFieldInformation> getRepresentingFieldInformation() throws UnexpectedTypeContentException {
-        return FluentIterable.ofNonNullElements(parameterBasedFieldInformation).map(castToRepresentingFieldInformation).combine(FluentIterable.ofNonNullElements(generatedFieldInformation).map(castToRepresentingFieldInformation)).toList();
+        return NullableIterable.ofNonNullElements(parameterBasedFieldInformation).map(castToRepresentingFieldInformation).combine(NullableIterable.ofNonNullElements(generatedFieldInformation).map(castToRepresentingFieldInformation)).toList();
     }
     
     /* -------------------------------------------------- Generatable -------------------------------------------------- */
@@ -219,7 +210,7 @@ public class ClassInformation extends TypeInformation {
         @Nonnull List<DeclaredFieldInformation> accessibleFields = new ArrayList<>();
         
         try {
-            final @Nonnull FluentNonNullIterable<MethodInformation> methodInformationIterable = getMethodInformation(typeElement, containingType);
+            final @Nonnull NonNullIterable<MethodInformation> methodInformationIterable = getMethodInformation(typeElement, containingType);
             
             equalsMethod = methodInformationIterable.find(methodNameMatcher, "equals");
             hashCodeMethod = methodInformationIterable.find(methodNameMatcher, "hashCode");
@@ -232,10 +223,10 @@ public class ClassInformation extends TypeInformation {
             
             overriddenMethods = methodInformationIterable.filter(noJavaRuntimeMethod).toList();
             
-            constructors = FluentIterable.ofNonNullElements(javax.lang.model.util.ElementFilter.constructorsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))).map(constructorInformationFunction).toList();
+            constructors = NullableIterable.ofNonNullElements(javax.lang.model.util.ElementFilter.constructorsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))).map(constructorInformationFunction).toList();
             
             recoverMethod = methodInformationIterable.find(recoverMethodMatcher);
-            parameterBasedFieldInformation = FieldInformationFactory.getParameterBasedFieldInformation(typeElement, containingType, FluentNonNullIterable.ofNonNullElements(getParameterVariables(constructors.get(0), recoverMethod)), methodInformationIterable);
+            parameterBasedFieldInformation = FieldInformationFactory.getParameterBasedFieldInformation(typeElement, containingType, NonNullIterable.ofNonNullElements(getParameterVariables(constructors.get(0), recoverMethod)), methodInformationIterable);
             
             accessibleFields = FieldInformationFactory.getDirectlyAccessibleFieldInformation(typeElement, containingType).toList();
             

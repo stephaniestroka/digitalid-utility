@@ -1,58 +1,50 @@
 package net.digitalid.utility.functional.iterable.zip;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.tuples.NullablePair;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * The zip iterator implements an iterator that combines elements from the source iterators by alternating the iterator on every call to "next()".
  */
 @Mutable
-public class ZipIterator<T> implements Iterator<T> {
+public class NullableZipIterator<T1, T2> implements Iterator<NullablePair<T1, T2>> {
     
     /**
      * The iterators which serves as a source for the elements.
      */
-    private final List<Iterator<T>> iterators;
+    private final @Nonnull @NullableElements Iterator<T1> iterator1;
     
-    /**
-     * The index that indicates from which iterator the next element can be retrieved.
-     */
-    private int index = 0;
+    private final @Nonnull @NullableElements Iterator<T2> iterator2;
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a new zip iterator with the given left and right source iterators.
      */
-    public ZipIterator(@Nonnull @NonNullableElements List<Iterator<T>> iterators) {
-        this.iterators = iterators;
+    public NullableZipIterator(@Nonnull @NullableElements Iterator<T1> iterator1, @Nonnull @NullableElements Iterator<T2> iterator2) {
+        this.iterator1 = iterator1;
+        this.iterator2 = iterator2;
     }
     
     /* -------------------------------------------------- Iterator -------------------------------------------------- */
     
     @Override
     public boolean hasNext() {
-        for (int i = 0; i < iterators.size(); i++) {
-            if (iterators.get(index).hasNext()) {
-                return true;
-            }
-            index = (index + 1) % iterators.size();
-        }
-        return false;
+        return iterator1.hasNext() && iterator2.hasNext();
     }
     
     @Override
-    public T next() {
+    public NullablePair<T1, T2> next() {
         if (hasNext()) {
-            return iterators.get(index).next();
+            return NullablePair.with(iterator1.next(), iterator2.next());
         }
-        throw new NoSuchElementException("There are no more elements in this map iterator. This exception could have been prevented by calling 'hasNext()' before calling 'next()' on this iterator");
+        throw new NoSuchElementException("There are no more elements in this map iterator. This exception could have been prevented by calling 'hasNext()' before calling 'next()' on this iterator.");
     }
     
 }

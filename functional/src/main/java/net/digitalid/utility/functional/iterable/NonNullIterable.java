@@ -13,6 +13,7 @@ import net.digitalid.utility.functional.iterable.map.function.NonNullToNonNullUn
 import net.digitalid.utility.functional.iterable.map.function.NonNullToNullableUnaryFunction;
 import net.digitalid.utility.functional.iterable.zip.function.NonNullToNonNullBinaryFunction;
 import net.digitalid.utility.functional.iterable.zip.function.NonNullToNullableBinaryFunction;
+import net.digitalid.utility.tuples.NonNullablePair;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -22,7 +23,7 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  * holds and retrieves non-nullable elements.
  */
 @Stateless
-public abstract class FluentNonNullIterable<T> extends FluentIterable<T> {
+public abstract class NonNullIterable<T> extends NullableIterable<T> {
     
     /* -------------------------------------------------- Filter -------------------------------------------------- */
     
@@ -31,22 +32,22 @@ public abstract class FluentNonNullIterable<T> extends FluentIterable<T> {
      * Since we have a non-null iterable, this function is a no-op and returns itself.
      */
     @Override
-    public @Nonnull @NonNullableElements FluentNonNullIterable<T> filterNonNull() {
+    public @Nonnull @NonNullableElements NonNullIterable<T> filterNonNull() {
         return this;
     }
     
     /**
      * Applies a filter to a non-null iterable and returns a new iterable.
      */
-    public @Nonnull @NonNullableElements FluentNonNullIterable<T> filter(@Nonnull NonNullPredicate<T, Object> predicate) {
-        return new FluentNonNullFilterIterable<>(this, predicate, null);
+    public @Nonnull @NonNullableElements NonNullIterable<T> filter(@Nonnull NonNullPredicate<T, Object> predicate) {
+        return new FilterNonNullIterable<>(this, predicate, null);
     }
     
     /**
      * Applies a filter to a non-null iterable and returns a new iterable.
      */
-    public @Nonnull @NonNullableElements <A> FluentNonNullIterable<T> filter(@Nonnull NonNullPredicate<T, A> predicate, @Nullable A additionalInformation) {
-        return new FluentNonNullFilterIterable<>(this, predicate, additionalInformation);
+    public @Nonnull @NonNullableElements <A> NonNullIterable<T> filter(@Nonnull NonNullPredicate<T, A> predicate, @Nullable A additionalInformation) {
+        return new FilterNonNullIterable<>(this, predicate, additionalInformation);
     }
     
     /* -------------------------------------------------- Find -------------------------------------------------- */
@@ -56,7 +57,7 @@ public abstract class FluentNonNullIterable<T> extends FluentIterable<T> {
     }
     
     public @Nullable <A> T find(@Nonnull NonNullPredicate<T, A> predicate, @Nullable A additionalInformation) throws UnexpectedResultException {
-        final @Nonnull @NullableElements FluentIterable<T> iterable = filter(predicate, additionalInformation);
+        final @Nonnull @NullableElements NullableIterable<T> iterable = filter(predicate, additionalInformation);
         final @Nonnull @NullableElements Iterator<T> iterator = iterable.iterator();
         if (!iterator.hasNext()) {
             return null;
@@ -76,8 +77,8 @@ public abstract class FluentNonNullIterable<T> extends FluentIterable<T> {
      * The function maps non-null elements to non-null elements, therefore the resulting iterable
      * contains only non-nullable elements.
      */
-    public @Nonnull @NonNullableElements <E> FluentNonNullIterable<E> map(@Nonnull NonNullToNonNullUnaryFunction<? super T, E, ?> function) {
-        return new FluentNonNullMapIterable<>(this, function, null);
+    public @Nonnull @NonNullableElements <E> NonNullIterable<E> map(@Nonnull NonNullToNonNullUnaryFunction<? super T, E, ?> function) {
+        return new MapNonNullIterable<>(this, function, null);
     }
     
     /**
@@ -85,8 +86,8 @@ public abstract class FluentNonNullIterable<T> extends FluentIterable<T> {
      * The function maps non-null elements to nullable elements, therefore the resulting iterable
      * contains nullable elements.
      */
-    public @Nonnull @NullableElements <E> FluentIterable<E> map(@Nonnull NonNullToNullableUnaryFunction<T, E, ?> function) {
-        return new FluentMapIterable<>(this, function, null);
+    public @Nonnull @NullableElements <E> NullableIterable<E> map(@Nonnull NonNullToNullableUnaryFunction<T, E, ?> function) {
+        return new MapNullableIterable<>(this, function, null);
     }
     
     /**
@@ -94,8 +95,8 @@ public abstract class FluentNonNullIterable<T> extends FluentIterable<T> {
      * The function maps non-null elements to non-null elements, therefore the resulting iterable
      * contains only non-nullable elements.
      */   
-    public @Nonnull @NonNullableElements <E, A> FluentNonNullIterable<E> map(@Nonnull NonNullToNonNullUnaryFunction<T, E, A> function, @Nullable A additionalObject) {
-        return new FluentNonNullMapIterable<>(this, function, additionalObject);
+    public @Nonnull @NonNullableElements <E, A> NonNullIterable<E> map(@Nonnull NonNullToNonNullUnaryFunction<T, E, A> function, @Nullable A additionalObject) {
+        return new MapNonNullIterable<>(this, function, additionalObject);
     }
     
     /**
@@ -103,8 +104,8 @@ public abstract class FluentNonNullIterable<T> extends FluentIterable<T> {
      * The function maps non-null elements to nullable elements, therefore the resulting iterable
      * contains nullable elements.
      */
-    public @Nonnull @NullableElements <E, A> FluentIterable<E> map(@Nonnull NonNullToNullableUnaryFunction<T, E, A> function, @Nullable A additionalObject) {
-        return new FluentMapIterable<>(this, function, additionalObject);
+    public @Nonnull @NullableElements <E, A> NullableIterable<E> map(@Nonnull NonNullToNullableUnaryFunction<T, E, A> function, @Nullable A additionalObject) {
+        return new MapNullableIterable<>(this, function, additionalObject);
     }
     
     /* -------------------------------------------------- Reduce -------------------------------------------------- */
@@ -115,7 +116,7 @@ public abstract class FluentNonNullIterable<T> extends FluentIterable<T> {
      * or an empty element if we are at the beginning, and the second is the next element in the iterable.
      * The return value might be null.
      */
-    public @Nullable T reduce(@Nonnull NonNullToNullableBinaryFunction<T, T> function) {
+    public @Nullable T reduce(@Nonnull NonNullToNullableBinaryFunction<T, T, Object> function) {
         return reduceInternal(function);
     }
     
@@ -125,27 +126,36 @@ public abstract class FluentNonNullIterable<T> extends FluentIterable<T> {
      * or an empty element if we are at the beginning, and the second is the next element in the iterable.
      * The return value cannot be null.
      */
-    public @Nonnull T reduce(@Nonnull NonNullToNonNullBinaryFunction<T, T> function) {
+    public @Nonnull T reduce(@Nonnull NonNullToNonNullBinaryFunction<T, T, Object> function) {
         @Nullable T reducedValue = reduceInternal(function);
         assert reducedValue != null;
         final @Nonnull T result = reducedValue;
         return result;
     }
     
+    /* -------------------------------------------------- Zip -------------------------------------------------- */
+    
+    /**
+     * Zips this iterable with another iterable.
+     */
+    public @Nonnull @NullableElements <T2> NonNullableIterable<NonNullablePair<T,T2>> zip(@Nonnull Iterable<T2> iterable) {
+        return new ZipNonNullIterable<>(this, iterable);
+    } 
+    
     /* -------------------------------------------------- Combine -------------------------------------------------- */
     
     /**
      * Combines this iterable with another iterable.
      */
-    public @Nonnull @NonNullableElements FluentNonNullIterable<T> combine(@Nonnull Iterable<T>... iterables) {
+    public @Nonnull @NonNullableElements NonNullIterable<T> combine(@Nonnull Iterable<T>... iterables) {
         final @Nonnull @NonNullableElements List<Iterable<T>> combiningIterables = new ArrayList<>();
         combiningIterables.add(this);
         for (@Nonnull Iterable<T> iterable : iterables) {
             combiningIterables.add(iterable);
         }
-        return new FluentNonNullCombineIterable<>(combiningIterables);
+        return new CombineNonNullIterable<>(combiningIterables);
     }
-    // TODO: implements zip and combine. The only difference to the FluentIterable.zip() and FluentIterable.combine() is that the FluentNonNullIterable may return a FluentNonNullIterable if the given iterables are also non-null iterables.
+    // TODO: implements zip and combine. The only difference to the NullableIterable.zip() and NullableIterable.combine() is that the NonNullIterable may return a NonNullIterable if the given iterables are also non-null iterables.
     
     public @Nonnull @NonNullableElements List<T> toList() {
         final @Nonnull @NonNullableElements List<T> list = new ArrayList<>();

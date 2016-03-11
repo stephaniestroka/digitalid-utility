@@ -10,8 +10,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 
-import net.digitalid.utility.functional.iterable.FluentIterable;
-import net.digitalid.utility.functional.iterable.FluentNonNullIterable;
+import net.digitalid.utility.functional.iterable.NullableIterable;
+import net.digitalid.utility.functional.iterable.NonNullIterable;
 import net.digitalid.utility.functional.iterable.filter.predicate.NonNullPredicate;
 import net.digitalid.utility.functional.iterable.map.function.NonNullToNonNullUnaryFunction;
 import net.digitalid.utility.generator.BuilderGenerator;
@@ -145,16 +145,27 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         return indexedMethods;
     }
     
-    protected @Nonnull @NonNullableElements FluentNonNullIterable<MethodInformation> getMethodInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
-        return FluentIterable.ofNonNullElements(javax.lang.model.util.ElementFilter.methodsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))).map(methodInformationFunction, containingType);
+    protected @Nonnull @NonNullableElements NonNullIterable<MethodInformation> getMethodInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
+        return NullableIterable.ofNonNullElements(javax.lang.model.util.ElementFilter.methodsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))).map(methodInformationFunction, containingType);
     }
+    
+    /* -------------------------------------------------- Utility -------------------------------------------------- */
+    
+    protected static @Nonnull NonNullToNonNullUnaryFunction<? super RepresentingFieldInformation, RepresentingFieldInformation, Object> castToRepresentingFieldInformation = new NonNullToNonNullUnaryFunction<RepresentingFieldInformation, RepresentingFieldInformation, Object>() {
+        
+        @Override 
+        public @Nonnull RepresentingFieldInformation apply(@Nonnull RepresentingFieldInformation element, @Nullable Object additionalInformation) {
+            return element;
+        }
+        
+    };
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     protected TypeInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
         super(typeElement, typeElement.asType(), containingType);
         
-        final @Nonnull FluentNonNullIterable<MethodInformation> methodInformation = getMethodInformation(typeElement, containingType);
+        final @Nonnull NonNullIterable<MethodInformation> methodInformation = getMethodInformation(typeElement, containingType);
         
         this.abstractGetters = indexMethodInformation(methodInformation.filter(abstractGetterPredicate));
     

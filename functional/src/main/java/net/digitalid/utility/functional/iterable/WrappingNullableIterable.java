@@ -12,7 +12,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * Wraps an ordinary iterable into a fluent iterable.
  */
 @Immutable
-class WrappingFluentIterable<T> extends FluentIterable<T> {
+class WrappingNullableIterable<T> extends NullableIterable<T> {
     
     /**
      * The original iterable.
@@ -22,7 +22,7 @@ class WrappingFluentIterable<T> extends FluentIterable<T> {
     /**
      * Creates a wrapper around the original iterable.
      */
-    WrappingFluentIterable(@Nonnull @NullableElements Iterable<T> iterable) {
+    WrappingNullableIterable(@Nonnull @NullableElements Iterable<T> iterable) {
         this.iterable = iterable;
     }
     

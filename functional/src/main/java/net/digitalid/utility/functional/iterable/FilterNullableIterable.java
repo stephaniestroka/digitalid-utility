@@ -15,7 +15,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * a given predicate.
  */
 @Immutable
-class FluentFilterIterable<T, A> extends FluentIterable<T> {
+class FilterNullableIterable<T, A> extends NullableIterable<T> {
     
     /* -------------------------------------------------- Final Fields -------------------------------------------------- */
     
@@ -28,7 +28,7 @@ class FluentFilterIterable<T, A> extends FluentIterable<T> {
     /**
      * The iterator which serves as a source for the elements.
      */
-    private final @Nonnull @NullableElements FluentIterable<T> iterable;
+    private final @Nonnull @NullableElements NullableIterable<T> iterable;
     
     private final @Nullable A additionalInformation;
     
@@ -37,7 +37,7 @@ class FluentFilterIterable<T, A> extends FluentIterable<T> {
     /**
      * Creates a new fluent filter iterable, which implements a filter with the given predicate on the iterator.
      */
-    protected FluentFilterIterable(@Nonnull @NullableElements FluentIterable<T> iterable, @Nonnull NullablePredicate<T, A> predicate, @Nullable A additionalInformation) {
+    protected FilterNullableIterable(@Nonnull @NullableElements NullableIterable<T> iterable, @Nonnull NullablePredicate<T, A> predicate, @Nullable A additionalInformation) {
         this.iterable = iterable;
         this.predicate = predicate;
         this.additionalInformation = additionalInformation;

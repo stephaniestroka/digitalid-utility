@@ -11,8 +11,8 @@ import javax.lang.model.type.DeclaredType;
 
 import net.digitalid.utility.exceptions.ConformityViolation;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
-import net.digitalid.utility.functional.iterable.FluentIterable;
-import net.digitalid.utility.functional.iterable.FluentNonNullIterable;
+import net.digitalid.utility.functional.iterable.NonNullIterable;
+import net.digitalid.utility.functional.iterable.NullableIterable;
 import net.digitalid.utility.functional.iterable.exceptions.UnexpectedResultException;
 import net.digitalid.utility.functional.iterable.filter.predicate.NonNullPredicate;
 import net.digitalid.utility.functional.iterable.map.function.NonNullToNonNullUnaryFunction;
@@ -27,8 +27,8 @@ public class FieldInformationFactory {
     
     /* -------------------------------------------------- Fields as Variable Elements -------------------------------------------------- */
     
-    private static @Nonnull @NonNullableElements FluentNonNullIterable<VariableElement> getFields(@Nonnull TypeElement typeElement) {
-        return FluentIterable.ofNonNullElements(javax.lang.model.util.ElementFilter.fieldsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement)));
+    private static @Nonnull @NonNullableElements NonNullIterable<VariableElement> getFields(@Nonnull TypeElement typeElement) {
+        return NullableIterable.ofNonNullElements(javax.lang.model.util.ElementFilter.fieldsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement)));
     }
     
     private static @Nonnull NonNullPredicate<VariableElement, String> variableElementNameMatcher = new NonNullPredicate<VariableElement, String>() {
@@ -52,7 +52,7 @@ public class FieldInformationFactory {
         
     };
     
-    private static @Nonnull MethodInformation getGetterOf(@Nonnull String fieldName, @Nonnull @NonNullableElements FluentNonNullIterable<MethodInformation> methodsOfType) {
+    private static @Nonnull MethodInformation getGetterOf(@Nonnull String fieldName, @Nonnull @NonNullableElements NonNullIterable<MethodInformation> methodsOfType) {
         final @Nullable MethodInformation getter;
         try {
             getter = methodsOfType.find(getterForFieldMatcher, fieldName);
@@ -75,7 +75,7 @@ public class FieldInformationFactory {
         
     };   
     
-    private static @Nullable MethodInformation getSetterOf(@Nonnull String fieldName, @Nonnull @NonNullableElements FluentNonNullIterable<MethodInformation> methodsOfType) {
+    private static @Nullable MethodInformation getSetterOf(@Nonnull String fieldName, @Nonnull @NonNullableElements NonNullIterable<MethodInformation> methodsOfType) {
         try {
             return methodsOfType.find(setterForFieldMatcher, fieldName);
         } catch (UnexpectedResultException e) {
@@ -85,13 +85,13 @@ public class FieldInformationFactory {
     
     private static class AdditionalInformation {
         
-        final @Nonnull @NonNullableElements FluentNonNullIterable<VariableElement> fields;
+        final @Nonnull @NonNullableElements NonNullIterable<VariableElement> fields;
         
         final @Nonnull DeclaredType containingType;
         
-        final @Nonnull @NonNullableElements FluentNonNullIterable<MethodInformation> methodsOfType;
+        final @Nonnull @NonNullableElements NonNullIterable<MethodInformation> methodsOfType;
         
-        AdditionalInformation(@Nonnull @NonNullableElements FluentNonNullIterable<VariableElement> fields, @Nonnull DeclaredType containingType, @Nonnull @NonNullableElements FluentNonNullIterable<MethodInformation> methodsOfType) {
+        AdditionalInformation(@Nonnull @NonNullableElements NonNullIterable<VariableElement> fields, @Nonnull DeclaredType containingType, @Nonnull @NonNullableElements NonNullIterable<MethodInformation> methodsOfType) {
             this.fields = fields;
             this.containingType = containingType;
             this.methodsOfType = methodsOfType;
@@ -105,9 +105,9 @@ public class FieldInformationFactory {
         public @Nonnull ParameterBasedFieldInformation apply(@Nonnull VariableElement representingParameter, @Nullable AdditionalInformation additionalInformation) {
             assert additionalInformation != null;
             
-            final @Nonnull @NonNullableElements FluentNonNullIterable<VariableElement> fields = additionalInformation.fields;
+            final @Nonnull @NonNullableElements NonNullIterable<VariableElement> fields = additionalInformation.fields;
             final @Nonnull DeclaredType containingType = additionalInformation.containingType;
-            final @Nonnull @NonNullableElements FluentNonNullIterable<MethodInformation> methodsOfType = additionalInformation.methodsOfType;
+            final @Nonnull @NonNullableElements NonNullIterable<MethodInformation> methodsOfType = additionalInformation.methodsOfType;
             
             final @Nonnull String parameterName = representingParameter.getSimpleName().toString();
             @Nullable VariableElement field;
@@ -131,15 +131,15 @@ public class FieldInformationFactory {
         
     };
     
-    private static @Nonnull @NonNullableElements FluentNonNullIterable<ParameterBasedFieldInformation> getParameterBasedFieldInformation(@Nonnull @NonNullableElements FluentNonNullIterable<VariableElement> fields, @Nonnull FluentNonNullIterable<VariableElement> representingParameters, @Nonnull DeclaredType containingType, @Nonnull @NonNullableElements FluentNonNullIterable<MethodInformation> methodsOfType) {
+    private static @Nonnull @NonNullableElements NonNullIterable<ParameterBasedFieldInformation> getParameterBasedFieldInformation(@Nonnull @NonNullableElements NonNullIterable<VariableElement> fields, @Nonnull NonNullIterable<VariableElement> representingParameters, @Nonnull DeclaredType containingType, @Nonnull @NonNullableElements NonNullIterable<MethodInformation> methodsOfType) {
         
         return representingParameters.map(parametersToFieldFunction, new AdditionalInformation(fields, containingType, methodsOfType));
     }
     
-    public static @Nonnull @NonNullableElements List<ParameterBasedFieldInformation> getParameterBasedFieldInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType, @Nonnull FluentNonNullIterable<VariableElement> representingParameters, @Nonnull @NonNullableElements FluentNonNullIterable<MethodInformation> methodsOfType) {
+    public static @Nonnull @NonNullableElements List<ParameterBasedFieldInformation> getParameterBasedFieldInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType, @Nonnull NonNullIterable<VariableElement> representingParameters, @Nonnull @NonNullableElements NonNullIterable<MethodInformation> methodsOfType) {
     
-        final @Nonnull @NonNullableElements FluentNonNullIterable<VariableElement> fields = getFields(typeElement);
-        final @Nonnull @NonNullableElements FluentNonNullIterable<ParameterBasedFieldInformation> parameterBasedFieldInformation = getParameterBasedFieldInformation(fields, representingParameters, containingType, methodsOfType);
+        final @Nonnull @NonNullableElements NonNullIterable<VariableElement> fields = getFields(typeElement);
+        final @Nonnull @NonNullableElements NonNullIterable<ParameterBasedFieldInformation> parameterBasedFieldInformation = getParameterBasedFieldInformation(fields, representingParameters, containingType, methodsOfType);
         return parameterBasedFieldInformation.toList();
     }
     
@@ -163,10 +163,10 @@ public class FieldInformationFactory {
         
     };
     
-    private static final @Nonnull NonNullToNonNullUnaryFunction<MethodInformation, GeneratedFieldInformation, FluentNonNullIterable<MethodInformation>> getterToFieldFunction = new NonNullToNonNullUnaryFunction<MethodInformation, GeneratedFieldInformation, FluentNonNullIterable<MethodInformation>>() {
+    private static final @Nonnull NonNullToNonNullUnaryFunction<MethodInformation, GeneratedFieldInformation, NonNullIterable<MethodInformation>> getterToFieldFunction = new NonNullToNonNullUnaryFunction<MethodInformation, GeneratedFieldInformation, NonNullIterable<MethodInformation>>() {
         
         @Override
-        public @Nonnull GeneratedFieldInformation apply(@Nonnull MethodInformation element, @Nullable FluentNonNullIterable<MethodInformation> methodsOfType) {
+        public @Nonnull GeneratedFieldInformation apply(@Nonnull MethodInformation element, @Nullable NonNullIterable<MethodInformation> methodsOfType) {
             assert methodsOfType != null;
             
             final @Nullable MethodInformation setter;
@@ -180,7 +180,7 @@ public class FieldInformationFactory {
         
     };
     
-    public static @Nonnull @NonNullableElements FluentNonNullIterable<GeneratedFieldInformation> getGeneratedFieldInformation(@Nonnull @NonNullableElements FluentNonNullIterable<MethodInformation> methodsOfType) {
+    public static @Nonnull @NonNullableElements NonNullIterable<GeneratedFieldInformation> getGeneratedFieldInformation(@Nonnull @NonNullableElements NonNullIterable<MethodInformation> methodsOfType) {
         return methodsOfType.filter(abstractGetterMatcher).map(getterToFieldFunction, methodsOfType);
     }
     
@@ -205,22 +205,22 @@ public class FieldInformationFactory {
         
     };
     
-    private static @Nonnull @NonNullableElements FluentNonNullIterable<DeclaredFieldInformation> getDirectlyAccessibleFieldInformation(@Nonnull @NonNullableElements FluentNonNullIterable<VariableElement> fields, @Nonnull DeclaredType containingType) {
+    private static @Nonnull @NonNullableElements NonNullIterable<DeclaredFieldInformation> getDirectlyAccessibleFieldInformation(@Nonnull @NonNullableElements NonNullIterable<VariableElement> fields, @Nonnull DeclaredType containingType) {
         return fields.filter(accessibleFieldMatcher).map(toDeclaredFieldFunction, containingType);
     }
     
-    public static @Nonnull @NonNullableElements FluentIterable<DeclaredFieldInformation> getDirectlyAccessibleFieldInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
+    public static @Nonnull @NonNullableElements NullableIterable<DeclaredFieldInformation> getDirectlyAccessibleFieldInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
     
-        final @Nonnull @NonNullableElements FluentNonNullIterable<VariableElement> fields = getFields(typeElement);
+        final @Nonnull @NonNullableElements NonNullIterable<VariableElement> fields = getFields(typeElement);
         return getDirectlyAccessibleFieldInformation(fields, containingType);
     }
     
    
 /*  TODO: remove this
-    private static @Nonnull NonNullPredicate<VariableElement, FluentNonNullIterable<VariableElement>> notRepresentingAndAccessibleFieldMatcher = new NonNullPredicate<VariableElement, FluentNonNullIterable<VariableElement>>() {
+    private static @Nonnull NonNullPredicate<VariableElement, NonNullIterable<VariableElement>> notRepresentingAndAccessibleFieldMatcher = new NonNullPredicate<VariableElement, NonNullIterable<VariableElement>>() {
         
         @Override
-        public boolean apply(@Nonnull VariableElement field, @Nullable FluentNonNullIterable<VariableElement> representingParameters) {
+        public boolean apply(@Nonnull VariableElement field, @Nullable NonNullIterable<VariableElement> representingParameters) {
             assert representingParameters != null;
             try {
                 return !field.getModifiers().contains(Modifier.PRIVATE) && (representingParameters.find(variableElementNameMatcher, field.getSimpleName().toString()) == null);
@@ -231,7 +231,7 @@ public class FieldInformationFactory {
         
     };
     
-    private static @Nonnull @NonNullableElements FluentNonNullIterable<DeclaredFieldInformation> getDeclaredFieldInformation(@Nonnull @NonNullableElements FluentNonNullIterable<VariableElement> fields, @Nonnull FluentNonNullIterable<VariableElement> representingParameters, @Nonnull DeclaredType containingType) {
+    private static @Nonnull @NonNullableElements NonNullIterable<DeclaredFieldInformation> getDeclaredFieldInformation(@Nonnull @NonNullableElements NonNullIterable<VariableElement> fields, @Nonnull NonNullIterable<VariableElement> representingParameters, @Nonnull DeclaredType containingType) {
          return fields.filter(notRepresentingAndAccessibleFieldMatcher, representingParameters).map(toDeclaredFieldFunction, containingType);
     }
     
@@ -254,14 +254,14 @@ public class FieldInformationFactory {
     };
     
     @SuppressWarnings("unchecked")
-    public static @Nonnull @NonNullableElements List<FieldInformation> getFieldInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType, @Nonnull FluentNonNullIterable<VariableElement> representingParameters, @Nonnull @NonNullableElements FluentNonNullIterable<MethodInformation> methodsOfType) {
-        final @Nonnull @NonNullableElements FluentNonNullIterable<VariableElement> fields = getFields(typeElement);
-        final @Nonnull @NonNullableElements FluentNonNullIterable<ParameterBasedFieldInformation> parameterBasedFieldInformation = getParameterBasedFieldInformation(fields, representingParameters, containingType, methodsOfType);
-        final @Nonnull @NonNullableElements FluentNonNullIterable<GeneratedFieldInformation> generatedFieldInformation = getGeneratedFieldInformation(methodsOfType);
+    public static @Nonnull @NonNullableElements List<FieldInformation> getFieldInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType, @Nonnull NonNullIterable<VariableElement> representingParameters, @Nonnull @NonNullableElements NonNullIterable<MethodInformation> methodsOfType) {
+        final @Nonnull @NonNullableElements NonNullIterable<VariableElement> fields = getFields(typeElement);
+        final @Nonnull @NonNullableElements NonNullIterable<ParameterBasedFieldInformation> parameterBasedFieldInformation = getParameterBasedFieldInformation(fields, representingParameters, containingType, methodsOfType);
+        final @Nonnull @NonNullableElements NonNullIterable<GeneratedFieldInformation> generatedFieldInformation = getGeneratedFieldInformation(methodsOfType);
         
-        final @Nonnull @NonNullableElements FluentNonNullIterable<RepresentingFieldInformation> representingFields = FluentIterable.ofNonNullElements(parameterBasedFieldInformation).map(castToRepresentingFieldInformation).combine(generatedFieldInformation.map(castToRepresentingFieldInformation));
+        final @Nonnull @NonNullableElements NonNullIterable<RepresentingFieldInformation> representingFields = NullableIterable.ofNonNullElements(parameterBasedFieldInformation).map(castToRepresentingFieldInformation).combine(generatedFieldInformation.map(castToRepresentingFieldInformation));
         
-        final @Nonnull @NonNullableElements FluentNonNullIterable<DeclaredFieldInformation> declaredFieldInformation = getDeclaredFieldInformation(fields, representingParameters, containingType);
+        final @Nonnull @NonNullableElements NonNullIterable<DeclaredFieldInformation> declaredFieldInformation = getDeclaredFieldInformation(fields, representingParameters, containingType);
     
         return representingFields.map(castToFieldInformation).combine(declaredFieldInformation.map(castToFieldInformation)).toList();
     }
