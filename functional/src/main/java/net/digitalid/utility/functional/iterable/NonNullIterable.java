@@ -138,7 +138,7 @@ public abstract class NonNullIterable<T> extends NullableIterable<T> {
     /**
      * Zips this iterable with another iterable.
      */
-    public @Nonnull @NullableElements <T2> NonNullableIterable<NonNullablePair<T,T2>> zip(@Nonnull Iterable<T2> iterable) {
+    public @Nonnull @NonNullableElements <T2> NonNullIterable<NonNullablePair<T,T2>> zipNonNull(@Nonnull @NonNullableElements Iterable<T2> iterable) {
         return new ZipNonNullIterable<>(this, iterable);
     } 
     
