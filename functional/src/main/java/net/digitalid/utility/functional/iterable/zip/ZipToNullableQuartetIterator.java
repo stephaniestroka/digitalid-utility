@@ -6,7 +6,8 @@ import java.util.NoSuchElementException;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.exceptions.UnexpectedValueException;
-import net.digitalid.utility.tuples.NullableQuartet;
+import net.digitalid.utility.tuples.quartet.NullableQuartet;
+import net.digitalid.utility.tuples.quartet.Quartet;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -72,7 +73,7 @@ public class ZipToNullableQuartetIterator<T1, T2, T3, T4> implements Iterator<Nu
     @Override
     public NullableQuartet<T1, T2, T3, T4> next() {
         if (hasNext()) {
-            return NullableQuartet.with(ZipIteratorUtility.getNextOrNull(iterator1), ZipIteratorUtility.getNextOrNull(iterator2), ZipIteratorUtility.getNextOrNull(iterator3), ZipIteratorUtility.getNextOrNull(iterator4));
+            return Quartet.withNullable(ZipIteratorUtility.getNextOrNull(iterator1), ZipIteratorUtility.getNextOrNull(iterator2), ZipIteratorUtility.getNextOrNull(iterator3), ZipIteratorUtility.getNextOrNull(iterator4));
         }
         throw new NoSuchElementException("There are no more elements in this zip iterator. This exception could have been prevented by calling 'hasNext()' before calling 'next()' on this iterator.");
     }

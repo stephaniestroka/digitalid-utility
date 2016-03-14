@@ -5,7 +5,8 @@ import java.util.NoSuchElementException;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.tuples.NonNullableTriplet;
+import net.digitalid.utility.tuples.triplet.NonNullableTriplet;
+import net.digitalid.utility.tuples.triplet.Triplet;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -51,7 +52,7 @@ public class ZipToNonNullableTripletIterator<T1, T2, T3> implements Iterator<Non
     @Override
     public NonNullableTriplet<T1, T2, T3> next() {
         if (hasNext()) {
-            return NonNullableTriplet.with(iterator1.next(), iterator2.next(), iterator3.next());
+            return Triplet.withNonNullable(iterator1.next(), iterator2.next(), iterator3.next());
         }
         throw new NoSuchElementException("There are no more elements in this zip iterator. This exception could have been prevented by calling 'hasNext()' before calling 'next()' on this iterator.");
     }

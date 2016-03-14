@@ -13,12 +13,9 @@ import net.digitalid.utility.functional.iterable.map.function.NonNullToNonNullUn
 import net.digitalid.utility.functional.iterable.map.function.NonNullToNullableUnaryFunction;
 import net.digitalid.utility.functional.iterable.zip.function.NonNullToNonNullBinaryFunction;
 import net.digitalid.utility.functional.iterable.zip.function.NonNullToNullableBinaryFunction;
-import net.digitalid.utility.tuples.NonNullablePair;
-import net.digitalid.utility.tuples.NonNullableQuartet;
-import net.digitalid.utility.tuples.NonNullableTriplet;
-import net.digitalid.utility.tuples.NullablePair;
-import net.digitalid.utility.tuples.NullableQuartet;
-import net.digitalid.utility.tuples.NullableTriplet;
+import net.digitalid.utility.tuples.pair.NonNullablePair;
+import net.digitalid.utility.tuples.quartet.NonNullableQuartet;
+import net.digitalid.utility.tuples.triplet.NonNullableTriplet;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Stateless;

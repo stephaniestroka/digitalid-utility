@@ -1,4 +1,4 @@
 /**
- * Provides the root class from which all custom classes inherit.
+ * Provides the root types from which all custom types inherit.
  */
 package net.digitalid.utility.rootclass;

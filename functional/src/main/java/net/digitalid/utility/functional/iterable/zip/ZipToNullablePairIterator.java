@@ -6,7 +6,8 @@ import java.util.NoSuchElementException;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.exceptions.UnexpectedValueException;
-import net.digitalid.utility.tuples.NullablePair;
+import net.digitalid.utility.tuples.pair.NullablePair;
+import net.digitalid.utility.tuples.pair.Pair;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -62,7 +63,7 @@ public class ZipToNullablePairIterator<T1, T2> implements Iterator<NullablePair<
     @Override
     public NullablePair<T1, T2> next() {
         if (hasNext()) {
-            return NullablePair.with(ZipIteratorUtility.getNextOrNull(iterator1), ZipIteratorUtility.getNextOrNull(iterator2));
+            return Pair.withNullable(ZipIteratorUtility.getNextOrNull(iterator1), ZipIteratorUtility.getNextOrNull(iterator2));
         }
         throw new NoSuchElementException("There are no more elements in this zip iterator. This exception could have been prevented by calling 'hasNext()' before calling 'next()' on this iterator.");
     }
