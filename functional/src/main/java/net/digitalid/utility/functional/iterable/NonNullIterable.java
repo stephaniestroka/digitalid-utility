@@ -79,8 +79,8 @@ public abstract class NonNullIterable<T> extends NullableIterable<T> {
      * The function maps non-null elements to non-null elements, therefore the resulting iterable
      * contains only non-nullable elements.
      */
-    public @Nonnull @NonNullableElements <E> NonNullIterable<E> map(@Nonnull NonNullToNonNullUnaryFunction<? super T, E, ?> function) {
-        return new MapNonNullIterable<>(this, function, null);
+    public @Nonnull @NonNullableElements <E> NonNullIterable<E> map(@Nonnull NonNullToNonNullUnaryFunction<? super T, E> function) {
+        return new MapNonNullIterable<>(this, function);
     }
     
     /**
@@ -88,26 +88,8 @@ public abstract class NonNullIterable<T> extends NullableIterable<T> {
      * The function maps non-null elements to nullable elements, therefore the resulting iterable
      * contains nullable elements.
      */
-    public @Nonnull @NullableElements <E> NullableIterable<E> map(@Nonnull NonNullToNullableUnaryFunction<T, E, ?> function) {
-        return new MapNullableIterable<>(this, function, null);
-    }
-    
-    /**
-     * Takes a non-null iterable and maps its elements to a new iterable by passing each element through a given function.
-     * The function maps non-null elements to non-null elements, therefore the resulting iterable
-     * contains only non-nullable elements.
-     */   
-    public @Nonnull @NonNullableElements <E, A> NonNullIterable<E> map(@Nonnull NonNullToNonNullUnaryFunction<T, E, A> function, @Nullable A additionalObject) {
-        return new MapNonNullIterable<>(this, function, additionalObject);
-    }
-    
-    /**
-     * Takes a non-null iterable and maps its elements to a new iterable by passing each element through a given function.
-     * The function maps non-null elements to nullable elements, therefore the resulting iterable
-     * contains nullable elements.
-     */
-    public @Nonnull @NullableElements <E, A> NullableIterable<E> map(@Nonnull NonNullToNullableUnaryFunction<T, E, A> function, @Nullable A additionalObject) {
-        return new MapNullableIterable<>(this, function, additionalObject);
+    public @Nonnull @NullableElements <E> NullableIterable<E> map(@Nonnull NonNullToNullableUnaryFunction<T, E> function) {
+        return new MapNullableIterable<>(this, function);
     }
     
     /* -------------------------------------------------- Reduce -------------------------------------------------- */
@@ -118,7 +100,7 @@ public abstract class NonNullIterable<T> extends NullableIterable<T> {
      * or an empty element if we are at the beginning, and the second is the next element in the iterable.
      * The return value might be null.
      */
-    public @Nullable T reduce(@Nonnull NonNullToNullableBinaryFunction<T, T, Object> function) {
+    public @Nullable T reduce(@Nonnull NonNullToNullableBinaryFunction<T, T, T> function) {
         return reduceInternal(function);
     }
     
@@ -128,7 +110,7 @@ public abstract class NonNullIterable<T> extends NullableIterable<T> {
      * or an empty element if we are at the beginning, and the second is the next element in the iterable.
      * The return value cannot be null.
      */
-    public @Nonnull T reduce(@Nonnull NonNullToNonNullBinaryFunction<T, T, Object> function) {
+    public @Nonnull T reduce(@Nonnull NonNullToNonNullBinaryFunction<T, T, T> function) {
         @Nullable T reducedValue = reduceInternal(function);
         assert reducedValue != null;
         final @Nonnull T result = reducedValue;

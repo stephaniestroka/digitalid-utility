@@ -7,16 +7,14 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
  * The function interface which maps one element of type &lt;I&gt; to an element of type &lt;O&gt;.
- * 
- * @param <A> additional information that might be required when applying the function.
  */
 @Stateless
-public interface UnaryFunction<I, O, A> {
+public interface UnaryFunction<I, O> {
     
     /**
      * Applies the function on an element of the type &lt;I&gt; and delivers a result of type &lt;O&gt;.
      */
     @Pure
-    public O apply(I element, @Nullable A additionalInformation);
+    public O apply(I element);
     
 }

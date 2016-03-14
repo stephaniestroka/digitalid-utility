@@ -9,12 +9,12 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  * The function interface which maps one or more elements of type &lt;I&gt; to elements of type &lt;O&gt;.
  */
 @Stateless
-public interface ToNullableUnaryFunction<I, O, A> extends UnaryFunction<I, O, A> {
+public interface ToNullableUnaryFunction<I, O> extends UnaryFunction<I, O> {
     
     /**
      * Applies the function on elements of the type &lt;I&gt; and delivers a result of type &lt;O&gt;.
      */
     @Pure
-    public @Nullable O apply(I element, @Nullable A additionalInformation);
+    public @Nullable O apply(I element);
     
 }

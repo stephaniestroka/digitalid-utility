@@ -1,7 +1,8 @@
-package net.digitalid.utility.functional.iterable.filter.predicate;
+package net.digitalid.utility.functional.iterable.filter.predicate.implementation;
 
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.functional.iterable.filter.predicate.NullablePredicate;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 

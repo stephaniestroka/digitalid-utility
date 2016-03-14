@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.functional.iterable.exceptions.UnexpectedResultException;
-import net.digitalid.utility.functional.iterable.filter.predicate.FilterNonNullPredicate;
+import net.digitalid.utility.functional.iterable.filter.predicate.implementation.FilterNonNullPredicate;
 import net.digitalid.utility.functional.iterable.filter.predicate.NullablePredicate;
 import net.digitalid.utility.functional.iterable.map.function.NullableToNonNullUnaryFunction;
 import net.digitalid.utility.functional.iterable.map.function.NullableToNullableUnaryFunction;
@@ -95,29 +95,15 @@ public abstract class NullableIterable<T> implements Iterable<T> {
     /**
      * Maps the elements of this iterable to elements that are non-null, using a given function.
      */
-    public @Nonnull @NonNullableElements <E> NonNullIterable<E> map(@Nonnull NullableToNonNullUnaryFunction<T, E, ?> function) {
-        return new MapNonNullIterable<>(this, function, null);
+    public @Nonnull @NonNullableElements <E> NonNullIterable<E> map(@Nonnull NullableToNonNullUnaryFunction<T, E> function) {
+        return new MapNonNullIterable<>(this, function);
     }
     
     /**
      * Maps the elements of this iterable to elements that are nullable, using a given function.
      */
-    public @Nonnull @NullableElements <E> NullableIterable<E> map(@Nonnull NullableToNullableUnaryFunction<T, E, ?> function) {
-        return new MapNullableIterable<>(this, function, null);
-    }
-    
-        /**
-     * Maps the elements of this iterable to elements that are non-null, using a given function.
-     */
-    public @Nonnull @NonNullableElements <E, A> NonNullIterable<E> map(@Nonnull NullableToNonNullUnaryFunction<T, E, A> function, A additionalInformation) {
-        return new MapNonNullIterable<>(this, function, additionalInformation);
-    }
-    
-    /**
-     * Maps the elements of this iterable to elements that are nullable, using a given function.
-     */
-    public @Nonnull @NullableElements <E, A> NullableIterable<E> map(@Nonnull NullableToNullableUnaryFunction<T, E, A> function, A additionalInformation) {
-        return new MapNullableIterable<>(this, function, additionalInformation);
+    public @Nonnull @NullableElements <E> NullableIterable<E> map(@Nonnull NullableToNullableUnaryFunction<T, E> function) {
+        return new MapNullableIterable<>(this, function);
     }
     
     /* -------------------------------------------------- Reduce -------------------------------------------------- */
@@ -126,14 +112,14 @@ public abstract class NullableIterable<T> implements Iterable<T> {
      * Reduces the iterable elements to a single element by applying a given function.
      */
     @SuppressWarnings("unchecked")
-    protected @Nullable T reduceInternal(@Nonnull BinaryFunction<T, T, Object> function) {
+    protected @Nullable T reduceInternal(@Nonnull BinaryFunction<T, T, T> function) {
         final @Nonnull @NullableElements Iterator<T> iterator = iterator();
         @Nullable T left = null;
         if (iterator.hasNext()) {
             left = iterator.next();
             while (iterator.hasNext()) {
                 @Nonnull T right = iterator.next();
-                left = function.apply(left, right, null);
+                left = function.apply(left, right);
             }
         }
         return left;
@@ -143,7 +129,7 @@ public abstract class NullableIterable<T> implements Iterable<T> {
      * Reduces the iterable elements to a single element by applying a given function.
      * The result may be null.
      */
-    public @Nullable T reduce(@Nonnull NullableToNullableBinaryFunction<T, T, Object> function) {
+    public @Nullable T reduce(@Nonnull NullableToNullableBinaryFunction<T, T, T> function) {
         return reduceInternal(function);
     }
     
@@ -151,7 +137,7 @@ public abstract class NullableIterable<T> implements Iterable<T> {
      * Reduces the iterable elements to a single element by applying a given function.
      * The result may not be null.
      */
-    public @Nonnull T reduce(@Nonnull NullableToNonNullBinaryFunction<T, T, Object> function) {
+    public @Nonnull T reduce(@Nonnull NullableToNonNullBinaryFunction<T, T, T> function) {
         @Nullable T reducedValue = reduceInternal(function);
         assert reducedValue != null;
         final @Nonnull T result = reducedValue;

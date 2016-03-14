@@ -10,13 +10,13 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  * Maps nullable elements to a non-null result by applying the implemented function.
  */
 @Stateless
-public abstract class NullableToNonNullUnaryFunction<I, O, A> implements ToNonNullUnaryFunction<I, O, A> {
+public abstract class NullableToNonNullUnaryFunction<I, O> implements ToNonNullUnaryFunction<I, O> {
     
     /**
      * Applies the function on nullable elements to produce a non-null result.
      */
     @Pure
     @Override
-    public abstract @Nonnull O apply(@Nullable I element, @Nullable A additionalInformation);
+    public abstract @Nonnull O apply(@Nullable I element);
     
 }

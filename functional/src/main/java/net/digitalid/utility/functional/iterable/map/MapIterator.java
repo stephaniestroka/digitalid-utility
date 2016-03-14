@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.digitalid.utility.functional.iterable.map.function.UnaryFunction;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -16,30 +15,27 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * Cannot be shared among multiple threads. 
  */
 @Mutable
-public class MapIterator<T, E, A> implements Iterator<E> {
+public class MapIterator<T, E> implements Iterator<E> {
     
     /**
      * The function which is used to transform elements from the original iterable to elements
      * of the new iterable.
      */
-    private final @Nonnull UnaryFunction<? super T, E, A> function;
+    private final @Nonnull UnaryFunction<? super T, E> function;
     
     /**
      * The iterator which serves as a source for the elements.
      */
     private final @Nonnull Iterator<T> iterator;
     
-    private final @Nullable A additionalInformation;
-    
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a new map iterator with the given source iterator and the given function.
      */
-    public MapIterator(@Nonnull @NonNullableElements Iterator<T> iterator, @Nonnull UnaryFunction<? super T, E, A> function, @Nullable A additionalInformation) {
+    public MapIterator(@Nonnull @NonNullableElements Iterator<T> iterator, @Nonnull UnaryFunction<? super T, E> function) {
         this.iterator = iterator;
         this.function = function;
-        this.additionalInformation = additionalInformation;
     }
     
     /* -------------------------------------------------- Iterator -------------------------------------------------- */
@@ -53,7 +49,7 @@ public class MapIterator<T, E, A> implements Iterator<E> {
     @SuppressWarnings("unchecked")
     public E next() {
         if (hasNext()) {
-            return function.apply(iterator.next(), additionalInformation);
+            return function.apply(iterator.next());
         }
         throw new NoSuchElementException("There are no more elements in this map iterator. This exception could have been prevented by calling 'hasNext()' before calling 'next()' on this iterator");
     }
