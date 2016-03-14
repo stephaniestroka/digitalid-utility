@@ -12,10 +12,13 @@ import net.digitalid.utility.functional.iterable.filter.predicate.FilterNonNullP
 import net.digitalid.utility.functional.iterable.filter.predicate.NullablePredicate;
 import net.digitalid.utility.functional.iterable.map.function.NullableToNonNullUnaryFunction;
 import net.digitalid.utility.functional.iterable.map.function.NullableToNullableUnaryFunction;
+import net.digitalid.utility.functional.iterable.zip.ZipStrategy;
 import net.digitalid.utility.functional.iterable.zip.function.BinaryFunction;
 import net.digitalid.utility.functional.iterable.zip.function.NullableToNonNullBinaryFunction;
 import net.digitalid.utility.functional.iterable.zip.function.NullableToNullableBinaryFunction;
 import net.digitalid.utility.tuples.NullablePair;
+import net.digitalid.utility.tuples.NullableQuartet;
+import net.digitalid.utility.tuples.NullableTriplet;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -160,9 +163,33 @@ public abstract class NullableIterable<T> implements Iterable<T> {
     /**
      * Zips this iterable with another iterable.
      */
-    public @Nonnull @NullableElements <T2> NullableIterable<NullablePair<T,T2>> zip(@Nonnull Iterable<T2> iterable) {
-        return new ZipNullableIterable<>(this, iterable);
+    public @Nonnull @NonNullableElements <T2> NonNullIterable<NullablePair<T,T2>> zip(@Nonnull @NullableElements Iterable<T2> iterable) {
+        return new ZipToNullablePairNonNullIterable<>(this, iterable);
     } 
+    
+    /**
+     * Zips this iterable with another non-nullable-elements iterable. An iterable of non-nullable pairs is returned.
+     * Elements exceeding shorter iterables are stored as null in the triplet.
+     */
+    public @Nonnull <T2> NonNullIterable<NullablePair<T,T2>> zipLongest(@Nonnull @NullableElements Iterable<T2> iterable) {
+        return new ZipToNullablePairNonNullIterable<>(this, iterable, ZipStrategy.LONGEST_SEQUENCE);
+    } 
+    
+    /**
+     * Zips this iterable with two other non-nullable-elements iterables. An iterable of non-nullable triplets is returned.
+     * Elements exceeding shorter iterables are stored as null in the triplet.
+     */
+    public @Nonnull <T2, T3> NonNullIterable<NullableTriplet<T,T2, T3>> zipLongest(@Nonnull @NonNullableElements Iterable<T2> iterable2, @Nonnull @NonNullableElements Iterable<T3> iterable3) {
+        return new ZipToNullableTripletNonNullIterable<>(this, iterable2, iterable3, ZipStrategy.LONGEST_SEQUENCE);
+    } 
+    
+    /**
+     * Zips this iterable with three other non-nullable-elements iterables. An iterable of non-nullable quartets is returned. 
+     * Elements exceeding shorter iterables are stored as null in the quartet.
+     */
+    public @Nonnull <T2, T3, T4> NonNullIterable<NullableQuartet<T,T2, T3, T4>> zipLongest(@Nonnull @NonNullableElements Iterable<T2> iterable2, @Nonnull @NonNullableElements Iterable<T3> iterable3, @Nonnull @NonNullableElements Iterable<T4> iterable4) {
+        return new ZipToNullableQuartetNonNullIterable<>(this, iterable2, iterable3, iterable4, ZipStrategy.LONGEST_SEQUENCE);
+    }
     
     /* -------------------------------------------------- Combine -------------------------------------------------- */
     

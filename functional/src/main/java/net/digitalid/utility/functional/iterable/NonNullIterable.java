@@ -14,6 +14,11 @@ import net.digitalid.utility.functional.iterable.map.function.NonNullToNullableU
 import net.digitalid.utility.functional.iterable.zip.function.NonNullToNonNullBinaryFunction;
 import net.digitalid.utility.functional.iterable.zip.function.NonNullToNullableBinaryFunction;
 import net.digitalid.utility.tuples.NonNullablePair;
+import net.digitalid.utility.tuples.NonNullableQuartet;
+import net.digitalid.utility.tuples.NonNullableTriplet;
+import net.digitalid.utility.tuples.NullablePair;
+import net.digitalid.utility.tuples.NullableQuartet;
+import net.digitalid.utility.tuples.NullableTriplet;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -136,11 +141,25 @@ public abstract class NonNullIterable<T> extends NullableIterable<T> {
     /* -------------------------------------------------- Zip -------------------------------------------------- */
     
     /**
-     * Zips this iterable with another iterable.
+     * Zips this iterable with another non-nullable-elements iterable. An iterable of non-nullable pairs is returned. Elements exceeding the shorter iterable are discarded.
      */
-    public @Nonnull @NonNullableElements <T2> NonNullIterable<NonNullablePair<T,T2>> zipNonNull(@Nonnull @NonNullableElements Iterable<T2> iterable) {
-        return new ZipNonNullIterable<>(this, iterable);
+    public @Nonnull <T2> NonNullIterable<NonNullablePair<T,T2>> zipNonNull(@Nonnull @NonNullableElements Iterable<T2> iterable) {
+        return new ZipToNonNullablePairNonNullIterable<>(this, iterable);
     } 
+    
+    /**
+     * Zips this iterable with two other non-nullable-elements iterables. An iterable of non-nullable triplets is returned. Elements exceeding the shorter iterable are discarded.
+     */
+    public @Nonnull <T2, T3> NonNullIterable<NonNullableTriplet<T,T2, T3>> zipNonNull(@Nonnull @NonNullableElements Iterable<T2> iterable2, @Nonnull @NonNullableElements Iterable<T3> iterable3) {
+        return new ZipToNonNullableTripletNonNullIterable<>(this, iterable2, iterable3);
+    } 
+    
+    /**
+     * Zips this iterable with three other non-nullable-elements iterables. An iterable of non-nullable quartets is returned. Elements exceeding the shorter iterable are discarded.
+     */
+    public @Nonnull <T2, T3, T4> NonNullIterable<NonNullableQuartet<T,T2, T3, T4>> zipNonNull(@Nonnull @NonNullableElements Iterable<T2> iterable2, @Nonnull @NonNullableElements Iterable<T3> iterable3, @Nonnull @NonNullableElements Iterable<T4> iterable4) {
+        return new ZipToNonNullableQuartetNonNullIterable<>(this, iterable2, iterable3, iterable4);
+    }
     
     /* -------------------------------------------------- Combine -------------------------------------------------- */
     
