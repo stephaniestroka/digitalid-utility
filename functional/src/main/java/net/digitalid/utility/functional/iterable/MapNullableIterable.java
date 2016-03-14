@@ -3,8 +3,8 @@ package net.digitalid.utility.functional.iterable;
 import java.util.Iterator;
 
 import net.digitalid.utility.functional.iterable.map.MapIterator;
-import net.digitalid.utility.functional.iterable.map.function.ToNullableUnaryFunction;
-import net.digitalid.utility.functional.iterable.map.function.UnaryFunction;
+import net.digitalid.utility.functional.function.unary.ToNullableUnaryFunction;
+import net.digitalid.utility.functional.function.unary.UnaryFunction;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;

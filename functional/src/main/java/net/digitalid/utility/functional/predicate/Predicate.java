@@ -1,4 +1,4 @@
-package net.digitalid.utility.functional.iterable.filter.predicate;
+package net.digitalid.utility.functional.predicate;
 
 import javax.annotation.Nullable;
 

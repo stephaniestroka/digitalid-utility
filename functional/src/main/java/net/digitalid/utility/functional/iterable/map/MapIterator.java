@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.functional.iterable.map.function.UnaryFunction;
+import net.digitalid.utility.functional.function.unary.UnaryFunction;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 

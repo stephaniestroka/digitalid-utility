@@ -8,11 +8,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.functional.iterable.exceptions.UnexpectedResultException;
-import net.digitalid.utility.functional.iterable.filter.predicate.NonNullPredicate;
-import net.digitalid.utility.functional.iterable.map.function.NonNullToNonNullUnaryFunction;
-import net.digitalid.utility.functional.iterable.map.function.NonNullToNullableUnaryFunction;
-import net.digitalid.utility.functional.iterable.zip.function.NonNullToNonNullBinaryFunction;
-import net.digitalid.utility.functional.iterable.zip.function.NonNullToNullableBinaryFunction;
+import net.digitalid.utility.functional.predicate.NonNullPredicate;
+import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunction;
+import net.digitalid.utility.functional.function.unary.NonNullToNullableUnaryFunction;
+import net.digitalid.utility.functional.function.binary.NonNullToNonNullBinaryFunction;
+import net.digitalid.utility.functional.function.binary.NonNullToNullableBinaryFunction;
 import net.digitalid.utility.tuples.pair.NonNullablePair;
 import net.digitalid.utility.tuples.quartet.NonNullableQuartet;
 import net.digitalid.utility.tuples.triplet.NonNullableTriplet;

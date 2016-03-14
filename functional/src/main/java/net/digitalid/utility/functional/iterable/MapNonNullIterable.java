@@ -6,8 +6,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.functional.iterable.map.MapIterator;
-import net.digitalid.utility.functional.iterable.map.function.UnaryFunction;
-import net.digitalid.utility.functional.iterable.map.function.ToNonNullUnaryFunction;
+import net.digitalid.utility.functional.function.unary.UnaryFunction;
+import net.digitalid.utility.functional.function.unary.ToNonNullUnaryFunction;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;

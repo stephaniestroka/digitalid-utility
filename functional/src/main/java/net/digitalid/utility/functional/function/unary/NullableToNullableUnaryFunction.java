@@ -1,4 +1,4 @@
-package net.digitalid.utility.functional.iterable.zip.function;
+package net.digitalid.utility.functional.function.unary;
 
 import javax.annotation.Nullable;
 
@@ -9,13 +9,13 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  * Maps nullable elements to a nullable result by applying the implemented function.
  */
 @Stateless
-public abstract class NullableToNullableBinaryFunction<E0, E1, O> implements ToNullableBinaryFunction<E0, E1, O> {
+public abstract class NullableToNullableUnaryFunction<I, O> implements ToNullableUnaryFunction<I, O> {
     
     /**
      * Applies the function on nullable elements to produce a nullable result.
      */
     @Pure
     @Override
-    public abstract @Nullable O apply(@Nullable E0 element0, @Nullable E1 element1);
+    public abstract @Nullable O apply(@Nullable I element);
     
 }

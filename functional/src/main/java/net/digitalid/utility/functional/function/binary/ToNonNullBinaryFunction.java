@@ -1,4 +1,4 @@
-package net.digitalid.utility.functional.iterable.zip.function;
+package net.digitalid.utility.functional.function.binary;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

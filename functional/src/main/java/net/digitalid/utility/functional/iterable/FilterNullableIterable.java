@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.functional.iterable.filter.FilterIterator;
-import net.digitalid.utility.functional.iterable.filter.predicate.NullablePredicate;
+import net.digitalid.utility.functional.predicate.NullablePredicate;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 

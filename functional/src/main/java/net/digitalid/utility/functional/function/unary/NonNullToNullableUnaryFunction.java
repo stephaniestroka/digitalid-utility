@@ -1,4 +1,4 @@
-package net.digitalid.utility.functional.iterable.map.function;
+package net.digitalid.utility.functional.function.unary;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
