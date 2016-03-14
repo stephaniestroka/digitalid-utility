@@ -5,7 +5,7 @@ import java.util.Iterator;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.functional.iterable.zip.NullableZipIterator;
-import net.digitalid.utility.tuples.NullablePair;
+import net.digitalid.utility.tuples.interfaces.NullablePair;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;

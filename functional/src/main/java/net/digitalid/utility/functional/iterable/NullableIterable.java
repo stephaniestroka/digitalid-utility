@@ -15,7 +15,7 @@ import net.digitalid.utility.functional.iterable.map.function.NullableToNullable
 import net.digitalid.utility.functional.iterable.zip.function.BinaryFunction;
 import net.digitalid.utility.functional.iterable.zip.function.NullableToNonNullBinaryFunction;
 import net.digitalid.utility.functional.iterable.zip.function.NullableToNullableBinaryFunction;
-import net.digitalid.utility.tuples.NullablePair;
+import net.digitalid.utility.tuples.interfaces.NullablePair;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Stateless;

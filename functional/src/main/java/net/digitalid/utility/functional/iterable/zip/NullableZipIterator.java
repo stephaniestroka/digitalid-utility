@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.tuples.NullablePair;
+import net.digitalid.utility.tuples.interfaces.NullablePair;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 

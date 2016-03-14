@@ -1,26 +1,30 @@
-package net.digitalid.utility.tuples;
+package net.digitalid.utility.tuples.quartet;
 
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.tuples.pair.NullablePairImplementation;
+import net.digitalid.utility.tuples.triplet.NullableTripletImplementation;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- * This class models a quartet with nullable elements.
+ * This class implements a quartet with nullable elements.
+ * 
+ * @see NonNullableQuartetImplementation
  */
 @Immutable
 @SuppressWarnings("EqualsAndHashcode")
-public class NullableQuartet<E0, E1, E2, E3> extends NullableTriplet<E0, E1, E2> {
+public class NullableQuartetImplementation<E0, E1, E2, E3> extends NullableTripletImplementation<E0, E1, E2> implements NullableQuartet<E0, E1, E2, E3> {
     
     /* -------------------------------------------------- Element 0 -------------------------------------------------- */
     
     @Pure
     @Override
     public @Nonnull NullableQuartet<E0, E1, E2, E3> setNullable0(@Nullable E0 element0) {
-        return with(element0, element1, element2, element3);
+        return new NullableQuartetImplementation<>(element0, element1, element2, element3);
     }
     
     /* -------------------------------------------------- Element 1 -------------------------------------------------- */
@@ -28,7 +32,7 @@ public class NullableQuartet<E0, E1, E2, E3> extends NullableTriplet<E0, E1, E2>
     @Pure
     @Override
     public @Nonnull NullableQuartet<E0, E1, E2, E3> setNullable1(@Nullable E1 element1) {
-        return with(element0, element1, element2, element3);
+        return new NullableQuartetImplementation<>(element0, element1, element2, element3);
     }
     
     /* -------------------------------------------------- Element 2 -------------------------------------------------- */
@@ -36,51 +40,39 @@ public class NullableQuartet<E0, E1, E2, E3> extends NullableTriplet<E0, E1, E2>
     @Pure
     @Override
     public @Nonnull NullableQuartet<E0, E1, E2, E3> setNullable2(@Nullable E2 element2) {
-        return with(element0, element1, element2, element3);
+        return new NullableQuartetImplementation<>(element0, element1, element2, element3);
     }
     
-    /* -------------------------------------------------- Element 2 -------------------------------------------------- */
+    /* -------------------------------------------------- Element 3 -------------------------------------------------- */
     
     protected final @Nullable E3 element3;
     
-    /**
-     * Returns the fourth element of this tuple.
-     */
     @Pure
+    @Override
     public @Nullable E3 get3() {
         return element3;
     }
     
-    /**
-     * Returns a new tuple with the fourth element set to the given object.
-     */
     @Pure
+    @Override
     public @Nonnull NullableQuartet<E0, E1, E2, E3> setNullable3(@Nullable E3 element3) {
-        return with(element0, element1, element2, element3);
+        return new NullableQuartetImplementation<>(element0, element1, element2, element3);
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected NullableQuartet(@Nullable E0 element0, @Nullable E1 element1, @Nullable E2 element2, @Nullable E3 element3) {
+    protected NullableQuartetImplementation(@Nullable E0 element0, @Nullable E1 element1, @Nullable E2 element2, @Nullable E3 element3) {
         super(element0, element1, element2);
         
         this.element3 = element3;
-    }
-    
-    /**
-     * Returns a quartet with the given nullable elements.
-     */
-    @Pure
-    public static @Nonnull <E0, E1, E2, E3> NullableQuartet<E0, E1, E2, E3> with(@Nullable E0 element0, @Nullable E1 element1, @Nullable E2 element2, @Nullable E3 element3) {
-        return new NullableQuartet<>(element0, element1, element2, element3);
     }
     
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
     @Override
-    protected boolean elementEquals(@Nonnull NullablePair<?, ?> tuple) {
-        return super.elementEquals(tuple) && Objects.equals(this.element3, ((NullableQuartet) tuple).element3);
+    protected boolean elementEquals(@Nonnull NullablePairImplementation<?, ?> tuple) {
+        return super.elementEquals(tuple) && Objects.equals(this.element3, ((NullableQuartetImplementation) tuple).element3);
     }
     
     @Pure
