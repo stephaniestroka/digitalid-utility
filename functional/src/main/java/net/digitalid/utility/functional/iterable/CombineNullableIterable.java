@@ -18,12 +18,12 @@ class CombineNullableIterable<T> extends NullableIterable<T> {
     /**
      * The list of iterables that are combined.
      */
-    private final @Nonnull @NullableElements List<Iterable<T>> iterables;
+    private final @Nonnull @NullableElements List<NullableIterable<T>> iterables;
     
     /**
      * Creates a fluent combine iterable by combining other iterables.
      */
-    CombineNullableIterable(@Nonnull @NullableElements List<Iterable<T>> iterables) {
+    CombineNullableIterable(@Nonnull @NullableElements List<NullableIterable<T>> iterables) {
         this.iterables = iterables;
     }
     
@@ -34,6 +34,15 @@ class CombineNullableIterable<T> extends NullableIterable<T> {
             iterators.add(iterable.iterator());
         }
         return new CombineIterator<>(iterators);
+    }
+    
+    @Override
+    public int size() {
+        int size = 0;
+        for (NullableIterable<T> iterable : iterables) {
+            size += iterable.size();
+        }
+        return size;
     }
     
 }

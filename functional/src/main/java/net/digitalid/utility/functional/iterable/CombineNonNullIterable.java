@@ -18,12 +18,12 @@ class CombineNonNullIterable<T> extends NonNullIterable<T> {
     /**
      * The list of iterables that are combined.
      */
-    private final @Nonnull @NonNullableElements List<Iterable<T>> iterables;
+    private final @Nonnull @NonNullableElements List<NonNullIterable<T>> iterables;
     
     /**
      * Creates a fluent combine iterable by combining other iterables.
      */
-    CombineNonNullIterable(@Nonnull @NonNullableElements List<Iterable<T>> iterables) {
+    CombineNonNullIterable(@Nonnull @NonNullableElements List<NonNullIterable<T>> iterables) {
         this.iterables = iterables;
     }
     
@@ -34,6 +34,15 @@ class CombineNonNullIterable<T> extends NonNullIterable<T> {
             iterators.add(iterable.iterator());
         }
         return new CombineIterator<>(iterators);
+    }
+    
+    @Override
+    public int size() {
+        int size = 0;
+        for (NonNullIterable<T> iterable : iterables) {
+            size += iterable.size();
+        }
+        return size;
     }
     
 }

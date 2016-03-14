@@ -19,17 +19,17 @@ class ZipToNonNullablePairNonNullIterable<T1, T2> extends NonNullIterable<NonNul
     /**
      * The first iterable with non-nullable elements.
      */
-    private final @Nonnull @NonNullableElements Iterable<T1> iterable1;
+    private final @Nonnull NonNullIterable<T1> iterable1;
     
     /**
      * The second iterable with non-nullable elements.
      */
-    private final @Nonnull @NonNullableElements Iterable<T2> iterable2;
+    private final @Nonnull NonNullIterable<T2> iterable2;
     
     /**
      * Creates a zip-to-non-nullable-pair iterable by combining two non-nullable-elements iterables.
      */
-    ZipToNonNullablePairNonNullIterable(@Nonnull @NonNullableElements Iterable<T1> iterable1, @Nonnull @NonNullableElements Iterable<T2> iterable2) {
+    ZipToNonNullablePairNonNullIterable(@Nonnull NonNullIterable<T1> iterable1, @Nonnull NonNullIterable<T2> iterable2) {
         this.iterable1 = iterable1;
         this.iterable2 = iterable2;
     }
@@ -38,6 +38,11 @@ class ZipToNonNullablePairNonNullIterable<T1, T2> extends NonNullIterable<NonNul
     @Override
     public @Nonnull @NonNullableElements Iterator<NonNullablePair<T1, T2>> iterator() {
         return new ZipToNonNullablePairIterator<>(iterable1.iterator(), iterable2.iterator());
+    }
+    
+    @Override
+    public int size() {
+        return Math.min(iterable1.size(), iterable2.size());
     }
     
 }

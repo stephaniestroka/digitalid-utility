@@ -22,7 +22,7 @@ class MapNonNullIterable<T, I> extends NonNullIterable<I> {
     /**
      * The original iterable with non-null elements.
      */
-    private final @Nonnull @NonNullableElements Iterable<T> iterable;
+    private final @Nonnull @NullableElements NullableIterable<T> iterable;
     
     /**
      * The function that is applied to the elements of the original iterable.
@@ -41,6 +41,11 @@ class MapNonNullIterable<T, I> extends NonNullIterable<I> {
     @Override
     public @Nonnull @NonNullableElements Iterator<I> iterator() {
         return new MapIterator<>(iterable.iterator(), function);
+    }
+    
+    @Override
+    public int size() {
+        return iterable.size();
     }
     
 }

@@ -2,6 +2,8 @@ package net.digitalid.utility.functional.iterable;
 
 import java.util.Iterator;
 
+import javax.annotation.Nonnull;
+
 import net.digitalid.utility.functional.iterable.map.MapIterator;
 import net.digitalid.utility.functional.function.unary.ToNullableUnaryFunction;
 import net.digitalid.utility.functional.function.unary.UnaryFunction;
@@ -28,7 +30,7 @@ class MapNullableIterable<T, I> extends NullableIterable<I> {
     /**
      * Creates a new map iterable with a given fluent iterable and a given function.
      */
-    protected MapNullableIterable(NullableIterable<T> iterable, ToNullableUnaryFunction<T, I> function) {
+    protected MapNullableIterable(@Nonnull NullableIterable<T> iterable, ToNullableUnaryFunction<T, I> function) {
         this.iterable = iterable;
         this.function = function;
     }
@@ -37,6 +39,11 @@ class MapNullableIterable<T, I> extends NullableIterable<I> {
     @Override
     public @NullableElements Iterator<I> iterator() {
         return new MapIterator<>(iterable.iterator(), function);
+    }
+    
+    @Override
+    public int size() {
+        return iterable.size();
     }
     
 }

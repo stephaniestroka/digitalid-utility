@@ -1,50 +1,44 @@
 package net.digitalid.utility.functional.iterable;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.functional.iterable.array.ArrayIterator;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- *
+ * Wraps an ordinary iterable into a fluent iterable.
  */
 @Immutable
-class WrappingNonNullIterable<T> extends NonNullIterable<T> {
-    
-    private final @Nonnull @NonNullableElements Iterable<T> iterable;
+class ArrayNonNullableIterable<T> extends NonNullIterable<T> {
     
     /**
-     * The size of the iterable.
+     * The original iterable.
      */
-    private final int size;
-    
-    WrappingNonNullIterable(@Nonnull NonNullIterable<T> iterable) {
-        this.iterable = iterable;
-        this.size = iterable.size();
-    }
+    private final @Nonnull @NonNullableElements T[] array;
     
     /**
-     * Creates a wrapper around the original collection.
+     * Creates a wrapper around the original array.
      */
-    WrappingNonNullIterable(@Nonnull @NonNullableElements Collection<T> collection) {
-        this.iterable = collection;
-        this.size = collection.size();
+    ArrayNonNullableIterable(@Nonnull @NonNullableElements T[] array) {
+        this.array = array;
     }
     
     @Pure
     @Override
     public @Nonnull @NonNullableElements Iterator<T> iterator() {
-        return iterable.iterator();
+        return new ArrayIterator<>(array);
     }
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
     
     @Override
     public int size() {
-        return 0;
+        return array.length;
     }
+    
 }

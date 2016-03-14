@@ -41,25 +41,14 @@ public abstract class NonNullIterable<T> extends NullableIterable<T> {
     /**
      * Applies a filter to a non-null iterable and returns a new iterable.
      */
-    public @Nonnull @NonNullableElements NonNullIterable<T> filter(@Nonnull NonNullPredicate<T, Object> predicate) {
-        return new FilterNonNullIterable<>(this, predicate, null);
+    public @Nonnull @NonNullableElements NonNullIterable<T> filter(@Nonnull NonNullPredicate<T> predicate) {
+        return new FilterNonNullIterable<>(this, predicate);
     }
     
-    /**
-     * Applies a filter to a non-null iterable and returns a new iterable.
-     */
-    public @Nonnull @NonNullableElements <A> NonNullIterable<T> filter(@Nonnull NonNullPredicate<T, A> predicate, @Nullable A additionalInformation) {
-        return new FilterNonNullIterable<>(this, predicate, additionalInformation);
-    }
+    /* -------------------------------------------------- Find First -------------------------------------------------- */
     
-    /* -------------------------------------------------- Find -------------------------------------------------- */
-    
-    public @Nullable T find(@Nonnull NonNullPredicate<T, ?> predicate) throws UnexpectedResultException {
-        return find(predicate, null);
-    }
-    
-    public @Nullable <A> T find(@Nonnull NonNullPredicate<T, A> predicate, @Nullable A additionalInformation) throws UnexpectedResultException {
-        final @Nonnull @NullableElements NullableIterable<T> iterable = filter(predicate, additionalInformation);
+    public @Nullable T findFirst(@Nonnull NonNullPredicate<T> predicate) throws UnexpectedResultException {
+        final @Nonnull @NullableElements NullableIterable<T> iterable = filter(predicate);
         final @Nonnull @NullableElements Iterator<T> iterator = iterable.iterator();
         if (!iterator.hasNext()) {
             return null;
@@ -122,21 +111,21 @@ public abstract class NonNullIterable<T> extends NullableIterable<T> {
     /**
      * Zips this iterable with another non-nullable-elements iterable. An iterable of non-nullable pairs is returned. Elements exceeding the shorter iterable are discarded.
      */
-    public @Nonnull <T2> NonNullIterable<NonNullablePair<T,T2>> zipNonNull(@Nonnull @NonNullableElements Iterable<T2> iterable) {
+    public @Nonnull <T2> NonNullIterable<NonNullablePair<T,T2>> zipNonNull(@Nonnull NonNullIterable<T2> iterable) {
         return new ZipToNonNullablePairNonNullIterable<>(this, iterable);
     } 
     
     /**
      * Zips this iterable with two other non-nullable-elements iterables. An iterable of non-nullable triplets is returned. Elements exceeding the shorter iterable are discarded.
      */
-    public @Nonnull <T2, T3> NonNullIterable<NonNullableTriplet<T,T2, T3>> zipNonNull(@Nonnull @NonNullableElements Iterable<T2> iterable2, @Nonnull @NonNullableElements Iterable<T3> iterable3) {
+    public @Nonnull <T2, T3> NonNullIterable<NonNullableTriplet<T,T2, T3>> zipNonNull(@Nonnull NonNullIterable<T2> iterable2, @Nonnull NonNullIterable<T3> iterable3) {
         return new ZipToNonNullableTripletNonNullIterable<>(this, iterable2, iterable3);
     } 
     
     /**
      * Zips this iterable with three other non-nullable-elements iterables. An iterable of non-nullable quartets is returned. Elements exceeding the shorter iterable are discarded.
      */
-    public @Nonnull <T2, T3, T4> NonNullIterable<NonNullableQuartet<T,T2, T3, T4>> zipNonNull(@Nonnull @NonNullableElements Iterable<T2> iterable2, @Nonnull @NonNullableElements Iterable<T3> iterable3, @Nonnull @NonNullableElements Iterable<T4> iterable4) {
+    public @Nonnull <T2, T3, T4> NonNullIterable<NonNullableQuartet<T,T2, T3, T4>> zipNonNull(@Nonnull NonNullIterable<T2> iterable2, @Nonnull NonNullIterable<T3> iterable3, @Nonnull NonNullIterable<T4> iterable4) {
         return new ZipToNonNullableQuartetNonNullIterable<>(this, iterable2, iterable3, iterable4);
     }
     
@@ -145,10 +134,10 @@ public abstract class NonNullIterable<T> extends NullableIterable<T> {
     /**
      * Combines this iterable with another iterable.
      */
-    public @Nonnull @NonNullableElements NonNullIterable<T> combine(@Nonnull Iterable<T>... iterables) {
-        final @Nonnull @NonNullableElements List<Iterable<T>> combiningIterables = new ArrayList<>();
+    public @Nonnull @NonNullableElements NonNullIterable<T> combine(@Nonnull NonNullIterable<T>... iterables) {
+        final @Nonnull @NonNullableElements List<NonNullIterable<T>> combiningIterables = new ArrayList<>();
         combiningIterables.add(this);
-        for (@Nonnull Iterable<T> iterable : iterables) {
+        for (@Nonnull NonNullIterable<T> iterable : iterables) {
             combiningIterables.add(iterable);
         }
         return new CombineNonNullIterable<>(combiningIterables);

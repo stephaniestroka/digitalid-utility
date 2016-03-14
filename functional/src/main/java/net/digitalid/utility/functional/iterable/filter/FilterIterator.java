@@ -16,30 +16,27 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * Cannot be shared among multiple threads. 
  */
 @Mutable
-public class FilterIterator<E, A> implements Iterator<E> {
+public class FilterIterator<E> implements Iterator<E> {
     
     /**
      * The predicate which is used to filter elements from an iterator. Only the elements that
      * satisfy the predicate are returned by this iterator.
      */
-    private final @Nonnull NonNullPredicate<E, A> predicate;
+    private final @Nonnull NonNullPredicate<E> predicate;
     
     /**
      * The iterator which serves as a source for the elements.
      */
     private final @Nonnull @NullableElements Iterator<E> iterator;
     
-    private final @Nullable A additionalInformation;
-    
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
      * Creates a new filter iterator with a given source iterator and a given predicate.
      */
-    public FilterIterator(@Nonnull @NullableElements Iterator<E> iterator, @Nonnull NonNullPredicate<E, A> predicate, @Nullable A additionalInformation) {
+    public FilterIterator(@Nonnull @NullableElements Iterator<E> iterator, @Nonnull NonNullPredicate<E> predicate) {
         this.predicate = predicate;
         this.iterator = iterator;
-        this.additionalInformation = additionalInformation;
     }
     
     /* -------------------------------------------------- Find Next -------------------------------------------------- */
@@ -53,7 +50,7 @@ public class FilterIterator<E, A> implements Iterator<E> {
         @Nullable E nextElement;
         while (iterator.hasNext()) {
             nextElement = iterator.next();
-            if (predicate.apply(nextElement, additionalInformation)) {
+            if (predicate.apply(nextElement)) {
                 return new Consumable<>(nextElement);
             }
         }

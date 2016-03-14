@@ -19,7 +19,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * The filtered elements are non-nullable.
  */
 @Immutable
-class FilterNonNullIterable<T, A> extends NonNullIterable<T> {
+class FilterNonNullIterable<T> extends NonNullIterable<T> {
     
     /**
      * The iterator which serves as a source for the elements.
@@ -30,33 +30,41 @@ class FilterNonNullIterable<T, A> extends NonNullIterable<T> {
      * The predicate which is used to filter elements from an iterator. Only the elements that
      * satisfy the predicate are returned by this iterator.
      */
-    private final @Nonnull NonNullPredicate<T, A> predicate;
-    
-    private final @Nullable A additionalInformation;
+    private final @Nonnull NonNullPredicate<T> predicate;
     
     /**
      * Creates a new fluent filter iterable, which implements a filter with the given predicate on the iterator.
      * The filtered elements are non-nullable.
      */
-    protected FilterNonNullIterable(@Nonnull @NonNullableElements NonNullIterable<T> iterable, @Nonnull NonNullPredicate<T, A> predicate, @Nullable A additionalInformation) {
+    protected FilterNonNullIterable(@Nonnull @NonNullableElements NonNullIterable<T> iterable, @Nonnull NonNullPredicate<T> predicate) {
         this.iterable = iterable;
         this.predicate = predicate;
-        this.additionalInformation = additionalInformation;
     }
     
     /**
      * Creates a new fluent filter iterable with non-null elements on a fluent iterable with potential nullable elements and a predicate that filters non-null elements.
      */
-    protected FilterNonNullIterable(@Nonnull @NonNullableElements NullableIterable<T> iterable, @Nonnull FilterNonNullPredicate<T, A> predicate, @Nullable A additionalInformation) {
+    protected FilterNonNullIterable(@Nonnull @NonNullableElements NullableIterable<T> iterable, @Nonnull FilterNonNullPredicate<T> predicate) {
         this.iterable = iterable;
         this.predicate = predicate;
-        this.additionalInformation = additionalInformation;
     }
     
     @Pure
     @Override
     public @Nonnull @NonNullableElements Iterator<T> iterator() {
-        return new FilterIterator<>(iterable.iterator(), predicate, additionalInformation);
+        return new FilterIterator<>(iterable.iterator(), predicate);
+    }
+    
+    // TODO: The infinite iterables must override the filter() method of the super class, such that they can return -1 (= infinite) or 0 for the size.
+    @Override
+    public int size() {
+        int size = 0;
+        final @Nonnull @NonNullableElements Iterator<T> iterator = iterator();
+        while (iterator.hasNext()) {
+            iterator.next();
+            size++;
+        }
+        return size;
     }
     
 }

@@ -19,27 +19,27 @@ class ZipToNonNullableQuartetNonNullIterable<T1, T2, T3, T4> extends NonNullIter
     /**
      * The first iterable with non-nullable elements.
      */
-    private final @Nonnull @NonNullableElements Iterable<T1> iterable1;
+    private final @Nonnull NonNullIterable<T1> iterable1;
     
     /**
      * The second iterable with non-nullable elements.
      */
-    private final @Nonnull @NonNullableElements Iterable<T2> iterable2;
+    private final @Nonnull NonNullIterable<T2> iterable2;
     
     /**
      * The third iterable with non-nullable elements.
      */
-    private final @Nonnull @NonNullableElements Iterable<T3> iterable3;
+    private final @Nonnull NonNullIterable<T3> iterable3;
     
     /**
      * The forth iterable with non-nullable elements.
      */
-    private final @Nonnull @NonNullableElements Iterable<T4> iterable4;
+    private final @Nonnull NonNullIterable<T4> iterable4;
     
     /**
      * Creates a zip-to-non-nullable-quartet iterable by combining four non-nullable-elements iterables.
      */
-    ZipToNonNullableQuartetNonNullIterable(@Nonnull @NonNullableElements Iterable<T1> iterable1, @Nonnull @NonNullableElements Iterable<T2> iterable2, @Nonnull @NonNullableElements Iterable<T3> iterable3, @Nonnull @NonNullableElements Iterable<T4> iterable4) {
+    ZipToNonNullableQuartetNonNullIterable(@Nonnull NonNullIterable<T1> iterable1, @Nonnull NonNullIterable<T2> iterable2, @Nonnull NonNullIterable<T3> iterable3, @Nonnull NonNullIterable<T4> iterable4) {
         this.iterable1 = iterable1;
         this.iterable2 = iterable2;
         this.iterable3 = iterable3;
@@ -50,6 +50,11 @@ class ZipToNonNullableQuartetNonNullIterable<T1, T2, T3, T4> extends NonNullIter
     @Override
     public @Nonnull @NonNullableElements Iterator<NonNullableQuartet<T1, T2, T3, T4>> iterator() {
         return new ZipToNonNullableQuartetIterator<>(iterable1.iterator(), iterable2.iterator(), iterable3.iterator(), iterable4.iterator());
+    }
+    
+    @Override
+    public int size() {
+        return Math.min(Math.min(Math.min(iterable1.size(), iterable2.size()), iterable3.size()), iterable4.size());
     }
     
 }

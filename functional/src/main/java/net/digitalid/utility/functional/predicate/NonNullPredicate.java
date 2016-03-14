@@ -1,7 +1,6 @@
 package net.digitalid.utility.functional.predicate;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -10,20 +9,20 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  * A predicate that can only be applied on non-nullable objects.
  */
 @Stateless
-public abstract class NonNullPredicate<T, A> implements Predicate<T, A> {
+public abstract class NonNullPredicate<T> implements Predicate<T> {
     
     /**
      * Combines two predicates using an AND operator.
      * Since the first predicate is non-null, the second predicate must also be non-null.
      */
     @Pure
-    public NonNullPredicate<T, A> and(@Nonnull final NonNullPredicate<T, A> predicate) {
-        final @Nonnull NonNullPredicate<T, A> self = this;
-        return new NonNullPredicate<T, A>() {
+    public NonNullPredicate<T> and(@Nonnull final NonNullPredicate<T> predicate) {
+        final @Nonnull NonNullPredicate<T> self = this;
+        return new NonNullPredicate<T>() {
             
             @Override
-            public boolean apply(@Nonnull T object, @Nullable A additionalInformation) {
-                return self.apply(object, additionalInformation) && predicate.apply(object, additionalInformation);
+            public boolean apply(@Nonnull T object) {
+                return self.apply(object) && predicate.apply(object);
             }
             
         };
@@ -33,13 +32,13 @@ public abstract class NonNullPredicate<T, A> implements Predicate<T, A> {
      * Combines two predicates using an OR operator.
      */
     @Pure
-    public NonNullPredicate<T, A> or(@Nonnull final NonNullPredicate<T, A> predicate) {
-        final @Nonnull NonNullPredicate<T, A> self = this;
-        return new NonNullPredicate<T, A>() {
+    public NonNullPredicate<T> or(@Nonnull final NonNullPredicate<T> predicate) {
+        final @Nonnull NonNullPredicate<T> self = this;
+        return new NonNullPredicate<T>() {
             
             @Override
-            public boolean apply(@Nonnull T object, @Nullable A additionalInformation) {
-                return self.apply(object, additionalInformation) || predicate.apply(object, additionalInformation);
+            public boolean apply(@Nonnull T object) {
+                return self.apply(object) || predicate.apply(object);
             }
             
         };
@@ -49,12 +48,12 @@ public abstract class NonNullPredicate<T, A> implements Predicate<T, A> {
      * Combines two predicates using an OR operator.
      */
     @Pure
-    public NonNullPredicate<T, A> negate() {
-        final @Nonnull NonNullPredicate<T, A> self = this;
-        return new NonNullPredicate<T, A>() {
+    public NonNullPredicate<T> negate() {
+        final @Nonnull NonNullPredicate<T> self = this;
+        return new NonNullPredicate<T>() {
             
-            @Override public boolean apply(@Nonnull T object, @Nullable A additionalInformation) {
-                return !self.apply(object, additionalInformation);
+            @Override public boolean apply(@Nonnull T object) {
+                return !self.apply(object);
             }
             
         };
@@ -67,6 +66,6 @@ public abstract class NonNullPredicate<T, A> implements Predicate<T, A> {
      */
     @Pure
     @Override
-    public abstract boolean apply(@Nonnull T object, @Nullable A additionalInformation);
+    public abstract boolean apply(@Nonnull T object);
     
 }
