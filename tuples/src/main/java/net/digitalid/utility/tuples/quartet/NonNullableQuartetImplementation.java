@@ -7,7 +7,7 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- * Description.
+ * This class implements a quartet with non-nullable elements.
  */
 @Immutable
 @SuppressWarnings("null")
