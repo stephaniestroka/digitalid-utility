@@ -10,13 +10,13 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- * Wraps an ordinary iterable into a fluent iterable.
+ * Wraps an ordinary collection into an iterable that can be used to filter or transform its elements.
  */
 @Immutable
 class WrappingNullableIterable<T> extends NullableIterable<T> {
     
     /**
-     * The original iterable.
+     * The original iterable with nullable elements.
      */
     private final @Nonnull @NullableElements Iterable<T> iterable;
     
@@ -26,14 +26,6 @@ class WrappingNullableIterable<T> extends NullableIterable<T> {
     private final int size;
     
     /**
-     * Creates a wrapper around the original iterable.
-     */
-    WrappingNullableIterable(@Nonnull @NullableElements NullableIterable<T> iterable) {
-        this.iterable = iterable;
-        this.size = iterable.size();
-    }
-    
-    /**
      * Creates a wrapper around the original collection.
      */
     WrappingNullableIterable(@Nonnull @NullableElements Collection<T> collection) {
@@ -41,11 +33,15 @@ class WrappingNullableIterable<T> extends NullableIterable<T> {
         this.size = collection.size();
     }
     
+    /* -------------------------------------------------- Iterable -------------------------------------------------- */
+    
     @Pure
     @Override
     public @Nonnull @NullableElements Iterator<T> iterator() {
         return iterable.iterator();
     }
+    
+    /* -------------------------------------------------- Size -------------------------------------------------- */
     
     @Override
     public int size() {

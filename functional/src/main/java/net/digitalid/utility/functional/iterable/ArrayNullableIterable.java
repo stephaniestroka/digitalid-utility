@@ -10,7 +10,7 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- * Wraps an ordinary iterable into a fluent iterable.
+ * Wraps an array into a iterable with nullable elements.
  */
 @Immutable
 class ArrayNullableIterable<T> extends NullableIterable<T> {
@@ -26,6 +26,8 @@ class ArrayNullableIterable<T> extends NullableIterable<T> {
     ArrayNullableIterable(@Nonnull @NullableElements T[] array) {
         this.array = array;
     }
+    
+    /* -------------------------------------------------- Iterable -------------------------------------------------- */
     
     @Pure
     @Override

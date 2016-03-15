@@ -10,8 +10,8 @@ import net.digitalid.utility.functional.iterable.combine.CombineIterator;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 
 /**
- * The combine iterable implements an iterable that combines two iterables and returns an iterator that retrieves 
- * elements from the first iterable before returning elements from the second iterable.
+ * The combine iterable implements an iterable that combines two or more iterables with nullable elements and returns an iterator that retrieves 
+ * elements from the iterables in sequence.
  */
 class CombineNullableIterable<T> extends NullableIterable<T> {
     
@@ -21,11 +21,13 @@ class CombineNullableIterable<T> extends NullableIterable<T> {
     private final @Nonnull @NullableElements List<NullableIterable<T>> iterables;
     
     /**
-     * Creates a fluent combine iterable by combining other iterables.
+     * Creates a combine iterable by combining other iterables.
      */
     CombineNullableIterable(@Nonnull @NullableElements List<NullableIterable<T>> iterables) {
         this.iterables = iterables;
     }
+    
+    /* -------------------------------------------------- Iterable -------------------------------------------------- */
     
     @Override
     public @Nonnull @NullableElements Iterator<T> iterator() {
@@ -35,6 +37,8 @@ class CombineNullableIterable<T> extends NullableIterable<T> {
         }
         return new CombineIterator<>(iterators);
     }
+    
+    /* -------------------------------------------------- Size -------------------------------------------------- */
     
     @Override
     public int size() {

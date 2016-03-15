@@ -5,8 +5,10 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
- *
+ * @deprecated should be replaced with map() functions from {@link net.digitalid.utility.functional.iterable.NullableIterable NullableIterable} and 
+ * {@link net.digitalid.utility.functional.iterable.NonNullableIterable NonNullableIterable}.
  */
+@Deprecated
 public interface NonNullableElementConverter<E> {
     
     /**

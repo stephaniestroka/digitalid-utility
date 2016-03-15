@@ -10,22 +10,24 @@ import net.digitalid.utility.functional.iterable.combine.CombineIterator;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 
 /**
- * The combine iterable implements an iterable that combines two iterables and returns an iterator that retrieves 
- * elements from the first iterable before returning elements from the second iterable.
+ * The combine iterable implements an iterable that combines two or more iterables with non-nullable elements and returns an iterator that retrieves 
+ * elements from the iterables in sequence.
  */
-class CombineNonNullIterable<T> extends NonNullIterable<T> {
+class CombineNonNullIterable<T> extends NonNullableIterable<T> {
     
     /**
      * The list of iterables that are combined.
      */
-    private final @Nonnull @NonNullableElements List<NonNullIterable<T>> iterables;
+    private final @Nonnull @NonNullableElements List<NonNullableIterable<T>> iterables;
     
     /**
-     * Creates a fluent combine iterable by combining other iterables.
+     * Creates a combine iterable by combining other iterables.
      */
-    CombineNonNullIterable(@Nonnull @NonNullableElements List<NonNullIterable<T>> iterables) {
+    CombineNonNullIterable(@Nonnull @NonNullableElements List<NonNullableIterable<T>> iterables) {
         this.iterables = iterables;
     }
+    
+    /* -------------------------------------------------- Iterable -------------------------------------------------- */
     
     @Override
     public @Nonnull @NonNullableElements Iterator<T> iterator() {
@@ -36,10 +38,12 @@ class CombineNonNullIterable<T> extends NonNullIterable<T> {
         return new CombineIterator<>(iterators);
     }
     
+    /* -------------------------------------------------- Size -------------------------------------------------- */
+    
     @Override
     public int size() {
         int size = 0;
-        for (NonNullIterable<T> iterable : iterables) {
+        for (NonNullableIterable<T> iterable : iterables) {
             size += iterable.size();
         }
         return size;

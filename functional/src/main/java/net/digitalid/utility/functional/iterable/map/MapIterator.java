@@ -12,7 +12,6 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 /**
  * The map iterator implements an iterator that transforms elements from the source iterator
  * to new elements using the provided function.
- * Cannot be shared among multiple threads. 
  */
 @Mutable
 public class MapIterator<T, E> implements Iterator<E> {

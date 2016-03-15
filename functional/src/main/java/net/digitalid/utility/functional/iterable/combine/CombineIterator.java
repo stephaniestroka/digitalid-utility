@@ -36,7 +36,7 @@ public class CombineIterator<T> implements Iterator<T> {
     
     @Override
     public boolean hasNext() {
-        while (iterators.size() > index) {
+        while (index < iterators.size()) {
             if (iterators.get(index).hasNext()) {
                 return true;
             } else {

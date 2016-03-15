@@ -9,14 +9,19 @@ import javax.annotation.Nullable;
  */
 public class InfiniteIterator<T> implements Iterator<T> {
     
+    /**
+     * The element that is returned infinitely.
+     */
     private final @Nullable T element;
     
     /**
-     * Creates a new infinite iterator.
+     * Creates a new infinite iterator with a given element.
      */
     public InfiniteIterator(@Nullable T element) {
         this.element = element;
     }
+    
+    /* -------------------------------------------------- Iterator -------------------------------------------------- */
     
     @Override
     public boolean hasNext() {

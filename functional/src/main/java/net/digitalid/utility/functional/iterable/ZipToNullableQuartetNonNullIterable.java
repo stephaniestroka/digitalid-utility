@@ -15,7 +15,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * The zip-to-nullable-quartet iterable implements an iterable that combines four nullable-elements iterables and returns an iterator that returns quartets of the elements of the source iterables.
  */
 @Immutable
-class ZipToNullableQuartetNonNullIterable<T1, T2, T3, T4> extends NonNullIterable<NullableQuartet<T1, T2, T3, T4>> {
+class ZipToNullableQuartetNonNullIterable<T1, T2, T3, T4> extends NonNullableIterable<NullableQuartet<T1, T2, T3, T4>> {
     
     /**
      * The first iterable with nullable elements.
@@ -42,6 +42,8 @@ class ZipToNullableQuartetNonNullIterable<T1, T2, T3, T4> extends NonNullIterabl
      */
     private final @Nonnull ZipStrategy strategy;
     
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
+    
     /**
      * Creates a zip-to-nullable-quartet iterable by combining four nullable-elements iterables.
      * If the length of the given iterables is not equal, the zip iterator will return pairs on a call to <i>next()</i>
@@ -64,12 +66,22 @@ class ZipToNullableQuartetNonNullIterable<T1, T2, T3, T4> extends NonNullIterabl
         this.strategy = strategy;
     }
     
+    /* -------------------------------------------------- Iterable -------------------------------------------------- */
+    
     @Pure
     @Override
     public @Nonnull @NonNullableElements Iterator<NullableQuartet<T1, T2, T3, T4>> iterator() {
         return new ZipToNullableQuartetIterator<>(iterable1.iterator(), iterable2.iterator(), iterable3.iterator(), iterable4.iterator(), strategy);
     }
     
+    /* -------------------------------------------------- Size -------------------------------------------------- */
+    
+    /**
+     * If the {@link net.digitalid.utility.functional.iterable.zip.ZipStrategy#SHORTEST_SEQUENCE SHORTEST_SEQUENCE}
+     * zip strategy was applied, the size is equal to the shortest source iterable.
+     * Otherwise, if the {@link net.digitalid.utility.functional.iterable.zip.ZipStrategy#LONGEST_SEQUENCE LONGEST_SEQUENCE}
+     * zip strategy was applied, the size is equal to the longest source iterable.
+     */
     @Override
     public int size() {
         if (strategy == ZipStrategy.SHORTEST_SEQUENCE) {

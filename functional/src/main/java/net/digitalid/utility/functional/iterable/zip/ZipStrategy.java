@@ -12,6 +12,7 @@ public enum ZipStrategy {
      * In this case, shorter iterators add <i>null</i> to the returned tuple.
      */
     LONGEST_SEQUENCE,
+    
     /**
      * Indicates, that the zip iterator should return tuples on the call to <i>next()</i> until the shortest zipped iterator reached its end. 
      * In this case, elements of longer iterators are discarded.

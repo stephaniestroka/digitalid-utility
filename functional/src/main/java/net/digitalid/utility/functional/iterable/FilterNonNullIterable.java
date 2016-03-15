@@ -3,7 +3,6 @@ package net.digitalid.utility.functional.iterable;
 import java.util.Iterator;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.digitalid.utility.functional.iterable.filter.FilterIterator;
 import net.digitalid.utility.functional.iterable.filter.predicate.implementation.FilterNonNullPredicate;
@@ -14,17 +13,17 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- * The fluent filter iterable implements a fluent iterable that filters its elements using 
+ * The filter iterable implements a iterable that filters its elements using 
  * a given predicate.
  * The filtered elements are non-nullable.
  */
 @Immutable
-class FilterNonNullIterable<T> extends NonNullIterable<T> {
+class FilterNonNullIterable<T> extends NonNullableIterable<T> {
     
     /**
      * The iterator which serves as a source for the elements.
      */
-    private final @Nonnull @NullableElements NullableIterable<T> iterable;
+    private final @Nonnull NullableIterable<T> iterable;
     
     /**
      * The predicate which is used to filter elements from an iterator. Only the elements that
@@ -33,21 +32,23 @@ class FilterNonNullIterable<T> extends NonNullIterable<T> {
     private final @Nonnull NonNullPredicate<T> predicate;
     
     /**
-     * Creates a new fluent filter iterable, which implements a filter with the given predicate on the iterator.
+     * Creates a new filter iterable, which implements a filter with the given predicate on the iterator.
      * The filtered elements are non-nullable.
      */
-    protected FilterNonNullIterable(@Nonnull @NonNullableElements NonNullIterable<T> iterable, @Nonnull NonNullPredicate<T> predicate) {
+    protected FilterNonNullIterable(@Nonnull NonNullableIterable<T> iterable, @Nonnull NonNullPredicate<T> predicate) {
         this.iterable = iterable;
         this.predicate = predicate;
     }
     
     /**
-     * Creates a new fluent filter iterable with non-null elements on a fluent iterable with potential nullable elements and a predicate that filters non-null elements.
+     * Creates a new filter iterable with non-null elements on an iterable with potential nullable elements and a predicate that filters non-nullable elements.
      */
-    protected FilterNonNullIterable(@Nonnull @NonNullableElements NullableIterable<T> iterable, @Nonnull FilterNonNullPredicate<T> predicate) {
+    protected FilterNonNullIterable(@Nonnull NullableIterable<T> iterable, @Nonnull FilterNonNullPredicate<T> predicate) {
         this.iterable = iterable;
         this.predicate = predicate;
     }
+    
+    /* -------------------------------------------------- Iterable -------------------------------------------------- */
     
     @Pure
     @Override
@@ -55,16 +56,26 @@ class FilterNonNullIterable<T> extends NonNullIterable<T> {
         return new FilterIterator<>(iterable.iterator(), predicate);
     }
     
-    // TODO: The infinite iterables must override the filter() method of the super class, such that they can return -1 (= infinite) or 0 for the size.
+    /* -------------------------------------------------- Size -------------------------------------------------- */
+    
+    /**
+     * Returns 0 if the iterable is empty, -1 if the iterable is infinite or otherwise the number of filtered elements.
+     * Note: Compared to other size() functions, this function must iterate through all elements in the iterable. Therefore, it has a runtime complexity of O(n).
+     */
     @Override
     public int size() {
-        int size = 0;
-        final @Nonnull @NonNullableElements Iterator<T> iterator = iterator();
-        while (iterator.hasNext()) {
-            iterator.next();
-            size++;
+        if (iterable.size() > 0) {
+            int size = 0;
+            final @Nonnull @NullableElements Iterator<T> iterator = iterator();
+            while (iterator.hasNext()) {
+                iterator.next();
+                size++;
+            }
+            assert size <= iterable.size();
+            return size;
+        } else {
+            return iterable.size();
         }
-        return size;
     }
     
 }

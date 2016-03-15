@@ -13,7 +13,7 @@ import net.digitalid.utility.functional.function.binary.NullableToNonNullBinaryF
 import net.digitalid.utility.functional.function.binary.NullableToNullableBinaryFunction;
 import net.digitalid.utility.functional.function.unary.NullableToNonNullUnaryFunction;
 import net.digitalid.utility.functional.function.unary.NullableToNullableUnaryFunction;
-import net.digitalid.utility.functional.iterable.exceptions.UnexpectedResultException;
+import net.digitalid.utility.functional.iterable.exceptions.InfiniteIterableException;
 import net.digitalid.utility.functional.iterable.filter.predicate.implementation.FilterNonNullPredicate;
 import net.digitalid.utility.functional.iterable.zip.ZipStrategy;
 import net.digitalid.utility.functional.predicate.NullablePredicate;
@@ -22,11 +22,15 @@ import net.digitalid.utility.tuples.quartet.NullableQuartet;
 import net.digitalid.utility.tuples.triplet.NullableTriplet;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
+import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
- * This class represents an iterable to which elements filtering and transformation functions
- * can be applied.
+ * This class represents an iterable on which filtering and transformation functions can be applied. 
+ * The elements of this iterable may be null, which means that functions and predicates applied on this iterable must be able to handle null values.
+ * The filtering and transformation functions are applied lazily on a call to {@link Iterator#next()}.
+ * 
+ * @see NonNullableIterable
  */
 @Stateless
 public abstract class NullableIterable<T> implements Iterable<T> {
@@ -34,78 +38,74 @@ public abstract class NullableIterable<T> implements Iterable<T> {
     /* -------------------------------------------------- Wrapping -------------------------------------------------- */
     
     /**
-     * Returns a new non-nullable elements iterable.
+     * Returns a new non-nullable elements iterable for the given collection.
      */
-    public static @Nonnull @NonNullableElements <T> NonNullIterable<T> ofNonNullElements(@Nonnull @NonNullableElements Collection<T> collection) {
+    public static @Nonnull <T> NonNullableIterable<T> ofNonNullableElements(@Nonnull @NonNullableElements Collection<T> collection) {
         return new WrappingNonNullIterable<>(collection);
     }
     
     /**
-     * Returns a new non-nullable elements iterable.
+     * Returns a new non-nullable elements iterable for the given array of type <i>&lt;T&gt;</i>.
      */
-    public static @Nonnull @NonNullableElements <T> NonNullIterable<T> ofNonNullElements(@Nonnull @NonNullableElements NonNullIterable<T> iterable) {
-        return new WrappingNonNullIterable<>(iterable);
-    }
-    
-    /**
-     * Returns a new non-nullable elements iterable.
-     */
-    public static @Nonnull @NonNullableElements <T> NonNullIterable<T> ofNonNullElements(@Nonnull @NonNullableElements T[] array) {
+    public static @Nonnull <T> NonNullableIterable<T> ofNonNullableElements(@Nonnull @NonNullableElements T[] array) {
         return new ArrayNonNullableIterable<>(array);
     }
     
     /**
-     * Returns a new iterable that may contain null elements.
+     * Returns a new infinite iterable that returns the same element of type <i>&lt;T&gt;</i> infinitely. 
+     * The element may not be null.
      */
-    public static @Nonnull @NullableElements <T> NullableIterable<T> of(@Nonnull @NullableElements Collection<T> collection) {
+    public static @Nonnull <T> NonNullableIterable<T> ofNonNullableElement(@Nonnull T element) {
+        return new InfiniteNonNullableIterable<>(element);
+    }
+    
+    /**
+     * Returns a new iterable for the given collection that may contain null elements.
+     */
+    public static @Nonnull <T> NullableIterable<T> ofNullableElements(@Nonnull @NullableElements Collection<T> collection) {
         return new WrappingNullableIterable<>(collection);
     }
     
     /**
-     * Returns a new iterable that may contain null elements.
+     * Returns a new iterable that may contain null elements for the given array of type <i>&lt;T&gt;</i>.
      */
-    public static @Nonnull @NullableElements <T> NullableIterable<T> of(@Nonnull @NullableElements NullableIterable<T> iterable) {
-        return new WrappingNullableIterable<>(iterable);
+    public static @Nonnull <T> NullableIterable<T> ofNullableElements(@Nonnull @NullableElements T[] array) {
+        return new ArrayNullableIterable<>(array);
     }
     
     /**
-     * Returns a new iterable that may contain null elements.
+     * Returns a new infinite iterable that returns the same element of type <i>&lt;T&gt;</i> infinitely. 
+     * The element may be null.
      */
-    public static @Nonnull @NullableElements <T> NullableIterable<T> of(@Nonnull @NullableElements T[] array) {
-        return new ArrayNullableIterable<>(array);
+    public static @Nonnull <T> NullableIterable<T> ofNullableElement(@Nullable T element) {
+        return new InfiniteNullableIterable<>(element);
     }
     
     /* -------------------------------------------------- Filter -------------------------------------------------- */
     
     /**
-     * Filters all elements that are non-null and returns a fluent iterable with non-null elements.
+     * Filters all elements that are non-null and returns an iterable with non-null elements.
      */
-    // Ideally, this should only be visible for NullableIterable.
-    public @Nonnull @NonNullableElements NonNullIterable<T> filterNonNull() {
+    public @Nonnull NonNullableIterable<T> filterNonNull() {
         return new FilterNonNullIterable<>(this, new FilterNonNullPredicate<T>());
     }
     
     /**
-     * Filters the elements of a fluent iterable using a given predicate.
+     * Filters the elements of an iterable using a given predicate.
      */
-    public @Nonnull @NullableElements NullableIterable<T> filter(@Nonnull NullablePredicate<T> predicate) {
+    public @Nonnull NullableIterable<T> filter(@Nonnull NullablePredicate<T> predicate) {
         return new FilterNullableIterable<>(this, predicate);
     }
     
     /* -------------------------------------------------- Find First -------------------------------------------------- */
     
-    public @Nullable T findFirst(@Nonnull NullablePredicate<T> predicate) throws UnexpectedResultException {
-        final @Nonnull @NullableElements NullableIterable<T> iterable = filter(predicate);
-        final @Nonnull @NullableElements Iterator<T> iterator = iterable.iterator();
-        if (!iterator.hasNext()) {
-            return null;
-        } else {
-            final @Nullable T element = iterator.next();
-            if (iterator.hasNext()) {
-                throw UnexpectedResultException.with("Found more than one elements for the given predicate");
-            }
-            return element;
-        }
+    /**
+     * Filters and returns the first element that matches the given predicate.
+     */
+    public @Nullable T findFirst(@Nonnull NullablePredicate<T> predicate) {
+        final @Nonnull NullableIterable<T> iterable = filter(predicate);
+        final @Nonnull Iterator<T> iterator = iterable.iterator();
+        return iterator.hasNext() ? iterator.next() : null;
     }
     
     /* -------------------------------------------------- Map -------------------------------------------------- */
@@ -113,7 +113,7 @@ public abstract class NullableIterable<T> implements Iterable<T> {
     /**
      * Maps the elements of this iterable to elements that are non-null, using a given function.
      */
-    public @Nonnull @NonNullableElements <E> NonNullIterable<E> map(@Nonnull NullableToNonNullUnaryFunction<T, E> function) {
+    public @Nonnull @NonNullableElements <E> NonNullableIterable<E> map(@Nonnull NullableToNonNullUnaryFunction<T, E> function) {
         return new MapNonNullIterable<>(this, function);
     }
     
@@ -129,6 +129,7 @@ public abstract class NullableIterable<T> implements Iterable<T> {
     /**
      * Reduces the iterable elements to a single element by applying a given function.
      */
+    @Pure
     @SuppressWarnings("unchecked")
     protected @Nullable T reduceInternal(@Nonnull BinaryFunction<T, T, T> function) {
         final @Nonnull @NullableElements Iterator<T> iterator = iterator();
@@ -147,6 +148,7 @@ public abstract class NullableIterable<T> implements Iterable<T> {
      * Reduces the iterable elements to a single element by applying a given function.
      * The result may be null.
      */
+    @Pure
     public @Nullable T reduce(@Nonnull NullableToNullableBinaryFunction<T, T, T> function) {
         return reduceInternal(function);
     }
@@ -155,6 +157,7 @@ public abstract class NullableIterable<T> implements Iterable<T> {
      * Reduces the iterable elements to a single element by applying a given function.
      * The result may not be null.
      */
+    @Pure
     public @Nonnull T reduce(@Nonnull NullableToNonNullBinaryFunction<T, T, T> function) {
         @Nullable T reducedValue = reduceInternal(function);
         assert reducedValue != null;
@@ -165,33 +168,34 @@ public abstract class NullableIterable<T> implements Iterable<T> {
     /* -------------------------------------------------- Zip -------------------------------------------------- */
     
     /**
-     * Zips this iterable with another iterable.
+     * Zips this iterable with another iterable. An iterable of nullable pairs is returned.
+     * If one iterable is shorter, excess elements of the longer iterable are discarded.
      */
-    public @Nonnull @NonNullableElements <T2> NonNullIterable<NullablePair<T,T2>> zip(@Nonnull NullableIterable<T2> iterable) {
+    public @Nonnull <T2> NonNullableIterable<NullablePair<T,T2>> zip(@Nonnull NullableIterable<T2> iterable) {
         return new ZipToNullablePairNonNullIterable<>(this, iterable);
     } 
     
     /**
-     * Zips this iterable with another non-nullable-elements iterable. An iterable of non-nullable pairs is returned.
-     * Elements exceeding shorter iterables are stored as null in the triplet.
+     * Zips this iterable with another iterable. An iterable of nullable pairs is returned.
+     * If one iterable is shorter, excess elements of the longer iterable are zipped with null values.
      */
-    public @Nonnull <T2> NonNullIterable<NullablePair<T,T2>> zipLongest(@Nonnull NullableIterable<T2> iterable) {
+    public @Nonnull <T2> NonNullableIterable<NullablePair<T,T2>> zipLongest(@Nonnull NullableIterable<T2> iterable) {
         return new ZipToNullablePairNonNullIterable<>(this, iterable, ZipStrategy.LONGEST_SEQUENCE);
     } 
     
     /**
-     * Zips this iterable with two other non-nullable-elements iterables. An iterable of non-nullable triplets is returned.
-     * Elements exceeding shorter iterables are stored as null in the triplet.
+     * Zips this iterable with two other iterables. An iterable of nullable triplets is returned.
+     * If one or more iterables are shorter, excess elements of the longer iterable are zipped with null values.
      */
-    public @Nonnull <T2, T3> NonNullIterable<NullableTriplet<T,T2, T3>> zipLongest(@Nonnull NullableIterable<T2> iterable2, @Nonnull NullableIterable<T3> iterable3) {
+    public @Nonnull <T2, T3> NonNullableIterable<NullableTriplet<T,T2, T3>> zipLongest(@Nonnull NullableIterable<T2> iterable2, @Nonnull NullableIterable<T3> iterable3) {
         return new ZipToNullableTripletNonNullIterable<>(this, iterable2, iterable3, ZipStrategy.LONGEST_SEQUENCE);
     } 
     
     /**
-     * Zips this iterable with three other non-nullable-elements iterables. An iterable of non-nullable quartets is returned. 
-     * Elements exceeding shorter iterables are stored as null in the quartet.
+     * Zips this iterable with three other iterables. An iterable of nullable quartets is returned. 
+     * If one or more iterables are shorter, excess elements of the longer iterable are zipped with null values.
      */
-    public @Nonnull <T2, T3, T4> NonNullIterable<NullableQuartet<T,T2, T3, T4>> zipLongest(@Nonnull NullableIterable<T2> iterable2, @Nonnull NullableIterable<T3> iterable3, @Nonnull NullableIterable<T4> iterable4) {
+    public @Nonnull <T2, T3, T4> NonNullableIterable<NullableQuartet<T,T2, T3, T4>> zipLongest(@Nonnull NullableIterable<T2> iterable2, @Nonnull NullableIterable<T3> iterable3, @Nonnull NullableIterable<T4> iterable4) {
         return new ZipToNullableQuartetNonNullIterable<>(this, iterable2, iterable3, iterable4, ZipStrategy.LONGEST_SEQUENCE);
     }
     
@@ -200,7 +204,7 @@ public abstract class NullableIterable<T> implements Iterable<T> {
     /**
      * Combines this iterable with another iterable.
      */
-    public @Nonnull @NullableElements NullableIterable<T> combine(@Nonnull NullableIterable<T>... iterables) {
+    public @Nonnull NullableIterable<T> combine(@Nonnull NullableIterable<T>... iterables) {
         final @Nonnull @NonNullableElements List<NullableIterable<T>> combiningIterables = new ArrayList<>();
         combiningIterables.add(this);
         for (@Nonnull NullableIterable<T> iterable : iterables) {
@@ -211,12 +215,22 @@ public abstract class NullableIterable<T> implements Iterable<T> {
     
     /* -------------------------------------------------- List -------------------------------------------------- */
     
+    /**
+     * Returns a list of the elements contained in this iterable.
+     * If the iterable is an infinite iterable, an infinite iterable exception is thrown.
+     */
+    @Pure
     public @Nonnull @NullableElements List<T> toList() {
-        final @Nonnull @NullableElements List<T> list = new ArrayList<>();
-        for (@Nullable T element : this) {
-            list.add(element);
+        int size = size();
+        if (size >= 0){
+            final @Nonnull @NullableElements List<T> list = new ArrayList<>(size);
+            for (@Nullable T element : this) {
+                list.add(element);
+            }
+            return list;
+        } else {
+            throw InfiniteIterableException.with("An infinite iterable cannot be converted to a finite list.");
         }
-        return list;
     }
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
@@ -224,6 +238,7 @@ public abstract class NullableIterable<T> implements Iterable<T> {
     /**
      * Returns the size of the iterable.
      */
+    @Pure
     public abstract int size();
     
 }

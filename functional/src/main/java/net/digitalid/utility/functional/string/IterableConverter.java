@@ -12,7 +12,6 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  * TODO: Refactor this class to a builder pattern.
  * TODO: Rename to NullableIterableConverter and make a subclass NonNullableIterableConverter.
  * 
- * TODO: Remove this class and do something like iterable.zip(iterable).map(mapper).reduce(reducer)?
  */
 @Stateless
 public final class IterableConverter {

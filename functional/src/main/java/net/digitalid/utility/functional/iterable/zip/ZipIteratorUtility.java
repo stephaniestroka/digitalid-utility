@@ -5,7 +5,7 @@ import java.util.Iterator;
 import javax.annotation.Nonnull;
 
 /**
- *
+ * Provides utility functions which can be used by the zip iterators.
  */
 public class ZipIteratorUtility {
     

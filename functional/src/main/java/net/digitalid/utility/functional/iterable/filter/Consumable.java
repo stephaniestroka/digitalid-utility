@@ -45,7 +45,6 @@ class Consumable<E> {
     
     /**
      * Returns the element and flips the {@link Consumable#consumed} flag.
-     * @return
      */
     public @Nullable E consume() {
         consumed = true;

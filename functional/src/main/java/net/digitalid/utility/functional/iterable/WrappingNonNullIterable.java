@@ -10,22 +10,20 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- *
+ * Wraps an ordinary collection into an iterable that can be used to filter or transform its elements.
  */
 @Immutable
-class WrappingNonNullIterable<T> extends NonNullIterable<T> {
+class WrappingNonNullIterable<T> extends NonNullableIterable<T> {
     
+    /**
+     * The original iterable with non-nullable elements.
+     */
     private final @Nonnull @NonNullableElements Iterable<T> iterable;
     
     /**
      * The size of the iterable.
      */
     private final int size;
-    
-    WrappingNonNullIterable(@Nonnull NonNullIterable<T> iterable) {
-        this.iterable = iterable;
-        this.size = iterable.size();
-    }
     
     /**
      * Creates a wrapper around the original collection.
@@ -34,6 +32,8 @@ class WrappingNonNullIterable<T> extends NonNullIterable<T> {
         this.iterable = collection;
         this.size = collection.size();
     }
+    
+    /* -------------------------------------------------- Iterable -------------------------------------------------- */
     
     @Pure
     @Override
@@ -44,7 +44,7 @@ class WrappingNonNullIterable<T> extends NonNullIterable<T> {
     /* -------------------------------------------------- Size -------------------------------------------------- */
     
     @Override
-    public int size() {
-        return 0;
+    public int size(){
+        return size;
     }
 }

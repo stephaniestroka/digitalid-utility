@@ -8,8 +8,9 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 /**
  * Implementations of this interface convert elements to strings.
  * 
- * TODO: Rename to NullableElementConverter and create a subclass NonNullableElementConverter.
- * TODO: Rename to ElementMapper!
+ *
+ * @deprecated should be replaced with map() functions from {@link net.digitalid.utility.functional.iterable.NullableIterable NullableIterable} and 
+ * {@link net.digitalid.utility.functional.iterable.NonNullableIterable NonNullableIterable}.
  * 
  * @see IterableConverter
  */

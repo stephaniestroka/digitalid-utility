@@ -13,7 +13,6 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * The filter iterator implements an iterator that returns elements of an iterable that satisfy a given predicate.
- * Cannot be shared among multiple threads. 
  */
 @Mutable
 public class FilterIterator<E> implements Iterator<E> {
@@ -57,7 +56,7 @@ public class FilterIterator<E> implements Iterator<E> {
         return null;
     }
     
-    /* -------------------------------------------------- Iterator Implementation -------------------------------------------------- */
+    /* -------------------------------------------------- Iterator -------------------------------------------------- */
     
     /**
      * Wraps the next element in a consumable type.
