@@ -1,7 +1,5 @@
 package net.digitalid.utility.generator.information.type;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,29 +7,37 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 
-import net.digitalid.utility.functional.iterable.NonNullIterable;
+import net.digitalid.utility.exceptions.ConformityViolation;
+import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunction;
+import net.digitalid.utility.functional.iterable.InfiniteNonNullableIterable;
+import net.digitalid.utility.functional.iterable.NonNullableIterable;
 import net.digitalid.utility.functional.iterable.NullableIterable;
-import net.digitalid.utility.functional.iterable.exceptions.UnexpectedResultException;
-import net.digitalid.utility.functional.iterable.filter.predicate.NonNullPredicate;
-import net.digitalid.utility.functional.iterable.map.function.NonNullToNonNullUnaryFunction;
+import net.digitalid.utility.functional.iterable.map.function.implementation.GetNonNull0Function;
+import net.digitalid.utility.functional.predicate.NonNullablePredicate;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.annotations.Recover;
 import net.digitalid.utility.generator.information.exceptions.UnexpectedTypeContentException;
 import net.digitalid.utility.generator.information.field.DeclaredFieldInformation;
+import net.digitalid.utility.generator.information.field.DirectlyAccessibleParameterBasedFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformationFactory;
+import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleParameterBasedFieldInformation;
 import net.digitalid.utility.generator.information.field.ParameterBasedFieldInformation;
 import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
-import net.digitalid.utility.logging.processing.ProcessingLog;
-import net.digitalid.utility.logging.processing.SourcePosition;
+import net.digitalid.utility.generator.query.MethodSignatureMatcher;
 import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
+import net.digitalid.utility.string.StringCase;
+import net.digitalid.utility.tuples.pair.NonNullablePair;
+import net.digitalid.utility.tuples.quartet.NonNullableQuartet;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.state.Unmodifiable;
@@ -100,7 +106,7 @@ public class ClassInformation extends TypeInformation {
     /* -------------------------------------------------- Parameter Variables -------------------------------------------------- */
     
     @SuppressWarnings("unchecked")
-    public @Nonnull @NonNullableElements List<VariableElement> getParameterVariables(@Nonnull ConstructorInformation constructorInformation, @Nullable MethodInformation recoverMethod) throws UnexpectedTypeContentException, UnexpectedResultException {
+    public @Nonnull @NonNullableElements List<VariableElement> getParameterVariables(@Nonnull ConstructorInformation constructorInformation, @Nullable MethodInformation recoverMethod) {
         final @Nullable ExecutableElement recoverExecutable;
         if (recoverMethod != null) {
             recoverExecutable = recoverMethod.getElement();
@@ -113,12 +119,124 @@ public class ClassInformation extends TypeInformation {
     /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
     
     /**
+     * A predicate that returns true iff a given method information matches a given method signature.
+     */
+    private static @Nonnull NonNullablePredicate<NonNullablePair<MethodInformation, MethodSignatureMatcher>> methodMatcher = new NonNullablePredicate<NonNullablePair<MethodInformation, MethodSignatureMatcher>>() {
+        
+        @Override
+        public boolean apply(@Nonnull NonNullablePair<MethodInformation, MethodSignatureMatcher> pair) {
+            final @Nonnull MethodInformation methodInformation = pair.get0();
+            final @Nonnull MethodSignatureMatcher methodSignatureMatcher = pair.get1();
+            return methodSignatureMatcher.matches(methodInformation);
+        }
+        
+    };
+    
+    /**
+     * A predicate that returns true iff a given variable element name matches a given string.
+     */
+    private static @Nonnull NonNullablePredicate<NonNullablePair<VariableElement, String>> variableElementNameMatcher = new NonNullablePredicate<NonNullablePair<VariableElement, String>>() {
+        
+        @Override
+        public boolean apply(@Nonnull NonNullablePair<VariableElement, String> pair) {
+            final @Nonnull VariableElement variableElement = pair.get0();
+            final @Nonnull String name = pair.get1();
+            return variableElement.getSimpleName().contentEquals(name);
+        }
+        
+    };
+    
+    private final static @Nonnull GetNonNull0Function<MethodInformation, MethodSignatureMatcher> GET_METHODINFORMATION = new GetNonNull0Function<>();
+    
+    /**
+     * Returns a method information object that matches the expected declaration of a getter for a certain field.
+     * A {@link ConformityViolation conformity violation exception} is thrown if the getter was not found.
+     */
+    private static @Nonnull MethodInformation getGetterOf(@Nonnull String fieldName, @Nonnull @NonNullableElements NonNullableIterable<MethodInformation> methodsOfType) {
+        final @Nonnull String nameRegex = "(get|has|is)" + StringCase.capitalizeFirstLetters(fieldName);
+        final @Nonnull NonNullableIterable<MethodSignatureMatcher> methodSignature = InfiniteNonNullableIterable.ofNonNullableElement(MethodSignatureMatcher.of(nameRegex, new TypeElement[0]));
+        final @Nullable MethodInformation methodInformation = methodsOfType.zipNonNull(methodSignature).findFirst(methodMatcher, GET_METHODINFORMATION);
+        if (methodInformation == null) {
+            throw ConformityViolation.with("Representative fields must be accessible, either directly or through a getter, but the getter for the field '" + fieldName + "' was not found");
+        }
+        return methodInformation;
+    }
+    
+    /**
+     * Returns a method information object that matches the expected declaration of a setter for a certain field.
+     * If the setter was not found, null is returned.
+     */
+    private static @Nullable MethodInformation getSetterOf(@Nonnull String fieldName, @Nonnull TypeElement fieldType, @Nonnull @NonNullableElements NonNullableIterable<MethodInformation> methodsOfType) {
+        final @Nonnull String methodName = "set" + StringCase.capitalizeFirstLetters(fieldName);
+        final @Nonnull NonNullableIterable<MethodSignatureMatcher> methodSignature = InfiniteNonNullableIterable.ofNonNullableElement(MethodSignatureMatcher.of(methodName, new TypeElement[] { fieldType }));
+        return methodsOfType.zipNonNull(methodSignature).findFirst(methodMatcher, GET_METHODINFORMATION);
+    }
+    
+    /**
+     * A unary function that transforms a quartet that consists of a parameter variable element, an iterable of field variable elements, a containing type and an iterable of method informations to a parameter-based field information object.
+     */
+    private static NonNullToNonNullUnaryFunction<NonNullableQuartet<VariableElement, NonNullableIterable<VariableElement>, DeclaredType, NonNullableIterable<MethodInformation>>, ParameterBasedFieldInformation> parametersToFieldFunction = new NonNullToNonNullUnaryFunction<NonNullableQuartet<VariableElement, NonNullableIterable<VariableElement>, DeclaredType, NonNullableIterable<MethodInformation>>, ParameterBasedFieldInformation>() {
+        
+        @Override
+        public @Nonnull ParameterBasedFieldInformation apply(@Nonnull NonNullableQuartet<VariableElement, NonNullableIterable<VariableElement>, DeclaredType, NonNullableIterable<MethodInformation>> quartet) {
+            final @Nonnull VariableElement representingParameter = quartet.get0();
+            final @Nonnull NonNullableIterable<VariableElement> fields = quartet.get1();
+            final @Nonnull DeclaredType containingType = quartet.get2();
+            final @Nonnull NonNullableIterable<MethodInformation> methodsOfType = quartet.get3();
+            
+            final @Nonnull String parameterName = representingParameter.getSimpleName().toString();
+            final @Nonnull NonNullableIterable<String> infiniteIterableParameterName = NullableIterable.ofNonNullableElement(parameterName);
+            
+            final @Nullable NonNullablePair<VariableElement, String> result = fields.zipNonNull(infiniteIterableParameterName).findFirst(variableElementNameMatcher);
+            if (result == null) {
+                throw ConformityViolation.with("Representative fields must have the same name as their parameters, but the field for '" + parameterName + "' was not found");
+            }
+            
+            final @Nonnull VariableElement field = result.get0();
+            if (!field.getModifiers().contains(Modifier.PRIVATE)) {
+                return DirectlyAccessibleParameterBasedFieldInformation.of(representingParameter, containingType, field);
+            } else {
+                final @Nonnull TypeElement fieldType = (TypeElement) StaticProcessingEnvironment.getTypeUtils().asElement(field.asType());
+                return NonDirectlyAccessibleParameterBasedFieldInformation.of(representingParameter, containingType, getGetterOf(parameterName, methodsOfType), getSetterOf(parameterName, fieldType, methodsOfType));
+            }
+            
+        }
+        
+    };
+    
+    /**
+     * Returns an iterable of parameter-based field information objects by transforming an iterable of parameter 
+     * variable elements plus additional information that is required for the transformation. 
+     * The additional information is: an iterable of the fields of a type, a containing type and an iterable of the methods of the type.
+     */
+    private static @Nonnull @NonNullableElements NonNullableIterable<ParameterBasedFieldInformation> getParameterBasedFieldInformation(@Nonnull NonNullableIterable<VariableElement> fields, @Nonnull NonNullableIterable<VariableElement> representingParameters, @Nonnull DeclaredType containingType, @Nonnull NonNullableIterable<MethodInformation> methodsOfType) {
+        
+        final @Nonnull NonNullableIterable<NonNullableIterable<VariableElement>> infiniteIterableOfFields = NullableIterable.ofNonNullableElement(fields);
+        final @Nonnull NonNullableIterable<DeclaredType> infiniteIterableOfContainingType = NullableIterable.ofNonNullableElement(containingType);
+        final @Nonnull NonNullableIterable<NonNullableIterable<MethodInformation>> infiniteIterableOfMethodsOfType = NullableIterable.ofNonNullableElement(methodsOfType);
+        
+        return representingParameters.zipNonNull(infiniteIterableOfFields, infiniteIterableOfContainingType, infiniteIterableOfMethodsOfType).map(parametersToFieldFunction);
+    }
+    
+    /**
+     * This function receives a subtype of representing field information and returns a representing field information object.
+     */
+    private static @Nonnull NonNullToNonNullUnaryFunction<? super RepresentingFieldInformation, RepresentingFieldInformation> castToRepresentingFieldInformation = new NonNullToNonNullUnaryFunction<RepresentingFieldInformation, RepresentingFieldInformation>() {
+        
+        @Override 
+        public @Nonnull RepresentingFieldInformation apply(@Nonnull RepresentingFieldInformation element) {
+            return element;
+        }
+        
+    };
+    
+    /**
      * Combines and returns the parameter-based fields and the generated fields of the type.
      */
     @Override
     @SuppressWarnings("unchecked")
     public @Nonnull @NonNullableElements List<RepresentingFieldInformation> getRepresentingFieldInformation() throws UnexpectedTypeContentException {
-        return NullableIterable.ofNonNullElements(parameterBasedFieldInformation).map(castToRepresentingFieldInformation).combine(NullableIterable.ofNonNullElements(generatedFieldInformation).map(castToRepresentingFieldInformation)).toList();
+        return NullableIterable.ofNonNullableElements(parameterBasedFieldInformation).map(castToRepresentingFieldInformation).combine(NullableIterable.ofNonNullableElements(generatedFieldInformation).map(castToRepresentingFieldInformation)).toList();
     }
     
     /* -------------------------------------------------- Generatable -------------------------------------------------- */
@@ -132,22 +250,12 @@ public class ClassInformation extends TypeInformation {
     
     /* -------------------------------------------------- Predicates -------------------------------------------------- */
     
-    protected static final @Nonnull NonNullPredicate<MethodInformation, String> methodNameMatcher = new NonNullPredicate<MethodInformation, String>() {
-        
-        @Override 
-        public boolean apply(@Nonnull MethodInformation methodInformation, @Nullable String name) {
-            assert name != null;
-            return methodInformation.getName().equals(name);
-        }
-        
-    };
-    
-    protected static final @Nonnull NonNullPredicate<MethodInformation, Object> recoverMethodMatcher = new NonNullPredicate<MethodInformation, Object>() {
+    protected static final @Nonnull NonNullablePredicate<MethodInformation> recoverMethodMatcher = new NonNullablePredicate<MethodInformation>() {
         
         final @Nonnull TypeMirror recoverAnnotationType = StaticProcessingEnvironment.getElementUtils().getTypeElement(Recover.class.getName()).asType();
         
         @Override 
-        public boolean apply(@Nonnull MethodInformation methodInformation, @Nullable Object none) {
+        public boolean apply(@Nonnull MethodInformation methodInformation) {
             for (@Nonnull AnnotationMirror annotationMirror : methodInformation.getAnnotations()) {
                 if (annotationMirror.getAnnotationType().equals(recoverAnnotationType)) {
                     return true;
@@ -158,19 +266,19 @@ public class ClassInformation extends TypeInformation {
         
     };
     
-    protected static final @Nonnull NonNullPredicate<MethodInformation, Object> implementedGetterMatcher = new NonNullPredicate<MethodInformation, Object>() {
+    protected static final @Nonnull NonNullablePredicate<MethodInformation> implementedGetterMatcher = new NonNullablePredicate<MethodInformation>() {
         
         @Override 
-        public boolean apply(@Nonnull MethodInformation methodInformation, @Nullable Object none) {
+        public boolean apply(@Nonnull MethodInformation methodInformation) {
             return !methodInformation.isAbstract() && methodInformation.isGetter();
         }
         
     };
     
-    protected static final @Nonnull NonNullPredicate<MethodInformation, Object> noJavaRuntimeMethod = new NonNullPredicate<MethodInformation, Object>() {
+    protected static final @Nonnull NonNullablePredicate<MethodInformation> noJavaRuntimeMethod = new NonNullablePredicate<MethodInformation>() {
         
         @Override 
-        public boolean apply(@Nonnull MethodInformation methodInformation, @Nullable Object none) {
+        public boolean apply(@Nonnull MethodInformation methodInformation) {
             return !methodInformation.isDeclaredInRuntimeEnvironment();
         }
         
@@ -178,10 +286,11 @@ public class ClassInformation extends TypeInformation {
     
     /* -------------------------------------------------- Functions -------------------------------------------------- */
     
-    protected static final @Nonnull NonNullToNonNullUnaryFunction<ExecutableElement, ConstructorInformation, DeclaredType> constructorInformationFunction = new NonNullToNonNullUnaryFunction<ExecutableElement, ConstructorInformation, DeclaredType>() {
+    protected static final @Nonnull NonNullToNonNullUnaryFunction<NonNullablePair<ExecutableElement, DeclaredType>, ConstructorInformation> constructorInformationFunction = new NonNullToNonNullUnaryFunction<NonNullablePair<ExecutableElement, DeclaredType>, ConstructorInformation>() {
         
-        @Nonnull @Override public ConstructorInformation apply(@Nonnull ExecutableElement element, @Nullable DeclaredType containingType) {
-            assert containingType != null;
+        @Nonnull @Override public ConstructorInformation apply(@Nonnull NonNullablePair<ExecutableElement, DeclaredType> pair) {
+            final @Nonnull ExecutableElement element = pair.get0();
+            final @Nonnull DeclaredType containingType = pair.get1();
             return ConstructorInformation.of(element, containingType);
         }
         
@@ -190,64 +299,41 @@ public class ClassInformation extends TypeInformation {
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
-     * Creates a class information object with the help of the given class information helper.
+     * Creates a class information object.
      */
     protected ClassInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
         super(typeElement, containingType);
     
-        boolean generatable = true;
-        @Nullable MethodInformation equalsMethod = null;
-        @Nullable MethodInformation hashCodeMethod = null;
-        @Nullable MethodInformation toStringMethod = null;
-        @Nullable MethodInformation compareToMethod = null;
-        @Nullable MethodInformation cloneMethod = null;
-        @Nullable MethodInformation validateMethod = null;
-        @Nonnull Map<String, MethodInformation> implementedGetters = new HashMap<>();
-        @Nonnull List<MethodInformation> overriddenMethods = new ArrayList<>();
-        @Nonnull List<ConstructorInformation> constructors = new ArrayList<>();
-        @Nullable MethodInformation recoverMethod = null;
-        @Nonnull @NonNullableElements List<ParameterBasedFieldInformation> parameterBasedFieldInformation = new ArrayList<>();
-        @Nonnull List<DeclaredFieldInformation> accessibleFields = new ArrayList<>();
+        final @Nonnull NonNullableIterable<MethodInformation> methodInformationIterable = getMethodInformation(typeElement, containingType);
         
-        try {
-            final @Nonnull NonNullIterable<MethodInformation> methodInformationIterable = getMethodInformation(typeElement, containingType);
-            
-            equalsMethod = methodInformationIterable.find(methodNameMatcher, "equals");
-            hashCodeMethod = methodInformationIterable.find(methodNameMatcher, "hashCode");
-            toStringMethod = methodInformationIterable.find(methodNameMatcher, "toString");
-            compareToMethod = methodInformationIterable.find(methodNameMatcher, "compareTo");
-            cloneMethod = methodInformationIterable.find(methodNameMatcher, "clone");
-            validateMethod = methodInformationIterable.find(methodNameMatcher, "validate");
-            
-            implementedGetters = indexMethodInformation(methodInformationIterable.filter(implementedGetterMatcher));
-            
-            overriddenMethods = methodInformationIterable.filter(noJavaRuntimeMethod).toList();
-            
-            constructors = NullableIterable.ofNonNullElements(javax.lang.model.util.ElementFilter.constructorsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))).map(constructorInformationFunction).toList();
-            
-            recoverMethod = methodInformationIterable.find(recoverMethodMatcher);
-            parameterBasedFieldInformation = FieldInformationFactory.getParameterBasedFieldInformation(typeElement, containingType, NonNullIterable.ofNonNullElements(getParameterVariables(constructors.get(0), recoverMethod)), methodInformationIterable);
-            
-            accessibleFields = FieldInformationFactory.getDirectlyAccessibleFieldInformation(typeElement, containingType).toList();
-            
-        } catch (UnexpectedResultException | UnexpectedTypeContentException  e) {
-            ProcessingLog.information(e.getMessage(), SourcePosition.of(typeElement));
-            generatable = false;
-        } finally {
-            this.equalsMethod = equalsMethod;
-            this.hashCodeMethod = hashCodeMethod;
-            this.toStringMethod = toStringMethod;
-            this.compareToMethod = compareToMethod;
-            this.cloneMethod = cloneMethod;
-            this.validateMethod = validateMethod;
-            this.implementedGetters = implementedGetters;
-            this.overriddenMethods = overriddenMethods;
-            this.constructors = constructors;
-            this.recoverMethod = recoverMethod;
-            this.parameterBasedFieldInformation = parameterBasedFieldInformation;
-            this.accessibleFields = accessibleFields;
-            this.generatable = generatable;
-        }
+        final @Nonnull NonNullableIterable<MethodSignatureMatcher> equalsMatcherIterable = NullableIterable.ofNonNullableElement(MethodSignatureMatcher.of("equals", new TypeElement[0]));
+        this.equalsMethod = methodInformationIterable.zipNonNull(equalsMatcherIterable).findFirst(methodMatcher, GET_METHODINFORMATION);
+        final @Nonnull NonNullableIterable<MethodSignatureMatcher> hashCodeMatcherIterable = NullableIterable.ofNonNullableElement(MethodSignatureMatcher.of("hashCode", new TypeElement[0]));
+        this.hashCodeMethod = methodInformationIterable.zipNonNull(hashCodeMatcherIterable).findFirst(methodMatcher, GET_METHODINFORMATION);
+        final @Nonnull NonNullableIterable<MethodSignatureMatcher> toStringMatcherIterable = NullableIterable.ofNonNullableElement(MethodSignatureMatcher.of("toString", new TypeElement[0]));
+        this.toStringMethod = methodInformationIterable.zipNonNull(toStringMatcherIterable).findFirst(methodMatcher, GET_METHODINFORMATION);
+        final @Nonnull NonNullableIterable<MethodSignatureMatcher> compareToMatcherIterable = NullableIterable.ofNonNullableElement(MethodSignatureMatcher.of("compareTo", new TypeElement[] { typeElement }));
+        this.compareToMethod = methodInformationIterable.zipNonNull(compareToMatcherIterable).findFirst(methodMatcher, GET_METHODINFORMATION);
+        final @Nonnull NonNullableIterable<MethodSignatureMatcher> cloneMethodMatcherIterable = NullableIterable.ofNonNullableElement(MethodSignatureMatcher.of("clone", new TypeElement[0]));
+        this.cloneMethod = methodInformationIterable.zipNonNull(cloneMethodMatcherIterable).findFirst(methodMatcher, GET_METHODINFORMATION);
+        final @Nonnull NonNullableIterable<MethodSignatureMatcher> validateMethodMatcherIterable = NullableIterable.ofNonNullableElement(MethodSignatureMatcher.of("validate", new TypeElement[0]));
+        this.validateMethod = methodInformationIterable.zipNonNull(validateMethodMatcherIterable).findFirst(methodMatcher, GET_METHODINFORMATION);
+        
+        this.implementedGetters = indexMethodInformation(methodInformationIterable.filter(implementedGetterMatcher));
+        
+        this.overriddenMethods = methodInformationIterable.filter(noJavaRuntimeMethod).toList();
+    
+        final @Nonnull NonNullableIterable<DeclaredType> containingTypeIterable = NullableIterable.ofNonNullableElement(containingType);
+        this.constructors = NullableIterable.ofNonNullableElements(javax.lang.model.util.ElementFilter.constructorsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))).zipNonNull(containingTypeIterable).map(constructorInformationFunction).toList();
+        
+        this.recoverMethod = methodInformationIterable.findFirst(recoverMethodMatcher);
+        final @Nonnull NonNullableIterable<VariableElement> fields = NonNullableIterable.ofNonNullableElements(ElementFilter.fieldsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement)));
+        this.parameterBasedFieldInformation = getParameterBasedFieldInformation(fields, NonNullableIterable.ofNonNullableElements(getParameterVariables(constructors.get(0), recoverMethod)), containingType, methodInformationIterable).toList();
+    
+        this.accessibleFields = FieldInformationFactory.getDirectlyAccessibleFieldInformation(typeElement, containingType).toList();
+        
+        // TODO: think of cases where the generation can fail
+        this.generatable = true;
     }
     
     /**

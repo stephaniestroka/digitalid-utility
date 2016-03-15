@@ -10,8 +10,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 
+import net.digitalid.utility.functional.iterable.NonNullableIterable;
 import net.digitalid.utility.functional.iterable.NullableIterable;
-import net.digitalid.utility.functional.iterable.NonNullIterable;
 import net.digitalid.utility.functional.iterable.filter.predicate.NonNullPredicate;
 import net.digitalid.utility.functional.iterable.map.function.NonNullToNonNullUnaryFunction;
 import net.digitalid.utility.generator.BuilderGenerator;
@@ -112,7 +112,8 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     
     protected static final @Nonnull NonNullToNonNullUnaryFunction<ExecutableElement, MethodInformation, DeclaredType> methodInformationFunction = new NonNullToNonNullUnaryFunction<ExecutableElement, MethodInformation, DeclaredType>() {
         
-        @Nonnull @Override public MethodInformation apply(@Nonnull ExecutableElement element, @Nullable DeclaredType containingType) {
+        @Override
+        public @Nonnull MethodInformation apply(@Nonnull ExecutableElement element, @Nullable DeclaredType containingType) {
             assert containingType != null;
             return MethodInformation.of(element, containingType);
         }
@@ -145,8 +146,8 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         return indexedMethods;
     }
     
-    protected @Nonnull @NonNullableElements NonNullIterable<MethodInformation> getMethodInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
-        return NullableIterable.ofNonNullElements(javax.lang.model.util.ElementFilter.methodsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))).map(methodInformationFunction, containingType);
+    protected @Nonnull @NonNullableElements NonNullableIterable<MethodInformation> getMethodInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
+        return NullableIterable.ofNonNullableElements(javax.lang.model.util.ElementFilter.methodsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))).map(methodInformationFunction, containingType);
     }
     
     /* -------------------------------------------------- Utility -------------------------------------------------- */
@@ -165,7 +166,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     protected TypeInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
         super(typeElement, typeElement.asType(), containingType);
         
-        final @Nonnull NonNullIterable<MethodInformation> methodInformation = getMethodInformation(typeElement, containingType);
+        final @Nonnull NonNullableIterable<MethodInformation> methodInformation = getMethodInformation(typeElement, containingType);
         
         this.abstractGetters = indexMethodInformation(methodInformation.filter(abstractGetterPredicate));
     

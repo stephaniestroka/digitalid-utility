@@ -34,7 +34,7 @@ public class InterfaceInformation extends TypeInformation {
     @Pure
     @Override
     public @Nonnull List<RepresentingFieldInformation> getRepresentingFieldInformation() throws UnexpectedTypeContentException {
-        return NullableIterable.ofNonNullElements(generatedFieldInformation).map(castToRepresentingFieldInformation).toList();
+        return NullableIterable.ofNonNullableElements(generatedFieldInformation).map(castToRepresentingFieldInformation).toList();
     }
     
     /* -------------------------------------------------- Overriden Methods -------------------------------------------------- */

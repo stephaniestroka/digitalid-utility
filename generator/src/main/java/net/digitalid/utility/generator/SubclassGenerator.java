@@ -101,7 +101,7 @@ public class SubclassGenerator extends JavaFileGenerator {
     private void generateConstructor(@Nullable List<? extends TypeMirror> throwTypes, @Nullable String superStatement) throws UnexpectedTypeContentException {
          final @Nonnull @NonNullableElements List<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
         
-        beginConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + IterableConverter.toString(NullableIterable.ofNonNullElements(representingFieldInformation).map(elementInformationToStringFunction), Brackets.ROUND) + (throwTypes == null || throwTypes.isEmpty() ? "" : " throws " + IterableConverter.toString(throwTypes, importingTypeVisitor.TYPE_MAPPER)));
+        beginConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + IterableConverter.toString(NullableIterable.ofNonNullableElements(representingFieldInformation).map(elementInformationToStringFunction), Brackets.ROUND) + (throwTypes == null || throwTypes.isEmpty() ? "" : " throws " + IterableConverter.toString(throwTypes, importingTypeVisitor.TYPE_MAPPER)));
 
         if (superStatement != null) {
             addStatement(superStatement);
@@ -118,7 +118,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         if (typeInformation instanceof ClassInformation) {
             for (@Nonnull ConstructorInformation constructor : typeInformation.getConstructors()) {
                 ClassInformation classInformation = (ClassInformation) typeInformation;
-                generateConstructor(constructor.getElement().getThrownTypes(), "super" + IterableConverter.toString(NullableIterable.ofNonNullElements(classInformation.parameterBasedFieldInformation).map(elementInformationToStringFunction), Brackets.ROUND));
+                generateConstructor(constructor.getElement().getThrownTypes(), "super" + IterableConverter.toString(NullableIterable.ofNonNullableElements(classInformation.parameterBasedFieldInformation).map(elementInformationToStringFunction), Brackets.ROUND));
             }
         } else if (typeInformation instanceof InterfaceInformation) {
             generateConstructor(null, null);
@@ -143,7 +143,7 @@ public class SubclassGenerator extends JavaFileGenerator {
             addAnnotation(Override.class);
             beginMethod(method.getModifiersForOverridingMethod() + importIfPossible(method.getType()) + " " + method.getName() + importingTypeVisitor.reduceParametersDeclarationToString(method.getType(), method.getElement()) + (method.getElement().getThrownTypes().isEmpty() ? "" : " throws " + IterableConverter.toString(method.getElement().getThrownTypes(), importingTypeVisitor.TYPE_MAPPER)));
             addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + method.getName() + " was called.") + ")");
-            addStatement((method.hasReturnType() ? "return " : "") + "super." + method.getName() + IterableConverter.toString(NullableIterable.ofNonNullElements(method.getElement().getParameters()).map(parameterToStringFunction), Brackets.ROUND));
+            addStatement((method.hasReturnType() ? "return " : "") + "super." + method.getName() + IterableConverter.toString(NullableIterable.ofNonNullableElements(method.getElement().getParameters()).map(parameterToStringFunction), Brackets.ROUND));
             endMethod();
         }
     }
