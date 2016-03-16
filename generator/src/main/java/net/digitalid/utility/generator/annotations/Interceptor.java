@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 
 /**
- * This meta-annotation indicates the interceptor which intercepts calls to methods that are annotated by the annotated annotation.
+ * This meta-annotation links to the interceptor which intercepts calls to methods that are annotated with the annotated annotation.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -19,7 +19,7 @@ import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 public @interface Interceptor {
     
     /**
-     * Returns the interceptor which intercepts calls to methods that are annotated by the annotated annotation.
+     * Returns the interceptor which intercepts calls to methods that are annotated with the annotated annotation.
      */
     @Nonnull Class<? extends MethodInterceptor> value();
     

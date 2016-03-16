@@ -1,18 +1,9 @@
 package net.digitalid.utility.generator.interceptor;
 
 import javax.annotation.Nonnull;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
 
-import net.digitalid.utility.validation.validator.AnnotationHandler;
-
-public class MethodInterceptor extends AnnotationHandler {
+public interface MethodInterceptor {
     
-    public Object invoke(@Nonnull MethodInvocation methodInvocation) throws Throwable {
-        return null;
-    }
+    public abstract Object invoke(@Nonnull MethodInvocation methodInvocation) throws Throwable;
     
-    @Override public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
-        
-    }
 }

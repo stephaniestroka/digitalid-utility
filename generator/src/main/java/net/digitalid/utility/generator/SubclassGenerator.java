@@ -142,6 +142,7 @@ public class SubclassGenerator extends JavaFileGenerator {
             ProcessingLog.verbose("Overriding the method " + QuoteString.inSingle(method.getName()));
             addAnnotation(Override.class);
             beginMethod(method.getModifiersForOverridingMethod() + importIfPossible(method.getType()) + " " + method.getName() + importingTypeVisitor.reduceParametersDeclarationToString(method.getType(), method.getElement()) + (method.getElement().getThrownTypes().isEmpty() ? "" : " throws " + IterableConverter.toString(method.getElement().getThrownTypes(), importingTypeVisitor.TYPE_MAPPER)));
+            // TODO: get method interceptor and generate call to invoke()
             addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + method.getName() + " was called.") + ")");
             addStatement((method.hasReturnType() ? "return " : "") + "super." + method.getName() + IterableConverter.toString(NullableIterable.ofNonNullableElements(method.getElement().getParameters()).map(parameterToStringFunction), Brackets.ROUND));
             endMethod();
