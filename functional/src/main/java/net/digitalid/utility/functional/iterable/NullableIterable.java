@@ -14,7 +14,7 @@ import net.digitalid.utility.functional.function.binary.NullableToNullableBinary
 import net.digitalid.utility.functional.function.unary.NullableToNonNullUnaryFunction;
 import net.digitalid.utility.functional.function.unary.NullableToNullableUnaryFunction;
 import net.digitalid.utility.functional.iterable.exceptions.InfiniteIterableException;
-import net.digitalid.utility.functional.iterable.filter.predicate.implementation.FilterNonNullPredicate;
+import net.digitalid.utility.functional.iterable.filter.predicate.implementation.FilterNonNullablePredicate;
 import net.digitalid.utility.functional.iterable.zip.ZipStrategy;
 import net.digitalid.utility.functional.predicate.NullablePredicate;
 import net.digitalid.utility.tuples.pair.NullablePair;
@@ -87,7 +87,7 @@ public abstract class NullableIterable<T> implements Iterable<T> {
      * Filters all elements that are non-null and returns an iterable with non-null elements.
      */
     public @Nonnull NonNullableIterable<T> filterNonNull() {
-        return new FilterNonNullIterable<>(this, new FilterNonNullPredicate<T>());
+        return new FilterNonNullIterable<>(this, new FilterNonNullablePredicate<T>());
     }
     
     /**
@@ -240,5 +240,21 @@ public abstract class NullableIterable<T> implements Iterable<T> {
      */
     @Pure
     public abstract int size();
+    
+    /**
+     * Returns true if the size of this iterable is 0.
+     */
+    @Pure
+    public boolean isEmpty() {
+        return size() == 0;
+    }
+    
+    /**
+     * Returns true if the size of this iterable is -1, which indicates that the iterable is infinitely large.
+     */
+    @Pure
+    public boolean isInfinite() {
+        return size() == -1;
+    }
     
 }

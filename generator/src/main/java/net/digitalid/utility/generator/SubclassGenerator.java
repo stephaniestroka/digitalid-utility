@@ -11,12 +11,12 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunction;
+import net.digitalid.utility.functional.iterable.NonNullableIterable;
 import net.digitalid.utility.functional.iterable.NullableIterable;
-import net.digitalid.utility.functional.iterable.map.function.NonNullToNonNullUnaryFunction;
 import net.digitalid.utility.functional.string.Brackets;
 import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.generator.information.ElementInformation;
-import net.digitalid.utility.generator.information.exceptions.UnexpectedTypeContentException;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedFieldInformation;
 import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
@@ -25,12 +25,12 @@ import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.type.ClassInformation;
 import net.digitalid.utility.generator.information.type.InterfaceInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
+import net.digitalid.utility.generator.information.type.exceptions.UnsupportedTypeException;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.string.StringCase;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
@@ -89,19 +89,19 @@ public class SubclassGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    private static NonNullToNonNullUnaryFunction<ElementInformation, String, Object> elementInformationToStringFunction = new NonNullToNonNullUnaryFunction<ElementInformation, String, Object>() {
+    private static NonNullToNonNullUnaryFunction<ElementInformation, String> elementInformationToStringFunction = new NonNullToNonNullUnaryFunction<ElementInformation, String>() {
         
         @Override
-        public @Nonnull String apply(@Nonnull ElementInformation element, @Nullable Object additionalInformation) {
+        public @Nonnull String apply(@Nonnull ElementInformation element) {
             return element.getName();
         }
         
     };
     
-    private void generateConstructor(@Nullable List<? extends TypeMirror> throwTypes, @Nullable String superStatement) throws UnexpectedTypeContentException {
-         final @Nonnull @NonNullableElements List<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
+    private void generateConstructor(@Nullable List<? extends TypeMirror> throwTypes, @Nullable String superStatement) throws UnsupportedTypeException {
+         final @Nonnull NonNullableIterable<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
         
-        beginConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + IterableConverter.toString(NullableIterable.ofNonNullableElements(representingFieldInformation).map(elementInformationToStringFunction), Brackets.ROUND) + (throwTypes == null || throwTypes.isEmpty() ? "" : " throws " + IterableConverter.toString(throwTypes, importingTypeVisitor.TYPE_MAPPER)));
+        beginConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + IterableConverter.toString(representingFieldInformation.map(elementInformationToStringFunction), Brackets.ROUND) + (throwTypes == null || throwTypes.isEmpty() ? "" : " throws " + IterableConverter.toString(throwTypes, importingTypeVisitor.TYPE_MAPPER)));
 
         if (superStatement != null) {
             addStatement(superStatement);
@@ -113,12 +113,12 @@ public class SubclassGenerator extends JavaFileGenerator {
         endConstructor();       
     }
     
-    protected void generateConstructors() throws UnexpectedTypeContentException {
+    protected void generateConstructors() throws UnsupportedTypeException {
         addSection("Constructors");
         if (typeInformation instanceof ClassInformation) {
             for (@Nonnull ConstructorInformation constructor : typeInformation.getConstructors()) {
                 ClassInformation classInformation = (ClassInformation) typeInformation;
-                generateConstructor(constructor.getElement().getThrownTypes(), "super" + IterableConverter.toString(NullableIterable.ofNonNullableElements(classInformation.parameterBasedFieldInformation).map(elementInformationToStringFunction), Brackets.ROUND));
+                generateConstructor(constructor.getElement().getThrownTypes(), "super" + IterableConverter.toString(classInformation.parameterBasedFieldInformation.map(elementInformationToStringFunction), Brackets.ROUND));
             }
         } else if (typeInformation instanceof InterfaceInformation) {
             generateConstructor(null, null);
@@ -127,10 +127,10 @@ public class SubclassGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Overridden Methods -------------------------------------------------- */
     
-    private static NonNullToNonNullUnaryFunction<VariableElement, String, Object> parameterToStringFunction = new NonNullToNonNullUnaryFunction<VariableElement, String, Object>() {
+    private static NonNullToNonNullUnaryFunction<VariableElement, String> parameterToStringFunction = new NonNullToNonNullUnaryFunction<VariableElement, String>() {
         
         @Override
-        public @Nonnull String apply(@Nonnull VariableElement element, @Nullable Object additionalInformation) {
+        public @Nonnull String apply(@Nonnull VariableElement element) {
             return element.getSimpleName().toString();
         }
         

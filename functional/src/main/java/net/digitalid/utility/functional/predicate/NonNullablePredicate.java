@@ -9,16 +9,16 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  * A predicate that can only be applied on non-nullable objects.
  */
 @Stateless
-public abstract class NonNullPredicate<T> implements Predicate<T> {
+public abstract class NonNullablePredicate<T> implements Predicate<T> {
     
     /**
      * Combines two predicates using an AND operator.
      * Since the first predicate is non-null, the second predicate must also be non-null.
      */
     @Pure
-    public NonNullPredicate<T> and(@Nonnull final NonNullPredicate<T> predicate) {
-        final @Nonnull NonNullPredicate<T> self = this;
-        return new NonNullPredicate<T>() {
+    public NonNullablePredicate<T> and(@Nonnull final NonNullablePredicate<T> predicate) {
+        final @Nonnull NonNullablePredicate<T> self = this;
+        return new NonNullablePredicate<T>() {
             
             @Override
             public boolean apply(@Nonnull T object) {
@@ -32,9 +32,9 @@ public abstract class NonNullPredicate<T> implements Predicate<T> {
      * Combines two predicates using an OR operator.
      */
     @Pure
-    public NonNullPredicate<T> or(@Nonnull final NonNullPredicate<T> predicate) {
-        final @Nonnull NonNullPredicate<T> self = this;
-        return new NonNullPredicate<T>() {
+    public NonNullablePredicate<T> or(@Nonnull final NonNullablePredicate<T> predicate) {
+        final @Nonnull NonNullablePredicate<T> self = this;
+        return new NonNullablePredicate<T>() {
             
             @Override
             public boolean apply(@Nonnull T object) {
@@ -48,9 +48,9 @@ public abstract class NonNullPredicate<T> implements Predicate<T> {
      * Combines two predicates using an OR operator.
      */
     @Pure
-    public NonNullPredicate<T> negate() {
-        final @Nonnull NonNullPredicate<T> self = this;
-        return new NonNullPredicate<T>() {
+    public NonNullablePredicate<T> negate() {
+        final @Nonnull NonNullablePredicate<T> self = this;
+        return new NonNullablePredicate<T>() {
             
             @Override public boolean apply(@Nonnull T object) {
                 return !self.apply(object);

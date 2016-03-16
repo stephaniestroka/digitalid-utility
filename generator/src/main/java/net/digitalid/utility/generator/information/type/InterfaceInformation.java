@@ -1,16 +1,14 @@
 package net.digitalid.utility.generator.information.type;
 
 import java.util.Collections;
-import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 
-import net.digitalid.utility.functional.iterable.NullableIterable;
+import net.digitalid.utility.functional.iterable.NonNullableIterable;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
-import net.digitalid.utility.generator.information.exceptions.UnexpectedTypeContentException;
 import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
@@ -25,28 +23,31 @@ public class InterfaceInformation extends TypeInformation {
     
     @Pure
     @Override
-    public @Nonnull List<ConstructorInformation> getConstructors() {
-        return Collections.emptyList();
+    public @Nonnull NonNullableIterable<ConstructorInformation> getConstructors() {
+        return NonNullableIterable.ofNonNullableElements(Collections.<ConstructorInformation>emptyList());
     }
     
     /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Nonnull List<RepresentingFieldInformation> getRepresentingFieldInformation() throws UnexpectedTypeContentException {
-        return NullableIterable.ofNonNullableElements(generatedFieldInformation).map(castToRepresentingFieldInformation).toList();
+    public @Nonnull NonNullableIterable<RepresentingFieldInformation> getRepresentingFieldInformation() {
+        return generatedFieldInformation.map(toRepresentingFieldInformation);
     }
     
     /* -------------------------------------------------- Overriden Methods -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Nonnull List<MethodInformation> getOverriddenMethods() {
-        return Collections.emptyList();
+    public @Nonnull NonNullableIterable<MethodInformation> getOverriddenMethods() {
+        return NonNullableIterable.ofNonNullableElements(Collections.<MethodInformation>emptyList());
     }
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
+    /**
+     * Creates a new interface information instance.
+     */
     protected InterfaceInformation(@Nonnull TypeElement element, @Nonnull DeclaredType containingType) {
         super(element, containingType);
     }

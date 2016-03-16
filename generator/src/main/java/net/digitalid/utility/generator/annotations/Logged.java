@@ -6,6 +6,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.annotation.Nonnull;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 
 /**
@@ -23,7 +27,12 @@ public @interface Logged {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     public static class Interceptor extends MethodInterceptor {
-        // TODO: Generate the method interception.
+    
+        @Override
+        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
+            // TODO: Generate the method interception.
+        }
+        
     }
     
 }

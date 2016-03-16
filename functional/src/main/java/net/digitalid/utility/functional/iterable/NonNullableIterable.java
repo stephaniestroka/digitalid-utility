@@ -13,7 +13,7 @@ import net.digitalid.utility.functional.function.binary.NonNullToNullableBinaryF
 import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunction;
 import net.digitalid.utility.functional.function.unary.NonNullToNullableUnaryFunction;
 import net.digitalid.utility.functional.iterable.exceptions.InfiniteIterableException;
-import net.digitalid.utility.functional.predicate.NonNullPredicate;
+import net.digitalid.utility.functional.predicate.NonNullablePredicate;
 import net.digitalid.utility.tuples.pair.NonNullablePair;
 import net.digitalid.utility.tuples.quartet.NonNullableQuartet;
 import net.digitalid.utility.tuples.triplet.NonNullableTriplet;
@@ -45,8 +45,34 @@ public abstract class NonNullableIterable<T> extends NullableIterable<T> {
     /**
      * Applies a filter to a non-null iterable and returns a new iterable.
      */
-    public @Nonnull NonNullableIterable<T> filter(@Nonnull NonNullPredicate<T> predicate) {
+    public @Nonnull NonNullableIterable<T> filter(@Nonnull NonNullablePredicate<T> predicate) {
         return new FilterNonNullIterable<>(this, predicate);
+    }
+    
+    /* -------------------------------------------------- Find First -------------------------------------------------- */
+    
+    /**
+     * Filters and returns the first element that matches the given predicate.
+     * If no element was found, null is returned.
+     */
+    public @Nullable T findFirst(@Nonnull NonNullablePredicate<T> predicate) {
+        final @Nonnull NullableIterable<T> iterable = filter(predicate);
+        final @Nonnull Iterator<T> iterator = iterable.iterator();
+        return iterator.hasNext() ? iterator.next() : null;
+    }
+    
+    /**
+     * Filters the first element that matches the given predicate. If an element was found, a given function is applied and the result is returned. Otherwise, null is returned.
+     */
+    public @Nullable <O> O findFirst(@Nonnull NonNullablePredicate<T> predicate, @Nonnull NonNullToNonNullUnaryFunction<T, O> function) {
+        final @Nonnull NullableIterable<T> iterable = filter(predicate);
+        final @Nonnull Iterator<T> iterator = iterable.iterator();
+        if (iterator.hasNext()) {
+            final @Nonnull T element = iterator.next();
+            return function.apply(element);
+        } else {
+            return null;
+        }
     }
     
     /* -------------------------------------------------- Map -------------------------------------------------- */

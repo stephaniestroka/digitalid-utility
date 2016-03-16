@@ -9,7 +9,10 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 
+import net.digitalid.utility.generator.information.type.ClassInformation;
+import net.digitalid.utility.generator.information.type.InterfaceInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.processor.CustomProcessor;
@@ -57,8 +60,15 @@ public class GeneratorProcessor extends CustomProcessor {
      * 
      * @return whether these classes can be generated for the given type.
      */
-    protected boolean generateClasses(@Nonnull TypeElement typeElement) {
-        final @Nonnull TypeInformation typeInformation = TypeInformation.forType(typeElement);
+    protected boolean generateClasses(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
+        final @Nonnull TypeInformation typeInformation;
+        if (typeElement.getKind() == ElementKind.CLASS) {
+            typeInformation = ClassInformation.of(typeElement, containingType);
+        } else {
+            assert typeElement.getKind() == ElementKind.INTERFACE;
+            
+            typeInformation = InterfaceInformation.of(typeElement, containingType);
+        }
         if (typeInformation.isGeneratable()) {
             SubclassGenerator.generateSubclassOf(typeInformation);
             BuilderGenerator.generateBuilderFor(typeInformation);
@@ -74,7 +84,7 @@ public class GeneratorProcessor extends CustomProcessor {
                 if (!rootElement.getModifiers().contains(Modifier.FINAL) && !PrefixString.startsWithAny(rootElement.getSimpleName().toString(), "ReadOnly", "Freezable") && !rootElement.getSimpleName().toString().endsWith("Test") && !rootElement.getSimpleName().toString().equals("ConverterAnnotations")) {
                     ProcessingLog.debugging("Generate the classes for  " + QuoteString.inSingle(rootElement.getSimpleName()));
                     final long start = System.currentTimeMillis();
-                    final boolean generated = generateClasses((TypeElement) rootElement);
+                    final boolean generated = generateClasses((TypeElement) rootElement, (DeclaredType) rootElement.asType());
                     final long end = System.currentTimeMillis();
                     ProcessingLog.debugging("Generated " + (generated ? "the" : "no") + " classes for " + QuoteString.inSingle(rootElement.getSimpleName()) + " in " + (end - start) + " ms.\n");
                 }

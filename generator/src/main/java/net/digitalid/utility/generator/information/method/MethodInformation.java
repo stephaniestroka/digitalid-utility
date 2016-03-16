@@ -13,7 +13,6 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.annotations.Interceptor;
 import net.digitalid.utility.generator.annotations.Recover;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
@@ -26,13 +25,13 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 
 /**
- * This type collects the relevant information about a method for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
+ * This type collects the relevant information about a method for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.
  */
 public class MethodInformation extends ExecutableInformation {
     
     private final @Nonnull Map<AnnotationMirror, MethodAnnotationValidator> methodValidators;
     
-    public Map<AnnotationMirror, MethodAnnotationValidator> getMethodValidators() {
+    public @Nonnull Map<AnnotationMirror, MethodAnnotationValidator> getMethodValidators() {
         return methodValidators;
     }
     

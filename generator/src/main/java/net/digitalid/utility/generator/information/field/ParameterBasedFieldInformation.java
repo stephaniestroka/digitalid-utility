@@ -6,7 +6,7 @@ import javax.lang.model.element.VariableElement;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
- * This type collects the relevant information about a parameter-based field for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
+ * This type collects the relevant information about a parameter-based field for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.
  */
 public interface ParameterBasedFieldInformation extends RepresentingFieldInformation {
     

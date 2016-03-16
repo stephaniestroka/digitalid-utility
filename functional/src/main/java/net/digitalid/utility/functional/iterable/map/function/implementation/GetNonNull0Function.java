@@ -11,10 +11,10 @@ import net.digitalid.utility.tuples.pair.NullablePair;
 /**
  * Provides an implementation to get the first element out of a tuple.
  */
-public class GetNonNull0Function<E0> extends NonNullToNonNullUnaryFunction<NonNullablePair<E0, ?>, E0> {
+public class GetNonNull0Function<E0, E1> extends NonNullToNonNullUnaryFunction<NonNullablePair<E0, E1>, E0> {
     
     @Override
-    public @Nonnull E0 apply(@Nonnull NonNullablePair<E0, ?> element) {
+    public @Nonnull E0 apply(@Nonnull NonNullablePair<E0, E1> element) {
         return element.get0();
     }
     

@@ -12,7 +12,7 @@ import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
- * This type collects the relevant information about an executable for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
+ * This type collects the relevant information about an executable for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.
  * 
  * @see ConstructorInformation
  * @see MethodInformation

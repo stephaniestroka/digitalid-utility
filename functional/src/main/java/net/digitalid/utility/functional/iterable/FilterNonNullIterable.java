@@ -5,8 +5,8 @@ import java.util.Iterator;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.functional.iterable.filter.FilterIterator;
-import net.digitalid.utility.functional.iterable.filter.predicate.implementation.FilterNonNullPredicate;
-import net.digitalid.utility.functional.predicate.NonNullPredicate;
+import net.digitalid.utility.functional.iterable.filter.predicate.implementation.FilterNonNullablePredicate;
+import net.digitalid.utility.functional.predicate.NonNullablePredicate;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
@@ -29,13 +29,13 @@ class FilterNonNullIterable<T> extends NonNullableIterable<T> {
      * The predicate which is used to filter elements from an iterator. Only the elements that
      * satisfy the predicate are returned by this iterator.
      */
-    private final @Nonnull NonNullPredicate<T> predicate;
+    private final @Nonnull NonNullablePredicate<T> predicate;
     
     /**
      * Creates a new filter iterable, which implements a filter with the given predicate on the iterator.
      * The filtered elements are non-nullable.
      */
-    protected FilterNonNullIterable(@Nonnull NonNullableIterable<T> iterable, @Nonnull NonNullPredicate<T> predicate) {
+    protected FilterNonNullIterable(@Nonnull NonNullableIterable<T> iterable, @Nonnull NonNullablePredicate<T> predicate) {
         this.iterable = iterable;
         this.predicate = predicate;
     }
@@ -43,7 +43,7 @@ class FilterNonNullIterable<T> extends NonNullableIterable<T> {
     /**
      * Creates a new filter iterable with non-null elements on an iterable with potential nullable elements and a predicate that filters non-nullable elements.
      */
-    protected FilterNonNullIterable(@Nonnull NullableIterable<T> iterable, @Nonnull FilterNonNullPredicate<T> predicate) {
+    protected FilterNonNullIterable(@Nonnull NullableIterable<T> iterable, @Nonnull FilterNonNullablePredicate<T> predicate) {
         this.iterable = iterable;
         this.predicate = predicate;
     }

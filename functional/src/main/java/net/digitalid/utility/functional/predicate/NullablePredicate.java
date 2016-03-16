@@ -10,7 +10,7 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  * A predicate that can be applied on nullable objects.
  */
 @Stateless
-public abstract class NullablePredicate<T> extends NonNullPredicate<T> {
+public abstract class NullablePredicate<T> extends NonNullablePredicate<T> {
     
     /* -------------------------------------------------- Combinations of Predicates -------------------------------------------------- */
     

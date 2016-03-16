@@ -12,7 +12,7 @@ import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.string.IterableConverter;
-import net.digitalid.utility.generator.information.exceptions.UnexpectedTypeContentException;
+import net.digitalid.utility.generator.information.type.exceptions.UnsupportedTypeException;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.logging.processing.ProcessingLog;
@@ -84,7 +84,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      * Returns a list of field information objects for fields that are required.
      */
     // TODO: improve exception handling
-    private @Nonnull @NonNullableElements List<FieldInformation> getRequiredFields() throws UnexpectedTypeContentException {
+    private @Nonnull @NonNullableElements List<FieldInformation> getRequiredFields() throws UnsupportedTypeException {
         final @Nonnull @NonNullableElements List<FieldInformation> requiredFields = new ArrayList<>();
         for (@Nonnull FieldInformation fieldInformation : typeInformation.getRepresentingFieldInformation()) {
             if (isFieldRequired(fieldInformation)) {
@@ -123,7 +123,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      * Creates a builder that collects all fields and provides a build() method, which returns an instance of the type that the builder builds.
      */
     // TODO: improve exception handling
-    protected void createInnerClassForFields(@Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) throws UnexpectedTypeContentException {
+    protected void createInnerClassForFields(@Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) throws UnsupportedTypeException {
         
         ProcessingLog.debugging("createInnerClassForFields()");
         
@@ -173,7 +173,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      * a static "get()" method is created, which returns the new builder instance without calling any additional builder setters.
      */
     // TODO: improve exception handling
-    protected void createStaticEntryMethod(@Nonnull FieldInformation entryField, @Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) throws UnexpectedTypeContentException {
+    protected void createStaticEntryMethod(@Nonnull FieldInformation entryField, @Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) throws UnsupportedTypeException {
         final List<? extends TypeMirror> typeArguments = typeInformation.getType().getTypeArguments();
         
         if (interfacesForRequiredFields.size() > 0) {

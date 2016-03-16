@@ -10,7 +10,7 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  * This predicate is used in combination with a filter that intends to filter out all non-nullable objects.
  */
 @Stateless
-public class FilterNonNullPredicate<T> extends NullablePredicate<T> {
+public class FilterNonNullablePredicate<T> extends NullablePredicate<T> {
     
     /**
      * Returns false if an object is null.

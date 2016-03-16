@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.functional.predicate.NonNullPredicate;
+import net.digitalid.utility.functional.predicate.NonNullablePredicate;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
@@ -21,7 +21,7 @@ public class FilterIterator<E> implements Iterator<E> {
      * The predicate which is used to filter elements from an iterator. Only the elements that
      * satisfy the predicate are returned by this iterator.
      */
-    private final @Nonnull NonNullPredicate<E> predicate;
+    private final @Nonnull NonNullablePredicate<E> predicate;
     
     /**
      * The iterator which serves as a source for the elements.
@@ -33,7 +33,7 @@ public class FilterIterator<E> implements Iterator<E> {
     /**
      * Creates a new filter iterator with a given source iterator and a given predicate.
      */
-    public FilterIterator(@Nonnull @NullableElements Iterator<E> iterator, @Nonnull NonNullPredicate<E> predicate) {
+    public FilterIterator(@Nonnull @NullableElements Iterator<E> iterator, @Nonnull NonNullablePredicate<E> predicate) {
         this.predicate = predicate;
         this.iterator = iterator;
     }

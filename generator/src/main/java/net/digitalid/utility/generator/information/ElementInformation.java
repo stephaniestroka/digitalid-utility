@@ -2,7 +2,6 @@ package net.digitalid.utility.generator.information;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -18,14 +17,12 @@ import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.state.Unmodifiable;
-import net.digitalid.utility.validation.validator.ContractGenerator;
-import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
  * This type collects the relevant information about an element for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  * 
  * @see ElementInformationImplementation
- * @see FieldInformation
+ * @see net.digitalid.utility.generator.information.field.FieldInformation
  */
 public interface ElementInformation {
     
