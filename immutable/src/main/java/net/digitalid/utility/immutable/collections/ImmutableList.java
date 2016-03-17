@@ -19,7 +19,14 @@ public class ImmutableList<E> extends ArrayList<E> {
     protected ImmutableList(Collection<? extends E> collection) {
         super(collection);
         
-        if (contains(null)) { throw new NullPointerException("An immutable set may not contain null."); }
+        if (contains(null)) { throw new NullPointerException("An immutable list may not contain null."); }
+    }
+    
+    protected ImmutableList(Iterable<? extends E> iterable) {
+        for (E element : iterable) {
+            if (element == null) { throw new NullPointerException("An immutable list may not contain null."); }
+            super.add(element);
+        }
     }
     
     /**
@@ -30,6 +37,16 @@ public class ImmutableList<E> extends ArrayList<E> {
      */
     public static <E> ImmutableList<E> with(Collection<? extends E> collection) {
         return new ImmutableList<>(collection);
+    }
+    
+    /**
+     * Returns an immutable list with the elements of the given iterable in the same order.
+     * The given iterable is not captured as its elements are copied to the immutable list.
+     * 
+     * @throws NullPointerException if any of the elements of the given iterable is null.
+     */
+    public static <E> ImmutableList<E> with(Iterable<? extends E> iterable) {
+        return new ImmutableList<>(iterable);
     }
     
     /**

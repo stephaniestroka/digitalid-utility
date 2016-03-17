@@ -21,6 +21,13 @@ public class ImmutableSet<E> extends LinkedHashSet<E> {
         if (contains(null)) { throw new NullPointerException("An immutable set may not contain null."); }
     }
     
+    protected ImmutableSet(Iterable<? extends E> iterable) {
+        for (E element : iterable) {
+            if (element == null) { throw new NullPointerException("An immutable set may not contain null."); }
+            super.add(element);
+        }
+    }
+    
     /**
      * Returns an immutable set with the elements of the given collection.
      * The given collection is not captured as its elements are copied to the immutable set.
@@ -29,6 +36,16 @@ public class ImmutableSet<E> extends LinkedHashSet<E> {
      */
     public static <E> ImmutableSet<E> with(Collection<? extends E> collection) {
         return new ImmutableSet<>(collection);
+    }
+    
+    /**
+     * Returns an immutable set with the elements of the given iterable.
+     * The given iterable is not captured as its elements are copied to the immutable set.
+     * 
+     * @throws NullPointerException if any of the elements of the given iterable is null.
+     */
+    public static <E> ImmutableSet<E> with(Iterable<? extends E> iterable) {
+        return new ImmutableSet<>(iterable);
     }
     
     /**
