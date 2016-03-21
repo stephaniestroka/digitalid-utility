@@ -5,7 +5,7 @@ import java.util.Iterator;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.functional.iterable.zip.ZipToNonNullableQuartetIterator;
-import net.digitalid.utility.tuples.quartet.NonNullableQuartet;
+import net.digitalid.utility.tupless.quartet.NonNullableQuartet;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;

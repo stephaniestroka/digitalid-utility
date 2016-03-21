@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.functional.function.unary.NonNullToNullableUnaryFunction;
-import net.digitalid.utility.tuples.quartet.NullableQuartet;
+import net.digitalid.utility.tupless.quartet.NullableQuartet;
 
 /**
  * Provides an implementation to get the forth element out of a tuple.

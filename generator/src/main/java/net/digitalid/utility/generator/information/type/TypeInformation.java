@@ -25,9 +25,9 @@ import net.digitalid.utility.generator.information.field.RepresentingFieldInform
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
-import net.digitalid.utility.tuples.pair.NonNullablePair;
-import net.digitalid.utility.tuples.pair.NullablePair;
-import net.digitalid.utility.tuples.pair.Pair;
+import net.digitalid.utility.tuples.NonNullablePair;
+import net.digitalid.utility.tuples.NullablePair;
+import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 

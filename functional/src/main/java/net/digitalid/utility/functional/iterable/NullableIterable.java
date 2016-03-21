@@ -17,9 +17,9 @@ import net.digitalid.utility.functional.iterable.exceptions.InfiniteIterableExce
 import net.digitalid.utility.functional.iterable.filter.predicate.implementation.FilterNonNullablePredicate;
 import net.digitalid.utility.functional.iterable.zip.ZipStrategy;
 import net.digitalid.utility.functional.predicate.NullablePredicate;
-import net.digitalid.utility.tuples.pair.NullablePair;
-import net.digitalid.utility.tuples.quartet.NullableQuartet;
-import net.digitalid.utility.tuples.triplet.NullableTriplet;
+import net.digitalid.utility.tuples.NullablePair;
+import net.digitalid.utility.tupless.quartet.NullableQuartet;
+import net.digitalid.utility.tupless.triplet.NullableTriplet;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;

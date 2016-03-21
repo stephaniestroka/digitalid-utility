@@ -13,12 +13,4 @@
         <version>1.0.0</version>
     </parent>
     
-    <dependencies>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-rootclass</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
-    
 </project>

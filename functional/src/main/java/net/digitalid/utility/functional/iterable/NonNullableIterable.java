@@ -14,9 +14,9 @@ import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunc
 import net.digitalid.utility.functional.function.unary.NonNullToNullableUnaryFunction;
 import net.digitalid.utility.functional.iterable.exceptions.InfiniteIterableException;
 import net.digitalid.utility.functional.predicate.NonNullablePredicate;
-import net.digitalid.utility.tuples.pair.NonNullablePair;
-import net.digitalid.utility.tuples.quartet.NonNullableQuartet;
-import net.digitalid.utility.tuples.triplet.NonNullableTriplet;
+import net.digitalid.utility.tuples.NonNullablePair;
+import net.digitalid.utility.tupless.quartet.NonNullableQuartet;
+import net.digitalid.utility.tupless.triplet.NonNullableTriplet;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
