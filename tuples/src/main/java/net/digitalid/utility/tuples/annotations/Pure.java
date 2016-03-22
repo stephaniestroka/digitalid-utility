@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.annotations.method;
+package net.digitalid.utility.tuples.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

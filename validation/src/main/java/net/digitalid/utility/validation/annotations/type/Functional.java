@@ -2,7 +2,6 @@ package net.digitalid.utility.validation.annotations.type;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -10,9 +9,10 @@ import java.lang.annotation.Target;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.logging.processing.ProcessingLog;
@@ -23,17 +23,14 @@ import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
 
 /**
- * This annotation indicates that the objects of the annotated class are stateless (have no non-static fields).
- * 
- * @see Utility
- * @see Immutable
+ * This annotation indicates that an interface is intended to be a <i>functional interface</i> as defined by the Java Language Specification.
+ * It should only be used on interface declarations and one may not add more abstract methods later on as other code might depend on this.
  */
-@Inherited
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@TypeValidator(Stateless.Validator.class)
-public @interface Stateless {
+@TypeValidator(Functional.Validator.class)
+public @interface Functional {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
     
@@ -46,10 +43,21 @@ public @interface Stateless {
         @Pure
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
-            for (@Nonnull VariableElement field : ElementFilter.fieldsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers((TypeElement) element))) {
-                if (!field.getModifiers().contains(Modifier.STATIC)) {
-                    ProcessingLog.error("The stateless type $ may not have non-static fields.", SourcePosition.of(field), element);
+            if (element.getKind() != ElementKind.INTERFACE) {
+                ProcessingLog.error("Only an interface can be functional.", SourcePosition.of(element));
+            }
+            boolean found = false;
+            for (@Nonnull ExecutableElement method : ElementFilter.methodsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers((TypeElement) element))) {
+                if (method.getModifiers().contains(Modifier.ABSTRACT)) {
+                    if (found) {
+                        ProcessingLog.error("The functional interface $ may have only one abstract method.", SourcePosition.of(method), element);
+                    } else {
+                        found = true;
+                    }
                 }
+            }
+            if (!found) {
+                ProcessingLog.error("The functional interface $ must have an abstract method.", SourcePosition.of(element), element);
             }
         }
         

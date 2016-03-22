@@ -2,6 +2,8 @@ package net.digitalid.utility.tuples;
 
 import java.util.Objects;
 
+import net.digitalid.utility.tuples.annotations.Pure;
+
 /**
  * This class implements an immutable septet.
  * 
@@ -12,6 +14,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     
     /* -------------------------------------------------- Element 0 -------------------------------------------------- */
     
+    @Pure
     @Override
     public Septet<E0, E1, E2, E3, E4, E5, E6> set0(E0 element0) {
         return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
@@ -19,6 +22,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     
     /* -------------------------------------------------- Element 1 -------------------------------------------------- */
     
+    @Pure
     @Override
     public Septet<E0, E1, E2, E3, E4, E5, E6> set1(E1 element1) {
         return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
@@ -26,6 +30,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     
     /* -------------------------------------------------- Element 2 -------------------------------------------------- */
     
+    @Pure
     @Override
     public Septet<E0, E1, E2, E3, E4, E5, E6> set2(E2 element2) {
         return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
@@ -33,6 +38,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     
     /* -------------------------------------------------- Element 3 -------------------------------------------------- */
     
+    @Pure
     @Override
     public Septet<E0, E1, E2, E3, E4, E5, E6> set3(E3 element3) {
         return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
@@ -40,6 +46,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     
     /* -------------------------------------------------- Element 4 -------------------------------------------------- */
     
+    @Pure
     @Override
     public Septet<E0, E1, E2, E3, E4, E5, E6> set4(E4 element4) {
         return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
@@ -47,6 +54,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     
     /* -------------------------------------------------- Element 5 -------------------------------------------------- */
     
+    @Pure
     @Override
     public Septet<E0, E1, E2, E3, E4, E5, E6> set5(E5 element5) {
         return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
@@ -59,6 +67,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     /**
      * Returns the seventh element of this tuple.
      */
+    @Pure
     public E6 get6() {
         return element6;
     }
@@ -66,6 +75,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     /**
      * Returns a new tuple with the seventh element set to the given object.
      */
+    @Pure
     public Septet<E0, E1, E2, E3, E4, E5, E6> set6(E6 element6) {
         return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
     }
@@ -80,16 +90,19 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
+    @Pure
     @Override
     protected boolean elementEquals(Pair<?, ?> tuple) {
         return super.elementEquals(tuple) && Objects.equals(this.element6, ((Septet) tuple).element6);
     }
     
+    @Pure
     @Override
     public int hashCode() {
         return 83 * super.hashCode() + Objects.hashCode(element6);
     }
     
+    @Pure
     @Override
     public String toStringWithoutParentheses() {
         return super.toStringWithoutParentheses() + ", " + element6;

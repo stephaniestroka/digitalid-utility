@@ -8,7 +8,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.functional.function.binary.BinaryFunction;
+import net.digitalid.utility.functional.interfaces.BinaryFunction;
 import net.digitalid.utility.functional.function.binary.NullableToNonNullBinaryFunction;
 import net.digitalid.utility.functional.function.binary.NullableToNullableBinaryFunction;
 import net.digitalid.utility.functional.function.unary.NullableToNonNullUnaryFunction;
