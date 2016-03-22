@@ -9,9 +9,7 @@ import java.util.Objects;
 import net.digitalid.utility.immutable.iterators.ImmutableIterator;
 
 /**
- * This class implements an immutable map of non-nullable elements.
- * <p>
- * <em>Important:</em> This map is only immutable in Java 1.7!
+ * This class implements an immutable map.
  */
 public class ImmutableMap<K, V> extends LinkedHashMap<K, V> {
     
@@ -19,30 +17,14 @@ public class ImmutableMap<K, V> extends LinkedHashMap<K, V> {
 
     protected ImmutableMap(Map<? extends K, ? extends V> map) {
         super(map);
-        
-        if (containsKey(null) || containsValue(null)) { throw new NullPointerException("An immutable map may not contain null."); }
     }
     
     /**
      * Returns an immutable map with the elements of the given map.
      * The given map is not captured as its keys and values are copied to the immutable map.
-     * 
-     * @throws NullPointerException if any of the elements of the given map is null.
      */
     public static <K, V> ImmutableMap<K, V> with(Map<? extends K, ? extends V> map) {
         return new ImmutableMap<>(map);
-    }
-    
-    /* -------------------------------------------------- NonNullable Results -------------------------------------------------- */
-    
-    /**
-     * {@inheritDoc}
-     *
-     * @ensure result != null : "The result may not be null.";
-     */
-    @Override
-    public V get(Object key) {
-        return super.get(key);
     }
     
     /* -------------------------------------------------- Modified Operations -------------------------------------------------- */
