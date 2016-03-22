@@ -2,6 +2,7 @@ package net.digitalid.utility.immutable.collections;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 
 import net.digitalid.utility.immutable.iterators.ImmutableIterator;
@@ -16,7 +17,8 @@ public class ImmutableSet<E> extends LinkedHashSet<E> {
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
 
     protected ImmutableSet(Collection<? extends E> collection) {
-        super(collection);
+        super();
+        addAllInternal(collection);
         
         if (contains(null)) { throw new NullPointerException("An immutable set may not contain null."); }
     }
@@ -26,6 +28,16 @@ public class ImmutableSet<E> extends LinkedHashSet<E> {
             if (element == null) { throw new NullPointerException("An immutable set may not contain null."); }
             super.add(element);
         }
+    private boolean addAllInternal(Collection<? extends E> collection) {
+        boolean var2 = false;
+        Iterator<? extends E> var3 = collection.iterator();
+        while(var3.hasNext()) {
+            E var4 = var3.next();
+            if(super.add(var4)) {
+                var2 = true;
+            }
+        }
+        return var2;
     }
     
     /**
