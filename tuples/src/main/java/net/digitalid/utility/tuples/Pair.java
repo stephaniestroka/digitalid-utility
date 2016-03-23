@@ -58,10 +58,18 @@ public class Pair<E0, E1> {
         this.element1 = element1;
     }
     
+    /**
+     * Returns a new pair with the given elements.
+     */
+    @Pure
+    public static <E0, E1> Pair<E0, E1> of(E0 element0, E1 element1) {
+        return new Pair<>(element0, element1);
+    }
+    
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
     /**
-     * Returns whether the elements of the given tuple and this tuple are equal.
+     * Returns whether the elements of the given non-nullable tuple and this tuple are equal.
      * 
      * @require getClass().isInstance(tuple) : "The object has to be assignable to the class of this object.";
      */

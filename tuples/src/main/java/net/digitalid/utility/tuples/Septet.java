@@ -88,6 +88,14 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
         this.element6 = element6;
     }
     
+    /**
+     * Returns a new septet with the given elements.
+     */
+    @Pure
+    public static <E0, E1, E2, E3, E4, E5, E6> Septet<E0, E1, E2, E3, E4, E5, E6> of(E0 element0, E1 element1, E2 element2, E3 element3, E4 element4, E5 element5, E6 element6) {
+        return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
+    }
+    
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure

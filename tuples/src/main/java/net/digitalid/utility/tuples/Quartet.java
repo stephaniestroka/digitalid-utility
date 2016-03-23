@@ -64,6 +64,14 @@ public class Quartet<E0, E1, E2, E3> extends Triplet<E0, E1, E2> {
         this.element3 = element3;
     }
     
+    /**
+     * Returns a new quartet with the given elements.
+     */
+    @Pure
+    public static <E0, E1, E2, E3> Quartet<E0, E1, E2, E3> of(E0 element0, E1 element1, E2 element2, E3 element3) {
+        return new Quartet<>(element0, element1, element2, element3);
+    }
+    
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure

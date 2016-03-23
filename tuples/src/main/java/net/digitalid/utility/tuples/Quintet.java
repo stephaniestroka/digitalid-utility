@@ -72,6 +72,14 @@ public class Quintet<E0, E1, E2, E3, E4> extends Quartet<E0, E1, E2, E3> {
         this.element4 = element4;
     }
     
+    /**
+     * Returns a new quintet with the given elements.
+     */
+    @Pure
+    public static <E0, E1, E2, E3, E4> Quintet<E0, E1, E2, E3, E4> of(E0 element0, E1 element1, E2 element2, E3 element3, E4 element4) {
+        return new Quintet<>(element0, element1, element2, element3, element4);
+    }
+    
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure

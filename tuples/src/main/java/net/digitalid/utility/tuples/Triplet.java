@@ -56,6 +56,14 @@ public class Triplet<E0, E1, E2> extends Pair<E0, E1> {
         this.element2 = element2;
     }
     
+    /**
+     * Returns a new triplet with the given elements.
+     */
+    @Pure
+    public static <E0, E1, E2> Triplet<E0, E1, E2> of(E0 element0, E1 element1, E2 element2) {
+        return new Triplet<>(element0, element1, element2);
+    }
+    
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure

@@ -94,6 +94,14 @@ public class Octet<E0, E1, E2, E3, E4, E5, E6, E7> extends Septet<E0, E1, E2, E3
         this.element7 = element7;
     }
     
+    /**
+     * Returns a new octet with the given elements.
+     */
+    @Pure
+    public static <E0, E1, E2, E3, E4, E5, E6, E7> Octet<E0, E1, E2, E3, E4, E5, E6, E7> of(E0 element0, E1 element1, E2 element2, E3 element3, E4 element4, E5 element5, E6 element6, E7 element7) {
+        return new Octet<>(element0, element1, element2, element3, element4, element5, element6, element7);
+    }
+    
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
