@@ -12,8 +12,8 @@ import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunction;
-import net.digitalid.utility.functional.iterable.NonNullableIterable;
-import net.digitalid.utility.functional.iterable.NullableIterable;
+import net.digitalid.utility.functional.iterable.old.NonNullableIterable;
+import net.digitalid.utility.functional.iterable.old.NullableIterable;
 import net.digitalid.utility.functional.string.Brackets;
 import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.generator.information.ElementInformation;

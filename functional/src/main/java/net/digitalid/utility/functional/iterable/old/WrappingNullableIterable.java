@@ -1,30 +1,36 @@
-package net.digitalid.utility.functional.iterable;
+package net.digitalid.utility.functional.iterable.old;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.functional.iterable.array.ArrayIterator;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- * Wraps an array into a iterable with nullable elements.
+ * Wraps an ordinary collection into an iterable that can be used to filter or transform its elements.
  */
 @Immutable
-class ArrayNullableIterable<T> extends NullableIterable<T> {
+class WrappingNullableIterable<T> extends NullableIterable<T> {
     
     /**
-     * The original iterable.
+     * The original iterable with nullable elements.
      */
-    private final @Nonnull @NullableElements T[] array;
+    private final @Nonnull @NullableElements Iterable<T> iterable;
     
     /**
-     * Creates a wrapper around the original array.
+     * The size of the iterable.
      */
-    ArrayNullableIterable(@Nonnull @NullableElements T[] array) {
-        this.array = array;
+    private final int size;
+    
+    /**
+     * Creates a wrapper around the original collection.
+     */
+    WrappingNullableIterable(@Nonnull @NullableElements Collection<T> collection) {
+        this.iterable = collection;
+        this.size = collection.size();
     }
     
     /* -------------------------------------------------- Iterable -------------------------------------------------- */
@@ -32,14 +38,14 @@ class ArrayNullableIterable<T> extends NullableIterable<T> {
     @Pure
     @Override
     public @Nonnull @NullableElements Iterator<T> iterator() {
-        return new ArrayIterator<>(array);
+        return iterable.iterator();
     }
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
     
     @Override
     public int size() {
-        return array.length;
+        return size;
     }
     
 }

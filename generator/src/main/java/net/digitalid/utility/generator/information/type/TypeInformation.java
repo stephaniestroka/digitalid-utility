@@ -14,8 +14,8 @@ import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunction;
 import net.digitalid.utility.functional.function.unary.NonNullToNullableUnaryFunction;
-import net.digitalid.utility.functional.iterable.NonNullableIterable;
-import net.digitalid.utility.functional.iterable.NullableIterable;
+import net.digitalid.utility.functional.iterable.old.NonNullableIterable;
+import net.digitalid.utility.functional.iterable.old.NullableIterable;
 import net.digitalid.utility.functional.predicate.NonNullablePredicate;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;

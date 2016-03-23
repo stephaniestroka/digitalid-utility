@@ -1,29 +1,29 @@
-package net.digitalid.utility.functional.iterable;
+package net.digitalid.utility.functional.iterable.old;
 
 import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.functional.iterable.array.ArrayIterator;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- * Wraps an array into a iterable with non-nullable elements.
+ * Wraps an array into a iterable with nullable elements.
  */
 @Immutable
-class ArrayNonNullableIterable<T> extends NonNullableIterable<T> {
+class ArrayNullableIterable<T> extends NullableIterable<T> {
     
     /**
-     * The original array.
+     * The original iterable.
      */
-    private final @Nonnull @NonNullableElements T[] array;
+    private final @Nonnull @NullableElements T[] array;
     
     /**
      * Creates a wrapper around the original array.
      */
-    ArrayNonNullableIterable(@Nonnull @NonNullableElements T[] array) {
+    ArrayNullableIterable(@Nonnull @NullableElements T[] array) {
         this.array = array;
     }
     
@@ -31,7 +31,7 @@ class ArrayNonNullableIterable<T> extends NonNullableIterable<T> {
     
     @Pure
     @Override
-    public @Nonnull @NonNullableElements Iterator<T> iterator() {
+    public @Nonnull @NullableElements Iterator<T> iterator() {
         return new ArrayIterator<>(array);
     }
     

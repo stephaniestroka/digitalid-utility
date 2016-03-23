@@ -1,31 +1,38 @@
-package net.digitalid.utility.functional.iterable;
+package net.digitalid.utility.functional.iterable.old;
 
 import java.util.Iterator;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 import net.digitalid.utility.functional.iterable.infinite.InfiniteIterator;
 
 /**
- * An infinite nullable iterable is an iterable that holds an infinite iterator
- * that returns a given nullable element infinitely.
+ * An infinite non-nullable iterable is an iterable that holds an iterator
+ * that returns a given non-null element infinitely.
  */
-public class InfiniteNullableIterable<T> extends NullableIterable<T> {
+public class InfiniteNonNullableIterable<T> extends NonNullableIterable<T> {
     
-    /* -------------------------------------------------- Final Fields -------------------------------------------------- */
+    /* -------------------------------------------------- Element -------------------------------------------------- */
     
     /**
-     * The nullable element that is returned infinitely.
+     * The non-nullable element that is returned infinitely.
      */
-    private final @Nullable T element;
+    private final @Nonnull T element;
+    
+    /**
+     * Returns the element that is returned infinitely in the iterator.
+     */
+    public @Nonnull T getElement() {
+        return element;
+    }
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
-     * Creates a new infinite iterable from a nullable element.
+     * Creates a new infinite iterable from a non-nullable element.
      * The iterator of this iterable returns the element infinitely.
      */
-    InfiniteNullableIterable(@Nullable T element) {
+    InfiniteNonNullableIterable(@Nonnull T element) {
         this.element = element;
     }
     

@@ -1,5 +1,6 @@
 package net.digitalid.utility.functional.interfaces;
 
+import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
@@ -8,9 +9,34 @@ import net.digitalid.utility.tuples.annotations.Pure;
 public interface BinaryFunction<I0, I1, O> {
     
     /**
-     * Applies the function on two elements of the type &lt;E0&gt; and &lt;E1&gt; and delivers a result of type &lt;O&gt;.
+     * Evaluates this function for the given objects.
+     * All implementations of this method have to be side-effect-free.
      */
     @Pure
-    public O evaluate(I0 element0, I1 element1);
+    public O evaluate(I0 object0, I1 object1);
+    
+    /**
+     * Evaluates this function for the objects in the given pair.
+     */
+    @Pure
+    public default O evaluate(Pair<I0, I1> pair) {
+        return evaluate(pair.get0(), pair.get1());
+    }
+    
+    /**
+     * Returns the composition of this function followed by the given function.
+     */
+    @Pure
+    public default <T> BinaryFunction<I0, I1, T> before(UnaryFunction<? super O, ? extends T> function) {
+        return (object0, object1) -> function.evaluate(evaluate(object0, object1));
+    }
+    
+    /**
+     * Returns the composition of the given functions followed by this function.
+     */
+    @Pure
+    public default <T0, T1> BinaryFunction<T0, T1, O> after(UnaryFunction<? super T0, ? extends I0> function0, UnaryFunction<? super T1, ? extends I1> function1) {
+        return (object0, object1) -> evaluate(function0.evaluate(object0), function1.evaluate(object1));
+    }
     
 }

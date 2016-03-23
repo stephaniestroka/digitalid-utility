@@ -1,4 +1,4 @@
-package net.digitalid.utility.functional.iterable;
+package net.digitalid.utility.functional.iterable.old;
 
 import java.util.Iterator;
 
