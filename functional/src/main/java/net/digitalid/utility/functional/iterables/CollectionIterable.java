@@ -25,6 +25,12 @@ public interface CollectionIterable<E> extends FiniteIterable<E> {
     
     @Pure
     @Override
+    public default boolean isEmpty() {
+        return size() > 0;
+    }
+    
+    @Pure
+    @Override
     public default int size(int limit) {
         return Math.min(size(), limit);
     }

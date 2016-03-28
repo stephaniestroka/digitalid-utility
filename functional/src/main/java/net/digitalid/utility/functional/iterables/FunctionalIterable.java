@@ -3,6 +3,7 @@ package net.digitalid.utility.functional.iterables;
 import java.util.Iterator;
 
 import net.digitalid.utility.functional.interfaces.Predicate;
+import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.tuples.annotations.Pure;
 
@@ -12,7 +13,7 @@ import net.digitalid.utility.tuples.annotations.Pure;
  * @see InfiniteIterable
  * @see FiniteIterable
  */
-public interface FunctionalIterable<T> extends Iterable<T> {
+public interface FunctionalIterable<E> extends Iterable<E> {
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
     
@@ -34,7 +35,7 @@ public interface FunctionalIterable<T> extends Iterable<T> {
         if (limit < 0) { throw new IndexOutOfBoundsException("The limit has to be non-negative but was " + limit + "."); }
         
         int size = 0;
-        final Iterator<T> iterator = iterator();
+        final Iterator<E> iterator = iterator();
         while (iterator.hasNext() && size < limit) {
             iterator.next();
             size++;
@@ -61,16 +62,16 @@ public interface FunctionalIterable<T> extends Iterable<T> {
     /* -------------------------------------------------- Access -------------------------------------------------- */
     
     /**
-     * Returns the object at the given index.
+     * Returns the element at the given index.
      * 
      * @throws IndexOutOfBoundsException if the given index is negative or greater or equal to the size of this iterable.
      */
     @Pure
-    public default T get(int index) {
+    public default E get(int index) {
         int currentIndex = 0;
-        for (T object : this) {
-            if (currentIndex == index) { return object; }
-            else { currentIndex += 1; }
+        for (E element : this) {
+            if (currentIndex == index) { return element; }
+            currentIndex += 1;
         }
         throw new IndexOutOfBoundsException("The index has to be non-negative and smaller than the size but was " + index + ".");
     }
@@ -78,65 +79,112 @@ public interface FunctionalIterable<T> extends Iterable<T> {
     /* -------------------------------------------------- Filter -------------------------------------------------- */
     
     /**
-     * Filters the elements of this iterable with the given predicate.
+     * Returns the elements of this iterable filtered by the given predicate.
      */
     @Pure
-    public default FunctionalIterable<T> filter(Predicate<T> predicate) {
-        // TODO: Override the return type in the subinterfaces. Throw UnsupportedOperationException here?
-        return () -> new FilterIterator(this, predicate);
+    public default FunctionalIterable<E> filter(Predicate<? super E> predicate) {
+        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
     }
     
     /* -------------------------------------------------- Mapping -------------------------------------------------- */
     
-    // map(unaryFunction)
-    // flatMap as well?
-    
-    /* -------------------------------------------------- Zipping -------------------------------------------------- */
-    
+    /**
+     * Returns the elements of this iterable mapped by the given function.
+     */
     @Pure
-    public default <T1> FiniteIterable<Pair<T, T1>> zipShortest(FiniteIterable<T1> iterable) {
-        
-    }
-    
-    @Pure
-    public default <T1> FunctionalIterable<Pair<T, T1>> zipShortest(InfiniteIterable<T1> iterable) {
+    public default <F> FunctionalIterable<E> map(UnaryFunction<? super E, ? extends F> function) {
         throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
-    }
-    
-    @Pure
-    public default <T1> FunctionalIterable<Pair<T, T1>> zipLongest(FiniteIterable<T1> iterable) {
-        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
-    }
-    
-    @Pure
-    public default <T1> InfiniteIterable<Pair<T, T1>> zipLongest(InfiniteIterable<T1> iterable) {
-        
     }
     
     /* -------------------------------------------------- Pruning -------------------------------------------------- */
     
     /**
-     * Filters the elements of this iterable with the given predicate.
+     * Returns the elements of this iterable after discarding the given number of elements from the beginning.
      */
     @Pure
-    public default FunctionalIterable<T> skip(int number) {
-        return () -> new FilterIterator(this, predicate);
+    public default FunctionalIterable<E> skip(int number) {
+        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
     }
     
     /**
-     * Filters the elements of this iterable with the given predicate.
+     * Returns the given number of elements from the beginning of this iterable.
      */
     @Pure
-    public default FunctionalIterable<T> limit(int number) {
-        return () -> new FilterIterator(this, predicate);
+    public default FiniteIterable<E> limit(int number) {
+        return () -> new SequenceIterator(iterator(), 0, number);
     }
     
     /**
-     * Filters the elements of this iterable with the given predicate.
+     * Returns the elements of this iterable from the given index to but not including the second index.
      */
     @Pure
-    public default FunctionalIterable<T> extract(int fromIndex, int toIndex) {
-        return () -> new FilterIterator(this, predicate);
+    public default FiniteIterable<E> extract(int fromIndex, int toIndex) {
+        return () -> new SequenceIterator(iterator(), fromIndex, toIndex);
+    }
+    
+    /* -------------------------------------------------- Zipping -------------------------------------------------- */
+    
+    /**
+     * Returns the elements from this and the given iterable as pairs, where the i-th pair contains the i-th element of each iterable.
+     * The returned iterable is truncated to the length of the shorter iterable.
+     */
+    @Pure
+    public default <F> FiniteIterable<Pair<E, F>> zipShortest(FiniteIterable<F> iterable) {
+        return () -> new ZipShortestIterator(iterator(), iterable.iterator());
+    }
+    
+    /**
+     * Returns the elements from this and the given iterable as pairs, where the i-th pair contains the i-th element of each iterable.
+     * The returned iterable is truncated to the length of the shorter iterable.
+     */
+    @Pure
+    public default <F> FunctionalIterable<Pair<E, F>> zipShortest(InfiniteIterable<F> iterable) {
+        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
+    }
+    
+    /**
+     * Returns the elements from this and the given iterable as pairs, where the i-th pair contains the i-th element of each iterable.
+     * The shorter iterable is extended to the length of the longer iterable with null values for the missing elements.
+     */
+    @Pure
+    public default <F> FunctionalIterable<Pair<E, F>> zipLongest(FiniteIterable<F> iterable) {
+        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
+    }
+    
+    /**
+     * Returns the elements from this and the given iterable as pairs, where the i-th pair contains the i-th element of each iterable.
+     * The shorter iterable is extended to the length of the longer iterable with null values for the missing elements.
+     */
+    @Pure
+    public default <F> InfiniteIterable<Pair<E, F>> zipLongest(InfiniteIterable<F> iterable) {
+        return () -> new ZipLongestIterator(iterator(), iterable.iterator());
+    }
+    
+    /* -------------------------------------------------- Flattening -------------------------------------------------- */
+    
+    /**
+     * Returns the elements of this iterable with all collections up to the given level flattened.
+     */
+    @Pure
+    public default <F> FunctionalIterable<F> flatten(int level) {
+        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
+        return () -> new FlattenIterator(iterator(), level);
+    }
+    
+    /**
+     * Returns the elements of this iterable with all collections directly contained in this iterable flattened.
+     */
+    @Pure
+    public default <F> FunctionalIterable<F> flattenOne() {
+        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
+    }
+    
+    /**
+     * Returns the elements of this iterable with all collections directly or indirectly contained in this iterable flattened.
+     */
+    @Pure
+    public default <F> FunctionalIterable<F> flattenAll() {
+        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
     }
     
 }

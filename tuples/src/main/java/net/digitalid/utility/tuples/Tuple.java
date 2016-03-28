@@ -1,7 +1,10 @@
 package net.digitalid.utility.tuples;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 import net.digitalid.utility.tuples.annotations.Pure;
 
@@ -10,7 +13,7 @@ import net.digitalid.utility.tuples.annotations.Pure;
  * 
  * @see Pair
  */
-public abstract class Tuple implements Iterable<Object> {
+public abstract class Tuple implements Collection<Object> {
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
     
@@ -18,6 +21,7 @@ public abstract class Tuple implements Iterable<Object> {
      * Returns the size of this tuple.
      */
     @Pure
+    @Override
     public abstract int size();
     
     /* -------------------------------------------------- Access -------------------------------------------------- */
@@ -61,6 +65,87 @@ public abstract class Tuple implements Iterable<Object> {
     @Override
     public Iterator<Object> iterator() {
         return new TupleIterator();
+    }
+    
+    /* -------------------------------------------------- Collection -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+    
+    @Pure
+    @Override
+    public boolean contains(Object object) {
+        for (Object element : this) {
+            if (Objects.equals(object, element)) { return true; }
+        }
+        return false;
+    }
+    
+    @Pure
+    @Override
+    public boolean containsAll(Collection<?> collection) {
+        for (Object element : collection) {
+            if (!contains(element)) { return false; }
+        }
+        return true;
+    }
+    
+    @Pure
+    @Override
+    public Object[] toArray() {
+        final int size = size();
+        final Object[] array = new Object[size];
+        for (int i = 0; i < size; i++) {
+            array[i] = get(i);
+        }
+        return array;
+    }
+    
+    @Pure
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T[] toArray(T[] array) {
+        final int size = size();
+        final T[] result = array.length >= size ? array : (T[]) Array.newInstance(array.getClass().getComponentType(), size);
+        for (int i = 0; i < size(); i++) {
+            result[i] = (T) get(i);
+        }
+        return result;
+    }
+    
+    /* -------------------------------------------------- Unsupported Operations -------------------------------------------------- */
+    
+    @Override
+    public boolean add(Object object) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public boolean remove(Object object) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public boolean addAll(Collection<?> collection) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public boolean removeAll(Collection<?> collection) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public boolean retainAll(Collection<?> collection) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException();
     }
     
 }
