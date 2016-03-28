@@ -33,4 +33,11 @@ public class InfiniteIterator<T> implements Iterator<T> {
         return element;
     }
     
+    /* -------------------------------------------------- Remove -------------------------------------------------- */
+    
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("remove() is not implemented.");
+    }
+    
 }

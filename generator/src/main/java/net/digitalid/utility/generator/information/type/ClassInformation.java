@@ -26,8 +26,11 @@ import net.digitalid.utility.functional.predicate.NonNullablePredicate;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.annotations.Recover;
-import net.digitalid.utility.generator.information.field.DeclaredFieldInformation;
+import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
+import net.digitalid.utility.generator.information.field.DirectlyAccessibleFieldInformation;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleParameterBasedFieldInformation;
+import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleParameterBasedFieldInformation;
 import net.digitalid.utility.generator.information.field.ParameterBasedFieldInformation;
 import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
@@ -39,8 +42,8 @@ import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.string.StringCase;
-import net.digitalid.utility.tuples.NonNullablePair;
-import net.digitalid.utility.tupless.quartet.NonNullableQuartet;
+import net.digitalid.utility.tuples.pair.NonNullablePair;
+import net.digitalid.utility.tuples.quartet.NonNullableQuartet;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.size.MinSize;
@@ -121,6 +124,30 @@ public class ClassInformation extends TypeInformation {
         
     };
     
+    /**
+     * Only methods that are non-abstract can be overridden.
+     */
+    protected static final @Nonnull NonNullablePredicate<MethodInformation> abstractMethods = new NonNullablePredicate<MethodInformation>() {
+        
+        @Override 
+        public boolean apply(@Nonnull MethodInformation methodInformation) {
+            return !methodInformation.isAbstract();
+        }
+        
+    };
+     
+    /**
+     * Only methods that are non-static can be overridden.
+     */
+    protected static final @Nonnull NonNullablePredicate<MethodInformation> staticMethods = new NonNullablePredicate<MethodInformation>() {
+        
+        @Override 
+        public boolean apply(@Nonnull MethodInformation methodInformation) {
+            return !methodInformation.isStatic();
+        }
+        
+    };
+    
     /* -------------------------------------------------- Object Construction -------------------------------------------------- */
     
     /**
@@ -170,9 +197,19 @@ public class ClassInformation extends TypeInformation {
     public final @Nonnull NonNullableIterable<ParameterBasedFieldInformation> parameterBasedFieldInformation;
     
     /**
-     * Stores the accessible fields, which can be validated by the generated subclass.
+     * Stores the accessible fields that are mutable and must be validated by the generated subclass.
      */
-    public final @Nonnull NonNullableIterable<DeclaredFieldInformation> accessibleFields;
+    public final @Nonnull NonNullableIterable<DirectlyAccessibleDeclaredFieldInformation> writableAccessibleFields;
+    
+    /**
+     * Stores the directly accessible fields.
+     */
+    public final @Nonnull NonNullableIterable<DirectlyAccessibleDeclaredFieldInformation> directlyAccessibleDeclaredFields;
+    
+    /**
+     * Stores the non-directly accessible fields.
+     */
+    public final @Nonnull NonNullableIterable<NonDirectlyAccessibleDeclaredFieldInformation> nonDirectlyAccessibleDeclaredFields;
     
     /**
      * Stores the implemented getters for the fields in the type.
@@ -247,13 +284,14 @@ public class ClassInformation extends TypeInformation {
     /**
      * A predicate that returns true iff a given variable element name matches a given string.
      */
-    private static @Nonnull NonNullablePredicate<NonNullablePair<VariableElement, String>> variableElementNameMatcher = new NonNullablePredicate<NonNullablePair<VariableElement, String>>() {
+    private static @Nonnull NonNullablePredicate<NonNullablePair<FieldInformation, String>> fieldNameMatcher = new NonNullablePredicate<NonNullablePair<FieldInformation, String>>() {
         
         @Override
-        public boolean apply(@Nonnull NonNullablePair<VariableElement, String> pair) {
-            final @Nonnull VariableElement variableElement = pair.get0();
+        public boolean apply(@Nonnull NonNullablePair<FieldInformation, String> pair) {
+            final @Nonnull FieldInformation fieldInformation = pair.get0();
             final @Nonnull String name = pair.get1();
-            return variableElement.getSimpleName().contentEquals(name);
+            ProcessingLog.debugging("Checking whether field $ = parameter $", fieldInformation.getName(), name);
+            return fieldInformation.getName().equals(name);
         }
         
     };
@@ -262,13 +300,11 @@ public class ClassInformation extends TypeInformation {
      * Returns a method information object that matches the expected declaration of a getter for a certain field.
      * A {@link ConformityViolation conformity violation exception} is thrown if the getter was not found.
      */
-    private static @Nonnull MethodInformation getGetterOf(@Nonnull String fieldName, @Nonnull @NonNullableElements NonNullableIterable<MethodInformation> methodsOfType) {
+    private static @Nullable MethodInformation getGetterOf(@Nonnull String fieldName, @Nonnull @NonNullableElements NonNullableIterable<MethodInformation> methodsOfType) {
         final @Nonnull String nameRegex = "(get|has|is)" + StringCase.capitalizeFirstLetters(fieldName);
         final @Nonnull NonNullableIterable<MethodSignatureMatcher> methodSignature = InfiniteNonNullableIterable.ofNonNullableElement(MethodSignatureMatcher.of(nameRegex, new TypeElement[0]));
         final @Nullable MethodInformation methodInformation = methodsOfType.zipNonNull(methodSignature).findFirst(methodMatcher, GET_METHOD_INFORMATION);
-        if (methodInformation == null) {
-            throw ConformityViolation.with("Representative fields must be accessible, either directly or through a getter, but the getter for the field '" + fieldName + "' was not found");
-        }
+        ProcessingLog.debugging("getGetterOf($) : $", fieldName, methodInformation);
         return methodInformation;
     }
     
@@ -286,29 +322,36 @@ public class ClassInformation extends TypeInformation {
      * A unary function that transforms a quartet that consists of a parameter variable element, an iterable of field variable elements, a containing type and an iterable of method information to a parameter-based field information object.
      * A {@link ConformityViolation conformity violation exception} is thrown if any of the representative fields was not found or if a getter for a non-directly accessible field was not found.
      */
-    private static NonNullToNonNullUnaryFunction<NonNullableQuartet<VariableElement, NonNullableIterable<VariableElement>, DeclaredType, NonNullableIterable<MethodInformation>>, ParameterBasedFieldInformation> toParameterBasedFieldInformation = new NonNullToNonNullUnaryFunction<NonNullableQuartet<VariableElement, NonNullableIterable<VariableElement>, DeclaredType, NonNullableIterable<MethodInformation>>, ParameterBasedFieldInformation>() {
+    private static NonNullToNullableUnaryFunction<NonNullableQuartet<VariableElement, NonNullableIterable<FieldInformation>, DeclaredType, NonNullableIterable<MethodInformation>>, ParameterBasedFieldInformation> toParameterBasedFieldInformation = new NonNullToNullableUnaryFunction<NonNullableQuartet<VariableElement, NonNullableIterable<FieldInformation>, DeclaredType, NonNullableIterable<MethodInformation>>, ParameterBasedFieldInformation>() {
         
         @Override
-        public @Nonnull ParameterBasedFieldInformation apply(@Nonnull NonNullableQuartet<VariableElement, NonNullableIterable<VariableElement>, DeclaredType, NonNullableIterable<MethodInformation>> quartet) {
+        public @Nullable ParameterBasedFieldInformation apply(@Nonnull NonNullableQuartet<VariableElement, NonNullableIterable<FieldInformation>, DeclaredType, NonNullableIterable<MethodInformation>> quartet) {
             final @Nonnull VariableElement representingParameter = quartet.get0();
-            final @Nonnull NonNullableIterable<VariableElement> fields = quartet.get1();
+            final @Nonnull NonNullableIterable<FieldInformation> fields = quartet.get1();
             final @Nonnull DeclaredType containingType = quartet.get2();
             final @Nonnull NonNullableIterable<MethodInformation> methodsOfType = quartet.get3();
             
             final @Nonnull String parameterName = representingParameter.getSimpleName().toString();
             final @Nonnull NonNullableIterable<String> infiniteIterableParameterName = NullableIterable.ofNonNullableElement(parameterName);
             
-            final @Nullable NonNullablePair<VariableElement, String> result = fields.zipNonNull(infiniteIterableParameterName).findFirst(variableElementNameMatcher);
+            final @Nullable NonNullablePair<FieldInformation, String> result = fields.zipNonNull(infiniteIterableParameterName).findFirst(fieldNameMatcher);
+            ProcessingLog.debugging("Parameter: $", parameterName);
+            ProcessingLog.debugging("Field information: ");
+            for (FieldInformation field : fields) {
+                ProcessingLog.debugging(field.getName());
+            }
             if (result == null) {
-                throw ConformityViolation.with("Representative fields must have the same name as their parameters, but the field for '" + parameterName + "' was not found");
+                throw ConformityViolation.with("Representative fields of $ must have the same name as their parameters, but the field for $ was not found", containingType, parameterName);
             }
             
-            final @Nonnull VariableElement field = result.get0();
-            if (!field.getModifiers().contains(Modifier.PRIVATE)) {
-                return DirectlyAccessibleParameterBasedFieldInformation.of(representingParameter, containingType, field);
+            final @Nonnull FieldInformation field = result.get0();
+            if (field instanceof NonDirectlyAccessibleDeclaredFieldInformation) {
+                return NonDirectlyAccessibleParameterBasedFieldInformation.of(representingParameter, (NonDirectlyAccessibleDeclaredFieldInformation) field);
+            } else if (field instanceof DirectlyAccessibleDeclaredFieldInformation) {
+                return DirectlyAccessibleParameterBasedFieldInformation.of(representingParameter, (DirectlyAccessibleFieldInformation) field);
             } else {
-                final @Nonnull TypeElement fieldType = (TypeElement) StaticProcessingEnvironment.getTypeUtils().asElement(field.asType());
-                return NonDirectlyAccessibleParameterBasedFieldInformation.of(representingParameter, containingType, getGetterOf(parameterName, methodsOfType), getSetterOf(parameterName, fieldType, methodsOfType));
+            //    throw UnexpectedFailureException.with("Did not expect field information of type $. Cannot create a parameter-based field information instance from that type.", field.getClass());
+                return null;
             }
             
         }
@@ -321,14 +364,14 @@ public class ClassInformation extends TypeInformation {
      * The additional information is: an iterable of the fields of a type, a containing type and an iterable of the methods of the type.
      * Throws an unsupported type exception if a conformity violation exception was caught.
      */
-    private static @Nonnull @NonNullableElements NonNullableIterable<ParameterBasedFieldInformation> getParameterBasedFieldInformation(@Nonnull NonNullableIterable<VariableElement> fields, @Nonnull NonNullableIterable<VariableElement> representingParameters, @Nonnull DeclaredType containingType, @Nonnull NonNullableIterable<MethodInformation> methodsOfType) throws UnsupportedTypeException {
+    private static @Nonnull @NonNullableElements NonNullableIterable<ParameterBasedFieldInformation> getParameterBasedFieldInformation(@Nonnull NonNullableIterable<FieldInformation> fields, @Nonnull NonNullableIterable<VariableElement> representingParameters, @Nonnull DeclaredType containingType, @Nonnull NonNullableIterable<MethodInformation> methodsOfType) throws UnsupportedTypeException {
         
-        final @Nonnull NonNullableIterable<NonNullableIterable<VariableElement>> infiniteIterableOfFields = NullableIterable.ofNonNullableElement(fields);
+        final @Nonnull NonNullableIterable<NonNullableIterable<FieldInformation>> infiniteIterableOfFields = NullableIterable.ofNonNullableElement(fields);
         final @Nonnull NonNullableIterable<DeclaredType> infiniteIterableOfContainingType = NullableIterable.ofNonNullableElement(containingType);
         final @Nonnull NonNullableIterable<NonNullableIterable<MethodInformation>> infiniteIterableOfMethodsOfType = NullableIterable.ofNonNullableElement(methodsOfType);
         
         try {
-            return representingParameters.zipNonNull(infiniteIterableOfFields, infiniteIterableOfContainingType, infiniteIterableOfMethodsOfType).map(toParameterBasedFieldInformation);
+            return representingParameters.zipNonNull(infiniteIterableOfFields, infiniteIterableOfContainingType, infiniteIterableOfMethodsOfType).map(toParameterBasedFieldInformation).filterNonNull();
         } catch (ConformityViolation e) {
             throw UnsupportedTypeException.get(e.getMessage(), e);
         }
@@ -352,20 +395,47 @@ public class ClassInformation extends TypeInformation {
      * Combines and returns the parameter-based fields and the generated fields of the type.
      */
     @Override
-    @SuppressWarnings("unchecked")
     public @Nonnull NonNullableIterable<RepresentingFieldInformation> getRepresentingFieldInformation() {
-        return parameterBasedFieldInformation.map(toRepresentingFieldInformation).combine(generatedFieldInformation.map(toRepresentingFieldInformation));
+        final @Nonnull NonNullableIterable<RepresentingFieldInformation> generatedFieldInformationCasted = generatedFieldInformation.map(toRepresentingFieldInformation);
+        return parameterBasedFieldInformation.map(toRepresentingFieldInformation).combine(generatedFieldInformationCasted);
     }
+    
+    /* -------------------------------------------------- Fields -------------------------------------------------- */
+    
+    /**
+     * This function casts a element with its containing type to a declared field information object.
+     */
+    private static @Nonnull NonNullToNonNullUnaryFunction<FieldInformation, FieldInformation> castToFieldInformation = new NonNullToNonNullUnaryFunction<FieldInformation, FieldInformation>() {
+        
+        @Override
+        public @Nonnull FieldInformation apply(@Nonnull FieldInformation fieldInformation) {
+            return fieldInformation;
+        }
+        
+    };
+    
     /* -------------------------------------------------- Accessible Fields -------------------------------------------------- */
     
     /**
-     * This predicate checks whether a variable element has a non-private, non-final modifier.
+     * This predicate checks whether a variable element has a non-private modifier.
      */
-    private static @Nonnull NonNullablePredicate<VariableElement> accessibleFieldMatcher = new NonNullablePredicate<VariableElement>() {
+    private static @Nonnull NonNullablePredicate<DirectlyAccessibleDeclaredFieldInformation> nonFinalFieldsPredicate = new NonNullablePredicate<DirectlyAccessibleDeclaredFieldInformation>() {
+        
+        @Override
+        public boolean apply(@Nonnull DirectlyAccessibleDeclaredFieldInformation field) {
+            return !field.getModifiers().contains(Modifier.FINAL);
+        }
+        
+    };
+    
+    /**
+     * This predicate checks whether a variable element has a non-private modifier.
+     */
+    private static @Nonnull NonNullablePredicate<VariableElement> directlyAccessibleFieldPredicate = new NonNullablePredicate<VariableElement>() {
         
         @Override
         public boolean apply(@Nonnull VariableElement field) {
-            return !field.getModifiers().contains(Modifier.PRIVATE) && !field.getModifiers().contains(Modifier.FINAL);
+            return !field.getModifiers().contains(Modifier.PRIVATE);
         }
         
     };
@@ -373,13 +443,13 @@ public class ClassInformation extends TypeInformation {
     /**
      * This function maps a variable element with its containing type to a declared field information object.
      */
-    private static @Nonnull NonNullToNonNullUnaryFunction<NonNullablePair<VariableElement, DeclaredType>, DeclaredFieldInformation> toDeclaredFieldInformation = new NonNullToNonNullUnaryFunction<NonNullablePair<VariableElement, DeclaredType>, DeclaredFieldInformation>() {
+    private static @Nonnull NonNullToNonNullUnaryFunction<NonNullablePair<VariableElement, DeclaredType>, DirectlyAccessibleDeclaredFieldInformation> toDirectlyAccessibleDeclaredFieldInformation = new NonNullToNonNullUnaryFunction<NonNullablePair<VariableElement, DeclaredType>, DirectlyAccessibleDeclaredFieldInformation>() {
         
         @Override
-        public @Nonnull DeclaredFieldInformation apply(@Nonnull NonNullablePair<VariableElement, DeclaredType> pair) {
+        public @Nonnull DirectlyAccessibleDeclaredFieldInformation apply(@Nonnull NonNullablePair<VariableElement, DeclaredType> pair) {
             final @Nonnull VariableElement element = pair.get0();
             final @Nonnull DeclaredType containingType = pair.get1();
-            return DeclaredFieldInformation.of(element, containingType);
+            return DirectlyAccessibleDeclaredFieldInformation.of(element, containingType);
         }
         
     };
@@ -387,8 +457,58 @@ public class ClassInformation extends TypeInformation {
     /**
      * Retrieves declared field information objects for fields in a type.
      */
-    private static @Nonnull @NonNullableElements NonNullableIterable<DeclaredFieldInformation> getDirectlyAccessibleFieldInformation(@Nonnull @NonNullableElements NonNullableIterable<VariableElement> fields, @Nonnull DeclaredType containingType) {
-        return fields.filter(accessibleFieldMatcher).zipNonNull(NonNullableIterable.ofNonNullableElement(containingType)).map(toDeclaredFieldInformation);
+    private static @Nonnull @NonNullableElements NonNullableIterable<DirectlyAccessibleDeclaredFieldInformation> getDirectlyAccessibleFieldInformation(@Nonnull @NonNullableElements NonNullableIterable<VariableElement> fields, @Nonnull DeclaredType containingType) {
+        return fields.filter(directlyAccessibleFieldPredicate).zipNonNull(NonNullableIterable.ofNonNullableElement(containingType)).map(toDirectlyAccessibleDeclaredFieldInformation);
+    }
+    
+    /* -------------------------------------------------- Non-directly Accessible Fields -------------------------------------------------- */
+    
+    /**
+     * This predicate checks whether a variable element has a non-private, non-final modifier.
+     */
+    private static @Nonnull NonNullablePredicate<NonNullablePair<VariableElement, NonNullableIterable<MethodInformation>>> nonDirectlyAccessibleFieldMatcher = new NonNullablePredicate<NonNullablePair<VariableElement, NonNullableIterable<MethodInformation>>>() {
+        
+        @Override
+        public boolean apply(@Nonnull NonNullablePair<VariableElement, NonNullableIterable<MethodInformation>> pair) {
+            final @Nonnull VariableElement field = pair.get0();
+            final @Nonnull NonNullableIterable<MethodInformation> methods = pair.get1();
+            boolean isNonDirectlyAccessible = field.getModifiers().contains(Modifier.PRIVATE) && 
+            getGetterOf(field.getSimpleName().toString(), methods) != null;
+            ProcessingLog.debugging("The field $ is " + (!isNonDirectlyAccessible ? "not " : "") + "accessible via a getter", field.getSimpleName().toString());
+            return isNonDirectlyAccessible;
+        }
+        
+    };
+    
+    /**
+     * This function maps a variable element with its containing type to a declared field information object.
+     * Only expecting variable elements that have already been filtered for being accessible via a getter method.
+     */
+    private static @Nonnull NonNullToNonNullUnaryFunction<NonNullablePair<NonNullablePair<VariableElement, NonNullableIterable<MethodInformation>>, DeclaredType>, NonDirectlyAccessibleDeclaredFieldInformation> toNonDirectlyAccessibleDeclaredFieldInformation = new NonNullToNonNullUnaryFunction<NonNullablePair<NonNullablePair<VariableElement, NonNullableIterable<MethodInformation>>, DeclaredType>, NonDirectlyAccessibleDeclaredFieldInformation>() {
+        
+        @Override
+        public @Nonnull NonDirectlyAccessibleDeclaredFieldInformation apply(@Nonnull NonNullablePair<NonNullablePair<VariableElement, NonNullableIterable<MethodInformation>>, DeclaredType> pair) {
+            final @Nonnull NonNullablePair<VariableElement, NonNullableIterable<MethodInformation>> elementAndMethods = pair.get0();
+            final @Nonnull VariableElement element = elementAndMethods.get0();
+            final @Nonnull NonNullableIterable<MethodInformation> methods = elementAndMethods.get1();
+            final @Nonnull String fieldName = element.getSimpleName().toString();
+            final @Nullable MethodInformation getter = getGetterOf(fieldName, methods);
+            if (getter != null) {
+                final @Nonnull TypeElement fieldType = (TypeElement) StaticProcessingEnvironment.getTypeUtils().asElement(element.asType());
+                final @Nullable MethodInformation setter = getSetterOf(fieldName, fieldType, methods);
+                final @Nonnull DeclaredType containingType = pair.get1();
+                return NonDirectlyAccessibleDeclaredFieldInformation.of(element, containingType, getter, setter);
+            }
+            throw UnexpectedFailureException.with("Cannot create non-directly accessible declared field information if no getter was found.");
+        }
+        
+    };
+    
+    /**
+     * Retrieves declared field information objects for fields in a type.
+     */
+    private static @Nonnull @NonNullableElements NonNullableIterable<NonDirectlyAccessibleDeclaredFieldInformation> getNonDirectlyAccessibleFieldInformation(@Nonnull NonNullableIterable<VariableElement> fields, @Nonnull NonNullableIterable<MethodInformation> methodInformation, @Nonnull DeclaredType containingType) {
+        return fields.zipNonNull(NonNullableIterable.ofNonNullableElement(methodInformation)).filter(nonDirectlyAccessibleFieldMatcher).zipNonNull(NonNullableIterable.ofNonNullableElement(containingType)).map(toNonDirectlyAccessibleDeclaredFieldInformation);
     }
     
     /* -------------------------------------------------- Generatable -------------------------------------------------- */
@@ -401,8 +521,6 @@ public class ClassInformation extends TypeInformation {
     }
     
     /* -------------------------------------------------- Predicates -------------------------------------------------- */
-    
-    
     
     protected static final @Nonnull NonNullablePredicate<MethodInformation> implementedGetterMatcher = new NonNullablePredicate<MethodInformation>() {
         
@@ -440,32 +558,58 @@ public class ClassInformation extends TypeInformation {
         
         this.implementedGetters = indexMethodInformation(methodInformationIterable.filter(implementedGetterMatcher));
         
-        this.overriddenMethods = methodInformationIterable.filter(javaRuntimeMethod).filter(finalMethods);
+        this.overriddenMethods = methodInformationIterable.filter(javaRuntimeMethod).filter(finalMethods).filter(abstractMethods).filter(staticMethods);
         
         NonNullableIterable<MethodInformation> methodsMatchingTheRecoverMethodMatcher = methodInformationIterable.filter(recoverMethodMatcher);
         if (methodsMatchingTheRecoverMethodMatcher.size() > 1) {
+            ProcessingLog.debugging("More than one recover method found.");
             ProcessingLog.information("More than one recover methods found in class '" + typeElement.getSimpleName() + "'. We cannot decide which method to use for object construction.");
             generatable = false;
             this.recoverMethod = null;
-        } else {
+        } else if (methodsMatchingTheRecoverMethodMatcher.iterator().hasNext()) {
             this.recoverMethod = methodsMatchingTheRecoverMethodMatcher.iterator().next();
+        } else {
+            this.recoverMethod = null;
         }
         
         final @Nonnull NonNullableIterable<DeclaredType> containingTypeIterable = NullableIterable.ofNonNullableElement(containingType);
         this.constructors = NullableIterable.ofNonNullableElements(javax.lang.model.util.ElementFilter.constructorsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))).zipNonNull(containingTypeIterable).map(toConstructorInformation);
         
         final @Nonnull NonNullableIterable<VariableElement> fields = NonNullableIterable.ofNonNullableElements(ElementFilter.fieldsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement)));
-    
-        this.accessibleFields = getDirectlyAccessibleFieldInformation(fields, containingType);
         
-        @Nonnull @NonNullableElements NonNullableIterable<ParameterBasedFieldInformation> parameterBasedFieldInformation = NonNullableIterable.ofNonNullableElements(Collections.<ParameterBasedFieldInformation>emptyList());
+        this.directlyAccessibleDeclaredFields = getDirectlyAccessibleFieldInformation(fields, containingType);
+        
+        this.writableAccessibleFields = directlyAccessibleDeclaredFields.filter(nonFinalFieldsPredicate);
+        
+        this.nonDirectlyAccessibleDeclaredFields = getNonDirectlyAccessibleFieldInformation(fields, methodInformationIterable, containingType);
+    
+        ProcessingLog.debugging("Directly accessible fields: ");
+        for (FieldInformation field : directlyAccessibleDeclaredFields) {
+            ProcessingLog.debugging(field.getName());
+        }
+        ProcessingLog.debugging("Non-directly accessible fields: ");
+        for (FieldInformation field : nonDirectlyAccessibleDeclaredFields) {
+            ProcessingLog.debugging(field.getName());
+        }
+        
+        final @Nonnull NonNullableIterable<FieldInformation> directlyAccessibleDeclaredFieldsCasted = directlyAccessibleDeclaredFields.map(castToFieldInformation);
+        final @Nonnull NonNullableIterable<FieldInformation> nonDirectlyAccessibleDeclaredFieldsCasted = nonDirectlyAccessibleDeclaredFields.map(castToFieldInformation);
+        final @Nonnull NonNullableIterable<FieldInformation> generatedFieldInformationCasted = generatedFieldInformation.map(castToFieldInformation);
+        final @Nonnull NonNullableIterable<FieldInformation> fieldInformation = directlyAccessibleDeclaredFieldsCasted.combine(nonDirectlyAccessibleDeclaredFieldsCasted).combine(generatedFieldInformationCasted);
+        ProcessingLog.debugging("Fields(size: $): ", fieldInformation.size());
+        for (FieldInformation field : fieldInformation) {
+            ProcessingLog.debugging("> $", field.getName());
+        }
+        
+        @Nonnull NonNullableIterable<ParameterBasedFieldInformation> parameterBasedFieldInformation = NonNullableIterable.ofNonNullableElements(Collections.<ParameterBasedFieldInformation>emptyList());
         
         try {
             final @Nonnull ExecutableElement recoverExecutable;
                 recoverExecutable = getRecoverExecutable(recoverMethod, constructors);
             final @Nonnull NonNullableIterable<VariableElement> parameterVariables = getParameterVariables(recoverExecutable);
-            parameterBasedFieldInformation = getParameterBasedFieldInformation(fields, parameterVariables, containingType, methodInformationIterable);
+            parameterBasedFieldInformation = getParameterBasedFieldInformation(fieldInformation, parameterVariables, containingType, methodInformationIterable);
         } catch (UnsupportedTypeException e) {
+            ProcessingLog.debugging("Caught an unsupported type exception.");
             ProcessingLog.information(e.getMessage(), SourcePosition.of(typeElement));
             generatable = false;
         } finally {
@@ -479,7 +623,11 @@ public class ClassInformation extends TypeInformation {
      * Returns a class information object of the given type typeElement and containing type.
      */
     public static @Nonnull ClassInformation of(@Nonnull TypeElement element, @Nonnull DeclaredType containingType) {
-        return new ClassInformation(element, containingType);
+        try {
+            return new ClassInformation(element, containingType);
+        } catch (Exception e) {
+            throw UnexpectedFailureException.with("Failed to collect class information on type $", e, element);
+        }
     }
      
 }

@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 /**
  * This exception is thrown if the content of a type is not as expected, e.g. if more than one recover methods are present or if abstract methods exist that are not getters or setters.
  */
-public class UnsupportedTypeException extends Exception {
+public class UnsupportedTypeException extends RuntimeException {
     
     /* -------------------------------------------------- Constructor with Message -------------------------------------------------- */
     

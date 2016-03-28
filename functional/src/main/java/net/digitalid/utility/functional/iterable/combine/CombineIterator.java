@@ -51,7 +51,14 @@ public class CombineIterator<T> implements Iterator<T> {
         if (hasNext()) {
             return iterators.get(index).next();
         }
-        throw new NoSuchElementException("There are no more elements in this map iterator. This exception could have been prevented by calling 'hasNext()' before calling 'next()' on this iterator");
+        throw new NoSuchElementException("There are no more elements in this combine iterator. This exception could have been prevented by calling 'hasNext()' before calling 'next()' on this iterator");
+    }
+    
+    /* -------------------------------------------------- Remove -------------------------------------------------- */
+    
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("remove() is not implemented.");
     }
     
 }

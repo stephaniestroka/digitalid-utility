@@ -153,7 +153,8 @@ public abstract class NonNullableIterable<T> extends NullableIterable<T> {
     /**
      * Combines this iterable with another iterable with non-nullable elements.
      */
-    public @Nonnull NonNullableIterable<T> combine(@Nonnull NonNullableIterable<T>... iterables) {
+    @SafeVarargs
+    public final @Nonnull NonNullableIterable<T> combine(@Nonnull NonNullableIterable<T>... iterables) {
         final @Nonnull @NonNullableElements List<NonNullableIterable<T>> combiningIterables = new ArrayList<>();
         combiningIterables.add(this);
         combiningIterables.addAll(Arrays.asList(iterables));

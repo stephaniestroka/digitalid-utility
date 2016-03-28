@@ -24,6 +24,7 @@ import net.digitalid.utility.generator.information.field.GeneratedFieldInformati
 import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
+import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.tuples.NonNullablePair;
 import net.digitalid.utility.tuples.NullablePair;
@@ -171,7 +172,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     /**
      * Returns a map of indexed abstract getters.
      */
-    protected final @Nonnull @NonNullableElements Map<String, MethodInformation> abstractGetters;
+    public final @Nonnull @NonNullableElements Map<String, MethodInformation> abstractGetters;
     
     /**
      * The predicate checks whether a given method information is an abstract getter.
@@ -190,7 +191,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     /**
      * Returns a map of indexed abstract setters.
      */
-    protected final @Nonnull @NonNullableElements Map<String, MethodInformation> abstractSetters;
+    public final @Nonnull @NonNullableElements Map<String, MethodInformation> abstractSetters;
     
     /**
      * The predicate checks whether a given method information is an abstract setter.
@@ -274,6 +275,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         for (@Nonnull Map.Entry<String, MethodInformation> indexedGetter : abstractGetters.entrySet()) {
             final @Nonnull MethodInformation getter = indexedGetter.getValue();
             final @Nullable MethodInformation setter = abstractSetters.get(indexedGetter.getKey());
+            ProcessingLog.debugging("For field '" + indexedGetter.getKey() + "', adding getter: '" + getter + "' and setter '" + setter + "'.");
             gettersAndSetters.add(Pair.withNullable(getter, setter));
         }
         
@@ -282,6 +284,10 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         final @Nonnull NonNullableIterable<MethodInformation> allRemainingAbstractMethods = methodInformation.filter(abstractMethodPredicate).map(removeAbstractGettersAndSetters).filterNonNull();
         
         if (allRemainingAbstractMethods.size() != 0) {
+            ProcessingLog.debugging("Found abstract methods which cannot be generated: ", allRemainingAbstractMethods.size());
+            for (MethodInformation remainingAbstractMethod : allRemainingAbstractMethods) {
+                ProcessingLog.debugging("Remaining method $ cannot be generated", remainingAbstractMethod);
+            }
             generatable = false;
         }
         

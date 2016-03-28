@@ -8,12 +8,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import javax.annotation.Nonnull;
-import javax.annotation.processing.Processor;
 import javax.annotation.processing.SupportedAnnotationTypes;
 
 import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.meta.MethodValidator;
 
 /**
  * This annotation indicates what annotation types an annotation processor supports.
@@ -22,7 +20,8 @@ import net.digitalid.utility.validation.annotations.meta.MethodValidator;
  */
 @Documented
 @Target(ElementType.TYPE)
-@MethodValidator(Processor.class)
+// TODO: How does a method validator look like for this annotation? We can't generate code here, so maybe the method validator annotation is misplaced?
+// @MethodValidator(Processor.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SupportedAnnotations {
     

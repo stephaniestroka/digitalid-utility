@@ -35,7 +35,8 @@ public class GenericClass<G extends GenericClass<G>> {
     
     @Pure
     public static @Nonnull <G extends GenericClass<G>> GenericClass<G> with() {
-        return new GeneratedGenericClass<>();
+// TODO:       return new GeneratedGenericClass<>();
+        return null;
     }
     
     public GenericClass() {

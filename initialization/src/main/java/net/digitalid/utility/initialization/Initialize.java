@@ -12,7 +12,6 @@ import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.Initializer;
 import net.digitalid.utility.configuration.exceptions.InitializationException;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.meta.TargetTypes;
 
 /**
  * This annotation indicates that a method should be run during the initialization of the library.
@@ -22,7 +21,8 @@ import net.digitalid.utility.validation.annotations.meta.TargetTypes;
  * @see InitializationProcessor
  */
 @Documented
-@TargetTypes(Void.class)
+// TODO: the following annotation does not exist anymore. Find out why.
+//@TargetTypes(Void.class)
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Initialize {

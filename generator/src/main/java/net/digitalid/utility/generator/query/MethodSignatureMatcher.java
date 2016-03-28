@@ -51,8 +51,12 @@ public class MethodSignatureMatcher {
     public boolean matches(@Nonnull MethodInformation methodInformation) {
         boolean matches = namePattern.matcher(methodInformation.getName()).matches();
         final @Nonnull @NonNullableElements List<? extends VariableElement> methodParameters = methodInformation.getElement().getParameters();
-        for (int i = 0; i < methodParameters.size(); i++) {
-            matches = matches && StaticProcessingEnvironment.getTypeUtils().asElement(methodParameters.get(i).asType()).equals(parameters[i]);
+        if (parameters.length == methodParameters.size()) {
+            for (int i = 0; i < methodParameters.size(); i++) {
+                matches = matches && StaticProcessingEnvironment.getTypeUtils().asElement(methodParameters.get(i).asType()).equals(parameters[i]);
+            }
+        } else {
+            matches = false;
         }
         return matches;
     }

@@ -1,13 +1,10 @@
 package net.digitalid.utility.generator.information.field;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
 
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
@@ -26,8 +23,8 @@ public class NonDirectlyAccessibleParameterBasedFieldInformation extends NonDire
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected NonDirectlyAccessibleParameterBasedFieldInformation(@Nonnull VariableElement parameter, @Nonnull DeclaredType containingType, @Nonnull MethodInformation getter, @Nullable MethodInformation setter) {
-        super(parameter, parameter.asType(), containingType, getter, setter);
+    protected NonDirectlyAccessibleParameterBasedFieldInformation(@Nonnull VariableElement parameter, @Nonnull NonDirectlyAccessibleFieldInformation generatedFieldInformation) {
+        super(parameter, parameter.asType(), generatedFieldInformation.getContainingType(), generatedFieldInformation.getGetter(), generatedFieldInformation.getSetter());
         
         Require.that(parameter.getKind() == ElementKind.PARAMETER).orThrow("The element $ has to be a parameter.", SourcePosition.of(parameter));
     }
@@ -40,8 +37,8 @@ public class NonDirectlyAccessibleParameterBasedFieldInformation extends NonDire
      * @require setter == null || setter.isSetter() : "The second method has to be null or a setter.";
      */
     @Pure
-    public static @Nonnull NonDirectlyAccessibleParameterBasedFieldInformation of(@Nonnull VariableElement parameter, @Nonnull DeclaredType containingType, @Nonnull MethodInformation getter, @Nullable MethodInformation setter) {
-        return new NonDirectlyAccessibleParameterBasedFieldInformation(parameter, containingType, getter, setter);
+    public static @Nonnull NonDirectlyAccessibleParameterBasedFieldInformation of(@Nonnull VariableElement parameter, @Nonnull NonDirectlyAccessibleFieldInformation nonDirectlyAccessibleFieldInformation) {
+        return new NonDirectlyAccessibleParameterBasedFieldInformation(parameter, nonDirectlyAccessibleFieldInformation);
     }
     
 }

@@ -44,6 +44,9 @@ class CombineNonNullIterable<T> extends NonNullableIterable<T> {
     public int size() {
         int size = 0;
         for (NonNullableIterable<T> iterable : iterables) {
+            if (iterable.size() == -1) {
+                return -1;
+            }
             size += iterable.size();
         }
         return size;

@@ -20,6 +20,7 @@ import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.string.PrefixString;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * This annotation processor generates a subclass for each non-final type to implement common methods and aspects.
@@ -70,8 +71,11 @@ public class GeneratorProcessor extends CustomProcessor {
             typeInformation = InterfaceInformation.of(typeElement, containingType);
         }
         if (typeInformation.isGeneratable()) {
+            ProcessingLog.debugging("Type $ is generatable", typeInformation);
             SubclassGenerator.generateSubclassOf(typeInformation);
             BuilderGenerator.generateBuilderFor(typeInformation);
+        } else {
+            ProcessingLog.debugging("Type $ is NOT generatable", typeInformation);
         }
         return typeInformation.isGeneratable();
     }

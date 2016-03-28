@@ -112,11 +112,6 @@ public class ManuallyCreatedStudentBuilder {
    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    // Rather have a public constructor with all the fields as parameters for conversion recovery? Or make it private so that no one else calls it?
-    public ManuallyCreatedStudentBuilder(@Nonnull Object[] fieldValues) {
-        // TODO: Cast and assign the elements to the fields.
-    }
-    
     @Pure
     public static @Nonnull IdManuallyCreatedStudentBuilder withName(@Nonnull String name) {
         return new NameManuallyCreatedStudentBuilder().withName(name);
