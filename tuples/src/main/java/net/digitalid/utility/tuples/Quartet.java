@@ -72,6 +72,21 @@ public class Quartet<E0, E1, E2, E3> extends Triplet<E0, E1, E2> {
         return new Quartet<>(element0, element1, element2, element3);
     }
     
+    /* -------------------------------------------------- Tuple -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public int size() {
+        return 4;
+    }
+    
+    @Pure
+    @Override
+    public Object get(int index) {
+        if (index == 3) { return element3; }
+        else { return super.get(index); }
+    }
+    
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure

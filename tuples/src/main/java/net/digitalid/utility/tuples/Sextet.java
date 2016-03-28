@@ -88,6 +88,21 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
         return new Sextet<>(element0, element1, element2, element3, element4, element5);
     }
     
+    /* -------------------------------------------------- Tuple -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public int size() {
+        return 6;
+    }
+    
+    @Pure
+    @Override
+    public Object get(int index) {
+        if (index == 5) { return element5; }
+        else { return super.get(index); }
+    }
+    
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure

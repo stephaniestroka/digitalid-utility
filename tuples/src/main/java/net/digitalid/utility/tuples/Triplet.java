@@ -64,6 +64,21 @@ public class Triplet<E0, E1, E2> extends Pair<E0, E1> {
         return new Triplet<>(element0, element1, element2);
     }
     
+    /* -------------------------------------------------- Tuple -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public int size() {
+        return 3;
+    }
+    
+    @Pure
+    @Override
+    public Object get(int index) {
+        if (index == 2) { return element2; }
+        else { return super.get(index); }
+    }
+    
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure

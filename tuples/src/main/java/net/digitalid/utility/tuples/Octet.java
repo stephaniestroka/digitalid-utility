@@ -102,6 +102,21 @@ public class Octet<E0, E1, E2, E3, E4, E5, E6, E7> extends Septet<E0, E1, E2, E3
         return new Octet<>(element0, element1, element2, element3, element4, element5, element6, element7);
     }
     
+    /* -------------------------------------------------- Tuple -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public int size() {
+        return 8;
+    }
+    
+    @Pure
+    @Override
+    public Object get(int index) {
+        if (index == 7) { return element7; }
+        else { return super.get(index); }
+    }
+    
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure

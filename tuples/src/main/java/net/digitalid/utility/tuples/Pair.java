@@ -9,7 +9,7 @@ import net.digitalid.utility.tuples.annotations.Pure;
  * 
  * @see Triplet
  */
-public class Pair<E0, E1> {
+public class Pair<E0, E1> extends Tuple {
     
     /* -------------------------------------------------- Element 0 -------------------------------------------------- */
     
@@ -64,6 +64,22 @@ public class Pair<E0, E1> {
     @Pure
     public static <E0, E1> Pair<E0, E1> of(E0 element0, E1 element1) {
         return new Pair<>(element0, element1);
+    }
+    
+    /* -------------------------------------------------- Tuple -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public int size() {
+        return 2;
+    }
+    
+    @Pure
+    @Override
+    public Object get(int index) {
+        if (index == 0) { return element0; }
+        if (index == 1) { return element1; }
+        throw new IndexOutOfBoundsException("The size of the tuple is " + size() + " but the index was " + index + ".");
     }
     
     /* -------------------------------------------------- Object -------------------------------------------------- */

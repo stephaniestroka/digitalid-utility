@@ -80,6 +80,21 @@ public class Quintet<E0, E1, E2, E3, E4> extends Quartet<E0, E1, E2, E3> {
         return new Quintet<>(element0, element1, element2, element3, element4);
     }
     
+    /* -------------------------------------------------- Tuple -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public int size() {
+        return 5;
+    }
+    
+    @Pure
+    @Override
+    public Object get(int index) {
+        if (index == 4) { return element4; }
+        else { return super.get(index); }
+    }
+    
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
