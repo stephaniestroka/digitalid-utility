@@ -3,8 +3,8 @@ package net.digitalid.utility.functional.iterable.map.function.implementation;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunction;
-import net.digitalid.utility.tuples.pair.NonNullablePair;
-import net.digitalid.utility.tuples.triplet.NonNullableTriplet;
+import net.digitalid.utility.tuples.NonNullablePair;
+import net.digitalid.utility.tupless.triplet.NonNullableTriplet;
 
 /**
  * Provides an implementation to get the third element out of a tuple.

@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.functional.function.unary.NonNullToNullableUnaryFunction;
-import net.digitalid.utility.tuples.pair.NullablePair;
+import net.digitalid.utility.tuples.NullablePair;
 
 /**
  * Provides an implementation to get the first element out of a tuple.

@@ -1,6 +1,5 @@
 package net.digitalid.utility.taglets;
 
-import java.beans.Introspector;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -90,11 +89,21 @@ public abstract class CustomTaglet implements Taglet {
     private static final Pattern pattern = Pattern.compile("(.+) : \"(.+)\";");
     
     /**
+     * Decapitalizes the given string.
+     */
+    private static String decapitalize(String string) {
+        if (string == null || string.length() == 0) { return string; }
+        final char[] chars = string.toCharArray();
+        chars[0] = Character.toLowerCase(chars[0]);
+        return new String(chars);
+    }
+    
+    /**
      * Returns the given non-nullable text formatted as code if it matches the above pattern.
      */
     protected String getText(String text) {
         final Matcher matcher = pattern.matcher(text);
-        if (matcher.matches()) { return "<code> " + matcher.group(1) + "</code> - " + Introspector.decapitalize(matcher.group(2)); }
+        if (matcher.matches()) { return "<code> " + matcher.group(1) + "</code> - " + decapitalize(matcher.group(2)); }
         else { return text; }
     }
     

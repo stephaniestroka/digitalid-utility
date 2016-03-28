@@ -2,54 +2,34 @@ package net.digitalid.utility.immutable.collections;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 
 import net.digitalid.utility.immutable.iterators.ImmutableIterator;
 
 /**
- * This class implements an immutable set of non-nullable elements.
- * <p>
- * <em>Important:</em> This set is only immutable in Java 1.7!
+ * This class implements an immutable set.
  */
 public class ImmutableSet<E> extends LinkedHashSet<E> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
-
-    protected ImmutableSet(Collection<? extends E> collection) {
-        super();
-        addAllInternal(collection);
-        
-        if (contains(null)) { throw new NullPointerException("An immutable set may not contain null."); }
-    }
     
-    private boolean addAllInternal(Collection<? extends E> collection) {
-        boolean var2 = false;
-        Iterator<? extends E> var3 = collection.iterator();
-        while(var3.hasNext()) {
-            E var4 = var3.next();
-            if(super.add(var4)) {
-                var2 = true;
-            }
+    protected ImmutableSet(Iterable<? extends E> iterable) {
+        for (E element : iterable) {
+            super.add(element);
         }
-        return var2;
     }
     
     /**
-     * Returns an immutable set with the elements of the given collection.
-     * The given collection is not captured as its elements are copied to the immutable set.
-     * 
-     * @throws NullPointerException if any of the elements of the given collection is null.
+     * Returns an immutable set with the elements of the given iterable.
+     * The given iterable is not captured as its elements are copied to the immutable set.
      */
-    public static <E> ImmutableSet<E> with(Collection<? extends E> collection) {
-        return new ImmutableSet<>(collection);
+    public static <E> ImmutableSet<E> with(Iterable<? extends E> iterable) {
+        return new ImmutableSet<>(iterable);
     }
     
     /**
      * Returns an immutable set with the elements of the given array.
      * The given array is not captured as its elements are copied to the immutable set.
-     * 
-     * @throws NullPointerException if any of the elements of the given array is null.
      */
     @SafeVarargs
     public static <E> ImmutableSet<E> with(E... elements) {

@@ -3,7 +3,7 @@ package net.digitalid.utility.functional.iterable.map.function.implementation;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunction;
-import net.digitalid.utility.tuples.quartet.NonNullableQuartet;
+import net.digitalid.utility.tupless.quartet.NonNullableQuartet;
 
 /**
  * Provides an implementation to get the forth element out of a tuple.

@@ -5,8 +5,8 @@ import java.util.NoSuchElementException;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.tuples.triplet.NonNullableTriplet;
-import net.digitalid.utility.tuples.triplet.Triplet;
+import net.digitalid.utility.tupless.triplet.NonNullableTriplet;
+import net.digitalid.utility.tupless.triplet.Triplet;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 

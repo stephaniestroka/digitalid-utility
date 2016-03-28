@@ -4,9 +4,7 @@ import java.util.ListIterator;
 import java.util.Objects;
 
 /**
- * This class implements an immutable list iterator of non-nullable elements.
- * <p>
- * <em>Important:</em> This list iterator is only immutable in Java 1.7!
+ * This class implements an immutable list iterator.
  */
 public class ImmutableListIterator<E> extends ImmutableIterator<E> implements ListIterator<E> {
     
@@ -24,7 +22,6 @@ public class ImmutableListIterator<E> extends ImmutableIterator<E> implements Li
     
     /**
      * Returns an immutable list iterator that captures the given list iterator.
-     * The given list iterator should only return non-nullable elements.
      */
     public static <E> ImmutableListIterator<E> with(ListIterator<E> iterator) {
         return new ImmutableListIterator<>(iterator);
@@ -38,6 +35,11 @@ public class ImmutableListIterator<E> extends ImmutableIterator<E> implements Li
     }
     
     @Override
+    public E previous() {
+        return listIterator.previous();
+    }
+    
+    @Override
     public int nextIndex() {
         return listIterator.nextIndex();
     }
@@ -45,18 +47,6 @@ public class ImmutableListIterator<E> extends ImmutableIterator<E> implements Li
     @Override
     public int previousIndex() {
         return listIterator.previousIndex();
-    }
-    
-    /* -------------------------------------------------- NonNullable Results -------------------------------------------------- */
-    
-    /**
-     * {@inheritDoc}
-     *
-     * @ensure result != null : "The result may not be null.";
-     */
-    @Override
-    public E previous() {
-        return Objects.requireNonNull(listIterator.previous());
     }
     
     /* -------------------------------------------------- Unsupported Operations -------------------------------------------------- */

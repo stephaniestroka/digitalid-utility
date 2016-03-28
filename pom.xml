@@ -28,13 +28,17 @@
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-        <skipTests>true</skipTests> <!-- To re-enable tests, run 'mvn install -DskipTests=false'. -->
+        <maven.compiler.version>1.8</maven.compiler.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <tests.skip>true</tests.skip> <!-- To re-enable tests, run 'mvn install -DskipTests=false'. -->
     </properties>
     
     <modules>
         <module>taglets</module>
+        <module>tuples</module>
+        <module>functional</module>
+        <module>concurrency</module>
         <module>immutable</module>
         <module>string</module>
         <module>exceptions</module>
@@ -48,9 +52,6 @@
         <module>freezable</module>
         <module>casting</module>
         <module>rootclass</module>
-        <module>tuples</module>
-        <module>functional</module>
-        <module>concurrency</module>
         <module>processor</module>
         <module>initialization</module>
         <module>directory</module>
@@ -112,7 +113,8 @@
     <build>
         <plugins>
             
-<!--            <plugin>
+            <!-- If your IDE has difficulties in locating the generated sources:
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>1.10</version>
@@ -130,7 +132,8 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
+            -->
             
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -138,12 +141,15 @@
                 <version>3.5.1</version>
                 <configuration>
                     <fork>true</fork>
-                    <source>1.7</source>
-                    <target>1.7</target>
                     <verbose>true</verbose>
-                    <compilerVersion>1.7</compilerVersion>
-                    <executable>${JAVA_7_HOME}/bin/javac</executable>
-                    <!-- NetBeans seems to need the following line: -->
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <executable>${maven.compiler.executable}</executable>
+                    <compilerVersion>${maven.compiler.version}</compilerVersion>
+                    <compilerArguments>
+                        <bootclasspath>${maven.compiler.bootclasspath}</bootclasspath>
+                    </compilerArguments>
+                    <!-- NetBeans seems to need the following line sometimes: -->
                     <generatedSourcesDirectory>target/generated-sources/annotations</generatedSourcesDirectory>
                 </configuration>
             </plugin>
@@ -153,7 +159,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.19.1</version>
                 <configuration>
-                    <skipTests>${skipTests}</skipTests>
+                    <skipTests>${tests.skip}</skipTests>
                 </configuration>
             </plugin>
             

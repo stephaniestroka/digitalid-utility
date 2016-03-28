@@ -8,51 +8,33 @@ import net.digitalid.utility.immutable.iterators.ImmutableIterator;
 import net.digitalid.utility.immutable.iterators.ImmutableListIterator;
 
 /**
- * This class implements an immutable list of non-nullable elements.
- * <p>
- * <em>Important:</em> This list is only immutable in Java 1.7!
+ * This class implements an immutable list.
  */
 public class ImmutableList<E> extends ArrayList<E> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ImmutableList(Collection<? extends E> collection) {
-        super(collection);
-        
-        if (contains(null)) { throw new NullPointerException("An immutable set may not contain null."); }
+    protected ImmutableList(Iterable<? extends E> iterable) {
+        for (E element : iterable) {
+            super.add(element);
+        }
     }
     
     /**
-     * Returns an immutable list with the elements of the given collection in the same order.
-     * The given collection is not captured as its elements are copied to the immutable list.
-     * 
-     * @throws NullPointerException if any of the elements of the given collection is null.
+     * Returns an immutable list with the elements of the given iterable in the same order.
+     * The given iterable is not captured as its elements are copied to the immutable list.
      */
-    public static <E> ImmutableList<E> with(Collection<? extends E> collection) {
-        return new ImmutableList<>(collection);
+    public static <E> ImmutableList<E> with(Iterable<? extends E> iterable) {
+        return new ImmutableList<>(iterable);
     }
     
     /**
      * Returns an immutable list with the elements of the given array in the same order.
      * The given array is not captured as its elements are copied to the immutable list.
-     * 
-     * @throws NullPointerException if any of the elements of the given array is null.
      */
     @SafeVarargs
     public static <E> ImmutableList<E> with(E... elements) {
         return new ImmutableList<>(Arrays.asList(elements));
-    }
-    
-    /* -------------------------------------------------- NonNullable Results -------------------------------------------------- */
-    
-    /**
-     * {@inheritDoc}
-     *
-     * @ensure result != null : "The result may not be null.";
-     */
-    @Override
-    public E get(int index) {
-        return super.get(index);
     }
     
     /* -------------------------------------------------- Modified Operations -------------------------------------------------- */

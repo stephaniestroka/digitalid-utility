@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 
-import net.digitalid.utility.functional.iterable.NonNullableIterable;
+import net.digitalid.utility.functional.iterable.old.NonNullableIterable;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;

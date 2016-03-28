@@ -6,8 +6,8 @@ import java.util.NoSuchElementException;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.exceptions.UnexpectedValueException;
-import net.digitalid.utility.tuples.quartet.NullableQuartet;
-import net.digitalid.utility.tuples.quartet.Quartet;
+import net.digitalid.utility.tupless.quartet.NullableQuartet;
+import net.digitalid.utility.tupless.quartet.Quartet;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 

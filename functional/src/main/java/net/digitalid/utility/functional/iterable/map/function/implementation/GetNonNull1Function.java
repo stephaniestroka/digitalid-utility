@@ -3,7 +3,7 @@ package net.digitalid.utility.functional.iterable.map.function.implementation;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunction;
-import net.digitalid.utility.tuples.pair.NonNullablePair;
+import net.digitalid.utility.tuples.NonNullablePair;
 
 /**
  * Provides an implementation to get the second element out of a tuple.

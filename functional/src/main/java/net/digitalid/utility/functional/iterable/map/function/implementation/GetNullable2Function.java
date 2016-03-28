@@ -4,8 +4,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.functional.function.unary.NonNullToNullableUnaryFunction;
-import net.digitalid.utility.tuples.pair.NullablePair;
-import net.digitalid.utility.tuples.triplet.NullableTriplet;
+import net.digitalid.utility.tuples.NullablePair;
+import net.digitalid.utility.tupless.triplet.NullableTriplet;
 
 /**
  * Provides an implementation to get the third element out of a tuple.

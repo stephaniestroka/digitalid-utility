@@ -18,10 +18,9 @@ import javax.lang.model.util.ElementFilter;
 import net.digitalid.utility.exceptions.ConformityViolation;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunction;
-import net.digitalid.utility.functional.function.unary.NonNullToNullableUnaryFunction;
-import net.digitalid.utility.functional.iterable.InfiniteNonNullableIterable;
-import net.digitalid.utility.functional.iterable.NonNullableIterable;
-import net.digitalid.utility.functional.iterable.NullableIterable;
+import net.digitalid.utility.functional.iterable.old.InfiniteNonNullableIterable;
+import net.digitalid.utility.functional.iterable.old.NonNullableIterable;
+import net.digitalid.utility.functional.iterable.old.NullableIterable;
 import net.digitalid.utility.functional.iterable.map.function.implementation.GetNonNull0Function;
 import net.digitalid.utility.functional.predicate.NonNullablePredicate;
 import net.digitalid.utility.generator.BuilderGenerator;
@@ -354,6 +353,7 @@ public class ClassInformation extends TypeInformation {
             //    throw UnexpectedFailureException.with("Did not expect field information of type $. Cannot create a parameter-based field information instance from that type.", field.getClass());
                 return null;
             }
+            
         }
         
     };
