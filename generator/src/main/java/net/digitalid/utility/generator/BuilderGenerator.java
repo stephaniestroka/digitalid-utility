@@ -12,7 +12,7 @@ import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.ConformityViolation;
-import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunction;
+import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.string.Brackets;
 import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.generator.information.field.FieldInformation;
@@ -126,10 +126,10 @@ public class BuilderGenerator extends JavaFileGenerator {
         return listOfInterfaces;
     }
     
-    public final static NonNullToNonNullUnaryFunction<RepresentingFieldInformation, String> fieldToStringFunction = new NonNullToNonNullUnaryFunction<RepresentingFieldInformation, String>() {
+    public final static UnaryFunction<@Nonnull RepresentingFieldInformation, @Nonnull String> fieldToStringFunction = new UnaryFunction<@Nonnull RepresentingFieldInformation, @Nonnull String>() {
         
         @Override
-        public @Nonnull String apply(@Nonnull RepresentingFieldInformation element) {
+        public @Nonnull String evaluate(@Nonnull RepresentingFieldInformation element) {
             return element.getName();
         }
         
