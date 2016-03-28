@@ -50,7 +50,11 @@ class ZipToNonNullablePairNonNullIterable<T1, T2> extends NonNullableIterable<No
      */
     @Override
     public int size() {
-        return Math.min(iterable1.size(), iterable2.size());
+        if (iterable1.size() == -1 || iterable2.size() == -1) {
+            return Math.max(iterable1.size(), iterable2.size());
+        } else {
+            return Math.min(iterable1.size(), iterable2.size());
+        }
     }
     
 }

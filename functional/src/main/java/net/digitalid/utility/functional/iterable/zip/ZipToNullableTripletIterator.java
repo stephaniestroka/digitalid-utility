@@ -72,4 +72,11 @@ public class ZipToNullableTripletIterator<T1, T2, T3> implements Iterator<Nullab
         throw new NoSuchElementException("There are no more elements in this zip iterator. This exception could have been prevented by calling 'hasNext()' before calling 'next()' on this iterator.");
     }
     
+    /* -------------------------------------------------- Remove -------------------------------------------------- */
+    
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("remove() is not implemented.");
+    }
+    
 }

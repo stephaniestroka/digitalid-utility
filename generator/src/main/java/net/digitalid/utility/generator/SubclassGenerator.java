@@ -11,9 +11,9 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunction;
 import net.digitalid.utility.functional.iterable.NonNullableIterable;
-import net.digitalid.utility.functional.iterable.NullableIterable;
 import net.digitalid.utility.functional.string.Brackets;
 import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.generator.information.ElementInformation;
@@ -26,11 +26,13 @@ import net.digitalid.utility.generator.information.type.ClassInformation;
 import net.digitalid.utility.generator.information.type.InterfaceInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.type.exceptions.UnsupportedTypeException;
-import net.digitalid.utility.logging.Log;
+import net.digitalid.utility.generator.interceptor.MethodInterceptor;
+import net.digitalid.utility.generator.interceptor.MethodUtility;
 import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.string.StringCase;
+import net.digitalid.utility.tuples.pair.NonNullablePair;
 import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
@@ -43,6 +45,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * @see GeneratorProcessor
  * @see TypeInformation
  */
+// TODO: generate validate() method
 @Mutable
 public class SubclassGenerator extends JavaFileGenerator {
     
@@ -56,38 +59,39 @@ public class SubclassGenerator extends JavaFileGenerator {
         for (@Nonnull GeneratedFieldInformation field : typeInformation.generatedFieldInformation) {
             ProcessingLog.verbose("Generating the field $.", field.getName());
             addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize(field.getName())));
-            addField("private " + (field.isMutable() ? "" : "final ") + importIfPossible(field.getElement()) + " " + field.getName());
+            addField("private " + (field.isMutable() ? "" : "final ") + importIfPossible(field.getType()) + " " + field.getName());
             
-            final @Nonnull MethodInformation getter = field.getGetter();
-            // TODO: Support method interceptors!
-            addAnnotation(Override.class);
-            beginMethod(getter.getModifiersForOverridingMethod() + importIfPossible(getter.getType()) + " " + getter.getName() + "()");
-            addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + getter + " was called.") + ")");
-            addStatement("final " + importIfPossible(getter.getType().getReturnType()) + " result = " + field.getName());
-            for (@Nonnull Map.Entry<AnnotationMirror, MethodAnnotationValidator> entry : getter.getMethodValidators().entrySet()) {
-                addPostcondition(entry.getValue().generateContract(getter.getElement(), entry.getKey(), this));
+            {
+                final @Nonnull MethodInformation getter = field.getGetter();
+                ProcessingLog.verbose("Implementing the getter " + QuoteString.inSingle(getter.getName()));
+                final @Nonnull String statement = "result = this." + field.getName();
+                generateMethodWithStatement(getter, statement, "result");
             }
-            addStatement("return result");
-            endMethod();
             
             if (field.hasSetter()) {
-                final @Nullable MethodInformation setter = field.getSetter();
-                // TODO: Support method interceptors!
-                addAnnotation(Override.class);
-                beginMethod(setter.getModifiersForOverridingMethod() + "void " + setter.getName() + importingTypeVisitor.reduceParametersDeclarationToString(setter.getType(), setter.getElement()));
-                addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + setter + " was called.") + ")");
-                for (@Nonnull VariableElement parameter : setter.getElement().getParameters()) {
-                    for (@Nonnull Map.Entry<AnnotationMirror, ValueAnnotationValidator> entry : ProcessingUtility.getValueValidators(parameter).entrySet()) {
-                        addPrecondition(entry.getValue().generateContract(parameter, entry.getKey(), this));
-                    }
-                    addStatement("this." + field.getName() + " = " + parameter.getSimpleName());
-                }
-                endMethod();
+                final @Nonnull MethodInformation setter = field.getNonNullSetter();
+                ProcessingLog.verbose("Implementing the setter " + QuoteString.inSingle(setter.getName()));
+                final @Nonnull List<? extends VariableElement> parameters = setter.getElement().getParameters();
+                Require.that(parameters.size() == 1).orThrow("Found a setter with " + (parameters.size() == 0 ? "zero " : "more than one ") + "parameters.");
+                final @Nonnull VariableElement parameter = parameters.get(0);
+                final @Nonnull String statement = ("this." + field.getName() + " = " + parameter.getSimpleName());
+                generateMethodWithStatement(setter, statement);
             }
         }
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
+     
+    private static NonNullToNonNullUnaryFunction<NonNullablePair<RepresentingFieldInformation, SubclassGenerator>, String> elementInformationToDeclarationFunction = new NonNullToNonNullUnaryFunction<NonNullablePair<RepresentingFieldInformation, SubclassGenerator>, String>() {
+        
+        @Override
+        public @Nonnull String apply(@Nonnull NonNullablePair<RepresentingFieldInformation, SubclassGenerator> pair) {
+            final @Nonnull ElementInformation element = pair.get0();
+            final @Nonnull SubclassGenerator subclassGenerator = pair.get1();
+            return subclassGenerator.importIfPossible(element.getType()) + " " + element.getName();
+        }
+        
+    };
     
     private static NonNullToNonNullUnaryFunction<ElementInformation, String> elementInformationToStringFunction = new NonNullToNonNullUnaryFunction<ElementInformation, String>() {
         
@@ -101,7 +105,8 @@ public class SubclassGenerator extends JavaFileGenerator {
     private void generateConstructor(@Nullable List<? extends TypeMirror> throwTypes, @Nullable String superStatement) throws UnsupportedTypeException {
          final @Nonnull NonNullableIterable<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
         
-        beginConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + IterableConverter.toString(representingFieldInformation.map(elementInformationToStringFunction), Brackets.ROUND) + (throwTypes == null || throwTypes.isEmpty() ? "" : " throws " + IterableConverter.toString(throwTypes, importingTypeVisitor.TYPE_MAPPER)));
+        final @Nonnull NonNullableIterable<SubclassGenerator> infiniteThis = NonNullableIterable.ofNonNullableElement(this);
+        beginConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + IterableConverter.toString(representingFieldInformation.zipNonNull(infiniteThis).map(elementInformationToDeclarationFunction), Brackets.ROUND) + (throwTypes == null || throwTypes.isEmpty() ? "" : " throws " + IterableConverter.toString(throwTypes, importingTypeVisitor.TYPE_MAPPER)));
 
         if (superStatement != null) {
             addStatement(superStatement);
@@ -125,33 +130,60 @@ public class SubclassGenerator extends JavaFileGenerator {
         }
     }
     
-    /* -------------------------------------------------- Overridden Methods -------------------------------------------------- */
-    
-    private static NonNullToNonNullUnaryFunction<VariableElement, String> parameterToStringFunction = new NonNullToNonNullUnaryFunction<VariableElement, String>() {
-        
-        @Override
-        public @Nonnull String apply(@Nonnull VariableElement element) {
-            return element.getSimpleName().toString();
+    protected @Nonnull String implementCallToMethodInterceptors(@Nonnull MethodInformation method, @Nonnull String lastStatement, @Nullable String returnedValue) {
+        for (@Nonnull Map.Entry<AnnotationMirror, MethodInterceptor> annotationMirrorMethodInterceptorEntry : method.getInterceptors().entrySet()) {
+            final @Nonnull MethodInterceptor methodInterceptor = annotationMirrorMethodInterceptorEntry.getValue();
+            lastStatement = methodInterceptor.generateInterceptorMethod(this, method, lastStatement, returnedValue);
         }
-        
-    };
+        return lastStatement;
+    }
+    /* -------------------------------------------------- Overridden Methods -------------------------------------------------- */
     
     protected void overrideMethods() {
         if (!typeInformation.getOverriddenMethods().isEmpty()) { addSection("Overridden Methods"); }
-        for (@Nonnull MethodInformation method : typeInformation.getOverriddenMethods()) {
+        for (final @Nonnull MethodInformation method : typeInformation.getOverriddenMethods()) {
             ProcessingLog.verbose("Overriding the method " + QuoteString.inSingle(method.getName()));
+            
+            final @Nonnull String callToSuperMethod = MethodUtility.createSuperCall(method, "result");
+            final @Nonnull String firstMethodCall = implementCallToMethodInterceptors(method, callToSuperMethod, "result"); 
             addAnnotation(Override.class);
-            beginMethod(method.getModifiersForOverridingMethod() + importIfPossible(method.getType()) + " " + method.getName() + importingTypeVisitor.reduceParametersDeclarationToString(method.getType(), method.getElement()) + (method.getElement().getThrownTypes().isEmpty() ? "" : " throws " + IterableConverter.toString(method.getElement().getThrownTypes(), importingTypeVisitor.TYPE_MAPPER)));
-            // TODO: get method interceptor and generate call to invoke()
-            addStatement(importIfPossible(Log.class) + ".verbose(" + QuoteString.inDouble("The method " + method.getName() + " was called.") + ")");
-            addStatement((method.hasReturnType() ? "return " : "") + "super." + method.getName() + IterableConverter.toString(NullableIterable.ofNonNullableElements(method.getElement().getParameters()).map(parameterToStringFunction), Brackets.ROUND));
+            MethodUtility.generateBeginMethod(this, method, null, "result");
+            addStatement(firstMethodCall);
+            if (method.hasReturnType()) {
+                addStatement("return result");
+            }
             endMethod();
         }
     }
     
+    private void generateMethodWithStatement(@Nonnull MethodInformation method, @Nonnull String statement) {
+        generateMethodWithStatement(method, statement, null);
+    }
+    
+    private void generateMethodWithStatement(@Nonnull MethodInformation method, @Nonnull String statement, @Nullable String returnedValue) {
+        final @Nonnull String firstMethodCall = implementCallToMethodInterceptors(method, statement, returnedValue);
+        addAnnotation(Override.class);
+        MethodUtility.generateBeginMethod(this, method, null, returnedValue);
+        for (@Nonnull VariableElement parameter : method.getElement().getParameters()) {
+            for (@Nonnull Map.Entry<AnnotationMirror, ValueAnnotationValidator> entry : ProcessingUtility.getValueValidators(parameter).entrySet()) {
+                addPrecondition(entry.getValue().generateContract(parameter, entry.getKey(), this));
+            }
+        }
+        addStatement(firstMethodCall);
+        for (@Nonnull Map.Entry<AnnotationMirror, MethodAnnotationValidator> entry : method.getMethodValidators().entrySet()) {
+            addPostcondition(entry.getValue().generateContract(method.getElement(), entry.getKey(), this));
+        }
+        if (returnedValue != null) {
+            addStatement("return " + returnedValue);
+        }
+        endMethod();
+    }
+    
     protected void generateMethods() {
         addSection("Generated Methods");
+    
     }
+    
     /* Copied from the former root class. */
     
 //    /**
@@ -221,10 +253,11 @@ public class SubclassGenerator extends JavaFileGenerator {
             generateConstructors();
             overrideMethods();
             generateMethods();
+            // TODO: generateValidateMethod();
             
             endClass();
         } catch (Exception e) {
-            ProcessingLog.information("Failed to generate subclass for type '" + typeInformation.getName() + "'");
+            throw UnexpectedFailureException.with(e.getMessage(), e);
         }
     }
     

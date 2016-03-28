@@ -35,7 +35,8 @@ public abstract class AbstractClass {
     @Pure
     @Recover
     public static @Nonnull AbstractClass with(@Nonnull String[] value, int number) throws IOException {
-        return new GeneratedAbstractClass(value, number);
+// TODO:       return new GeneratedAbstractClass(value, number);
+        return null;
     }
     
     public static void main(@Nonnull String... args) throws IOException {

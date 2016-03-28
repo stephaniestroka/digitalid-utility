@@ -214,10 +214,21 @@ public class ProcessingUtility {
      */
     @Pure
     public static boolean isAssignable(@Nonnull TypeMirror declaredType, @Nonnull Class<?> desiredType) {
+        ProcessingLog.debugging("Checking whether $ is assignable from $", declaredType.toString(), desiredType.getCanonicalName());
+        if (desiredType.isPrimitive()) {
+            return declaredType.toString().equals(desiredType.toString());
+        }
+        // TODO: arrays cannot be fetched like this!
+        if (desiredType.isArray()) {
+            // TODO: find a way to check whether the declaredType is an array of a certain type.
+            return true;
+        }
         final @Nullable TypeElement desiredTypeElement = StaticProcessingEnvironment.getElementUtils().getTypeElement(desiredType.getCanonicalName());
         if (desiredTypeElement == null) { ProcessingLog.error("Could not retrieve the element for the type $.", desiredType); return false; }
         // TODO: Check whether this works with upper bounds of generic parameters and raw types.
-        return StaticProcessingEnvironment.getTypeUtils().isAssignable(getType(declaredType), desiredTypeElement.asType());
+        boolean result = StaticProcessingEnvironment.getTypeUtils().isAssignable(getType(declaredType), desiredTypeElement.asType());
+        ProcessingLog.debugging("= $", result);
+        return result;
     }
     
     /**
@@ -243,8 +254,10 @@ public class ProcessingUtility {
             final @Nonnull String qualifiedAnnotationName = getQualifiedName(annotationMirror);
             final @Nullable AnnotationHandler cachedAnnotationHandler = cachedAnnotationHandlers.get(qualifiedAnnotationName);
             if (cachedAnnotationHandler != null) {
-                cachedAnnotationHandler.checkUsage(element, annotationMirror);
-                result.put(annotationMirror, (G) cachedAnnotationHandler);
+                if (annotationHandlerType.isInstance(cachedAnnotationHandler)) {
+                    cachedAnnotationHandler.checkUsage(element, annotationMirror);
+                    result.put(annotationMirror, (G) cachedAnnotationHandler);
+                }
             } else {
                 final @Nonnull TypeElement annotationElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
                 final @Nonnull String annotationName = "@" + annotationElement.getSimpleName();
@@ -255,7 +268,9 @@ public class ProcessingUtility {
                     final @Nonnull TypeElement annotationHandlerImplementationElement = (TypeElement) annotationHandlerImplementationType.asElement();
                     final @Nonnull String annotationHandlerImplementationBinaryName = StaticProcessingEnvironment.getElementUtils().getBinaryName(annotationHandlerImplementationElement).toString();
                     try {
+                        ProcessingLog.debugging("Trying to retrieve class for name $", annotationHandlerImplementationBinaryName);
                         final @Nonnull Class<?> annotationHandlerImplementationClass = Class.forName(annotationHandlerImplementationBinaryName);
+                        ProcessingLog.debugging("Annotation handler class: $", annotationHandlerImplementationClass);
                         if (annotationHandlerType.isAssignableFrom(annotationHandlerImplementationClass)) {
                             final @Nonnull G annotationHandler = (G) annotationHandlerImplementationClass.newInstance();
                             cachedAnnotationHandlers.put(qualifiedAnnotationName, annotationHandler);

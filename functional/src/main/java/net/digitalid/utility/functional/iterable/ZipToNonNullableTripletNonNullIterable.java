@@ -56,7 +56,11 @@ class ZipToNonNullableTripletNonNullIterable<T1, T2, T3> extends NonNullableIter
      */
     @Override
     public int size() {
-        return Math.min(Math.min(iterable1.size(), iterable2.size()), iterable3.size());
+        final int sizeIterable1 = iterable1.size() == -1 ? Integer.MAX_VALUE : iterable1.size();
+        final int sizeIterable2 = iterable2.size() == -1 ? Integer.MAX_VALUE : iterable2.size();
+        final int sizeIterable3 = iterable3.size() == -1 ? Integer.MAX_VALUE : iterable3.size();
+        final int size = Math.min(Math.min(sizeIterable1, sizeIterable2), sizeIterable3);
+        return size == Integer.MAX_VALUE ? -1 : size;
     }
     
 }

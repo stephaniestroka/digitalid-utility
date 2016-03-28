@@ -71,7 +71,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     public static void error(CharSequence message, SourcePosition position, Object... arguments) {
-        log(Level.ERROR, message, position);
+        log(Level.ERROR, message, position, arguments);
     }
     
     /**
@@ -79,7 +79,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     public static void error(CharSequence message, Object... arguments) {
-        log(Level.ERROR, message, null);
+        log(Level.ERROR, message, null, arguments);
     }
     
     /* -------------------------------------------------- Warning -------------------------------------------------- */
@@ -89,7 +89,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     public static void warning(CharSequence message, SourcePosition position, Object... arguments) {
-        log(Level.WARNING, message, position);
+        log(Level.WARNING, message, position, arguments);
     }
     
     /**
@@ -97,7 +97,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     public static void warning(CharSequence message, Object... arguments) {
-        log(Level.WARNING, message, null);
+        log(Level.WARNING, message, null, arguments);
     }
     
     /* -------------------------------------------------- Information -------------------------------------------------- */
@@ -107,7 +107,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     public static void information(CharSequence message, SourcePosition position, Object... arguments) {
-        log(Level.INFORMATION, message, position);
+        log(Level.INFORMATION, message, position, arguments);
     }
     
     /**
@@ -115,7 +115,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     public static void information(CharSequence message, Object... arguments) {
-        log(Level.INFORMATION, message, null);
+        log(Level.INFORMATION, message, null, arguments);
     }
     
     /* -------------------------------------------------- Debugging -------------------------------------------------- */
@@ -125,7 +125,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     public static void debugging(CharSequence message, SourcePosition position, Object... arguments) {
-        log(Level.DEBUGGING, message, position);
+        log(Level.DEBUGGING, message, position, arguments);
     }
     
     /**
@@ -133,7 +133,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     public static void debugging(CharSequence message, Object... arguments) {
-        log(Level.DEBUGGING, message, null);
+        log(Level.DEBUGGING, message, null, arguments);
     }
     
     /* -------------------------------------------------- Verbose -------------------------------------------------- */
@@ -143,7 +143,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     public static void verbose(CharSequence message, SourcePosition position, Object... arguments) {
-        log(Level.VERBOSE, message, position);
+        log(Level.VERBOSE, message, position, arguments);
     }
     
     /**
@@ -151,7 +151,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     public static void verbose(CharSequence message, Object... arguments) {
-        log(Level.VERBOSE, message, null);
+        log(Level.VERBOSE, message, null, arguments);
     }
     
     /* -------------------------------------------------- Utility -------------------------------------------------- */

@@ -8,12 +8,16 @@ package net.digitalid.utility.exceptions;
 // TODO: Add Javadoc for the public methods.
 public class ConformityViolation extends InternalException {
     
-    protected ConformityViolation(String message, Exception cause) {
-        super(message, cause);
+    protected ConformityViolation(String message, Exception cause, Object... arguments) {
+        super(message, cause, arguments);
     }
     
-    protected ConformityViolation(String message) {
-        super(message);
+    protected ConformityViolation(String message, Object... arguments) {
+        super(message, arguments);
+    }
+    
+    public static ConformityViolation with(String message, Exception cause, Object... arguments) {
+        return new ConformityViolation(message, cause, arguments);
     }
     
     public static ConformityViolation with(String message, Exception cause) {
@@ -22,6 +26,10 @@ public class ConformityViolation extends InternalException {
     
     public static ConformityViolation with(String message) {
         return new ConformityViolation(message);
+    }
+    
+    public static ConformityViolation with(String message, Object... arguments) {
+        return new ConformityViolation(message, arguments);
     }
     
 }

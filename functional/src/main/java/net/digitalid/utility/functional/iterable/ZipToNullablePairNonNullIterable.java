@@ -72,9 +72,12 @@ class ZipToNullablePairNonNullIterable<T1, T2> extends NonNullableIterable<Nulla
      */
     @Override
     public int size() {
-        if (strategy == ZipStrategy.SHORTEST_SEQUENCE) {
+        boolean atLeastOneIterableInfinite = (iterable1.size() == -1 || iterable2.size() == -1);
+        if (strategy == ZipStrategy.SHORTEST_SEQUENCE ^ atLeastOneIterableInfinite) {
+            // either we use the shortest sequence and there is no infinite iterable, or we use the longest sequence and there is an infinite iterable.
             return Math.min(iterable1.size(), iterable2.size());
         } else {
+            // either we use the shortest sequence and there is an infinite iterable, or we use the longest sequence and there is no infinite iterable.
             return Math.max(iterable1.size(), iterable2.size());
         }
     }

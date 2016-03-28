@@ -8,13 +8,13 @@ import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
- * This type collects the relevant information about a declared field for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.
+ * This type collects the relevant information about a declared, directly-accessible field for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.
  */
-public class DeclaredFieldInformation extends DirectlyAccessibleFieldInformation implements PotentiallyInheritedFieldInformation {
+public class DirectlyAccessibleDeclaredFieldInformation extends DirectlyAccessibleFieldInformation implements PotentiallyInheritedFieldInformation {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected DeclaredFieldInformation(@Nonnull VariableElement field, @Nonnull DeclaredType containingType) {
+    protected DirectlyAccessibleDeclaredFieldInformation(@Nonnull VariableElement field, @Nonnull DeclaredType containingType) {
         super(field, StaticProcessingEnvironment.getTypeUtils().asMemberOf(containingType, field), containingType, field);
     }
     
@@ -24,8 +24,8 @@ public class DeclaredFieldInformation extends DirectlyAccessibleFieldInformation
      * @require field.getKind() == ElementKind.FIELD : "The element has to be a field.";
      */
     @Pure
-    public static @Nonnull DeclaredFieldInformation of(@Nonnull VariableElement field, @Nonnull DeclaredType containingType) {
-        return new DeclaredFieldInformation(field, containingType);
+    public static @Nonnull DirectlyAccessibleDeclaredFieldInformation of(@Nonnull VariableElement field, @Nonnull DeclaredType containingType) {
+        return new DirectlyAccessibleDeclaredFieldInformation(field, containingType);
     }
     
 }

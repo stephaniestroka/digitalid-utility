@@ -48,4 +48,11 @@ public class ArrayIterator<T> implements Iterator<T> {
         }
     }
     
+    /* -------------------------------------------------- Remove -------------------------------------------------- */
+    
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("remove() is not implemented.");
+    }
+    
 }

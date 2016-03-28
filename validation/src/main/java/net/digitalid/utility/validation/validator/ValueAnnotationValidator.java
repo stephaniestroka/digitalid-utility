@@ -36,6 +36,7 @@ public abstract class ValueAnnotationValidator extends AnnotationHandler impleme
     public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
         boolean elementAssignableToTargetType = false;
         for (@Nonnull Class<?> targetType : getTargetTypes()) {
+            ProcessingLog.debugging("Checking whether element $ is assignable to targetType $", element, targetType);
             if (ProcessingUtility.isAssignable(element, targetType)) { elementAssignableToTargetType = true; }
         }
         if (!elementAssignableToTargetType) {

@@ -8,15 +8,12 @@ import java.lang.annotation.Target;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
 
+import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
-import net.digitalid.utility.generator.interceptor.MethodInvocation;
 import net.digitalid.utility.logging.Log;
-import net.digitalid.utility.string.QuoteString;
-import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.processor.generator.JavaFileGenerator;
+import net.digitalid.utility.validation.annotations.method.Pure;
 
 /**
  * 
@@ -27,19 +24,33 @@ import net.digitalid.utility.validation.processing.TypeImporter;
 @Interceptor(Logged.Interceptor.class)
 public @interface Logged {
     
-    /* -------------------------------------------------- Validator -------------------------------------------------- */
+    /* -------------------------------------------------- Interceptor -------------------------------------------------- */
     
     /**
      * This class generates content for the annotated method.
      */
-    public static class Interceptor implements MethodInterceptor {
-    
-        @Override
-        public @Nullable Object invoke(@Nonnull MethodInvocation methodInvocation) throws Throwable {
-            Log.verbose(QuoteString.inDouble("The method " + methodInvocation.getMethod().getName() + " was called."));
-            return null;
+    public static class Interceptor extends MethodInterceptor {
+        
+        @Pure
+        protected @Nonnull String getPrefix() {
+            return "logged";
         }
         
+        @Override
+        protected void implementInterceptorMethod(@Nonnull JavaFileGenerator javaFileGenerator, @Nonnull MethodInformation method, @Nonnull String statement, @Nullable String resultVariable) {
+            javaFileGenerator.beginTry();
+            javaFileGenerator.importIfPossible(Log.class);
+            javaFileGenerator.addStatement("Log.verbose(\"" + method.getName() + "() {'\")");
+            javaFileGenerator.addStatement(statement);
+            javaFileGenerator.endTryOrTryCatchBeginFinally();
+            if (resultVariable != null) {
+                javaFileGenerator.addStatement("Log.verbose(\"} = (\" + " + resultVariable + " + \")\")");
+            } else {
+                javaFileGenerator.addStatement("Log.verbose(\"}\")");
+            }
+            javaFileGenerator.endTryFinally();
+        }
+    
     }
     
 }

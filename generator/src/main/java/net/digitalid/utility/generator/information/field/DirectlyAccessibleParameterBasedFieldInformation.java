@@ -24,8 +24,8 @@ public class DirectlyAccessibleParameterBasedFieldInformation extends DirectlyAc
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected DirectlyAccessibleParameterBasedFieldInformation(@Nonnull VariableElement parameter, @Nonnull DeclaredType containingType, @Nonnull VariableElement field) {
-        super(parameter, parameter.asType(), containingType, field);
+    protected DirectlyAccessibleParameterBasedFieldInformation(@Nonnull VariableElement parameter, @Nonnull DirectlyAccessibleFieldInformation directlyAccessibleFieldInformation) {
+        super(parameter, parameter.asType(), directlyAccessibleFieldInformation.getContainingType(), directlyAccessibleFieldInformation.getField());
         
         Require.that(parameter.getKind() == ElementKind.PARAMETER).orThrow("The element $ has to be a parameter.", SourcePosition.of(parameter));
     }
@@ -37,8 +37,8 @@ public class DirectlyAccessibleParameterBasedFieldInformation extends DirectlyAc
      * @require field.getKind() == ElementKind.FIELD : "The second element has to be a field.";
      */
     @Pure
-    public static @Nonnull DirectlyAccessibleParameterBasedFieldInformation of(@Nonnull VariableElement parameter, @Nonnull DeclaredType containingType, @Nonnull VariableElement field) {
-        return new DirectlyAccessibleParameterBasedFieldInformation(parameter, containingType, field);
+    public static @Nonnull DirectlyAccessibleParameterBasedFieldInformation of(@Nonnull VariableElement parameter, @Nonnull DirectlyAccessibleFieldInformation directlyAccessibleFieldInformation) {
+        return new DirectlyAccessibleParameterBasedFieldInformation(parameter, directlyAccessibleFieldInformation);
     }
     
 }

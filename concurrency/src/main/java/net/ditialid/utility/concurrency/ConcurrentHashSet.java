@@ -8,6 +8,8 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.functional.function.unary.NullableToNonNullUnaryFunction;
+import net.digitalid.utility.functional.iterable.NullableIterable;
 import net.digitalid.utility.functional.string.Brackets;
 import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
@@ -186,10 +188,23 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
     
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
+    private final NullableToNonNullUnaryFunction<E, String> toStringFunction = new NullableToNonNullUnaryFunction<E, String>() {
+        
+        @Override
+        public @Nonnull String apply(@Nullable E element) {
+            if (element == null) {
+                return "null";
+            } else {
+                return element.toString();
+            }
+        }
+        
+    };
+    
     @Pure
     @Override
     public @Nonnull String toString() {
-        return IterableConverter.toString(this, Brackets.CURLY);
+        return IterableConverter.toString(NullableIterable.ofNullableElements(this).map(toStringFunction), Brackets.CURLY);
     }
     
 }

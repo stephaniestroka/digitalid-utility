@@ -3,6 +3,7 @@ package net.digitalid.utility.generator.information.field;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
@@ -53,14 +54,23 @@ public abstract class NonDirectlyAccessibleFieldInformation extends FieldInforma
     
     /**
      * Returns the setter through which the value can be modified.
+     * This method requires that the setter is non-null.
      * 
      * @ensure result.isSetter() : "The returned method is a setter.";
      */
     @Pure
     @SuppressWarnings("null")
-    public @Nonnull MethodInformation getSetter() {
+    public @Nonnull MethodInformation getNonNullSetter() {
         Require.that(hasSetter()).orThrow("The setter may not be null.");
         
+        return setter;
+    }
+    
+    /**
+     * Returns the setter through which the value can be modified.
+     */
+    @Pure
+    public @Nullable MethodInformation getSetter() {
         return setter;
     }
     
@@ -74,6 +84,13 @@ public abstract class NonDirectlyAccessibleFieldInformation extends FieldInforma
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
+    /**
+     * @param element Either the field element (VariableElement), the representative parameter, or the getter element if the field is going to be generated.
+     * @param type
+     * @param containingType
+     * @param getter
+     * @param setter
+     */
     protected NonDirectlyAccessibleFieldInformation(@Nonnull Element element, @Nonnull TypeMirror type, @Nonnull DeclaredType containingType, @Nonnull MethodInformation getter, @Nullable MethodInformation setter) {
         super(element, type, containingType);
         

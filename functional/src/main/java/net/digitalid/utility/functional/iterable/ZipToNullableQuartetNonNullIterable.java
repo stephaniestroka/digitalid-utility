@@ -84,11 +84,17 @@ class ZipToNullableQuartetNonNullIterable<T1, T2, T3, T4> extends NonNullableIte
      */
     @Override
     public int size() {
+        final int sizeIterable1 = iterable1.size() == -1 ? Integer.MAX_VALUE : iterable1.size();
+        final int sizeIterable2 = iterable2.size() == -1 ? Integer.MAX_VALUE : iterable2.size();
+        final int sizeIterable3 = iterable3.size() == -1 ? Integer.MAX_VALUE : iterable3.size();
+        final int sizeIterable4 = iterable4.size() == -1 ? Integer.MAX_VALUE : iterable4.size();
+        final int size;
         if (strategy == ZipStrategy.SHORTEST_SEQUENCE) {
-            return Math.min(Math.min(Math.min(iterable1.size(), iterable2.size()), iterable3.size()), iterable4.size());
+            size = Math.min(Math.min(Math.min(sizeIterable1, sizeIterable2), sizeIterable3), sizeIterable4);
         } else {
-            return Math.max(Math.max(Math.max(iterable1.size(), iterable2.size()), iterable3.size()), iterable4.size());
+            size = Math.max(Math.max(Math.max(sizeIterable1, sizeIterable2), sizeIterable3), sizeIterable4);
         }
+        return size == Integer.MAX_VALUE ? -1 : size;
     }
     
 }
