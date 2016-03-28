@@ -13,6 +13,13 @@ import net.digitalid.utility.functional.interfaces.BinaryOperator;
 import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
+import net.digitalid.utility.functional.iterators.CombiningIterator;
+import net.digitalid.utility.functional.iterators.FilteringIterator;
+import net.digitalid.utility.functional.iterators.FlatteningIterator;
+import net.digitalid.utility.functional.iterators.MappingIterator;
+import net.digitalid.utility.functional.iterators.PruningIterator;
+import net.digitalid.utility.functional.iterators.ReversingIterator;
+import net.digitalid.utility.functional.iterators.ZippingIterator;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.tuples.annotations.Pure;
 
@@ -23,50 +30,50 @@ import net.digitalid.utility.tuples.annotations.Pure;
  */
 public interface FiniteIterable<E> extends FunctionalIterable<E> {
     
-    /* -------------------------------------------------- Filter -------------------------------------------------- */
+    /* -------------------------------------------------- Filtering -------------------------------------------------- */
     
     @Pure
     @Override
     public default FiniteIterable<E> filter(Predicate<? super E> predicate) {
-        return () -> new FilterIterator(iterator(), predicate);
+        return () -> FilteringIterator.with(iterator(), predicate);
     }
     
     /* -------------------------------------------------- Mapping -------------------------------------------------- */
     
     @Pure
     @Override
-    public default <F> FiniteIterable<E> map(UnaryFunction<? super E, ? extends F> function) {
-        return () -> new MappingIterator(iterator(), function);
+    public default <F> FiniteIterable<F> map(UnaryFunction<? super E, ? extends F> function) {
+        return () -> MappingIterator.with(iterator(), function);
     }
     
     /* -------------------------------------------------- Pruning -------------------------------------------------- */
     
     @Pure
     @Override
-    public default FiniteIterable<E> skip(int number) {
-        return () -> new SequenceIterator(iterator(), number, Integer.MAX_VALUE);
+    public default FiniteIterable<E> skip(long number) {
+        return () -> PruningIterator.with(iterator(), number, Long.MAX_VALUE);
     }
     
     /* -------------------------------------------------- Zipping -------------------------------------------------- */
     
     @Pure
     @Override
-    public default <F> FiniteIterable<Pair<E, F>> zipShortest(InfiniteIterable<F> iterable) {
-        return () -> new ZipShortestIterator(iterator(), iterable.iterator());
+    public default <F> FiniteIterable<Pair<E, F>> zipShortest(InfiniteIterable<? extends F> iterable) {
+        return () -> ZippingIterator.with(iterator(), iterable.iterator(), true);
     }
     
     @Pure
     @Override
-    public default <F> FiniteIterable<Pair<E, F>> zipLongest(FiniteIterable<F> iterable) {
-        return () -> new ZipLongestIterator(iterator(), iterable.iterator());
+    public default <F> FiniteIterable<Pair<E, F>> zipLongest(FiniteIterable<? extends F> iterable) {
+        return () -> ZippingIterator.with(iterator(), iterable.iterator(), false);
     }
     
     /* -------------------------------------------------- Flattening -------------------------------------------------- */
     
     @Pure
     @Override
-    public default <F> FiniteIterable<F> flatten(int level) {
-        return () -> new FlattenIterator(iterator(), level);
+    public default <F> FiniteIterable<F> flatten(long level) {
+        return () -> FlatteningIterator.with(iterator(), level);
     }
     
     @Pure
@@ -78,7 +85,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     @Pure
     @Override
     public default <F> FiniteIterable<F> flattenAll() {
-        return flatten(Integer.MAX_VALUE);
+        return flatten(Long.MAX_VALUE);
     }
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
@@ -87,8 +94,8 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the size of this iterable.
      */
     @Pure
-    public default int size() {
-        return size(Integer.MAX_VALUE);
+    public default long size() {
+        return size(Long.MAX_VALUE);
     }
     
     /* -------------------------------------------------- Index -------------------------------------------------- */
@@ -97,8 +104,8 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the index of the first occurrence of the given object in this iterable or -1 if this iterable does not contain the given object.
      */
     @Pure
-    public default int firstIndexOf(E object) {
-        int index = 0;
+    public default long firstIndexOf(E object) {
+        long index = 0;
         for (E element : this) {
             if (Objects.equals(object, element)) { return index; }
             index += 1;
@@ -110,9 +117,9 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the index of the last occurrence of the given object in this iterable or -1 if this iterable does not contain the given object.
      */
     @Pure
-    public default int lastIndexOf(E object) {
-        int lastIndex = -1;
-        int currentIndex = 0;
+    public default long lastIndexOf(E object) {
+        long lastIndex = -1;
+        long currentIndex = 0;
         for (E element : this) {
             if (Objects.equals(object, element)) { lastIndex = currentIndex; }
             currentIndex += 1;
@@ -120,7 +127,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
         return lastIndex;
     }
     
-    /* -------------------------------------------------- Contain -------------------------------------------------- */
+    /* -------------------------------------------------- Containing -------------------------------------------------- */
     
     /**
      * Returns whether this iterable contains the given object.
@@ -144,7 +151,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
         return true;
     }
     
-    /* -------------------------------------------------- Intersect -------------------------------------------------- */
+    /* -------------------------------------------------- Intersecting -------------------------------------------------- */
     
     /**
      * Returns the elements that are contained both in this iterable and the given iterable.
@@ -154,7 +161,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
         return filter(element -> iterable.contains(element));
     }
     
-    /* -------------------------------------------------- Exclude -------------------------------------------------- */
+    /* -------------------------------------------------- Excluding -------------------------------------------------- */
     
     /**
      * Returns the elements that are contained in this iterable but not in the given iterable.
@@ -164,25 +171,25 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
         return filter(element -> !iterable.contains(element));
     }
     
-    /* -------------------------------------------------- Combine -------------------------------------------------- */
+    /* -------------------------------------------------- Combining -------------------------------------------------- */
     
     /**
      * Returns the elements of this iterable followed by the elements of the given iterable.
      */
     @Pure
-    public default FiniteIterable<E> combine(FiniteIterable<E> iterable) {
-        return () -> new UnionIterator(iterator(), iterable.iterator());
+    public default FiniteIterable<E> combine(FiniteIterable<? extends E> iterable) {
+        return () -> CombiningIterator.with(iterator(), iterable.iterator());
     }
     
     /**
      * Returns the elements of this iterable followed by the elements of the given iterable.
      */
     @Pure
-    public default InfiniteIterable<E> combine(InfiniteIterable<E> iterable) {
-        return () -> new UnionIterator(iterator(), iterable.iterator());
+    public default InfiniteIterable<E> combine(InfiniteIterable<? extends E> iterable) {
+        return () -> CombiningIterator.with(iterator(), iterable.iterator());
     }
     
-    /* -------------------------------------------------- Find -------------------------------------------------- */
+    /* -------------------------------------------------- Finding -------------------------------------------------- */
     
     /**
      * Returns the first element of this iterable that fulfills the given predicate or null if no such element is found.
@@ -230,7 +237,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
         else { throw new NoSuchElementException("No element fulfills the given predicate."); }
     }
     
-    /* -------------------------------------------------- Match -------------------------------------------------- */
+    /* -------------------------------------------------- Matching -------------------------------------------------- */
     
     /**
      * Returns whether any elements of this iterable match the given predicate.
@@ -262,16 +269,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
         return !matchAny(predicate);
     }
     
-    /* -------------------------------------------------- Action -------------------------------------------------- */
-    
-    /**
-     * Performs the given action for each element of this iterable.
-     */
-    public default void forEach(Consumer<? super E> action) {
-        for (E element : this) { action.consume(element); }
-    }
-    
-    /* -------------------------------------------------- Reduction -------------------------------------------------- */
+    /* -------------------------------------------------- Reducing -------------------------------------------------- */
     
     /**
      * Returns the value reduced by the given operator or the given element if this iterable is empty.
@@ -340,6 +338,15 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
         return reduce((a, b) -> a == null ? b : (b == null ? a : ( ((Comparable<? super E>) a).compareTo(b) >= 0 ? a : b )));
     }
     
+    /* -------------------------------------------------- Action -------------------------------------------------- */
+    
+    /**
+     * Performs the given action for each element of this iterable.
+     */
+    public default void forEach(Consumer<? super E> action) {
+        for (E element : this) { action.consume(element); }
+    }
+    
     /* -------------------------------------------------- Array -------------------------------------------------- */
     
     /**
@@ -348,7 +355,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     @Pure
     @SuppressWarnings("unchecked")
     public default E[] toArray() {
-        final Object[] array = new Object[size()];
+        final Object[] array = new Object[(int) size()];
         int index = 0;
         for (E element : this) {
             array[index++] = element;
@@ -379,16 +386,14 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
         return sorted((a, b) -> a == null ? 1 : (b == null ? -1 : ( ((Comparable<? super E>) a).compareTo(b) )));
     }
     
-    /* -------------------------------------------------- Reverse -------------------------------------------------- */
+    /* -------------------------------------------------- Reversing -------------------------------------------------- */
     
     /**
      * Returns the elements of this iterable in reversed order.
      */
     @Pure
     public default FiniteIterable<E> reversed() {
-        final List<E> list = Arrays.asList(toArray());
-        Collections.reverse(list);
-        return CollectionIterable.of(list);
+        return () -> ReversingIterator.with(toArray());
     }
     
     /* -------------------------------------------------- Distinct -------------------------------------------------- */

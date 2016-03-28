@@ -10,7 +10,7 @@ public class ImmutableIterator<E> implements Iterator<E> {
     
     /* -------------------------------------------------- Iterator -------------------------------------------------- */
     
-    private final Iterator<E> iterator;
+    protected final Iterator<E> iterator;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     

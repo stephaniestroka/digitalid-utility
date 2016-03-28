@@ -5,7 +5,7 @@ import java.util.Collection;
 import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
- * This interface extends the functional iterable interface to provide a faster {@link #size()} implementation.
+ * This interface extends the finite iterable interface to provide a faster {@link #size()} implementation.
  * 
  * @see CollectionBasedIterable
  */
@@ -17,7 +17,7 @@ public interface CollectionIterable<E> extends FiniteIterable<E> {
      * Wraps the given collection as a functional iterable.
      */
     @Pure
-    public static <E> CollectionIterable<E> of(Collection<E> collection) {
+    public static <E> CollectionIterable<E> of(Collection<? extends E> collection) {
         return new CollectionBasedIterable<>(collection);
     }
     
@@ -31,12 +31,12 @@ public interface CollectionIterable<E> extends FiniteIterable<E> {
     
     @Pure
     @Override
-    public default int size(int limit) {
+    public default long size(long limit) {
         return Math.min(size(), limit);
     }
     
     @Pure
     @Override
-    public abstract int size();
+    public abstract long size();
     
 }

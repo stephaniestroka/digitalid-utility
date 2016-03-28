@@ -3,28 +3,29 @@ package net.digitalid.utility.functional.iterables;
 import java.util.Collection;
 import java.util.Iterator;
 
+import net.digitalid.utility.functional.iterators.SingleIteratorBasedIterator;
 import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
- * This class implements the functional iterable interface based on a collection.
+ * This class implements the collection iterable interface based on a collection.
  */
 public class CollectionBasedIterable<E> implements CollectionIterable<E> {
     
     /* -------------------------------------------------- Collection -------------------------------------------------- */
     
-    private final Collection<E> collection;
+    private final Collection<? extends E> collection;
     
     /**
      * Returns the underlying collection of this iterable.
      */
     @Pure
-    public Collection<E> getCollection() {
+    public Collection<? extends E> getCollection() {
         return collection;
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected CollectionBasedIterable(Collection<E> collection) {
+    protected CollectionBasedIterable(Collection<? extends E> collection) {
         this.collection = collection;
     }
     
@@ -33,14 +34,21 @@ public class CollectionBasedIterable<E> implements CollectionIterable<E> {
     @Pure
     @Override
     public Iterator<E> iterator() {
-        return collection.iterator();
+        return new SingleIteratorBasedIterator<E, E>(collection.iterator()) {
+            
+            @Override
+            public E next() {
+                return primaryIterator.next();
+            }
+            
+        };
     }
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
     
     @Pure
     @Override
-    public int size() {
+    public long size() {
         return collection.size();
     }
     

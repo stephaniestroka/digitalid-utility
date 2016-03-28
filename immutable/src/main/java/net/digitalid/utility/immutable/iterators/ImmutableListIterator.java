@@ -10,7 +10,7 @@ public class ImmutableListIterator<E> extends ImmutableIterator<E> implements Li
     
     /* -------------------------------------------------- List Iterator -------------------------------------------------- */
     
-    private final ListIterator<E> listIterator;
+    protected final ListIterator<E> listIterator;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     

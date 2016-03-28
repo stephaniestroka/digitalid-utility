@@ -46,14 +46,12 @@ public abstract class Tuple implements Collection<Object> {
             return cursor < size();
         }
         
-        @Pure
         @Override
         public Object next() {
             if (hasNext()) { return get(cursor++); }
             else { throw new NoSuchElementException(); }
         }
         
-        @Pure
         @Override
         public void remove() {
             throw new UnsupportedOperationException();
