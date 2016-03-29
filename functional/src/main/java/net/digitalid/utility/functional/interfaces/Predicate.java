@@ -1,5 +1,6 @@
 package net.digitalid.utility.functional.interfaces;
 
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
@@ -7,12 +8,16 @@ import net.digitalid.utility.tuples.annotations.Pure;
  */
 public interface Predicate<T> {
     
+    /* -------------------------------------------------- Evaluation -------------------------------------------------- */
+    
     /**
      * Evaluates whether the given object satisfies this predicate.
      * All implementations of this method have to be side-effect-free.
      */
     @Pure
     public boolean evaluate(T object);
+    
+    /* -------------------------------------------------- Conjunction -------------------------------------------------- */
     
     /**
      * Returns the conjunction of this predicate with the given predicate.
@@ -23,12 +28,42 @@ public interface Predicate<T> {
     }
     
     /**
+     * Returns the conjunction of the given predicates.
+     */
+    @Pure
+    public static <T> Predicate<T> and(FiniteIterable<? extends Predicate<? super T>> predicates) {
+        return object -> {
+                for (Predicate<? super T> predicate : predicates) {
+                    if (!predicate.evaluate(object)) { return false; }
+                }
+                return true;
+        };
+    }
+    
+    /* -------------------------------------------------- Disjunction -------------------------------------------------- */
+    
+    /**
      * Returns the disjunction of this predicate with the given predicate.
      */
     @Pure
     public default Predicate<T> or(Predicate<? super T> predicate) {
         return object -> evaluate(object) || predicate.evaluate(object);
     }
+    
+    /**
+     * Returns the disjunction of the given predicates.
+     */
+    @Pure
+    public static <T> Predicate<T> or(FiniteIterable<? extends Predicate<? super T>> predicates) {
+        return object -> {
+                for (Predicate<? super T> predicate : predicates) {
+                    if (predicate.evaluate(object)) { return true; }
+                }
+                return false;
+        };
+    }
+    
+    /* -------------------------------------------------- Negation -------------------------------------------------- */
     
     /**
      * Returns the negation of this predicate.

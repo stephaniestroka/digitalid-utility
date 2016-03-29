@@ -94,6 +94,12 @@ public interface FunctionalIterable<E> extends Iterable<E> {
     @Pure
     public FunctionalIterable<E> filter(Predicate<? super E> predicate);
     
+    /**
+     * Returns the elements of this iterable without the null values.
+     */
+    @Pure
+    public FunctionalIterable<E> filterNulls();
+    
     /* -------------------------------------------------- Mapping -------------------------------------------------- */
     
     /**

@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 
 import net.digitalid.utility.functional.fixes.Fixes;
 import net.digitalid.utility.functional.interfaces.BinaryOperator;
@@ -18,6 +19,7 @@ import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterators.ArrayIterator;
 import net.digitalid.utility.functional.iterators.CombiningIterator;
+import net.digitalid.utility.functional.iterators.CyclingIterator;
 import net.digitalid.utility.functional.iterators.FilteringIterator;
 import net.digitalid.utility.functional.iterators.FlatteningIterator;
 import net.digitalid.utility.functional.iterators.MappingIterator;
@@ -59,6 +61,12 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     @Override
     public default FiniteIterable<E> filter(Predicate<? super E> predicate) {
         return () -> FilteringIterator.with(iterator(), predicate);
+    }
+    
+    @Pure
+    @Override
+    public default FunctionalIterable<E> filterNulls() {
+        return filter(element -> element != null);
     }
     
     /* -------------------------------------------------- Mapping -------------------------------------------------- */
@@ -121,13 +129,34 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
         return size(Long.MAX_VALUE);
     }
     
+    /* -------------------------------------------------- Element -------------------------------------------------- */
+    
+    /**
+     * Returns the first element of this iterable or null if this iterable is empty.
+     */
+    @Pure
+    public default E getFirst() {
+        final Iterator<E> iterator = iterator();
+        return iterator.hasNext() ? iterator.next() : null;
+    }
+    
+    /**
+     * Returns the last element of this iterable or null if this iterable is empty.
+     */
+    @Pure
+    public default E getLast() {
+        E result = null;
+        for (E element : this) { result = element; }
+        return result;
+    }
+    
     /* -------------------------------------------------- Index -------------------------------------------------- */
     
     /**
      * Returns the index of the first occurrence of the given object in this iterable or -1 if this iterable does not contain the given object.
      */
     @Pure
-    public default long firstIndexOf(E object) {
+    public default long getFirstIndexOf(E object) {
         long index = 0;
         for (E element : this) {
             if (Objects.equals(object, element)) { return index; }
@@ -140,7 +169,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the index of the last occurrence of the given object in this iterable or -1 if this iterable does not contain the given object.
      */
     @Pure
-    public default long lastIndexOf(E object) {
+    public default long getLastIndexOf(E object) {
         long lastIndex = -1;
         long currentIndex = 0;
         for (E element : this) {
@@ -148,6 +177,20 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
             currentIndex += 1;
         }
         return lastIndex;
+    }
+    
+    /* -------------------------------------------------- Counting -------------------------------------------------- */
+    
+    /**
+     * Returns the number of elements in this iterable that equal the given object.
+     */
+    @Pure
+    public default long count(E object) {
+        long count = 0;
+        for (E element : this) {
+            if (Objects.equals(object, element)) { count++; }
+        }
+        return count;
     }
     
     /* -------------------------------------------------- Containing -------------------------------------------------- */
@@ -295,7 +338,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     /* -------------------------------------------------- Reducing -------------------------------------------------- */
     
     /**
-     * Returns the value reduced by the given operator or the given element if this iterable is empty.
+     * Returns the value reduced by the given operator or the given nullable element if this iterable is empty.
      */
     @Pure
     public default E reduce(BinaryOperator<E> operator, E element) {
@@ -326,7 +369,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     public default E min(Comparator<? super E> comparator) {
-        return reduce(BinaryOperator.minBy(comparator));
+        return reduce(BinaryOperator.min(comparator));
     }
     
     /**
@@ -347,7 +390,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     public default E max(Comparator<? super E> comparator) {
-        return reduce(BinaryOperator.maxBy(comparator));
+        return reduce(BinaryOperator.max(comparator));
     }
     
     /**
@@ -391,7 +434,19 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     public default List<E> toList() {
-        final ArrayList<E> result = new ArrayList<>((int) size());
+        final List<E> result = new ArrayList<>((int) size());
+        for (E element : this) {
+            result.add(element);
+        }
+        return result;
+    }
+    
+    /**
+     * Returns the elements of this iterable as a capturable set.
+     */
+    @Pure
+    public default Set<E> toSet() {
+        final Set<E> result = new LinkedHashSet<>((int) size());
         for (E element : this) {
             result.add(element);
         }
@@ -441,6 +496,16 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
         return FiniteIterable.of(new LinkedHashSet<>(Arrays.asList(toArray())));
     }
     
+    /* -------------------------------------------------- Cycling -------------------------------------------------- */
+    
+    /**
+     * Returns the elements of this iterable repeated indefinitely.
+     */
+    @Pure
+    public default InfiniteIterable<E> repeated() {
+        return () -> CyclingIterator.with(this);
+    }
+    
     /* -------------------------------------------------- Joining -------------------------------------------------- */
     
     /**
@@ -449,7 +514,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     @Pure
     public default String join(CharSequence prefix, CharSequence suffix, CharSequence empty, CharSequence delimiter) {
         if (isEmpty()) {
-            return empty.toString();
+            return String.valueOf(empty);
         } else {
             final StringBuilder result = new StringBuilder(prefix);
             boolean first = true;

@@ -25,6 +25,6 @@ public interface CollectionIterable<E> extends FiniteIterable<E> {
     
     @Pure
     @Override
-    public abstract long size();
+    public long size();
     
 }
