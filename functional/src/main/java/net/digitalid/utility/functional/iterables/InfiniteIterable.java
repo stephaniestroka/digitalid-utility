@@ -6,8 +6,11 @@ import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.interfaces.UnaryOperator;
 import net.digitalid.utility.functional.iterators.FilteringIterator;
 import net.digitalid.utility.functional.iterators.FlatteningIterator;
+import net.digitalid.utility.functional.iterators.GeneratingIterator;
+import net.digitalid.utility.functional.iterators.IteratingIterator;
 import net.digitalid.utility.functional.iterators.MappingIterator;
 import net.digitalid.utility.functional.iterators.PruningIterator;
+import net.digitalid.utility.functional.iterators.RepeatingIterator;
 import net.digitalid.utility.functional.iterators.ZippingIterator;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.tuples.annotations.Pure;
@@ -19,19 +22,28 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
+    /**
+     * Returns a new infinite iterable that repeats the given object infinitely.
+     */
     @Pure
     public static <E> InfiniteIterable<E> repeat(E object) {
-        return () -> new ObjectIterator(object);
+        return () -> RepeatingIterator.with(object);
     }
     
+    /**
+     * Returns a new infinite iterable that generates an infinite number of elements with the given producer.
+     */
     @Pure
     public static <E> InfiniteIterable<E> generate(Producer<? extends E> producer) {
-        return () -> new ProducerIterator(producer);
+        return () -> GeneratingIterator.with(producer);
     }
     
+    /**
+     * Returns a new infinite iterable that iterates over the sequence produced by the given operator from the given seed.
+     */
     @Pure
     public static <E> InfiniteIterable<E> iterate(UnaryOperator<E> operator, E seed) {
-        return () -> new OperatorIterator(operator, seed);
+        return () -> IteratingIterator.with(operator, seed);
     }
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
