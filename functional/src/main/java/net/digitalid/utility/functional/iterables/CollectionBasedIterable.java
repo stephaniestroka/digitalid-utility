@@ -35,7 +35,11 @@ public class CollectionBasedIterable<E> implements CollectionIterable<E> {
     @Override
     public Iterator<E> iterator() {
         return new SingleIteratorBasedIterator<E, E>(collection.iterator()) {
-            
+    
+            @Override public boolean hasNext() {
+                return primaryIterator.hasNext();
+            }
+    
             @Override
             public E next() {
                 return primaryIterator.next();
