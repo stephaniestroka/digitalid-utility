@@ -5,9 +5,9 @@ import java.util.NoSuchElementException;
 import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
- * This class implements a reversing iterator that iterates over the given elements in reverse order.
+ * This class implements an array iterator that iterates over the given elements.
  */
-public class ReversingIterator<E> implements ReadOnlyIterator<E> {
+public class ArrayIterator<E> implements ReadOnlyIterator<E> {
     
     /* -------------------------------------------------- Elements -------------------------------------------------- */
     
@@ -16,33 +16,32 @@ public class ReversingIterator<E> implements ReadOnlyIterator<E> {
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     @SafeVarargs
-    protected ReversingIterator(E... elements) {
+    protected ArrayIterator(E... elements) {
         this.elements = elements;
-        this.cursor = elements.length - 1;
     }
     
     /**
-     * Returns a new reversing iterator that iterates over the given elements in reverse order.
+     * Returns a new array iterator that iterates over the given elements.
      */
     @Pure
     @SafeVarargs
-    public static <E> ReversingIterator<E> with(E... elements) {
-        return new ReversingIterator<>(elements);
+    public static <E> ArrayIterator<E> with(E... elements) {
+        return new ArrayIterator<>(elements);
     }
     
     /* -------------------------------------------------- Methods -------------------------------------------------- */
     
-    private int cursor;
+    private int cursor = 0;
     
     @Pure
     @Override
     public boolean hasNext() {
-        return cursor >= 0;
+        return cursor < elements.length;
     }
     
     @Override
     public E next() {
-        if (hasNext()) { return elements[cursor--]; }
+        if (hasNext()) { return elements[cursor++]; }
         else { throw new NoSuchElementException(); }
     }
     

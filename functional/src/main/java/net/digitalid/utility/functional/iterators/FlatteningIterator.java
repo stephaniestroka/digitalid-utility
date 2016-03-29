@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import net.digitalid.utility.functional.iterables.CollectionIterable;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
@@ -58,7 +58,7 @@ public class FlatteningIterator<F, E> extends SingleIteratorBasedIterator<F, E> 
             while (primaryIterator.hasNext()) {
                 final E element = primaryIterator.next();
                 if (level > 0 && element instanceof Collection) {
-                    subiterator = CollectionIterable.of((Collection<?>) element).<F>flatten(level - 1).iterator();
+                    subiterator = FiniteIterable.of((Collection<?>) element).<F>flatten(level - 1).iterator();
                     if (subiterator.hasNext()) {
                         return true;
                     } else {

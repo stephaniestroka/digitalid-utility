@@ -1,6 +1,8 @@
 package net.digitalid.utility.functional.iterables;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -13,6 +15,7 @@ import net.digitalid.utility.functional.interfaces.BinaryOperator;
 import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
+import net.digitalid.utility.functional.iterators.ArrayIterator;
 import net.digitalid.utility.functional.iterators.CombiningIterator;
 import net.digitalid.utility.functional.iterators.FilteringIterator;
 import net.digitalid.utility.functional.iterators.FlatteningIterator;
@@ -29,6 +32,25 @@ import net.digitalid.utility.tuples.annotations.Pure;
  * @see CollectionIterable
  */
 public interface FiniteIterable<E> extends FunctionalIterable<E> {
+    
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
+    
+    /**
+     * Wraps the given collection as a finite iterable.
+     */
+    @Pure
+    public static <E> FiniteIterable<E> of(Collection<? extends E> collection) {
+        return new CollectionBasedIterable<>(collection);
+    }
+    
+    /**
+     * Wraps the given elements as a finite iterable.
+     */
+    @Pure
+    @SafeVarargs
+    public static <E> FiniteIterable<E> of(E... elements) {
+        return () -> ArrayIterator.with(elements);
+    }
     
     /* -------------------------------------------------- Filtering -------------------------------------------------- */
     
@@ -347,7 +369,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
         for (E element : this) { action.consume(element); }
     }
     
-    /* -------------------------------------------------- Array -------------------------------------------------- */
+    /* -------------------------------------------------- Exports -------------------------------------------------- */
     
     /**
      * Returns the elements of this iterable as a capturable array.
@@ -363,6 +385,18 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
         return (E[]) array;
     }
     
+    /**
+     * Returns the elements of this iterable as a capturable list.
+     */
+    @Pure
+    public default List<E> toList() {
+        final ArrayList<E> result = new ArrayList<>((int) size());
+        for (E element : this) {
+            result.add(element);
+        }
+        return result;
+    }
+    
     /* -------------------------------------------------- Sorting -------------------------------------------------- */
     
     /**
@@ -372,7 +406,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     public default FiniteIterable<E> sorted(Comparator<? super E> comparator) {
         final List<E> list = Arrays.asList(toArray());
         Collections.sort(list, comparator);
-        return CollectionIterable.of(list);
+        return FiniteIterable.of(list);
     }
     
     /**
@@ -403,7 +437,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     public default FiniteIterable<E> distinct() {
-        return CollectionIterable.of(new LinkedHashSet<>(Arrays.asList(toArray())));
+        return FiniteIterable.of(new LinkedHashSet<>(Arrays.asList(toArray())));
     }
     
 }

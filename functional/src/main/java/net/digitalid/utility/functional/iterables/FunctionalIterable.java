@@ -46,6 +46,14 @@ public interface FunctionalIterable<E> extends Iterable<E> {
     }
     
     /**
+     * Returns whether this iterable has the given number of elements.
+     */
+    @Pure
+    public default boolean isSize(long number) {
+        return size(number + 1) == number;
+    }
+    
+    /**
      * Returns whether the size of this iterable is at most the given value.
      */
     @Pure
