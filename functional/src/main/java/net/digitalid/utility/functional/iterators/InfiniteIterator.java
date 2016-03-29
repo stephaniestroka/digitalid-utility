@@ -7,7 +7,7 @@ import net.digitalid.utility.tuples.annotations.Pure;
  */
 public interface InfiniteIterator<E> extends ReadOnlyIterator<E> {
     
-    /* -------------------------------------------------- Overrided Operations -------------------------------------------------- */
+    /* -------------------------------------------------- Overridden Operations -------------------------------------------------- */
     
     @Pure
     @Override

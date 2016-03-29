@@ -44,7 +44,7 @@ public class PruningIterator<E> extends SingleIteratorBasedIterator<E, E> {
             primaryIterator.next();
             currentIndex += 1;
         }
-        return currentIndex < endIndex ? primaryIterator.hasNext() : false;
+        return currentIndex < endIndex && primaryIterator.hasNext();
     }
     
     @Override

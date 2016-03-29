@@ -32,6 +32,13 @@ public class MappingIterator<O, I> extends SingleIteratorBasedIterator<O, I> {
     
     /* -------------------------------------------------- Methods -------------------------------------------------- */
     
+    @Pure
+    @Override
+    public boolean hasNext() {
+        return primaryIterator.hasNext();
+    }
+    
+    @Pure
     @Override
     public O next() {
         return function.evaluate(primaryIterator.next());
