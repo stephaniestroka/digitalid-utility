@@ -1,10 +1,5 @@
 package net.ditialid.utility.concurrency;
 
-import javax.annotation.Nonnull;
-
-import net.digitalid.utility.validation.annotations.reference.Capturable;
-import net.digitalid.utility.validation.annotations.method.Pure;
-
 /**
  * Extends Java's {@link java.util.concurrent.ConcurrentMap ConcurrentMap} interface with more useful methods.
  * 
@@ -24,7 +19,7 @@ public interface ConcurrentMap<K, V> extends java.util.concurrent.ConcurrentMap<
      * 
      * @return the value that is now associated with the given key.
      */
-    public @Nonnull V putIfAbsentElseReturnPresent(@Nonnull K key, @Nonnull V value);
+    public V putIfAbsentElseReturnPresent(K key, V value);
     
     /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
@@ -33,7 +28,6 @@ public interface ConcurrentMap<K, V> extends java.util.concurrent.ConcurrentMap<
      *
      * @return a shallow copy of this map
      */
-    @Pure
-    public @Capturable @Nonnull ConcurrentMap<K, V> clone();
+    public ConcurrentMap<K, V> clone();
     
 }

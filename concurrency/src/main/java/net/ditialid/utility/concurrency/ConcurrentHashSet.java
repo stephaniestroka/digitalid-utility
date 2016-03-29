@@ -5,17 +5,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-import net.digitalid.utility.functional.function.unary.NullableToNonNullUnaryFunction;
-import net.digitalid.utility.functional.iterable.NullableIterable;
 import net.digitalid.utility.functional.fixes.Brackets;
-import net.digitalid.utility.functional.fixes.IterableConverter;
-import net.digitalid.utility.validation.annotations.math.NonNegative;
-import net.digitalid.utility.validation.annotations.math.Positive;
-import net.digitalid.utility.validation.annotations.reference.Capturable;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 
 /**
  * Implements a concurrent hash set based on {@link ConcurrentHashMap}.
@@ -29,19 +21,19 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
     /**
      * Stores the elements of this concurrent hash set.
      */
-    private final @Nonnull ConcurrentHashMap<E, Boolean> map;
+    private final ConcurrentHashMap<E, Boolean> map;
     
     /**
      * Stores the set representation of the map.
      */
-    private final @Nonnull Set<E> set;
+    private final Set<E> set;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
      * @see ConcurrentHashMap#ConcurrentHashMap(int, float, int)
      */
-    protected ConcurrentHashSet(@NonNegative int initialCapacity, @Positive float loadFactor, @Positive int concurrencyLevel) {
+    protected ConcurrentHashSet(int initialCapacity, float loadFactor, int concurrencyLevel) {
         this.map = ConcurrentHashMap.get(initialCapacity, loadFactor, concurrencyLevel);
         this.set = map.keySet();
     }
@@ -49,39 +41,35 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
     /**
      * @see ConcurrentHashMap#ConcurrentHashMap(int, float, int)
      */
-    @Pure
-    public static @Capturable @Nonnull <E> ConcurrentHashSet<E> get(@NonNegative int initialCapacity, @Positive float loadFactor, @Positive int concurrencyLevel) {
+    public static <E> ConcurrentHashSet<E> get(int initialCapacity, float loadFactor, int concurrencyLevel) {
         return new ConcurrentHashSet<>(initialCapacity, loadFactor, concurrencyLevel);
     }
     
     /**
      * @see ConcurrentHashMap#get(int, float)
      */
-    @Pure
-    public static @Capturable @Nonnull <E> ConcurrentHashSet<E> get(@NonNegative int initialCapacity, @Positive float loadFactor) {
+    public static <E> ConcurrentHashSet<E> get(int initialCapacity, float loadFactor) {
         return get(initialCapacity, loadFactor, 16);
     }
     
     /**
      * @see ConcurrentHashMap#get(int)
      */
-    @Pure
-    public static @Capturable @Nonnull <E> ConcurrentHashSet<E> get(@NonNegative int initialCapacity) {
+    public static <E> ConcurrentHashSet<E> get(int initialCapacity) {
         return get(initialCapacity, 0.75f);
     }
     
     /**
      * @see ConcurrentHashMap#get()
      */
-    @Pure
-    public static @Capturable @Nonnull <E> ConcurrentHashSet<E> get() {
+    public static <E> ConcurrentHashSet<E> get() {
         return get(16);
     }
     
     /**
      * @see ConcurrentHashMap#ConcurrentHashMap(java.util.Map)
      */
-    protected ConcurrentHashSet(@Nonnull Set<? extends E> set) {
+    protected ConcurrentHashSet(Set<? extends E> set) {
         this.map = ConcurrentHashMap.get(set.size());
         this.set = map.keySet();
         addAll(set);
@@ -90,89 +78,80 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
     /**
      * @see ConcurrentHashMap#ConcurrentHashMap(java.util.Map)
      */
-    @Pure
-    public static @Capturable @Nonnull <E> ConcurrentHashSet<E> getNonNullable(@Nonnull Set<? extends E> set) {
+    public static <E> ConcurrentHashSet<E> getNonNullable(Set<? extends E> set) {
         return new ConcurrentHashSet<>(set);
     }
     
     /**
      * @see ConcurrentHashMap#ConcurrentHashMap(java.util.Map)
      */
-    @Pure
-    public static @Capturable @Nullable <E> ConcurrentHashSet<E> getNullable(@Nullable Set<? extends E> set) {
+    public static <E> ConcurrentHashSet<E> getNullable(Set<? extends E> set) {
         return set == null ? null : getNonNullable(set);
     }
     
     /* -------------------------------------------------- Set -------------------------------------------------- */
     
-    @Pure
     @Override
     public int size() {
         return map.size();
     }
     
-    @Pure
     @Override
     public boolean isEmpty() {
         return map.isEmpty();
     }
     
-    @Pure
     @Override
-    public boolean contains(@Nonnull Object object) {
+    public boolean contains(Object object) {
         return map.containsKey(object);
     }
     
-    @Pure
     @Override
     public Iterator<E> iterator() {
         return set.iterator();
     }
     
-    @Pure
     @Override
     public Object[] toArray() {
         return set.toArray();
     }
     
-    @Pure
     @Override
     @SuppressWarnings("SuspiciousToArrayCall")
-    public <T> T[] toArray(@Nonnull T[] array) {
+    public <T> T[] toArray(T[] array) {
         return set.toArray(array);
     }
     
     /* -------------------------------------------------- Operations -------------------------------------------------- */
     
     @Override
-    public boolean add(@Nonnull E element) {
+    public boolean add(E element) {
         return map.put(element, true) == null;
     }
     
     @Override
-    public boolean remove(@Nonnull Object object) {
+    public boolean remove(Object object) {
         return map.remove(object) != null;
     }
     
-    @Pure
     @Override
-    public boolean containsAll(@Nonnull Collection<?> collection) {
+    public boolean containsAll(Collection<?> collection) {
         return set.containsAll(collection);
     }
     
     @Override
-    public boolean addAll(@Nonnull Collection<? extends E> collection) {
+    public boolean addAll(Collection<? extends E> collection) {
         boolean changed = false;
-        for (final @Nonnull E element : collection) {
+        for (final E element : collection) {
             if (add(element)) { changed = true; }
         }
         return changed;
     }
     
     @Override
-    public boolean retainAll(@Nonnull Collection<?> collection) {
+    public boolean retainAll(Collection<?> collection) {
         boolean changed = false;
-        for (final @Nonnull E element : this) {
+        for (final E element : this) {
             if (!collection.contains(element)) {
                 remove(element);
                 changed = true;
@@ -188,23 +167,9 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
     
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
-    private final NullableToNonNullUnaryFunction<E, String> toStringFunction = new NullableToNonNullUnaryFunction<E, String>() {
-        
-        @Override
-        public @Nonnull String apply(@Nullable E element) {
-            if (element == null) {
-                return "null";
-            } else {
-                return element.toString();
-            }
-        }
-        
-    };
-    
-    @Pure
     @Override
-    public @Nonnull String toString() {
-        return IterableConverter.toString(NullableIterable.ofNullableElements(this).map(toStringFunction), Brackets.CURLY);
+    public String toString() {
+        return FiniteIterable.of(this).map((element) -> (element.toString())).join(Brackets.CURLY);
     }
     
 }

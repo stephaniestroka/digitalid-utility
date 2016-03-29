@@ -2,16 +2,8 @@ package net.ditialid.utility.concurrency;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import net.digitalid.utility.functional.fixes.Brackets;
-import net.digitalid.utility.functional.fixes.ElementConverter;
-import net.digitalid.utility.functional.fixes.IterableConverter;
-import net.digitalid.utility.validation.annotations.math.NonNegative;
-import net.digitalid.utility.validation.annotations.math.Positive;
-import net.digitalid.utility.validation.annotations.reference.Capturable;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 
 /**
  * Extends Java's {@link java.util.concurrent.ConcurrentHashMap ConcurrentHashMap} implementation with more useful methods.
@@ -26,88 +18,85 @@ public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHash
     /**
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(int, float, int)
      */
-    protected ConcurrentHashMap(@NonNegative int initialCapacity, @Positive float loadFactor, @Positive int concurrencyLevel) {
+    protected ConcurrentHashMap(int initialCapacity, float loadFactor, int concurrencyLevel) {
         super(initialCapacity, loadFactor, concurrencyLevel);
     }
     
     /**
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(int, float, int)
      */
-    @Pure
-    public static @Capturable @Nonnull <K, V> ConcurrentHashMap<K, V> get(@NonNegative int initialCapacity, @Positive float loadFactor, @Positive int concurrencyLevel) {
+    public static <K, V> ConcurrentHashMap<K, V> get(int initialCapacity, float loadFactor, int concurrencyLevel) {
         return new ConcurrentHashMap<>(initialCapacity, loadFactor, concurrencyLevel);
     }
     
     /**
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(int, float)
      */
-    @Pure
-    public static @Capturable @Nonnull <K, V> ConcurrentHashMap<K, V> get(@NonNegative int initialCapacity, @Positive float loadFactor) {
+    public static <K, V> ConcurrentHashMap<K, V> get(int initialCapacity, float loadFactor) {
         return get(initialCapacity, loadFactor, 16);
     }
     
     /**
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(int)
      */
-    @Pure
-    public static @Capturable @Nonnull <K, V> ConcurrentHashMap<K, V> get(@NonNegative int initialCapacity) {
+    public static <K, V> ConcurrentHashMap<K, V> get(int initialCapacity) {
         return get(initialCapacity, 0.75f);
     }
     
     /**
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap()
      */
-    @Pure
-    public static @Capturable @Nonnull <K, V> ConcurrentHashMap<K, V> get() {
+    public static <K, V> ConcurrentHashMap<K, V> get() {
         return get(16);
     }
     
     /**
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(java.util.Map)
      */
-    protected ConcurrentHashMap(@Nonnull Map<? extends K, ? extends V> map) {
+    protected ConcurrentHashMap(Map<? extends K, ? extends V> map) {
         super(map);
     }
     
     /**
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(java.util.Map)
      */
-    @Pure
-    public static @Capturable @Nonnull <K, V> ConcurrentHashMap<K, V> getNonNullable(@Nonnull Map<? extends K, ? extends V> map) {
+    public static <K, V> ConcurrentHashMap<K, V> getNonNullable(Map<? extends K, ? extends V> map) {
         return new ConcurrentHashMap<>(map);
     }
     
     /**
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(java.util.Map)
      */
-    @Pure
-    public static @Capturable @Nullable <K, V> ConcurrentHashMap<K, V> getNullable(@Nullable Map<? extends K, ? extends V> map) {
+    public static <K, V> ConcurrentHashMap<K, V> getNullable(Map<? extends K, ? extends V> map) {
         return map == null ? null : getNonNullable(map);
     }
     
     /* -------------------------------------------------- ConcurrentMap -------------------------------------------------- */
     
     @Override
-    public @Nonnull V putIfAbsentElseReturnPresent(@Nonnull K key, @Nonnull V value) {
-        final @Nullable V previous = putIfAbsent(key, value);
+    public V putIfAbsentElseReturnPresent(K key, V value) {
+        final V previous = putIfAbsent(key, value);
         if (previous == null) { return value; }
         else { return previous; }
     }
     
     /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
-    @Pure
     @Override
-    public @Capturable @Nonnull ConcurrentHashMap<K, V> clone() {
-        return new ConcurrentHashMap<>(this);
+    @SuppressWarnings("unchecked")
+    public ConcurrentHashMap<K, V> clone() {
+        try {
+            return (ConcurrentHashMap<K, V>) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("This should never happen, because ConcurrentHashMap implements Cloneable", e);
+        }
     }
     
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
-    @Pure
     @Override
-    public @Nonnull String toString() {
-        return IterableConverter.toString(entrySet(), new ElementConverter<Entry<K, V>>() { @Pure @Override public String toString(@Nullable Entry<K, V> entry) { return entry == null ? "null" : entry.getKey() + ": " + entry.getValue(); } }, Brackets.CURLY);
+    public String toString() {
+        return FiniteIterable.of(entrySet()).map((entry) -> (entry == null ? "null" : entry.getKey() + ": " + entry.getValue())).join(Brackets.CURLY);
     }
     
 }
