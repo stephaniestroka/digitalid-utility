@@ -42,7 +42,6 @@ public class FlatteningIterator<F, E> extends SingleIteratorBasedIterator<F, E> 
     
     @Pure
     @Override
-    @SuppressWarnings("unchecked")
     public boolean hasNext() {
         if (subiterator != null) {
             if (subiterator.hasNext()) {
@@ -52,17 +51,26 @@ public class FlatteningIterator<F, E> extends SingleIteratorBasedIterator<F, E> 
             }
         }
         
+        assert subiterator == null;
+        
         if (found) {
             return true;
         } else {
             while (primaryIterator.hasNext()) {
                 final E element = primaryIterator.next();
-                if (level > 0 && element instanceof Collection) {
-                    subiterator = FiniteIterable.of((Collection<?>) element).<F>flatten(level - 1).iterator();
-                    if (subiterator.hasNext()) {
-                        return true;
-                    } else {
-                        subiterator = null;
+                if (level > 0) {
+                    final FiniteIterable<?> iterable;
+                    if (element instanceof Collection<?>) { iterable = FiniteIterable.of((Collection<?>) element); }
+                    else if (element instanceof Object[]) { iterable = FiniteIterable.of((Object[]) element); }
+                    else { iterable = null; }
+                    if (iterable != null) {
+                        subiterator = iterable.<F>flatten(level - 1).iterator();
+                        if (subiterator.hasNext()) {
+                            return true;
+                        } else {
+                            subiterator = null;
+                            continue;
+                        }
                     }
                 }
                 nextElement = element;
