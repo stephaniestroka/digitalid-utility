@@ -10,8 +10,8 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.functional.function.unary.NullableToNonNullUnaryFunction;
 import net.digitalid.utility.functional.iterable.NullableIterable;
-import net.digitalid.utility.functional.string.Brackets;
-import net.digitalid.utility.functional.string.IterableConverter;
+import net.digitalid.utility.functional.fixes.Brackets;
+import net.digitalid.utility.functional.fixes.IterableConverter;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.reference.Capturable;

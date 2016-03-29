@@ -31,7 +31,7 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.exceptions.UnexpectedValueException;
 import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunction;
-import net.digitalid.utility.functional.string.IterableConverter;
+import net.digitalid.utility.functional.fixes.IterableConverter;
 import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;

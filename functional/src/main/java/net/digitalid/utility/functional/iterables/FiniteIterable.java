@@ -23,6 +23,7 @@ import net.digitalid.utility.functional.iterators.MappingIterator;
 import net.digitalid.utility.functional.iterators.PruningIterator;
 import net.digitalid.utility.functional.iterators.ReversingIterator;
 import net.digitalid.utility.functional.iterators.ZippingIterator;
+import net.digitalid.utility.functional.fixes.Fixes;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.tuples.annotations.Pure;
 
@@ -438,6 +439,60 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     @Pure
     public default FiniteIterable<E> distinct() {
         return FiniteIterable.of(new LinkedHashSet<>(Arrays.asList(toArray())));
+    }
+    
+    /* -------------------------------------------------- Joining -------------------------------------------------- */
+    
+    /**
+     * Returns the elements of this iterable joined by the given delimiter with the given prefix and suffix or the given empty string if this iterable is empty.
+     */
+    @Pure
+    public default String join(CharSequence prefix, CharSequence suffix, CharSequence empty, CharSequence delimiter) {
+        if (isEmpty()) {
+            return empty.toString();
+        } else {
+            final StringBuilder result = new StringBuilder(prefix);
+            boolean first = true;
+            for (E element : this) {
+                if (first) { first = false; }
+                else { result.append(delimiter); }
+                result.append(String.valueOf(element));
+            }
+            return result.append(suffix).toString();
+        }
+    }
+    
+    /**
+     * Returns the elements of this iterable joined by the given delimiter with the given fixes or the given empty string if this iterable is empty.
+     */
+    @Pure
+    public default String join(Fixes fixes, CharSequence empty, CharSequence delimiter) {
+        if (fixes == null) { return join("", "", empty, delimiter); }
+        else { return join(fixes.getPrefix(), fixes.getSuffix(), empty, delimiter); }
+    }
+    
+    /**
+     * Returns the elements of this iterable joined by commas with the given fixes or the given empty string if this iterable is empty.
+     */
+    @Pure
+    public default String join(Fixes fixes, CharSequence empty) {
+        return join(fixes, empty, ", ");
+    }
+    
+    /**
+     * Returns the elements of this iterable joined by commas with the given fixes.
+     */
+    @Pure
+    public default String join(Fixes fixes) {
+        return join(fixes, fixes != null ? fixes.getBoth() : "");
+    }
+    
+    /**
+     * Returns the elements of this iterable joined by commas.
+     */
+    @Pure
+    public default String join() {
+        return join(null);
     }
     
 }

@@ -4,8 +4,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.functional.iterable.NullableIterable;
-import net.digitalid.utility.functional.string.Brackets;
-import net.digitalid.utility.functional.string.IterableConverter;
+import net.digitalid.utility.functional.fixes.Brackets;
+import net.digitalid.utility.functional.fixes.IterableConverter;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;

@@ -19,7 +19,7 @@ import javax.lang.model.util.SimpleTypeVisitor7;
 
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.string.Brackets;
-import net.digitalid.utility.functional.string.IterableConverter;
+import net.digitalid.utility.functional.fixes.IterableConverter;
 import net.digitalid.utility.functional.string.NonNullableElementConverter;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
