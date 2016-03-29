@@ -1,19 +1,21 @@
 package net.digitalid.utility.functional.iterables;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
 import net.digitalid.utility.functional.fixes.Fixes;
 import net.digitalid.utility.functional.interfaces.BinaryOperator;
+import net.digitalid.utility.functional.interfaces.Collector;
 import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
@@ -404,6 +406,85 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
         return reduce((a, b) -> a == null ? b : (b == null ? a : ( ((Comparable<? super E>) a).compareTo(b) >= 0 ? a : b )));
     }
     
+    /* -------------------------------------------------- Summation -------------------------------------------------- */
+    
+    /**
+     * Returns the sum of all {@link Number numbers} in this iterable as a long.
+     */
+    @Pure
+    public default long sumAsLong() {
+        long sum = 0;
+        for (E element : this) {
+            if (element instanceof Number) {
+                sum += ((Number) element).longValue();
+            }
+        }
+        return sum;
+    }
+    
+    /**
+     * Returns the sum of all {@link Number numbers} in this iterable as a double.
+     */
+    @Pure
+    public default double sumAsDouble() {
+        double sum = 0;
+        for (E element : this) {
+            if (element instanceof Number) {
+                sum += ((Number) element).doubleValue();
+            }
+        }
+        return sum;
+    }
+    
+    /* -------------------------------------------------- Average -------------------------------------------------- */
+    
+    /**
+     * Returns the average of all {@link Number numbers} in this iterable.
+     */
+    @Pure
+    public default double average() {
+        double sum = 0;
+        int counter = 0;
+        for (E element : this) {
+            if (element instanceof Number) {
+                sum += ((Number) element).doubleValue();
+                counter++;
+            }
+        }
+        return sum / counter;
+    }
+    
+    /* -------------------------------------------------- Grouping -------------------------------------------------- */
+    
+    /**
+     * Returns the elements of this iterable as a capturable map grouped by the given function.
+     */
+    @Pure
+    public default <K> Map<K, List<E>> groupBy(UnaryFunction<? super E, ? extends K> function) {
+        final Map<K, List<E>> result = new LinkedHashMap<>((int) size());
+        for (E element : this) {
+            final K key = function.evaluate(element);
+            List<E> list = result.get(key);
+            if (list == null) {
+                list = new LinkedList<>();
+                result.put(key, list);
+            }
+            list.add(element);
+        }
+        return result;
+    }
+    
+    /* -------------------------------------------------- Collecting -------------------------------------------------- */
+    
+    /**
+     * Returns the result of the given collector after consuming all elements of this iterable.
+     */
+    @Pure
+    public default <R> R collect(Collector<? super E, ? extends R> collector) {
+        for (E element : this) { collector.consume(element); }
+        return collector.getResult();
+    }
+    
     /* -------------------------------------------------- Action -------------------------------------------------- */
     
     /**
@@ -434,7 +515,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     public default List<E> toList() {
-        final List<E> result = new ArrayList<>((int) size());
+        final List<E> result = new LinkedList<>();
         for (E element : this) {
             result.add(element);
         }
@@ -446,9 +527,23 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     public default Set<E> toSet() {
-        final Set<E> result = new LinkedHashSet<>((int) size());
+        final Set<E> result = new LinkedHashSet<>();
         for (E element : this) {
             result.add(element);
+        }
+        return result;
+    }
+    
+    /**
+     * Returns the elements of this iterable as a capturable map with their key determined by the given function.
+     * Elements that are mapped to the same key overwrite each other. If this is not desired, use
+     * {@link #groupBy(net.digitalid.utility.functional.interfaces.UnaryFunction)} instead.
+     */
+    @Pure
+    public default <K> Map<K, E> toMap(UnaryFunction<? super E, ? extends K> function) {
+        final Map<K, E> result = new LinkedHashMap<>();
+        for (E element : this) {
+            result.put(function.evaluate(element), element);
         }
         return result;
     }
@@ -460,7 +555,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     public default FiniteIterable<E> sorted(Comparator<? super E> comparator) {
-        final List<E> list = Arrays.asList(toArray());
+        final List<E> list = toList();
         Collections.sort(list, comparator);
         return FiniteIterable.of(list);
     }
@@ -493,7 +588,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     public default FiniteIterable<E> distinct() {
-        return FiniteIterable.of(new LinkedHashSet<>(Arrays.asList(toArray())));
+        return FiniteIterable.of(toSet());
     }
     
     /* -------------------------------------------------- Cycling -------------------------------------------------- */

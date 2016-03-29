@@ -4,7 +4,7 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
- * This functional interface models a predicate that evaluates whether an object satisfies a condition.
+ * This functional interface models a predicate that evaluates whether an object of type {@code T} satisfies a condition.
  */
 public interface Predicate<T> {
     
@@ -71,6 +71,26 @@ public interface Predicate<T> {
     @Pure
     public default Predicate<T> negate() {
         return object -> !evaluate(object);
+    }
+    
+    /* -------------------------------------------------- Composition -------------------------------------------------- */
+    
+    /**
+     * Returns the composition of the given function followed by this predicate.
+     */
+    @Pure
+    public default <I> Predicate<I> after(UnaryFunction<? super I, ? extends T> function) {
+        return object -> evaluate(function.evaluate(object));
+    }
+    
+    /* -------------------------------------------------- Conversion -------------------------------------------------- */
+    
+    /**
+     * Returns this predicate as a unary function.
+     */
+    @Pure
+    public default UnaryFunction<T, Boolean> asFunction() {
+        return object -> evaluate(object);
     }
     
 }
