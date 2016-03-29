@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+import net.digitalid.utility.functional.fixes.Fixes;
 import net.digitalid.utility.functional.interfaces.BinaryOperator;
 import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.functional.interfaces.Predicate;
@@ -23,7 +24,6 @@ import net.digitalid.utility.functional.iterators.MappingIterator;
 import net.digitalid.utility.functional.iterators.PruningIterator;
 import net.digitalid.utility.functional.iterators.ReversingIterator;
 import net.digitalid.utility.functional.iterators.ZippingIterator;
-import net.digitalid.utility.functional.fixes.Fixes;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.tuples.annotations.Pure;
 

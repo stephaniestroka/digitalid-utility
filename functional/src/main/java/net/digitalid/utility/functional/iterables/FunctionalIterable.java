@@ -92,9 +92,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns the elements of this iterable filtered by the given predicate.
      */
     @Pure
-    public default FunctionalIterable<E> filter(Predicate<? super E> predicate) {
-        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
-    }
+    public FunctionalIterable<E> filter(Predicate<? super E> predicate);
     
     /* -------------------------------------------------- Mapping -------------------------------------------------- */
     
@@ -102,9 +100,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns the elements of this iterable mapped by the given function.
      */
     @Pure
-    public default <F> FunctionalIterable<F> map(UnaryFunction<? super E, ? extends F> function) {
-        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
-    }
+    public <F> FunctionalIterable<F> map(UnaryFunction<? super E, ? extends F> function);
     
     /* -------------------------------------------------- Pruning -------------------------------------------------- */
     
@@ -112,9 +108,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns the elements of this iterable after discarding the given number of elements from the beginning.
      */
     @Pure
-    public default FunctionalIterable<E> skip(long number) {
-        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
-    }
+    public FunctionalIterable<E> skip(long number);
     
     /**
      * Returns the given number of elements from the beginning of this iterable.
@@ -148,18 +142,14 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * The returned iterable is truncated to the length of the shorter iterable.
      */
     @Pure
-    public default <F> FunctionalIterable<Pair<E, F>> zipShortest(InfiniteIterable<? extends F> iterable) {
-        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
-    }
+    public <F> FunctionalIterable<Pair<E, F>> zipShortest(InfiniteIterable<? extends F> iterable);
     
     /**
      * Returns the elements from this and the given iterable as pairs, where the i-th pair contains the i-th element of each iterable.
      * The shorter iterable is extended to the length of the longer iterable with null values for the missing elements.
      */
     @Pure
-    public default <F> FunctionalIterable<Pair<E, F>> zipLongest(FiniteIterable<? extends F> iterable) {
-        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
-    }
+    public <F> FunctionalIterable<Pair<E, F>> zipLongest(FiniteIterable<? extends F> iterable);
     
     /**
      * Returns the elements from this and the given iterable as pairs, where the i-th pair contains the i-th element of each iterable.
@@ -176,24 +166,18 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns the elements of this iterable with all collections up to the given level flattened.
      */
     @Pure
-    public default <F> FunctionalIterable<F> flatten(long level) {
-        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
-    }
+    public <F> FunctionalIterable<F> flatten(long level);
     
     /**
      * Returns the elements of this iterable with all collections directly contained in this iterable flattened.
      */
     @Pure
-    public default <F> FunctionalIterable<F> flattenOne() {
-        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
-    }
+    public <F> FunctionalIterable<F> flattenOne();
     
     /**
      * Returns the elements of this iterable with all collections directly or indirectly contained in this iterable flattened.
      */
     @Pure
-    public default <F> FunctionalIterable<F> flattenAll() {
-        throw new UnsupportedOperationException("This method has to be overriden in subtypes.");
-    }
+    public <F> FunctionalIterable<F> flattenAll();
     
 }
