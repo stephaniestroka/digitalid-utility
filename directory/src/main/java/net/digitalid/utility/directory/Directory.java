@@ -4,11 +4,11 @@ import java.io.File;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.directory.annotations.Existing;
 import net.digitalid.utility.directory.annotations.IsDirectory;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
-import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
 

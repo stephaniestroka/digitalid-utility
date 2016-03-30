@@ -21,6 +21,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
@@ -323,7 +324,16 @@ public class ProcessingUtility {
     public static @Capturable @Nonnull List<VariableElement> getFieldsOfType(@Nonnull TypeElement classElement, @Nonnull Class<?> fieldType) {
         final @Nonnull List<VariableElement> fields = new LinkedList<>();
         for (@Nonnull VariableElement field : ElementFilter.fieldsIn(classElement.getEnclosedElements())) {
-            final @Nonnull String fieldTypeName = StaticProcessingEnvironment.getTypeUtils().erasure(field.asType()).toString();
+            final @Nonnull TypeMirror declaredFieldType = field.asType();
+            final @Nonnull String fieldTypeName;
+            if (declaredFieldType instanceof  DeclaredType) {
+                fieldTypeName = ((DeclaredType) declaredFieldType).asElement().toString();
+            } else if (declaredFieldType instanceof PrimitiveType) {
+                fieldTypeName = declaredFieldType.toString();
+            } else {
+                ProcessingLog.error("The type of the field $ is $", declaredFieldType, declaredFieldType.getClass());
+                fieldTypeName = declaredFieldType.toString();
+            }
             ProcessingLog.verbose("Found with the type $ the field", SourcePosition.of(field), fieldTypeName);
             if (fieldTypeName.equals(fieldType.getCanonicalName())) { fields.add(field); }
         }
