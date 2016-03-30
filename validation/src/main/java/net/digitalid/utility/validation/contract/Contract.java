@@ -10,13 +10,13 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 
+import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.contracts.exceptions.ContractViolationException;
 import net.digitalid.utility.string.FormatString;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.validation.annotations.state.Unmodifiable;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.processing.ProcessingUtility;

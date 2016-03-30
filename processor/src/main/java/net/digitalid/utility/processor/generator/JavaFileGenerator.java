@@ -24,6 +24,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 
+import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.contracts.Constraint;
 import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
@@ -39,7 +40,6 @@ import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.processing.TypeImporter;
 

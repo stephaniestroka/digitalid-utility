@@ -22,6 +22,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 
+import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
@@ -32,7 +33,6 @@ import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This class is the parent of all custom annotation processors.
