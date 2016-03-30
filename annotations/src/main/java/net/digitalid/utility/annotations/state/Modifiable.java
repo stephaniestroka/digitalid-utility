@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.annotations.state;
+package net.digitalid.utility.annotations.state;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This annotation indicates that an object is modifiable.
@@ -15,6 +15,6 @@ import net.digitalid.utility.tuples.annotations.Pure;
  * @see Unmodifiable
  */
 @Documented
+@Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface Modifiable {}

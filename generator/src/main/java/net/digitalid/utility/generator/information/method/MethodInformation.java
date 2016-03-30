@@ -21,7 +21,7 @@ import net.digitalid.utility.logging.processing.SourcePosition;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
 import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 
 /**

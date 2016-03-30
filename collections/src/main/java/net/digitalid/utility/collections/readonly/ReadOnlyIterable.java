@@ -6,9 +6,9 @@ import net.digitalid.utility.collections.freezable.FreezableIterable;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.ReadOnly;
-import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This interface provides read-only access to {@link Iterable iterables} and should not be lost by assigning its objects to a supertype.

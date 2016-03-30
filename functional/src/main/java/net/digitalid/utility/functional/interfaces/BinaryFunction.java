@@ -1,7 +1,7 @@
 package net.digitalid.utility.functional.interfaces;
 
 import net.digitalid.utility.tuples.Pair;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This functional interface models a binary function that maps an object of type {@code I0} and an object of type {@code I1} to an object of type {@code O}.

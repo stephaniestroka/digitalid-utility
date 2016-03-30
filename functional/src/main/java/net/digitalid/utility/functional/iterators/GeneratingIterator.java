@@ -1,7 +1,7 @@
 package net.digitalid.utility.functional.iterators;
 
 import net.digitalid.utility.functional.interfaces.Producer;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This class implements a generating iterator that generates an infinite number of elements with the given producer.

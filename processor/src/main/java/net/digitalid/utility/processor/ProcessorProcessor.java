@@ -11,7 +11,7 @@ import javax.lang.model.element.TypeElement;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.processor.generator.ServiceFileGenerator;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This annotation processor generates the service loader entry for other annotation processors.

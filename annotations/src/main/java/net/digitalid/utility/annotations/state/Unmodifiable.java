@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.annotations.state;
+package net.digitalid.utility.annotations.state;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -21,6 +21,6 @@ import java.util.Collections;
  * @see Modifiable
  */
 @Documented
+@Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface Unmodifiable {}

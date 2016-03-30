@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This class implements a flattening iterator that iterates over the elements of the given iterator with all collections up to the given level flattened.

@@ -1,7 +1,7 @@
 package net.digitalid.utility.functional.iterators;
 
 import net.digitalid.utility.functional.interfaces.UnaryOperator;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This class implements an iterating iterator that iterates over the sequence produced by the given operator from the given seed.

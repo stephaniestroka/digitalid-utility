@@ -1,6 +1,6 @@
 package net.digitalid.utility.functional.fixes;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * Fixes surround a string with a prefix and a suffix.

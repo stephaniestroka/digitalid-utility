@@ -8,9 +8,9 @@ import net.digitalid.utility.collections.freezable.FreezableArray;
 import net.digitalid.utility.collections.freezable.FreezableList;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This interface provides read-only access to arrays and should <em>never</em> be cast away.

@@ -36,7 +36,7 @@ import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient
 import net.digitalid.utility.processor.generator.annotations.OnlyPossibleIn;
 import net.digitalid.utility.string.FormatString;
 import net.digitalid.utility.string.QuoteString;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;

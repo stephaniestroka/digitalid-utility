@@ -2,13 +2,17 @@ package net.digitalid.utility.tuples;
 
 import java.util.Objects;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import javax.annotation.Nullable;
+
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.state.Unmodifiable;
 
 /**
  * This class implements an immutable pair.
  * 
  * @see Triplet
  */
+@Unmodifiable
 public class Pair<E0, E1> extends Tuple {
     
     /* -------------------------------------------------- Element 0 -------------------------------------------------- */
@@ -98,7 +102,7 @@ public class Pair<E0, E1> extends Tuple {
     
     @Pure
     @Override
-    public boolean equals(Object object) {
+    public boolean equals(@Nullable Object object) {
         if (object == this) { return true; }
         if (object == null) { return false; }
         

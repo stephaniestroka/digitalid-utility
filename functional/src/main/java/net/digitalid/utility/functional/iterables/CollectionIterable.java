@@ -1,6 +1,6 @@
 package net.digitalid.utility.functional.iterables;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This interface extends the finite iterable interface to provide a faster {@link #size()} implementation.

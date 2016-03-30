@@ -9,7 +9,7 @@ import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This interface models a {@link List list} that can be {@link Freezable frozen}.

@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * Numerical values can be validated with generated contracts.

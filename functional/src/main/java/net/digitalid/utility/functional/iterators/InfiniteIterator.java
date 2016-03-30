@@ -1,6 +1,6 @@
 package net.digitalid.utility.functional.iterators;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This interface models an iterator that returns an infinite number of elements.

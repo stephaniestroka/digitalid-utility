@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This property stores a replaceable value that can be null.

@@ -2,13 +2,15 @@ package net.digitalid.utility.tuples;
 
 import java.util.Objects;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.state.Unmodifiable;
 
 /**
  * This class implements an immutable quintet.
  * 
  * @see Sextet
  */
+@Unmodifiable
 @SuppressWarnings("EqualsAndHashcode")
 public class Quintet<E0, E1, E2, E3, E4> extends Quartet<E0, E1, E2, E3> {
     

@@ -6,7 +6,7 @@ import net.digitalid.utility.collections.readonly.ReadOnlySet;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.property.ReadOnlyProperty;
 import net.digitalid.utility.property.ValueValidator;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This is the read-only abstract class for extensible properties.
