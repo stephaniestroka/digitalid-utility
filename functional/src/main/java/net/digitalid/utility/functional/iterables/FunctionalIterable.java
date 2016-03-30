@@ -2,12 +2,18 @@ package net.digitalid.utility.functional.iterables;
 
 import java.util.Iterator;
 
+import javax.annotation.Nonnull;
+
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterators.PruningIterator;
 import net.digitalid.utility.functional.iterators.ZippingIterator;
 import net.digitalid.utility.tuples.Pair;
-import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.index.Index;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.math.Positive;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This interface extends the {@link Iterable} interface with functional methods.
@@ -15,6 +21,7 @@ import net.digitalid.utility.annotations.method.Pure;
  * @see InfiniteIterable
  * @see FiniteIterable
  */
+@Immutable
 public interface FunctionalIterable<E> extends Iterable<E> {
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
@@ -30,14 +37,14 @@ public interface FunctionalIterable<E> extends Iterable<E> {
     /**
      * Returns the size of this iterable or the given limit if the size is greater than the limit.
      * 
-     * @throws IndexOutOfBoundsException if the given limit is negative.
+     * @throws IndexOutOfBoundsException if the given limit is non-positive.
      */
     @Pure
-    public default long size(long limit) {
-        if (limit < 0) { throw new IndexOutOfBoundsException("The limit has to be non-negative but was " + limit + "."); }
+    public default @NonNegative long size(@Positive long limit) {
+        if (limit <= 0) { throw new IndexOutOfBoundsException("The limit has to be positive but was " + limit + "."); }
         
         long size = 0;
-        final Iterator<E> iterator = iterator();
+        final @Nonnull Iterator<E> iterator = iterator();
         while (iterator.hasNext() && size < limit) {
             iterator.next();
             size++;
@@ -49,7 +56,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns whether this iterable has the given number of elements.
      */
     @Pure
-    public default boolean isSize(long number) {
+    public default boolean isSize(@NonNegative long number) {
         return size(number + 1) == number;
     }
     
@@ -57,7 +64,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns whether the size of this iterable is at most the given value.
      */
     @Pure
-    public default boolean sizeAtMost(long value) {
+    public default boolean sizeAtMost(@NonNegative long value) {
         return size(value + 1) <= value;
     }
     
@@ -65,7 +72,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns whether the size of this iterable is at least the given value.
      */
     @Pure
-    public default boolean sizeAtLeast(long value) {
+    public default boolean sizeAtLeast(@Positive long value) {
         return size(value) == value;
     }
     
@@ -77,7 +84,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * @throws IndexOutOfBoundsException if the given index is negative or greater or equal to the size of this iterable.
      */
     @Pure
-    public default E get(long index) {
+    public default E get(@Index long index) {
         long currentIndex = 0;
         for (E element : this) {
             if (currentIndex == index) { return element; }
@@ -92,13 +99,13 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns the elements of this iterable filtered by the given predicate.
      */
     @Pure
-    public FunctionalIterable<E> filter(Predicate<? super E> predicate);
+    public @Nonnull FunctionalIterable<E> filter(@Nonnull Predicate<? super E> predicate);
     
     /**
      * Returns the elements of this iterable without the null values.
      */
     @Pure
-    public FunctionalIterable<E> filterNulls();
+    public @Nonnull FunctionalIterable<E> filterNulls();
     
     /* -------------------------------------------------- Mapping -------------------------------------------------- */
     
@@ -106,7 +113,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns the elements of this iterable mapped by the given function.
      */
     @Pure
-    public <F> FunctionalIterable<F> map(UnaryFunction<? super E, ? extends F> function);
+    public <F> @Nonnull FunctionalIterable<F> map(@Nonnull UnaryFunction<? super E, ? extends F> function);
     
     /* -------------------------------------------------- Pruning -------------------------------------------------- */
     
@@ -114,13 +121,13 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns the elements of this iterable after discarding the given number of elements from the beginning.
      */
     @Pure
-    public FunctionalIterable<E> skip(long number);
+    public @Nonnull FunctionalIterable<E> skip(@Positive long number);
     
     /**
      * Returns the given number of elements from the beginning of this iterable.
      */
     @Pure
-    public default FiniteIterable<E> limit(long number) {
+    public default @Nonnull FiniteIterable<E> limit(@Positive long number) {
         return () -> PruningIterator.with(iterator(), 0, number);
     }
     
@@ -128,7 +135,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns the elements of this iterable from the given start index to but not including the given end index.
      */
     @Pure
-    public default FiniteIterable<E> extract(long startIndex, long endIndex) {
+    public default @Nonnull FiniteIterable<E> extract(@Positive long startIndex, @Positive long endIndex) {
         return () -> PruningIterator.with(iterator(), startIndex, endIndex);
     }
     
@@ -139,7 +146,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * The returned iterable is truncated to the length of the shorter iterable.
      */
     @Pure
-    public default <F> FiniteIterable<Pair<E, F>> zipShortest(FiniteIterable<? extends F> iterable) {
+    public default <F> @Nonnull FiniteIterable<Pair<E, F>> zipShortest(@Nonnull FiniteIterable<? extends F> iterable) {
         return () -> ZippingIterator.with(iterator(), iterable.iterator(), true);
     }
     
@@ -148,21 +155,21 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * The returned iterable is truncated to the length of the shorter iterable.
      */
     @Pure
-    public <F> FunctionalIterable<Pair<E, F>> zipShortest(InfiniteIterable<? extends F> iterable);
+    public <F> @Nonnull FunctionalIterable<Pair<E, F>> zipShortest(@Nonnull InfiniteIterable<? extends F> iterable);
     
     /**
      * Returns the elements from this and the given iterable as pairs, where the i-th pair contains the i-th element of each iterable.
      * The shorter iterable is extended to the length of the longer iterable with null values for the missing elements.
      */
     @Pure
-    public <F> FunctionalIterable<Pair<E, F>> zipLongest(FiniteIterable<? extends F> iterable);
+    public <F> @Nonnull FunctionalIterable<Pair<E, F>> zipLongest(@Nonnull FiniteIterable<? extends F> iterable);
     
     /**
      * Returns the elements from this and the given iterable as pairs, where the i-th pair contains the i-th element of each iterable.
      * The shorter iterable is extended to the length of the longer iterable with null values for the missing elements.
      */
     @Pure
-    public default <F> InfiniteIterable<Pair<E, F>> zipLongest(InfiniteIterable<? extends F> iterable) {
+    public default <F> @Nonnull InfiniteIterable<Pair<E, F>> zipLongest(@Nonnull InfiniteIterable<? extends F> iterable) {
         return () -> ZippingIterator.with(iterator(), iterable.iterator(), false);
     }
     
@@ -172,18 +179,18 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns the elements of this iterable with all collections up to the given level flattened.
      */
     @Pure
-    public <F> FunctionalIterable<F> flatten(long level);
+    public <F> @Nonnull FunctionalIterable<F> flatten(@Positive long level);
     
     /**
      * Returns the elements of this iterable with all collections directly contained in this iterable flattened.
      */
     @Pure
-    public <F> FunctionalIterable<F> flattenOne();
+    public <F> @Nonnull FunctionalIterable<F> flattenOne();
     
     /**
      * Returns the elements of this iterable with all collections directly or indirectly contained in this iterable flattened.
      */
     @Pure
-    public <F> FunctionalIterable<F> flattenAll();
+    public <F> @Nonnull FunctionalIterable<F> flattenAll();
     
 }

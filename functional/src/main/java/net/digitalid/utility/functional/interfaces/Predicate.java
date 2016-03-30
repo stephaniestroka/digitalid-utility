@@ -1,11 +1,17 @@
 package net.digitalid.utility.functional.interfaces;
 
-import net.digitalid.utility.functional.iterables.FiniteIterable;
+import javax.annotation.Nonnull;
+
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.validation.annotations.type.Functional;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This functional interface models a predicate that evaluates whether an object of type {@code T} satisfies a condition.
  */
+@Immutable
+@Functional
 public interface Predicate<T> {
     
     /* -------------------------------------------------- Evaluation -------------------------------------------------- */
@@ -23,7 +29,7 @@ public interface Predicate<T> {
      * Returns the conjunction of this predicate with the given predicate.
      */
     @Pure
-    public default Predicate<T> and(Predicate<? super T> predicate) {
+    public default @Nonnull Predicate<T> and(@Nonnull Predicate<? super T> predicate) {
         return object -> evaluate(object) && predicate.evaluate(object);
     }
     
@@ -31,9 +37,9 @@ public interface Predicate<T> {
      * Returns the conjunction of the given predicates.
      */
     @Pure
-    public static <T> Predicate<T> and(FiniteIterable<? extends Predicate<? super T>> predicates) {
+    public static <T> @Nonnull Predicate<T> and(@Nonnull FiniteIterable<@Nonnull ? extends Predicate<? super T>> predicates) {
         return object -> {
-                for (Predicate<? super T> predicate : predicates) {
+                for (@Nonnull Predicate<? super T> predicate : predicates) {
                     if (!predicate.evaluate(object)) { return false; }
                 }
                 return true;
@@ -46,7 +52,7 @@ public interface Predicate<T> {
      * Returns the disjunction of this predicate with the given predicate.
      */
     @Pure
-    public default Predicate<T> or(Predicate<? super T> predicate) {
+    public default @Nonnull Predicate<T> or(@Nonnull Predicate<? super T> predicate) {
         return object -> evaluate(object) || predicate.evaluate(object);
     }
     
@@ -54,9 +60,9 @@ public interface Predicate<T> {
      * Returns the disjunction of the given predicates.
      */
     @Pure
-    public static <T> Predicate<T> or(FiniteIterable<? extends Predicate<? super T>> predicates) {
+    public static <T> @Nonnull Predicate<T> or(@Nonnull FiniteIterable<@Nonnull ? extends Predicate<? super T>> predicates) {
         return object -> {
-                for (Predicate<? super T> predicate : predicates) {
+                for (@Nonnull Predicate<? super T> predicate : predicates) {
                     if (predicate.evaluate(object)) { return true; }
                 }
                 return false;
@@ -69,7 +75,7 @@ public interface Predicate<T> {
      * Returns the negation of this predicate.
      */
     @Pure
-    public default Predicate<T> negate() {
+    public default @Nonnull Predicate<T> negate() {
         return object -> !evaluate(object);
     }
     
@@ -79,7 +85,7 @@ public interface Predicate<T> {
      * Returns the composition of the given function followed by this predicate.
      */
     @Pure
-    public default <I> Predicate<I> after(UnaryFunction<? super I, ? extends T> function) {
+    public default <I> @Nonnull Predicate<I> after(@Nonnull UnaryFunction<? super I, ? extends T> function) {
         return object -> evaluate(function.evaluate(object));
     }
     
@@ -89,7 +95,7 @@ public interface Predicate<T> {
      * Returns this predicate as a unary function.
      */
     @Pure
-    public default UnaryFunction<T, Boolean> asFunction() {
+    public default @Nonnull UnaryFunction<T, @Nonnull Boolean> asFunction() {
         return object -> evaluate(object);
     }
     

@@ -2,11 +2,16 @@ package net.digitalid.utility.functional.iterators;
 
 import java.util.Iterator;
 
+import javax.annotation.Nonnull;
+
+import net.digitalid.utility.annotations.type.Mutable;
+
 /**
  * This class implements an iterator which is based on a single iterator.
  * 
  * @see DoubleIteratorBasedIterator
  */
+@Mutable
 public abstract class SingleIteratorBasedIterator<O, I0> implements ReadOnlyIterator<O> {
     
     /* -------------------------------------------------- Primary Iterator -------------------------------------------------- */
@@ -14,11 +19,11 @@ public abstract class SingleIteratorBasedIterator<O, I0> implements ReadOnlyIter
     /**
      * Stores the primary iterator on which this iterator is based.
      */
-    protected final Iterator<? extends I0> primaryIterator;
+    protected final @Nonnull Iterator<? extends I0> primaryIterator;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected SingleIteratorBasedIterator(Iterator<? extends I0> primaryIterator) {
+    protected SingleIteratorBasedIterator(@Nonnull Iterator<? extends I0> primaryIterator) {
         this.primaryIterator = primaryIterator;
     }
     

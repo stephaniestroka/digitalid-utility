@@ -1,10 +1,14 @@
 package net.digitalid.utility.functional.fixes;
 
+import javax.annotation.Nonnull;
+
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class enumerates various comments.
  */
+@Immutable
 public enum Comments implements Fixes {
     
     /* -------------------------------------------------- Enumerations -------------------------------------------------- */
@@ -21,27 +25,27 @@ public enum Comments implements Fixes {
     
     /* -------------------------------------------------- Prefix -------------------------------------------------- */
     
-    private final String prefix;
+    private final @Nonnull String prefix;
     
     @Pure
     @Override
-    public String getPrefix() {
+    public @Nonnull String getPrefix() {
         return prefix;
     }
     
     /* -------------------------------------------------- Suffix -------------------------------------------------- */
     
-    private final String suffix;
+    private final @Nonnull String suffix;
     
     @Pure
     @Override
-    public String getSuffix() {
+    public @Nonnull String getSuffix() {
         return suffix;
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    private Comments(String prefix, String suffix) {
+    private Comments(@Nonnull String prefix, @Nonnull String suffix) {
         this.prefix = prefix;
         this.suffix = suffix;
     }
