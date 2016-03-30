@@ -2,15 +2,19 @@ package net.digitalid.utility.tuples;
 
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
+
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.state.Unmodifiable;
+import net.digitalid.utility.validation.annotations.index.Index;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class implements an immutable quartet.
  * 
  * @see Quintet
  */
-@Unmodifiable
+@Immutable
 @SuppressWarnings("EqualsAndHashcode")
 public class Quartet<E0, E1, E2, E3> extends Triplet<E0, E1, E2> {
     
@@ -18,7 +22,7 @@ public class Quartet<E0, E1, E2, E3> extends Triplet<E0, E1, E2> {
     
     @Pure
     @Override
-    public Quartet<E0, E1, E2, E3> set0(E0 element0) {
+    public @Nonnull Quartet<E0, E1, E2, E3> set0(E0 element0) {
         return new Quartet<>(element0, element1, element2, element3);
     }
     
@@ -26,7 +30,7 @@ public class Quartet<E0, E1, E2, E3> extends Triplet<E0, E1, E2> {
     
     @Pure
     @Override
-    public Quartet<E0, E1, E2, E3> set1(E1 element1) {
+    public @Nonnull Quartet<E0, E1, E2, E3> set1(E1 element1) {
         return new Quartet<>(element0, element1, element2, element3);
     }
     
@@ -34,7 +38,7 @@ public class Quartet<E0, E1, E2, E3> extends Triplet<E0, E1, E2> {
     
     @Pure
     @Override
-    public Quartet<E0, E1, E2, E3> set2(E2 element2) {
+    public @Nonnull Quartet<E0, E1, E2, E3> set2(E2 element2) {
         return new Quartet<>(element0, element1, element2, element3);
     }
     
@@ -54,7 +58,7 @@ public class Quartet<E0, E1, E2, E3> extends Triplet<E0, E1, E2> {
      * Returns a new tuple with the fourth element set to the given object.
      */
     @Pure
-    public Quartet<E0, E1, E2, E3> set3(E3 element3) {
+    public @Nonnull Quartet<E0, E1, E2, E3> set3(E3 element3) {
         return new Quartet<>(element0, element1, element2, element3);
     }
     
@@ -70,7 +74,7 @@ public class Quartet<E0, E1, E2, E3> extends Triplet<E0, E1, E2> {
      * Returns a new quartet with the given elements.
      */
     @Pure
-    public static <E0, E1, E2, E3> Quartet<E0, E1, E2, E3> of(E0 element0, E1 element1, E2 element2, E3 element3) {
+    public static <E0, E1, E2, E3> @Nonnull Quartet<E0, E1, E2, E3> of(E0 element0, E1 element1, E2 element2, E3 element3) {
         return new Quartet<>(element0, element1, element2, element3);
     }
     
@@ -78,13 +82,13 @@ public class Quartet<E0, E1, E2, E3> extends Triplet<E0, E1, E2> {
     
     @Pure
     @Override
-    public int size() {
+    public @NonNegative int size() {
         return 4;
     }
     
     @Pure
     @Override
-    public Object get(int index) {
+    public Object get(@Index int index) {
         if (index == 3) { return element3; }
         else { return super.get(index); }
     }
@@ -93,7 +97,7 @@ public class Quartet<E0, E1, E2, E3> extends Triplet<E0, E1, E2> {
     
     @Pure
     @Override
-    protected boolean elementEquals(Pair<?, ?> tuple) {
+    protected boolean elementEquals(@Nonnull Pair<?, ?> tuple) {
         return super.elementEquals(tuple) && Objects.equals(this.element3, ((Quartet) tuple).element3);
     }
     
@@ -105,7 +109,7 @@ public class Quartet<E0, E1, E2, E3> extends Triplet<E0, E1, E2> {
     
     @Pure
     @Override
-    public String toStringWithoutParentheses() {
+    public @Nonnull String toStringWithoutParentheses() {
         return super.toStringWithoutParentheses() + ", " + element3;
     }
     
