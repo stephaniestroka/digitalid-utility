@@ -3,7 +3,7 @@ package net.digitalid.utility.generator.information.field;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.VariableElement;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This type collects the relevant information about a parameter-based field for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.

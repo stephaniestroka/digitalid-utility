@@ -2,7 +2,7 @@ package net.digitalid.utility.functional.iterators;
 
 import java.util.Iterator;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This class implements a combining iterator that iterates first over the elements of the first iterator and then over the elements of the second iterator.

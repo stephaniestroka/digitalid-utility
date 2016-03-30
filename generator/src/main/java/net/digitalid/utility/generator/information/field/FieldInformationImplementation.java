@@ -10,7 +10,7 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.annotations.DefaultValue;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.validation.processing.ProcessingUtility;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This class implements the {@link FieldInformation} interface.

@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**

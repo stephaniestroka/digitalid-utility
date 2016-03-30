@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.annotations.reference;
+package net.digitalid.utility.annotations.reference;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation indicates that a method can be invoked on {@link Raw raw} objects.
+ * This annotation indicates that a method can (also) be invoked on {@link Raw raw} objects.
  */
 @Documented
 @Target(ElementType.METHOD)

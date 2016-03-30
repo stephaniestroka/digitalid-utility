@@ -3,7 +3,7 @@ package net.digitalid.utility.functional.iterators;
 import java.util.Iterator;
 
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This class implements a mapping iterator that iterates over the elements of the given iterator mapped by the given function.

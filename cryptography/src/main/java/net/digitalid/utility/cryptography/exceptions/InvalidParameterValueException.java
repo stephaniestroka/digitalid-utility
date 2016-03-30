@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.exceptions.InternalException;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This exception is thrown when a value decoded from a block is invalid.

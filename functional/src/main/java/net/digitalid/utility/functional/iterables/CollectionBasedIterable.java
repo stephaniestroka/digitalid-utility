@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import net.digitalid.utility.functional.iterators.SingleIteratorBasedIterator;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This class implements the collection iterable interface based on a collection.

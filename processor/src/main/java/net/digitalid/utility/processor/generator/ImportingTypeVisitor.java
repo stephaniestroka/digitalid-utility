@@ -22,8 +22,8 @@ import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.tuples.annotations.Pure;
-import net.digitalid.utility.validation.annotations.reference.Capturable;
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**

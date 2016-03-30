@@ -2,7 +2,7 @@ package net.digitalid.utility.functional.iterators;
 
 import java.util.Iterator;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This interface models an iterator whose elements can only be read.

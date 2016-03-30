@@ -1,6 +1,6 @@
 package net.digitalid.utility.functional.interfaces;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This functional interface models a unary function that maps an object of type {@code I} to an object of type {@code O}.

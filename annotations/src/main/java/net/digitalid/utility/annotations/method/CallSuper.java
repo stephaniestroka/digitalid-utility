@@ -1,4 +1,4 @@
-package net.digitalid.utility.tuples.annotations;
+package net.digitalid.utility.annotations.method;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,9 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation indicates that a method has no side-effects (other than caching) on the called object and the method parameters.
+ * This annotation indicates that when you override such a method you have to call the overridden method.
  */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Pure {}
+public @interface CallSuper {}

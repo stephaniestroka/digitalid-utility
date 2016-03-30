@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.annotations.reference;
+package net.digitalid.utility.annotations.reference;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation indicates that the result of a method can be captured by the caller.
- * This requires that the returned object has been created locally and has not been leaked.
+ * This requires that the returned object has been created locally and has not been stored.
  * 
  * @see Captured
  * @see NonCapturable

@@ -16,7 +16,7 @@ import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
 import net.digitalid.utility.logging.logger.StandardOutputLogger;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This class implements a logger that logs the messages to a rotating file.

@@ -3,7 +3,7 @@ package net.digitalid.utility.functional.iterators;
 import java.util.Iterator;
 
 import net.digitalid.utility.tuples.Pair;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This class implements a zipping iterator that iterates over the elements of the given iterators in pairs, extending the shorter or truncating the longer iterator depending on the given flag.

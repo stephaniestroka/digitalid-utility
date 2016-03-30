@@ -1,6 +1,6 @@
 package net.digitalid.utility.functional.fixes;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This class enumerates various quotation marks.

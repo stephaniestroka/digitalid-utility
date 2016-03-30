@@ -29,7 +29,7 @@ import net.digitalid.utility.functional.iterators.PruningIterator;
 import net.digitalid.utility.functional.iterators.ReversingIterator;
 import net.digitalid.utility.functional.iterators.ZippingIterator;
 import net.digitalid.utility.tuples.Pair;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This interface extends the functional iterable interface to model finite iterables.

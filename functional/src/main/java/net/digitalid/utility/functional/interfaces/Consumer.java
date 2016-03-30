@@ -1,6 +1,6 @@
 package net.digitalid.utility.functional.interfaces;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This functional interface models a method that consumes objects of type {@code T} without returning a result.

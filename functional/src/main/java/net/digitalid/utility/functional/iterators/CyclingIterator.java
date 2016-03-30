@@ -3,7 +3,7 @@ package net.digitalid.utility.functional.iterators;
 import java.util.Iterator;
 
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This class implements a cycling iterator that iterates over the elements of the given iterable indefinitely.

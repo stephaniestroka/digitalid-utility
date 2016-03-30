@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.validation.annotations.math.Positive;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**

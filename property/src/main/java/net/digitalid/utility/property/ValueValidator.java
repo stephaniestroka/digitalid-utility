@@ -2,7 +2,7 @@ package net.digitalid.utility.property;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * A value validator checks whether a value is valid.

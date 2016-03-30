@@ -3,7 +3,7 @@ package net.digitalid.utility.functional.iterators;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This class implements a pruning iterator that iterates over the elements of the given iterator from the given start index to but not including the given end index.

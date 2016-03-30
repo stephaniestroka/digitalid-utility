@@ -6,13 +6,18 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-import net.digitalid.utility.tuples.annotations.Pure;
+import javax.annotation.Nullable;
+
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.reference.Capturable;
+import net.digitalid.utility.annotations.state.Unmodifiable;
 
 /**
  * This class makes the tuples iterable.
  * 
  * @see Pair
  */
+@Unmodifiable
 public abstract class Tuple implements Collection<Object> {
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
@@ -61,7 +66,7 @@ public abstract class Tuple implements Collection<Object> {
     
     @Pure
     @Override
-    public Iterator<Object> iterator() {
+    public @Capturable Iterator<Object> iterator() {
         return new TupleIterator();
     }
     
@@ -75,7 +80,7 @@ public abstract class Tuple implements Collection<Object> {
     
     @Pure
     @Override
-    public boolean contains(Object object) {
+    public boolean contains(@Nullable Object object) {
         for (Object element : this) {
             if (Objects.equals(object, element)) { return true; }
         }
@@ -93,7 +98,7 @@ public abstract class Tuple implements Collection<Object> {
     
     @Pure
     @Override
-    public Object[] toArray() {
+    public @Capturable Object[] toArray() {
         final int size = size();
         final Object[] array = new Object[size];
         for (int i = 0; i < size; i++) {
@@ -105,7 +110,7 @@ public abstract class Tuple implements Collection<Object> {
     @Pure
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T[] toArray(T[] array) {
+    public <T> @Capturable T[] toArray(T[] array) {
         final int size = size();
         final T[] result = array.length >= size ? array : (T[]) Array.newInstance(array.getClass().getComponentType(), size);
         for (int i = 0; i < size(); i++) {

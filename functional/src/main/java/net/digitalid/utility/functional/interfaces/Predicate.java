@@ -1,7 +1,7 @@
 package net.digitalid.utility.functional.interfaces;
 
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.tuples.annotations.Pure;
+import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This functional interface models a predicate that evaluates whether an object of type {@code T} satisfies a condition.
