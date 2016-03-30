@@ -6,11 +6,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.method.Impure;
 
 /**
  * This annotation indicates that an object is modifiable.
- * Non-{@link Pure pure} methods can only be called on modifiable objects.
+ * {@link Impure} methods can only be called on modifiable objects.
  * 
  * @see Unmodifiable
  */

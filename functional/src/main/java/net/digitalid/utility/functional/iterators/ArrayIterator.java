@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.reference.Capturable;
+import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 

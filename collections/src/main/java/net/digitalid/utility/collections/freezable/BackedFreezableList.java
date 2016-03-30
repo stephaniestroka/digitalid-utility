@@ -19,7 +19,7 @@ import net.digitalid.utility.functional.fixes.IterableConverter;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.reference.Capturable;
+import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**

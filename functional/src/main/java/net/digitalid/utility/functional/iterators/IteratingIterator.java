@@ -3,7 +3,7 @@ package net.digitalid.utility.functional.iterators;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.reference.Capturable;
+import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.interfaces.UnaryOperator;
 

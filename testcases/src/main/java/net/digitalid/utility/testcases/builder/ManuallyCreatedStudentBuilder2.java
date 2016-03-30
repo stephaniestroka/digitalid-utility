@@ -10,7 +10,7 @@ import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.reference.Captured;
+import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.type.Mutable;

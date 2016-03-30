@@ -15,7 +15,7 @@ import net.digitalid.utility.conversion.annotations.Invariant;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
-import net.digitalid.utility.annotations.reference.Captured;
+import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.annotations.method.Pure;
 

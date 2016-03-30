@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation indicates that the objects of the annotated class are stateless (have no non-static fields).
+ * This annotation indicates that the objects of the annotated class have no non-static fields.
  * 
  * @see Utility
  * @see Immutable

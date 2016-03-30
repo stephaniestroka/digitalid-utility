@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.reference.Capturable;
+import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.interfaces.Predicate;
 

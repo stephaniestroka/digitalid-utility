@@ -35,7 +35,7 @@ import net.digitalid.utility.validation.annotations.meta.MethodValidator;
 import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.reference.Capturable;
+import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.validation.annotations.type.Utility;
 import net.digitalid.utility.validation.validator.AnnotationHandler;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
