@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
  * This annotation indicates that an object is modifiable.

@@ -9,7 +9,7 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
  * The property stores values in volatile memory.

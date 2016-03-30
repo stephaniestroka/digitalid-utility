@@ -2,7 +2,7 @@ package net.digitalid.utility.conversion.converter;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**

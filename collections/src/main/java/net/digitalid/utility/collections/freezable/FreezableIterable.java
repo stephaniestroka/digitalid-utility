@@ -6,7 +6,7 @@ import net.digitalid.utility.collections.readonly.ReadOnlyIterable;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
  * This interface models an {@link Iterable iterable} that can be {@link Freezable frozen}.

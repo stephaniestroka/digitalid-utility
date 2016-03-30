@@ -12,7 +12,7 @@ import javax.lang.model.element.Element;
 
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.validation.annotations.meta.MethodValidator;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.processing.TypeImporter;

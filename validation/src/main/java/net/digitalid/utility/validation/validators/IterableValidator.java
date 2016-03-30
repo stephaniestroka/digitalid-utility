@@ -3,7 +3,7 @@ package net.digitalid.utility.validation.validators;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.immutable.collections.ImmutableSet;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 

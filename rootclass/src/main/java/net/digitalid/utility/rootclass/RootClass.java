@@ -2,7 +2,7 @@ package net.digitalid.utility.rootclass;
 
 import net.digitalid.utility.casting.CastableClass;
 import net.digitalid.utility.validation.annotations.method.CallSuper;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
  * All custom classes in the Digital ID Library extend this root class.

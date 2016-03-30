@@ -7,7 +7,7 @@ import javax.lang.model.element.Element;
 
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.processing.TypeImporter;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;

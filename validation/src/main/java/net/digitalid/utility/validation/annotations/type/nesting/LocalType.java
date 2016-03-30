@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.NestingKind;
 
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.validators.NestingKindValidator;
 

@@ -21,7 +21,6 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 
@@ -30,16 +29,15 @@ import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.exceptions.UnexpectedValueException;
-import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunction;
-import net.digitalid.utility.functional.fixes.IterableConverter;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.logging.processing.ProcessingLog;
 import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 import net.digitalid.utility.processor.generator.annotations.OnlyPossibleIn;
 import net.digitalid.utility.string.FormatString;
 import net.digitalid.utility.string.QuoteString;
+import net.digitalid.utility.tuples.annotations.Pure;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.contract.Contract;
@@ -113,18 +111,6 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     public static @Nonnull JavaFileGenerator forClass(@Nonnull String qualifiedClassName, @Nonnull TypeElement sourceClassElement) {
         return new JavaFileGenerator(qualifiedClassName, sourceClassElement);
     }
-    
-    /* -------------------------------------------------- Static Functions -------------------------------------------------- */
-    
-    // TODO: can be removed once we have lambda expressions
-    public final static NonNullToNonNullUnaryFunction<VariableElement, String> parameterToStringFunction = new NonNullToNonNullUnaryFunction<VariableElement, String>() {
-        
-        @Override
-        public @Nonnull String apply(@Nonnull VariableElement element) {
-            return element.getSimpleName().toString();
-        }
-        
-    };
     
     /* -------------------------------------------------- Import Groups -------------------------------------------------- */
     
@@ -742,7 +728,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @NonWrittenRecipient
     @OnlyPossibleIn()
     protected void addContract(@Nonnull Class<? extends Constraint> contractType, @Nonnull Contract generatedContract) {
-        addStatement(importIfPossible(contractType) + ".that(" + generatedContract.getCondition() + ").orThrow(" + QuoteString.inDouble(generatedContract.getMessage()) + (generatedContract.getArguments().size() != 0 ? ", " + IterableConverter.toString(generatedContract.getArguments()) : "") + ")");
+        addStatement(importIfPossible(contractType) + ".that(" + generatedContract.getCondition() + ").orThrow(" + QuoteString.inDouble(generatedContract.getMessage()) + (generatedContract.getArguments().size() != 0 ? ", " + FiniteIterable.of(generatedContract.getArguments()).join() : "") + ")");
     }
     
     @NonWrittenRecipient

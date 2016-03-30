@@ -18,12 +18,11 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor7;
 
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.functional.string.Brackets;
-import net.digitalid.utility.functional.fixes.IterableConverter;
-import net.digitalid.utility.functional.string.NonNullableElementConverter;
-import net.digitalid.utility.processor.generator.JavaFileGenerator;
+import net.digitalid.utility.functional.fixes.Brackets;
+import net.digitalid.utility.functional.interfaces.UnaryFunction;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 import net.digitalid.utility.validation.annotations.reference.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -56,12 +55,7 @@ public class ImportingTypeVisitor extends SimpleTypeVisitor7<StringBuilder, Stri
         return string == null ? new StringBuilder() : string;
     }
     
-    public final @Nonnull NonNullableElementConverter<TypeMirror> TYPE_MAPPER = new NonNullableElementConverter<TypeMirror>() {
-        @Override
-        public String toString(@Nonnull TypeMirror type) {
-            return visit(type).toString();
-        }
-    };
+    public final @Nonnull UnaryFunction<TypeMirror, String> TYPE_MAPPER = (type) -> (visit(type).toString());
     
     @Pure
     public @Nonnull String getTypeVariablesWithoutBounds(@Nonnull @NonNullableElements List<? extends TypeMirror> types, boolean withTrailingSpace) {
@@ -102,7 +96,7 @@ public class ImportingTypeVisitor extends SimpleTypeVisitor7<StringBuilder, Stri
     
     @Pure
     public @Nonnull String reduceTypeVariablesWithBoundsToString(@Nonnull @NonNullableElements List<? extends TypeMirror> types) {
-        return types.isEmpty() ? "" : IterableConverter.toString(mapTypeVariablesWithBoundsToStrings(types), Brackets.POINTY);
+        return types.isEmpty() ? "" : FiniteIterable.of(mapTypeVariablesWithBoundsToStrings(types)).join(Brackets.POINTY);
     }
     
     @Pure
@@ -120,7 +114,7 @@ public class ImportingTypeVisitor extends SimpleTypeVisitor7<StringBuilder, Stri
     
     @Pure
     public @Nonnull String reduceParametersDeclarationToString(@Nonnull ExecutableType type, @Nonnull ExecutableElement element) {
-        return IterableConverter.toString(mapParametersDeclarationToStrings(type, element), Brackets.ROUND);
+        return FiniteIterable.of(mapParametersDeclarationToStrings(type, element)).join(Brackets.ROUND);
     }
     
     /* -------------------------------------------------- Default Action -------------------------------------------------- */

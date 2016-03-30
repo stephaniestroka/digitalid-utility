@@ -6,7 +6,7 @@ import javax.lang.model.element.VariableElement;
 
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.logging.processing.SourcePosition;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
  * This type collects the relevant information about a directly accessible parameter-based field for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.

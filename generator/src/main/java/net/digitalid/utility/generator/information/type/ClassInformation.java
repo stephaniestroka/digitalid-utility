@@ -45,7 +45,7 @@ import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.tuples.pair.NonNullablePair;
 import net.digitalid.utility.tuples.quartet.NonNullableQuartet;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 import net.digitalid.utility.validation.annotations.size.MinSize;
 import net.digitalid.utility.validation.annotations.state.Unmodifiable;
 

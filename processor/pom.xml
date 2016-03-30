@@ -26,8 +26,20 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.5.1</version>
                 <configuration>
+                    <fork>true</fork>
+                    <verbose>true</verbose>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <executable>${maven.compiler.executable}</executable>
+                    <compilerVersion>${maven.compiler.version}</compilerVersion>
+                    <compilerArguments>
+                        <bootclasspath>${compiler.bootclasspath.regular}</bootclasspath>
+                        <!--proc>none</proc-->
+                    </compilerArguments>
+                    <!-- NetBeans seems to need the following line sometimes: -->
+                    <generatedSourcesDirectory>target/generated-sources/annotations</generatedSourcesDirectory>
                     <!-- Disable processing because the definition in META-INF/services breaks javac. -->
                     <compilerArgument>-proc:none</compilerArgument>
                 </configuration>

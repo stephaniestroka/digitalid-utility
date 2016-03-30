@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.exceptions.MissingSupportException;
 import net.digitalid.utility.math.Element;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
  * Generates cryptographic hashes.

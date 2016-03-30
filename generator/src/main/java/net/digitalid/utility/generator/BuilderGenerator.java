@@ -13,6 +13,7 @@ import javax.lang.model.util.ElementFilter;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.ConformityViolation;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.string.Brackets;
 import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.generator.information.field.FieldInformation;
@@ -171,7 +172,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         }
         final @Nonnull ExecutableElement constructor = constructors.get(0);
         final @Nonnull List<? extends TypeMirror> throwTypes = constructor.getThrownTypes();
-        beginMethod("public " + typeInformation.getName() + " build()" + (throwTypes.isEmpty() ? "" : " throws " + IterableConverter.toString(throwTypes, importingTypeVisitor.TYPE_MAPPER)));
+        beginMethod("public " + typeInformation.getName() + " build()" + (throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(importingTypeVisitor.TYPE_MAPPER).join()));
         
         
         final @Nonnull ExecutableType type = (ExecutableType) StaticProcessingEnvironment.getTypeUtils().asMemberOf(typeInformation.getType(), constructor);

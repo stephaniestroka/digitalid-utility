@@ -20,7 +20,7 @@ import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.string.PrefixString;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
  * This annotation processor generates a subclass for each non-final type to implement common methods and aspects.

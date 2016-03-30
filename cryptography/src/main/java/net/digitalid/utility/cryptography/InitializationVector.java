@@ -7,7 +7,7 @@ import javax.crypto.spec.IvParameterSpec;
 
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.conversion.Convertible;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 import net.digitalid.utility.validation.annotations.size.Size;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 

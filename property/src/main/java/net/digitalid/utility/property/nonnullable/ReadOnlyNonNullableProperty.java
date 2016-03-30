@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.property.ReadOnlyProperty;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
  * This is the read-only abstract class for properties that stores a non-nullable replaceable value.

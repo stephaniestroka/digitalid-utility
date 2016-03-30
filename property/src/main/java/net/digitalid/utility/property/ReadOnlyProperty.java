@@ -11,7 +11,7 @@ import net.digitalid.utility.property.extensible.ReadOnlyExtensibleProperty;
 import net.digitalid.utility.property.indexed.ReadOnlyIndexedProperty;
 import net.digitalid.utility.property.nonnullable.ReadOnlyNonNullableProperty;
 import net.digitalid.utility.property.nullable.ReadOnlyNullableProperty;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
  * A property is an object that can be {@link PropertyObserver observed}.

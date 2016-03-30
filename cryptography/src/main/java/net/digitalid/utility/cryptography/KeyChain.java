@@ -11,7 +11,7 @@ import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.time.Time;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 

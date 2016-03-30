@@ -3,7 +3,7 @@ package net.digitalid.utility.casting;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.casting.exceptions.InvalidClassCastException;
-import net.digitalid.utility.validation.annotations.method.Pure;
+import net.digitalid.utility.tuples.annotations.Pure;
 
 /**
  * This class implements an easy way to cast an object to a subclass.
