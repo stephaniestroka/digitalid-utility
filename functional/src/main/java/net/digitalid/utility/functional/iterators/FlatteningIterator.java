@@ -7,8 +7,11 @@ import java.util.NoSuchElementException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
@@ -25,7 +28,7 @@ public class FlatteningIterator<F, E> extends SingleIteratorBasedIterator<F, E> 
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected FlatteningIterator(@Nonnull Iterator<? extends E> primaryIterator, @NonNegative long level) {
+    protected FlatteningIterator(@Captured @Nonnull Iterator<? extends E> primaryIterator, @NonNegative long level) {
         super(primaryIterator);
         
         this.level = level;
@@ -35,7 +38,7 @@ public class FlatteningIterator<F, E> extends SingleIteratorBasedIterator<F, E> 
      * Returns a new flattening iterator that iterates over the elements of the given iterator with all collections up to the given level flattened.
      */
     @Pure
-    public static <F, E> @Capturable @Nonnull FlatteningIterator<F, E> with(@Nonnull Iterator<? extends E> iterator, @NonNegative long level) {
+    public static <F, E> @Capturable @Nonnull FlatteningIterator<F, E> with(@Captured @Nonnull Iterator<? extends E> iterator, @NonNegative long level) {
         return new FlatteningIterator<>(iterator, level);
     }
     
@@ -88,9 +91,10 @@ public class FlatteningIterator<F, E> extends SingleIteratorBasedIterator<F, E> 
         }
     }
     
+    @Impure
     @Override
     @SuppressWarnings("unchecked")
-    public F next() {
+    public @NonCapturable F next() {
         if (hasNext()) {
             if (subiterator != null) {
                 return subiterator.next();

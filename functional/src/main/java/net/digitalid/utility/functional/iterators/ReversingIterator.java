@@ -4,8 +4,11 @@ import java.util.NoSuchElementException;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.type.Mutable;
 
 /**
@@ -21,7 +24,7 @@ public class ReversingIterator<E> implements ReadOnlyIterator<E> {
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     @SafeVarargs
-    protected ReversingIterator(E... elements) {
+    protected ReversingIterator(@Captured E... elements) {
         this.elements = elements;
         this.cursor = elements.length - 1;
     }
@@ -31,7 +34,7 @@ public class ReversingIterator<E> implements ReadOnlyIterator<E> {
      */
     @Pure
     @SafeVarargs
-    public static <E> @Capturable @Nonnull ReversingIterator<E> with(E... elements) {
+    public static <E> @Capturable @Nonnull ReversingIterator<E> with(@Captured E... elements) {
         return new ReversingIterator<>(elements);
     }
     
@@ -45,8 +48,9 @@ public class ReversingIterator<E> implements ReadOnlyIterator<E> {
         return cursor >= 0;
     }
     
+    @Impure
     @Override
-    public E next() {
+    public @NonCapturable E next() {
         if (hasNext()) { return elements[cursor--]; }
         else { throw new NoSuchElementException(); }
     }

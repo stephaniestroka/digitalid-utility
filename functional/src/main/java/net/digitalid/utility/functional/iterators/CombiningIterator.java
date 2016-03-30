@@ -4,8 +4,11 @@ import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.type.Mutable;
 
 /**
@@ -16,7 +19,7 @@ public class CombiningIterator<E> extends DoubleIteratorBasedIterator<E, E, E> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected CombiningIterator(@Nonnull Iterator<? extends E> primaryIterator, @Nonnull Iterator<? extends E> secondaryIterator) {
+    protected CombiningIterator(@Captured @Nonnull Iterator<? extends E> primaryIterator, @Captured @Nonnull Iterator<? extends E> secondaryIterator) {
         super(primaryIterator, secondaryIterator);
     }
     
@@ -24,7 +27,7 @@ public class CombiningIterator<E> extends DoubleIteratorBasedIterator<E, E, E> {
      * Returns a new combining iterator that iterates first over the elements of the first iterator and then over the elements of the second iterator.
      */
     @Pure
-    public static <E> @Capturable @Nonnull CombiningIterator<E> with(@Nonnull Iterator<? extends E> primaryIterator, @Nonnull Iterator<? extends E> secondaryIterator) {
+    public static <E> @Capturable @Nonnull CombiningIterator<E> with(@Captured @Nonnull Iterator<? extends E> primaryIterator, @Captured @Nonnull Iterator<? extends E> secondaryIterator) {
         return new CombiningIterator<>(primaryIterator, secondaryIterator);
     }
     
@@ -36,8 +39,9 @@ public class CombiningIterator<E> extends DoubleIteratorBasedIterator<E, E, E> {
         return primaryIterator.hasNext() || secondaryIterator.hasNext();
     }
     
+    @Impure
     @Override
-    public E next() {
+    public @NonCapturable E next() {
         if (primaryIterator.hasNext()) { return primaryIterator.next(); }
         else { return secondaryIterator.next(); }
     }

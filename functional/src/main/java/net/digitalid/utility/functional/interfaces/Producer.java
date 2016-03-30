@@ -3,7 +3,9 @@ package net.digitalid.utility.functional.interfaces;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.type.Functional;
 
@@ -19,7 +21,8 @@ public interface Producer<T> {
     /**
      * Produces a result.
      */
-    public T produce();
+    @Impure
+    public @Capturable T produce();
     
     /* -------------------------------------------------- Composition -------------------------------------------------- */
     

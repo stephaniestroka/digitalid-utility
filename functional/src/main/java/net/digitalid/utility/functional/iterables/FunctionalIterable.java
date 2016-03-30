@@ -5,6 +5,7 @@ import java.util.Iterator;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterators.PruningIterator;
@@ -84,7 +85,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * @throws IndexOutOfBoundsException if the given index is negative or greater or equal to the size of this iterable.
      */
     @Pure
-    public default E get(@Index long index) {
+    public default @NonCapturable E get(@Index long index) {
         long currentIndex = 0;
         for (E element : this) {
             if (currentIndex == index) { return element; }

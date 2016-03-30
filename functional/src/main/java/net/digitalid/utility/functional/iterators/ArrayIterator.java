@@ -4,8 +4,11 @@ import java.util.NoSuchElementException;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 
@@ -22,7 +25,7 @@ public class ArrayIterator<E> implements ReadOnlyIterator<E> {
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     @SafeVarargs
-    protected ArrayIterator(E... elements) {
+    protected ArrayIterator(@Captured E... elements) {
         this.elements = elements;
     }
     
@@ -31,7 +34,7 @@ public class ArrayIterator<E> implements ReadOnlyIterator<E> {
      */
     @Pure
     @SafeVarargs
-    public static <E> @Capturable @Nonnull ArrayIterator<E> with(E... elements) {
+    public static <E> @Capturable @Nonnull ArrayIterator<E> with(@Captured E... elements) {
         return new ArrayIterator<>(elements);
     }
     
@@ -45,8 +48,9 @@ public class ArrayIterator<E> implements ReadOnlyIterator<E> {
         return cursor < elements.length;
     }
     
+    @Impure
     @Override
-    public E next() {
+    public @NonCapturable E next() {
         if (hasNext()) { return elements[cursor++]; }
         else { throw new NoSuchElementException(); }
     }

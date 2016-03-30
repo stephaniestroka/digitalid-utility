@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.type.Mutable;
 
 /**
@@ -23,7 +24,7 @@ public abstract class SingleIteratorBasedIterator<O, I0> implements ReadOnlyIter
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected SingleIteratorBasedIterator(@Nonnull Iterator<? extends I0> primaryIterator) {
+    protected SingleIteratorBasedIterator(@Captured @Nonnull Iterator<? extends I0> primaryIterator) {
         this.primaryIterator = primaryIterator;
     }
     

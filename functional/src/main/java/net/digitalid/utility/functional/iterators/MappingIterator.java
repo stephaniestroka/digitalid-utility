@@ -4,8 +4,10 @@ import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 
@@ -21,7 +23,7 @@ public class MappingIterator<O, I> extends SingleIteratorBasedIterator<O, I> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected MappingIterator(@Nonnull Iterator<I> primaryIterator, @Nonnull UnaryFunction<? super I, ? extends O> function) {
+    protected MappingIterator(@Captured @Nonnull Iterator<I> primaryIterator, @Nonnull UnaryFunction<? super I, ? extends O> function) {
         super(primaryIterator);
         
         this.function = function;
@@ -31,7 +33,7 @@ public class MappingIterator<O, I> extends SingleIteratorBasedIterator<O, I> {
      * Returns a new mapping iterator that iterates over the elements of the given iterator mapped by the given function.
      */
     @Pure
-    public static <O, I> @Capturable @Nonnull MappingIterator<O, I> with(@Nonnull Iterator<I> iterator, @Nonnull UnaryFunction<? super I, ? extends O> function) {
+    public static <O, I> @Capturable @Nonnull MappingIterator<O, I> with(@Captured @Nonnull Iterator<I> iterator, @Nonnull UnaryFunction<? super I, ? extends O> function) {
         return new MappingIterator<>(iterator, function);
     }
     
@@ -43,7 +45,7 @@ public class MappingIterator<O, I> extends SingleIteratorBasedIterator<O, I> {
         return primaryIterator.hasNext();
     }
     
-    @Pure
+    @Impure
     @Override
     public O next() {
         return function.evaluate(primaryIterator.next());

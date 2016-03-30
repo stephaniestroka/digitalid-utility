@@ -5,6 +5,8 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -22,7 +24,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     
     @Pure
     @Override
-    public @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> set0(E0 element0) {
+    public @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> set0(@Captured E0 element0) {
         return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
     }
     
@@ -30,7 +32,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     
     @Pure
     @Override
-    public @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> set1(E1 element1) {
+    public @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> set1(@Captured E1 element1) {
         return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
     }
     
@@ -38,7 +40,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     
     @Pure
     @Override
-    public @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> set2(E2 element2) {
+    public @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> set2(@Captured E2 element2) {
         return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
     }
     
@@ -46,7 +48,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     
     @Pure
     @Override
-    public @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> set3(E3 element3) {
+    public @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> set3(@Captured E3 element3) {
         return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
     }
     
@@ -54,7 +56,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     
     @Pure
     @Override
-    public @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> set4(E4 element4) {
+    public @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> set4(@Captured E4 element4) {
         return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
     }
     
@@ -62,7 +64,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     
     @Pure
     @Override
-    public @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> set5(E5 element5) {
+    public @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> set5(@Captured E5 element5) {
         return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
     }
     
@@ -74,7 +76,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
      * Returns the seventh element of this tuple.
      */
     @Pure
-    public E6 get6() {
+    public @NonCapturable E6 get6() {
         return element6;
     }
     
@@ -82,13 +84,13 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
      * Returns a new tuple with the seventh element set to the given object.
      */
     @Pure
-    public @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> set6(E6 element6) {
+    public @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> set6(@Captured E6 element6) {
         return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected Septet(E0 element0, E1 element1, E2 element2, E3 element3, E4 element4, E5 element5, E6 element6) {
+    protected Septet(@Captured E0 element0, @Captured E1 element1, @Captured E2 element2, @Captured E3 element3, @Captured E4 element4, @Captured E5 element5, @Captured E6 element6) {
         super(element0, element1, element2, element3, element4, element5);
         
         this.element6 = element6;
@@ -98,7 +100,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
      * Returns a new septet with the given elements.
      */
     @Pure
-    public static <E0, E1, E2, E3, E4, E5, E6> @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> of(E0 element0, E1 element1, E2 element2, E3 element3, E4 element4, E5 element5, E6 element6) {
+    public static <E0, E1, E2, E3, E4, E5, E6> @Nonnull Septet<E0, E1, E2, E3, E4, E5, E6> of(@Captured E0 element0, @Captured E1 element1, @Captured E2 element2, @Captured E3 element3, @Captured E4 element4, @Captured E5 element5, @Captured E6 element6) {
         return new Septet<>(element0, element1, element2, element3, element4, element5, element6);
     }
     
@@ -112,7 +114,7 @@ public class Septet<E0, E1, E2, E3, E4, E5, E6> extends Sextet<E0, E1, E2, E3, E
     
     @Pure
     @Override
-    public Object get(@Index int index) {
+    public @NonCapturable Object get(@Index int index) {
         if (index == 6) { return element6; }
         else { return super.get(index); }
     }

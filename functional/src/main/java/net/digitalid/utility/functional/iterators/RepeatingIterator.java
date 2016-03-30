@@ -2,8 +2,11 @@ package net.digitalid.utility.functional.iterators;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.type.Mutable;
 
 /**
@@ -18,7 +21,7 @@ public class RepeatingIterator<E> implements InfiniteIterator<E> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected RepeatingIterator(E object) {
+    protected RepeatingIterator(@Captured E object) {
         this.object = object;
     }
     
@@ -26,14 +29,15 @@ public class RepeatingIterator<E> implements InfiniteIterator<E> {
      * Returns a new repeating iterator that repeats the given object infinitely.
      */
     @Pure
-    public static <E> @Capturable @Nonnull RepeatingIterator<E> with(E object) {
+    public static <E> @Capturable @Nonnull RepeatingIterator<E> with(@Captured E object) {
         return new RepeatingIterator<>(object);
     }
     
     /* -------------------------------------------------- Methods -------------------------------------------------- */
     
+    @Impure
     @Override
-    public E next() {
+    public @NonCapturable E next() {
         return object;
     }
     

@@ -5,6 +5,8 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -22,7 +24,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
     
     @Pure
     @Override
-    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set0(E0 element0) {
+    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set0(@Captured E0 element0) {
         return new Sextet<>(element0, element1, element2, element3, element4, element5);
     }
     
@@ -30,7 +32,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
     
     @Pure
     @Override
-    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set1(E1 element1) {
+    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set1(@Captured E1 element1) {
         return new Sextet<>(element0, element1, element2, element3, element4, element5);
     }
     
@@ -38,7 +40,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
     
     @Pure
     @Override
-    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set2(E2 element2) {
+    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set2(@Captured E2 element2) {
         return new Sextet<>(element0, element1, element2, element3, element4, element5);
     }
     
@@ -46,7 +48,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
     
     @Pure
     @Override
-    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set3(E3 element3) {
+    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set3(@Captured E3 element3) {
         return new Sextet<>(element0, element1, element2, element3, element4, element5);
     }
     
@@ -54,7 +56,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
     
     @Pure
     @Override
-    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set4(E4 element4) {
+    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set4(@Captured E4 element4) {
         return new Sextet<>(element0, element1, element2, element3, element4, element5);
     }
     
@@ -66,7 +68,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
      * Returns the sixth element of this tuple.
      */
     @Pure
-    public E5 get5() {
+    public @NonCapturable E5 get5() {
         return element5;
     }
     
@@ -74,13 +76,13 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
      * Returns a new tuple with the sixth element set to the given object.
      */
     @Pure
-    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set5(E5 element5) {
+    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set5(@Captured E5 element5) {
         return new Sextet<>(element0, element1, element2, element3, element4, element5);
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected Sextet(E0 element0, E1 element1, E2 element2, E3 element3, E4 element4, E5 element5) {
+    protected Sextet(@Captured E0 element0, @Captured E1 element1, @Captured E2 element2, @Captured E3 element3, @Captured E4 element4, @Captured E5 element5) {
         super(element0, element1, element2, element3, element4);
         
         this.element5 = element5;
@@ -90,7 +92,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
      * Returns a new sextet with the given elements.
      */
     @Pure
-    public static <E0, E1, E2, E3, E4, E5> @Nonnull Sextet<E0, E1, E2, E3, E4, E5> of(E0 element0, E1 element1, E2 element2, E3 element3, E4 element4, E5 element5) {
+    public static <E0, E1, E2, E3, E4, E5> @Nonnull Sextet<E0, E1, E2, E3, E4, E5> of(@Captured E0 element0, @Captured E1 element1, @Captured E2 element2, @Captured E3 element3, @Captured E4 element4, @Captured E5 element5) {
         return new Sextet<>(element0, element1, element2, element3, element4, element5);
     }
     
@@ -104,7 +106,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
     
     @Pure
     @Override
-    public Object get(@Index int index) {
+    public @NonCapturable Object get(@Index int index) {
         if (index == 5) { return element5; }
         else { return super.get(index); }
     }

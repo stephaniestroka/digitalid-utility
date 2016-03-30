@@ -6,6 +6,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -26,7 +30,7 @@ public class Pair<E0, E1> extends Tuple {
      * Returns the first element of this tuple.
      */
     @Pure
-    public E0 get0() {
+    public @NonCapturable E0 get0() {
         return element0;
     }
     
@@ -34,7 +38,7 @@ public class Pair<E0, E1> extends Tuple {
      * Returns a new tuple with the first element set to the given object.
      */
     @Pure
-    public @Nonnull Pair<E0, E1> set0(E0 element0) {
+    public @Nonnull Pair<E0, E1> set0(@Captured E0 element0) {
         return new Pair<>(element0, element1);
     }
     
@@ -46,7 +50,7 @@ public class Pair<E0, E1> extends Tuple {
      * Returns the second element of this tuple.
      */
     @Pure
-    public E1 get1() {
+    public @NonCapturable E1 get1() {
         return element1;
     }
     
@@ -54,13 +58,13 @@ public class Pair<E0, E1> extends Tuple {
      * Returns a new tuple with the second element set to the given object.
      */
     @Pure
-    public @Nonnull Pair<E0, E1> set1(E1 element1) {
+    public @Nonnull Pair<E0, E1> set1(@Captured E1 element1) {
         return new Pair<>(element0, element1);
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected Pair(E0 element0, E1 element1) {
+    protected Pair(@Captured E0 element0, @Captured E1 element1) {
         this.element0 = element0;
         this.element1 = element1;
     }
@@ -69,7 +73,7 @@ public class Pair<E0, E1> extends Tuple {
      * Returns a new pair with the given elements.
      */
     @Pure
-    public static <E0, E1> @Nonnull Pair<E0, E1> of(E0 element0, E1 element1) {
+    public static <E0, E1> @Nonnull Pair<E0, E1> of(@Captured E0 element0, @Captured E1 element1) {
         return new Pair<>(element0, element1);
     }
     
@@ -83,7 +87,7 @@ public class Pair<E0, E1> extends Tuple {
     
     @Pure
     @Override
-    public Object get(@Index int index) {
+    public @NonCapturable Object get(@Index int index) {
         if (index == 0) { return element0; }
         if (index == 1) { return element1; }
         throw new IndexOutOfBoundsException("The size of the tuple is " + size() + " but the index was " + index + ".");
@@ -105,7 +109,7 @@ public class Pair<E0, E1> extends Tuple {
     
     @Pure
     @Override
-    public boolean equals(@Nullable Object object) {
+    public boolean equals(@NonCaptured @Unmodified @Nullable Object object) {
         if (object == this) { return true; }
         if (object == null) { return false; }
         

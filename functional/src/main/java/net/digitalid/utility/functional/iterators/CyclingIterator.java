@@ -4,8 +4,10 @@ import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 
@@ -47,8 +49,9 @@ public class CyclingIterator<E> implements ReadOnlyIterator<E> {
         return hasNext;
     }
     
+    @Impure
     @Override
-    public E next() {
+    public @NonCapturable E next() {
         if (!iterator.hasNext()) { iterator = iterable.iterator(); }
         return iterator.next();
     }

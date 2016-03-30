@@ -3,6 +3,7 @@ package net.digitalid.utility.functional.iterables;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.interfaces.Producer;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
@@ -34,7 +35,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
      * Returns a new infinite iterable that repeats the given object infinitely.
      */
     @Pure
-    public static <E> @Nonnull InfiniteIterable<E> repeat(E object) {
+    public static <E> @Nonnull InfiniteIterable<E> repeat(@Captured E object) {
         return () -> RepeatingIterator.with(object);
     }
     
@@ -42,7 +43,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
      * Returns a new infinite iterable that generates an infinite number of elements with the given producer.
      */
     @Pure
-    public static <E> @Nonnull InfiniteIterable<E> generate(@Nonnull Producer<? extends E> producer) {
+    public static <E> @Nonnull InfiniteIterable<E> generate(@Captured @Nonnull Producer<? extends E> producer) {
         return () -> GeneratingIterator.with(producer);
     }
     
@@ -50,7 +51,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
      * Returns a new infinite iterable that iterates over the sequence produced by the given operator from the given seed.
      */
     @Pure
-    public static <E> @Nonnull InfiniteIterable<E> iterate(@Nonnull UnaryOperator<E> operator, E seed) {
+    public static <E> @Nonnull InfiniteIterable<E> iterate(@Nonnull UnaryOperator<E> operator, @Captured E seed) {
         return () -> IteratingIterator.with(operator, seed);
     }
     

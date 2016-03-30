@@ -3,7 +3,10 @@ package net.digitalid.utility.functional.interfaces;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.type.Functional;
 
@@ -19,6 +22,7 @@ public interface Consumer<T> {
     /**
      * Consumes the given object.
      */
+    @Impure
     public void consume(T object);
     
     /* -------------------------------------------------- Composition -------------------------------------------------- */
@@ -27,7 +31,7 @@ public interface Consumer<T> {
      * Returns the composition of this consumer followed by the given consumer.
      */
     @Pure
-    public default @Nonnull Consumer<T> before(@Nonnull Consumer<? super T> consumer) {
+    public default @Capturable @Nonnull Consumer<T> before(@Captured @Nonnull Consumer<? super T> consumer) {
         return object -> { consume(object); consumer.consume(object); };
     }
     
@@ -35,7 +39,7 @@ public interface Consumer<T> {
      * Returns the composition of the given consumer followed by this consumer.
      */
     @Pure
-    public default @Nonnull Consumer<T> after(@Nonnull Consumer<? super T> consumer) {
+    public default @Capturable @Nonnull Consumer<T> after(@Captured @Nonnull Consumer<? super T> consumer) {
         return object -> { consumer.consume(object); consume(object); };
     }
     
@@ -43,7 +47,7 @@ public interface Consumer<T> {
      * Returns the composition of the given function followed by this consumer.
      */
     @Pure
-    public default <I> @Nonnull Consumer<I> after(@Nonnull UnaryFunction<? super I, ? extends T> function) {
+    public default <I> @Capturable @Nonnull Consumer<I> after(@Nonnull UnaryFunction<? super I, ? extends T> function) {
         return object -> consume(function.evaluate(object));
     }
     

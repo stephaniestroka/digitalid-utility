@@ -6,8 +6,11 @@ import java.util.NoSuchElementException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.interfaces.Predicate;
 
@@ -23,7 +26,7 @@ public class FilteringIterator<E> extends SingleIteratorBasedIterator<E, E> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected FilteringIterator(@Nonnull Iterator<? extends E> primaryIterator, @Nonnull Predicate<? super E> predicate) {
+    protected FilteringIterator(@Captured @Nonnull Iterator<? extends E> primaryIterator, @Nonnull Predicate<? super E> predicate) {
         super(primaryIterator);
         
         this.predicate = predicate;
@@ -33,7 +36,7 @@ public class FilteringIterator<E> extends SingleIteratorBasedIterator<E, E> {
      * Returns a new filtering iterator that iterates over the elements of the given iterator that fulfill the given predicate.
      */
     @Pure
-    public static <E> @Capturable @Nonnull FilteringIterator<E> with(@Nonnull Iterator<? extends E> iterator, @Nonnull Predicate<? super E> predicate) {
+    public static <E> @Capturable @Nonnull FilteringIterator<E> with(@Captured @Nonnull Iterator<? extends E> iterator, @Nonnull Predicate<? super E> predicate) {
         return new FilteringIterator<>(iterator, predicate);
     }
     
@@ -61,8 +64,9 @@ public class FilteringIterator<E> extends SingleIteratorBasedIterator<E, E> {
         }
     }
     
+    @Impure
     @Override
-    public E next() {
+    public @NonCapturable E next() {
         if (hasNext()) {
             found = false;
             return nextElement;

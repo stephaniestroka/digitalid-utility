@@ -4,8 +4,10 @@ import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.tuples.Pair;
 
@@ -21,7 +23,7 @@ public class ZippingIterator<I0, I1> extends DoubleIteratorBasedIterator<@Nonnul
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ZippingIterator(@Nonnull Iterator<? extends I0> primaryIterator, @Nonnull Iterator<? extends I1> secondaryIterator, boolean shortest) {
+    protected ZippingIterator(@Captured @Nonnull Iterator<? extends I0> primaryIterator, @Captured @Nonnull Iterator<? extends I1> secondaryIterator, boolean shortest) {
         super(primaryIterator, secondaryIterator);
         
         this.shortest = shortest;
@@ -31,7 +33,7 @@ public class ZippingIterator<I0, I1> extends DoubleIteratorBasedIterator<@Nonnul
      * Returns a new zipping iterator that iterates over the elements of the given iterators in pairs, extending the shorter or truncating the longer iterator depending on the given flag.
      */
     @Pure
-    public static <I0, I1> @Capturable @Nonnull ZippingIterator<I0, I1> with(@Nonnull Iterator<? extends I0> primaryIterator, @Nonnull Iterator<? extends I1> secondaryIterator, boolean shortest) {
+    public static <I0, I1> @Capturable @Nonnull ZippingIterator<I0, I1> with(@Captured @Nonnull Iterator<? extends I0> primaryIterator, @Captured @Nonnull Iterator<? extends I1> secondaryIterator, boolean shortest) {
         return new ZippingIterator<>(primaryIterator, secondaryIterator, shortest);
     }
     
@@ -44,6 +46,7 @@ public class ZippingIterator<I0, I1> extends DoubleIteratorBasedIterator<@Nonnul
         else { return primaryIterator.hasNext() || secondaryIterator.hasNext(); }
     }
     
+    @Impure
     @Override
     public @Nonnull Pair<I0, I1> next() {
         if (shortest) { return Pair.of(primaryIterator.next(), secondaryIterator.next()); }

@@ -5,8 +5,11 @@ import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.functional.iterators.SingleIteratorBasedIterator;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -25,13 +28,13 @@ public class CollectionBasedIterable<E> implements CollectionIterable<E> {
      * Returns the underlying collection of this iterable.
      */
     @Pure
-    public @Nonnull Collection<? extends E> getCollection() {
+    public @NonCapturable @Nonnull Collection<? extends E> getCollection() {
         return collection;
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected CollectionBasedIterable(@Nonnull Collection<? extends E> collection) {
+    protected CollectionBasedIterable(@Captured @Nonnull Collection<? extends E> collection) {
         this.collection = collection;
     }
     
@@ -48,8 +51,9 @@ public class CollectionBasedIterable<E> implements CollectionIterable<E> {
                 return primaryIterator.hasNext();
             }
             
+            @Impure
             @Override
-            public E next() {
+            public @NonCapturable E next() {
                 return primaryIterator.next();
             }
             

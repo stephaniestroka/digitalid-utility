@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.type.Mutable;
 
 /**
@@ -21,7 +22,7 @@ public abstract class DoubleIteratorBasedIterator<O, I0, I1> extends SingleItera
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected DoubleIteratorBasedIterator(@Nonnull Iterator<? extends I0> primaryIterator, @Nonnull Iterator<? extends I1> secondaryIterator) {
+    protected DoubleIteratorBasedIterator(@Captured @Nonnull Iterator<? extends I0> primaryIterator, @Captured @Nonnull Iterator<? extends I1> secondaryIterator) {
         super(primaryIterator);
         
         this.secondaryIterator = secondaryIterator;
