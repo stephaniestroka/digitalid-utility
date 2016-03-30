@@ -2,17 +2,20 @@ package net.digitalid.utility.tuples;
 
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.state.Unmodifiable;
+import net.digitalid.utility.validation.annotations.index.Index;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class implements an immutable pair.
  * 
  * @see Triplet
  */
-@Unmodifiable
+@Immutable
 public class Pair<E0, E1> extends Tuple {
     
     /* -------------------------------------------------- Element 0 -------------------------------------------------- */
@@ -31,7 +34,7 @@ public class Pair<E0, E1> extends Tuple {
      * Returns a new tuple with the first element set to the given object.
      */
     @Pure
-    public Pair<E0, E1> set0(E0 element0) {
+    public @Nonnull Pair<E0, E1> set0(E0 element0) {
         return new Pair<>(element0, element1);
     }
     
@@ -51,7 +54,7 @@ public class Pair<E0, E1> extends Tuple {
      * Returns a new tuple with the second element set to the given object.
      */
     @Pure
-    public Pair<E0, E1> set1(E1 element1) {
+    public @Nonnull Pair<E0, E1> set1(E1 element1) {
         return new Pair<>(element0, element1);
     }
     
@@ -66,7 +69,7 @@ public class Pair<E0, E1> extends Tuple {
      * Returns a new pair with the given elements.
      */
     @Pure
-    public static <E0, E1> Pair<E0, E1> of(E0 element0, E1 element1) {
+    public static <E0, E1> @Nonnull Pair<E0, E1> of(E0 element0, E1 element1) {
         return new Pair<>(element0, element1);
     }
     
@@ -74,13 +77,13 @@ public class Pair<E0, E1> extends Tuple {
     
     @Pure
     @Override
-    public int size() {
+    public @NonNegative int size() {
         return 2;
     }
     
     @Pure
     @Override
-    public Object get(int index) {
+    public Object get(@Index int index) {
         if (index == 0) { return element0; }
         if (index == 1) { return element1; }
         throw new IndexOutOfBoundsException("The size of the tuple is " + size() + " but the index was " + index + ".");
@@ -94,7 +97,7 @@ public class Pair<E0, E1> extends Tuple {
      * @require getClass().isInstance(tuple) : "The object has to be assignable to the class of this object.";
      */
     @Pure
-    protected boolean elementEquals(Pair<?, ?> tuple) {
+    protected boolean elementEquals(@Nonnull Pair<?, ?> tuple) {
         assert getClass().isInstance(tuple) : "The tuple has to be assignable to the class of this object.";
         
         return Objects.equals(this.element0, tuple.element0) && Objects.equals(this.element1, tuple.element1);
@@ -124,13 +127,13 @@ public class Pair<E0, E1> extends Tuple {
      * Returns this tuple as a string without parentheses.
      */
     @Pure
-    public String toStringWithoutParentheses() {
+    public @Nonnull String toStringWithoutParentheses() {
         return element0 + ", " + element1;
     }
     
     @Pure
     @Override
-    public String toString() {
+    public @Nonnull String toString() {
         return "(" + toStringWithoutParentheses() + ")";
     }
     

@@ -36,6 +36,7 @@
     
     <modules>
         <module>taglets</module>
+        <module>bootstrap</module>
         <module>annotations</module>
         <module>tuples</module>
         <module>functional</module>

@@ -2,15 +2,19 @@ package net.digitalid.utility.tuples;
 
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
+
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.state.Unmodifiable;
+import net.digitalid.utility.validation.annotations.index.Index;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class implements an immutable sextet.
  * 
  * @see Septet
  */
-@Unmodifiable
+@Immutable
 @SuppressWarnings("EqualsAndHashcode")
 public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> {
     
@@ -18,7 +22,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
     
     @Pure
     @Override
-    public Sextet<E0, E1, E2, E3, E4, E5> set0(E0 element0) {
+    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set0(E0 element0) {
         return new Sextet<>(element0, element1, element2, element3, element4, element5);
     }
     
@@ -26,7 +30,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
     
     @Pure
     @Override
-    public Sextet<E0, E1, E2, E3, E4, E5> set1(E1 element1) {
+    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set1(E1 element1) {
         return new Sextet<>(element0, element1, element2, element3, element4, element5);
     }
     
@@ -34,7 +38,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
     
     @Pure
     @Override
-    public Sextet<E0, E1, E2, E3, E4, E5> set2(E2 element2) {
+    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set2(E2 element2) {
         return new Sextet<>(element0, element1, element2, element3, element4, element5);
     }
     
@@ -42,7 +46,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
     
     @Pure
     @Override
-    public Sextet<E0, E1, E2, E3, E4, E5> set3(E3 element3) {
+    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set3(E3 element3) {
         return new Sextet<>(element0, element1, element2, element3, element4, element5);
     }
     
@@ -50,7 +54,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
     
     @Pure
     @Override
-    public Sextet<E0, E1, E2, E3, E4, E5> set4(E4 element4) {
+    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set4(E4 element4) {
         return new Sextet<>(element0, element1, element2, element3, element4, element5);
     }
     
@@ -70,7 +74,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
      * Returns a new tuple with the sixth element set to the given object.
      */
     @Pure
-    public Sextet<E0, E1, E2, E3, E4, E5> set5(E5 element5) {
+    public @Nonnull Sextet<E0, E1, E2, E3, E4, E5> set5(E5 element5) {
         return new Sextet<>(element0, element1, element2, element3, element4, element5);
     }
     
@@ -86,7 +90,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
      * Returns a new sextet with the given elements.
      */
     @Pure
-    public static <E0, E1, E2, E3, E4, E5> Sextet<E0, E1, E2, E3, E4, E5> of(E0 element0, E1 element1, E2 element2, E3 element3, E4 element4, E5 element5) {
+    public static <E0, E1, E2, E3, E4, E5> @Nonnull Sextet<E0, E1, E2, E3, E4, E5> of(E0 element0, E1 element1, E2 element2, E3 element3, E4 element4, E5 element5) {
         return new Sextet<>(element0, element1, element2, element3, element4, element5);
     }
     
@@ -94,13 +98,13 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
     
     @Pure
     @Override
-    public int size() {
+    public @NonNegative int size() {
         return 6;
     }
     
     @Pure
     @Override
-    public Object get(int index) {
+    public Object get(@Index int index) {
         if (index == 5) { return element5; }
         else { return super.get(index); }
     }
@@ -109,7 +113,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
     
     @Pure
     @Override
-    protected boolean elementEquals(Pair<?, ?> tuple) {
+    protected boolean elementEquals(@Nonnull Pair<?, ?> tuple) {
         return super.elementEquals(tuple) && Objects.equals(this.element5, ((Sextet) tuple).element5);
     }
     
@@ -121,7 +125,7 @@ public class Sextet<E0, E1, E2, E3, E4, E5> extends Quintet<E0, E1, E2, E3, E4> 
     
     @Pure
     @Override
-    public String toStringWithoutParentheses() {
+    public @Nonnull String toStringWithoutParentheses() {
         return super.toStringWithoutParentheses() + ", " + element5;
     }
     

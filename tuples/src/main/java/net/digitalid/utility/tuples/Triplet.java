@@ -2,15 +2,19 @@ package net.digitalid.utility.tuples;
 
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
+
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.state.Unmodifiable;
+import net.digitalid.utility.validation.annotations.index.Index;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class implements an immutable triplet.
  * 
  * @see Quartet
  */
-@Unmodifiable
+@Immutable
 @SuppressWarnings("EqualsAndHashcode")
 public class Triplet<E0, E1, E2> extends Pair<E0, E1> {
     
@@ -18,7 +22,7 @@ public class Triplet<E0, E1, E2> extends Pair<E0, E1> {
     
     @Pure
     @Override
-    public Triplet<E0, E1, E2> set0(E0 element0) {
+    public @Nonnull Triplet<E0, E1, E2> set0(E0 element0) {
         return new Triplet<>(element0, element1, element2);
     }
     
@@ -26,7 +30,7 @@ public class Triplet<E0, E1, E2> extends Pair<E0, E1> {
     
     @Pure
     @Override
-    public Triplet<E0, E1, E2> set1(E1 element1) {
+    public @Nonnull Triplet<E0, E1, E2> set1(E1 element1) {
         return new Triplet<>(element0, element1, element2);
     }
     
@@ -46,7 +50,7 @@ public class Triplet<E0, E1, E2> extends Pair<E0, E1> {
      * Returns a new tuple with the third element set to the given object.
      */
     @Pure
-    public Triplet<E0, E1, E2> set2(E2 element2) {
+    public @Nonnull Triplet<E0, E1, E2> set2(E2 element2) {
         return new Triplet<>(element0, element1, element2);
     }
     
@@ -62,7 +66,7 @@ public class Triplet<E0, E1, E2> extends Pair<E0, E1> {
      * Returns a new triplet with the given elements.
      */
     @Pure
-    public static <E0, E1, E2> Triplet<E0, E1, E2> of(E0 element0, E1 element1, E2 element2) {
+    public static <E0, E1, E2> @Nonnull Triplet<E0, E1, E2> of(E0 element0, E1 element1, E2 element2) {
         return new Triplet<>(element0, element1, element2);
     }
     
@@ -70,13 +74,13 @@ public class Triplet<E0, E1, E2> extends Pair<E0, E1> {
     
     @Pure
     @Override
-    public int size() {
+    public @NonNegative int size() {
         return 3;
     }
     
     @Pure
     @Override
-    public Object get(int index) {
+    public Object get(@Index int index) {
         if (index == 2) { return element2; }
         else { return super.get(index); }
     }
@@ -85,7 +89,7 @@ public class Triplet<E0, E1, E2> extends Pair<E0, E1> {
     
     @Pure
     @Override
-    protected boolean elementEquals(Pair<?, ?> tuple) {
+    protected boolean elementEquals(@Nonnull Pair<?, ?> tuple) {
         return super.elementEquals(tuple) && Objects.equals(this.element2, ((Triplet) tuple).element2);
     }
     
@@ -97,7 +101,7 @@ public class Triplet<E0, E1, E2> extends Pair<E0, E1> {
     
     @Pure
     @Override
-    public String toStringWithoutParentheses() {
+    public @Nonnull String toStringWithoutParentheses() {
         return super.toStringWithoutParentheses() + ", " + element2;
     }
     

@@ -18,6 +18,12 @@
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-logging</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.digitalid.utility</groupId>
+                    <artifactId>utility-bootstrap</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     
