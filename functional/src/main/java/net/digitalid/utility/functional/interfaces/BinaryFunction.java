@@ -8,6 +8,8 @@ import net.digitalid.utility.tuples.annotations.Pure;
  */
 public interface BinaryFunction<I0, I1, O> {
     
+    /* -------------------------------------------------- Evaluation -------------------------------------------------- */
+    
     /**
      * Evaluates this function for the given objects.
      * All implementations of this method have to be side-effect-free.
@@ -22,6 +24,8 @@ public interface BinaryFunction<I0, I1, O> {
     public default O evaluate(Pair<I0, I1> pair) {
         return evaluate(pair.get0(), pair.get1());
     }
+    
+    /* -------------------------------------------------- Composition -------------------------------------------------- */
     
     /**
      * Returns the composition of this function followed by the given function.

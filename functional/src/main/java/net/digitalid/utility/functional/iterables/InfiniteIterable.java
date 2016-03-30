@@ -70,6 +70,12 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
         return () -> FilteringIterator.with(iterator(), predicate);
     }
     
+    @Pure
+    @Override
+    public default FunctionalIterable<E> filterNulls() {
+        return filter(element -> element != null);
+    }
+    
     /* -------------------------------------------------- Mapping -------------------------------------------------- */
     
     @Pure

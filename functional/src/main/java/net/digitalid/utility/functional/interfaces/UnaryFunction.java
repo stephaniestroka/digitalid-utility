@@ -7,12 +7,16 @@ import net.digitalid.utility.tuples.annotations.Pure;
  */
 public interface UnaryFunction<I, O> {
     
+    /* -------------------------------------------------- Evaluation -------------------------------------------------- */
+    
     /**
      * Evaluates this function for the given object.
      * All implementations of this method have to be side-effect-free.
      */
     @Pure
     public O evaluate(I object);
+    
+    /* -------------------------------------------------- Composition -------------------------------------------------- */
     
     /**
      * Returns the composition of this function followed by the given function.
