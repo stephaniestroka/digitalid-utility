@@ -1,6 +1,9 @@
 package net.digitalid.utility.functional.fixes;
 
+import javax.annotation.Nonnull;
+
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * Fixes surround a string with a prefix and a suffix.
@@ -9,6 +12,7 @@ import net.digitalid.utility.annotations.method.Pure;
  * @see Comments
  * @see Quotes
  */
+@Immutable
 public interface Fixes {
     
     /* -------------------------------------------------- Prefix -------------------------------------------------- */
@@ -17,7 +21,7 @@ public interface Fixes {
      * Returns the prefix.
      */
     @Pure
-    public String getPrefix();
+    public @Nonnull String getPrefix();
     
     /* -------------------------------------------------- Suffix -------------------------------------------------- */
     
@@ -25,7 +29,7 @@ public interface Fixes {
      * Returns the suffix.
      */
     @Pure
-    public String getSuffix();
+    public @Nonnull String getSuffix();
     
     /* -------------------------------------------------- Both -------------------------------------------------- */
     
@@ -33,7 +37,7 @@ public interface Fixes {
      * Returns the prefix directly followed by the suffix.
      */
     @Pure
-    public default String getBoth() {
+    public default @Nonnull String getBoth() {
         return getPrefix() + getSuffix();
     }
     

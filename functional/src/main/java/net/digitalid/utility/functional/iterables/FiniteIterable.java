@@ -13,6 +13,17 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.annotations.state.Modifiable;
 import net.digitalid.utility.functional.fixes.Fixes;
 import net.digitalid.utility.functional.interfaces.BinaryOperator;
 import net.digitalid.utility.functional.interfaces.Collector;
@@ -29,13 +40,19 @@ import net.digitalid.utility.functional.iterators.PruningIterator;
 import net.digitalid.utility.functional.iterators.ReversingIterator;
 import net.digitalid.utility.functional.iterators.ZippingIterator;
 import net.digitalid.utility.tuples.Pair;
-import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.math.Positive;
+import net.digitalid.utility.validation.annotations.math.relative.GreaterThanOrEqualTo;
+import net.digitalid.utility.validation.annotations.type.Functional;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This interface extends the functional iterable interface to model finite iterables.
  * 
  * @see CollectionIterable
  */
+@Immutable
+@Functional
 public interface FiniteIterable<E> extends FunctionalIterable<E> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
@@ -44,7 +61,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Wraps the given collection as a finite iterable.
      */
     @Pure
-    public static <E> FiniteIterable<E> of(Collection<? extends E> collection) {
+    public static <E> @Nonnull FiniteIterable<E> of(@Captured @Nonnull Collection<? extends E> collection) {
         return new CollectionBasedIterable<>(collection);
     }
     
@@ -53,7 +70,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     @SafeVarargs
-    public static <E> FiniteIterable<E> of(E... elements) {
+    public static <E> @Nonnull FiniteIterable<E> of(@Captured E... elements) {
         return () -> ArrayIterator.with(elements);
     }
     
@@ -61,13 +78,13 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default FiniteIterable<E> filter(Predicate<? super E> predicate) {
+    public default @Nonnull FiniteIterable<E> filter(@Nonnull Predicate<? super E> predicate) {
         return () -> FilteringIterator.with(iterator(), predicate);
     }
     
     @Pure
     @Override
-    public default FunctionalIterable<E> filterNulls() {
+    public default @Nonnull FunctionalIterable<E> filterNulls() {
         return filter(element -> element != null);
     }
     
@@ -75,7 +92,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default <F> FiniteIterable<F> map(UnaryFunction<? super E, ? extends F> function) {
+    public default <F> @Nonnull FiniteIterable<F> map(@Nonnull UnaryFunction<? super E, ? extends F> function) {
         return () -> MappingIterator.with(iterator(), function);
     }
     
@@ -83,7 +100,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default FiniteIterable<E> skip(long number) {
+    public default @Nonnull FiniteIterable<E> skip(@Positive long number) {
         return () -> PruningIterator.with(iterator(), number, Long.MAX_VALUE);
     }
     
@@ -91,13 +108,13 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default <F> FiniteIterable<Pair<E, F>> zipShortest(InfiniteIterable<? extends F> iterable) {
+    public default <F> @Nonnull FiniteIterable<Pair<E, F>> zipShortest(@Nonnull InfiniteIterable<? extends F> iterable) {
         return () -> ZippingIterator.with(iterator(), iterable.iterator(), true);
     }
     
     @Pure
     @Override
-    public default <F> FiniteIterable<Pair<E, F>> zipLongest(FiniteIterable<? extends F> iterable) {
+    public default <F> @Nonnull FiniteIterable<Pair<E, F>> zipLongest(@Nonnull FiniteIterable<? extends F> iterable) {
         return () -> ZippingIterator.with(iterator(), iterable.iterator(), false);
     }
     
@@ -105,19 +122,19 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default <F> FiniteIterable<F> flatten(long level) {
+    public default <F> @Nonnull FiniteIterable<F> flatten(@Positive long level) {
         return () -> FlatteningIterator.with(iterator(), level);
     }
     
     @Pure
     @Override
-    public default <F> FiniteIterable<F> flattenOne() {
+    public default <F> @Nonnull FiniteIterable<F> flattenOne() {
         return flatten(1);
     }
     
     @Pure
     @Override
-    public default <F> FiniteIterable<F> flattenAll() {
+    public default <F> @Nonnull FiniteIterable<F> flattenAll() {
         return flatten(Long.MAX_VALUE);
     }
     
@@ -127,7 +144,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the size of this iterable.
      */
     @Pure
-    public default long size() {
+    public default @NonNegative long size() {
         return size(Long.MAX_VALUE);
     }
     
@@ -137,8 +154,8 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the first element of this iterable or null if this iterable is empty.
      */
     @Pure
-    public default E getFirst() {
-        final Iterator<E> iterator = iterator();
+    public default @NonCapturable E getFirst() {
+        final @Nonnull Iterator<E> iterator = iterator();
         return iterator.hasNext() ? iterator.next() : null;
     }
     
@@ -146,7 +163,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the last element of this iterable or null if this iterable is empty.
      */
     @Pure
-    public default E getLast() {
+    public default @NonCapturable E getLast() {
         E result = null;
         for (E element : this) { result = element; }
         return result;
@@ -158,7 +175,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the index of the first occurrence of the given object in this iterable or -1 if this iterable does not contain the given object.
      */
     @Pure
-    public default long getFirstIndexOf(E object) {
+    public default @GreaterThanOrEqualTo(-1) long getFirstIndexOf(@NonCaptured @Unmodified E object) {
         long index = 0;
         for (E element : this) {
             if (Objects.equals(object, element)) { return index; }
@@ -171,7 +188,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the index of the last occurrence of the given object in this iterable or -1 if this iterable does not contain the given object.
      */
     @Pure
-    public default long getLastIndexOf(E object) {
+    public default @GreaterThanOrEqualTo(-1) long getLastIndexOf(@NonCaptured @Unmodified E object) {
         long lastIndex = -1;
         long currentIndex = 0;
         for (E element : this) {
@@ -187,7 +204,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the number of elements in this iterable that equal the given object.
      */
     @Pure
-    public default long count(E object) {
+    public default @NonNegative long count(@NonCaptured @Unmodified E object) {
         long count = 0;
         for (E element : this) {
             if (Objects.equals(object, element)) { count++; }
@@ -201,7 +218,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns whether this iterable contains the given object.
      */
     @Pure
-    public default boolean contains(E object) {
+    public default boolean contains(@NonCaptured @Unmodified E object) {
         for (E element : this) {
             if (Objects.equals(object, element)) { return true; }
         }
@@ -212,7 +229,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns whether this iterable contains all of the elements of the given iterable.
      */
     @Pure
-    public default boolean containsAll(FiniteIterable<? extends E> iterable) {
+    public default boolean containsAll(@Nonnull FiniteIterable<? extends E> iterable) {
         for (E element : iterable) {
             if (!contains(element)) { return false; }
         }
@@ -225,7 +242,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the elements that are contained both in this iterable and the given iterable.
      */
     @Pure
-    public default FiniteIterable<E> intersect(FiniteIterable<? super E> iterable) {
+    public default @Nonnull FiniteIterable<E> intersect(@Nonnull FiniteIterable<? super E> iterable) {
         return filter(element -> iterable.contains(element));
     }
     
@@ -235,7 +252,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the elements that are contained in this iterable but not in the given iterable.
      */
     @Pure
-    public default FiniteIterable<E> exclude(FiniteIterable<? super E> iterable) {
+    public default @Nonnull FiniteIterable<E> exclude(@Nonnull FiniteIterable<? super E> iterable) {
         return filter(element -> !iterable.contains(element));
     }
     
@@ -245,7 +262,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the elements of this iterable followed by the elements of the given iterable.
      */
     @Pure
-    public default FiniteIterable<E> combine(FiniteIterable<? extends E> iterable) {
+    public default @Nonnull FiniteIterable<E> combine(@Nonnull FiniteIterable<? extends E> iterable) {
         return () -> CombiningIterator.with(iterator(), iterable.iterator());
     }
     
@@ -253,7 +270,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the elements of this iterable followed by the elements of the given iterable.
      */
     @Pure
-    public default InfiniteIterable<E> combine(InfiniteIterable<? extends E> iterable) {
+    public default @Nonnull InfiniteIterable<E> combine(@Nonnull InfiniteIterable<? extends E> iterable) {
         return () -> CombiningIterator.with(iterator(), iterable.iterator());
     }
     
@@ -263,7 +280,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the first element of this iterable that fulfills the given predicate or null if no such element is found.
      */
     @Pure
-    public default E findFirst(Predicate<? super E> predicate) {
+    public default @NonCapturable @Nullable E findFirst(@Nonnull Predicate<? super E> predicate) {
         for (E element : this) {
             if (predicate.evaluate(element)) { return element; }
         }
@@ -274,8 +291,8 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the last element of this iterable that fulfills the given predicate or null if no such element is found.
      */
     @Pure
-    public default E findLast(Predicate<? super E> predicate) {
-        E lastElement = null;
+    public default @NonCapturable @Nullable E findLast(@Nonnull Predicate<? super E> predicate) {
+        @Nullable E lastElement = null;
         for (E element : this) {
             if (predicate.evaluate(element)) { lastElement = element; }
         }
@@ -288,8 +305,8 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * @throws NoSuchElementException if no unique element is found in this iterable.
      */
     @Pure
-    public default E findUnique(Predicate<? super E> predicate) {
-        E uniqueElement = null;
+    public default @NonCapturable E findUnique(@Nonnull Predicate<? super E> predicate) {
+        @Nullable E uniqueElement = null;
         boolean found = false;
         for (E element : this) {
             if (predicate.evaluate(element)) {
@@ -311,7 +328,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns whether any elements of this iterable match the given predicate.
      */
     @Pure
-    public default boolean matchAny(Predicate<? super E> predicate) {
+    public default boolean matchAny(@Nonnull Predicate<? super E> predicate) {
         for (E element : this) {
             if (predicate.evaluate(element)) { return true; }
         }
@@ -322,7 +339,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns whether all elements of this iterable match the given predicate.
      */
     @Pure
-    public default boolean matchAll(Predicate<? super E> predicate) {
+    public default boolean matchAll(@Nonnull Predicate<? super E> predicate) {
         for (E element : this) {
             if (!predicate.evaluate(element)) { return false; }
         }
@@ -333,18 +350,18 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns whether no element of this iterable matches the given predicate.
      */
     @Pure
-    public default boolean matchNone(Predicate<? super E> predicate) {
+    public default boolean matchNone(@Nonnull Predicate<? super E> predicate) {
         return !matchAny(predicate);
     }
     
     /* -------------------------------------------------- Reducing -------------------------------------------------- */
     
     /**
-     * Returns the value reduced by the given operator or the given nullable element if this iterable is empty.
+     * Returns the value reduced by the given operator or the given element if this iterable is empty.
      */
     @Pure
-    public default E reduce(BinaryOperator<E> operator, E element) {
-        final Iterator<E> iterator = iterator();
+    public default @Capturable E reduce(@Nonnull BinaryOperator<E> operator, @NonCaptured @Unmodified E element) {
+        final @Nonnull Iterator<E> iterator = iterator();
         if (iterator.hasNext()) {
             E result = iterator.next();
             while (iterator.hasNext()) {
@@ -360,7 +377,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the value reduced by the given operator or null if this iterable is empty.
      */
     @Pure
-    public default E reduce(BinaryOperator<E> operator) {
+    public default @Capturable @Nullable E reduce(@Nonnull BinaryOperator<E> operator) {
         return reduce(operator, null);
     }
     
@@ -370,7 +387,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the minimum element of this iterable according to the given comparator or null if this iterable is empty.
      */
     @Pure
-    public default E min(Comparator<? super E> comparator) {
+    public default @Capturable @Nullable E min(@Nonnull Comparator<? super E> comparator) {
         return reduce(BinaryOperator.min(comparator));
     }
     
@@ -381,7 +398,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public default E min() {
+    public default @Capturable @Nullable E min() {
         return reduce((a, b) -> a == null ? b : (b == null ? a : ( ((Comparable<? super E>) a).compareTo(b) <= 0 ? a : b )));
     }
     
@@ -391,7 +408,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the maximum element of this iterable according to the given comparator or null if this iterable is empty.
      */
     @Pure
-    public default E max(Comparator<? super E> comparator) {
+    public default @Capturable @Nullable E max(@Nonnull Comparator<? super E> comparator) {
         return reduce(BinaryOperator.max(comparator));
     }
     
@@ -402,7 +419,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public default E max() {
+    public default @Capturable @Nullable E max() {
         return reduce((a, b) -> a == null ? b : (b == null ? a : ( ((Comparable<? super E>) a).compareTo(b) >= 0 ? a : b )));
     }
     
@@ -457,14 +474,14 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     /* -------------------------------------------------- Grouping -------------------------------------------------- */
     
     /**
-     * Returns the elements of this iterable as a capturable map grouped by the given function.
+     * Returns the elements of this iterable as a map grouped by the given function.
      */
     @Pure
-    public default <K> Map<K, List<E>> groupBy(UnaryFunction<? super E, ? extends K> function) {
-        final Map<K, List<E>> result = new LinkedHashMap<>((int) size());
+    public default <K> @Capturable @Modifiable @Nonnull Map<K, @Nonnull List<E>> groupBy(@Nonnull UnaryFunction<? super E, ? extends K> function) {
+        final @Nonnull Map<K, List<E>> result = new LinkedHashMap<>((int) size());
         for (E element : this) {
             final K key = function.evaluate(element);
-            List<E> list = result.get(key);
+            @Nullable List<E> list = result.get(key);
             if (list == null) {
                 list = new LinkedList<>();
                 result.put(key, list);
@@ -480,7 +497,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the result of the given collector after consuming all elements of this iterable.
      */
     @Pure
-    public default <R> R collect(Collector<? super E, ? extends R> collector) {
+    public default <R> @Capturable R collect(@NonCaptured @Modified @Nonnull Collector<? super E, ? extends R> collector) {
         for (E element : this) { collector.consume(element); }
         return collector.getResult();
     }
@@ -490,19 +507,19 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     /**
      * Performs the given action for each element of this iterable.
      */
-    public default void forEach(Consumer<? super E> action) {
+    public default void forEach(@NonCaptured @Modified @Nonnull Consumer<? super E> action) {
         for (E element : this) { action.consume(element); }
     }
     
     /* -------------------------------------------------- Exports -------------------------------------------------- */
     
     /**
-     * Returns the elements of this iterable as a capturable array.
+     * Returns the elements of this iterable as an array.
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public default E[] toArray() {
-        final Object[] array = new Object[(int) size()];
+    public default @Capturable @Nonnull E[] toArray() {
+        final @Nonnull Object[] array = new Object[(int) size()];
         int index = 0;
         for (E element : this) {
             array[index++] = element;
@@ -511,11 +528,11 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     }
     
     /**
-     * Returns the elements of this iterable as a capturable list.
+     * Returns the elements of this iterable as a list.
      */
     @Pure
-    public default List<E> toList() {
-        final List<E> result = new LinkedList<>();
+    public default @Capturable @Modifiable @Nonnull List<E> toList() {
+        final @Nonnull List<E> result = new LinkedList<>();
         for (E element : this) {
             result.add(element);
         }
@@ -523,11 +540,11 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     }
     
     /**
-     * Returns the elements of this iterable as a capturable set.
+     * Returns the elements of this iterable as a set.
      */
     @Pure
-    public default Set<E> toSet() {
-        final Set<E> result = new LinkedHashSet<>();
+    public default @Capturable @Modifiable @Nonnull Set<E> toSet() {
+        final @Nonnull Set<E> result = new LinkedHashSet<>();
         for (E element : this) {
             result.add(element);
         }
@@ -535,12 +552,12 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     }
     
     /**
-     * Returns the elements of this iterable as a capturable map with their key determined by the given function.
+     * Returns the elements of this iterable as a map with their key determined by the given function.
      * Elements that are mapped to the same key overwrite each other. If this is not desired, use
      * {@link #groupBy(net.digitalid.utility.functional.interfaces.UnaryFunction)} instead.
      */
     @Pure
-    public default <K> Map<K, E> toMap(UnaryFunction<? super E, ? extends K> function) {
+    public default <K> @Capturable @Modifiable @Nonnull Map<K, E> toMap(@Nonnull UnaryFunction<? super E, ? extends K> function) {
         final Map<K, E> result = new LinkedHashMap<>();
         for (E element : this) {
             result.put(function.evaluate(element), element);
@@ -554,8 +571,8 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the elements of this iterable sorted according to the given comparator.
      */
     @Pure
-    public default FiniteIterable<E> sorted(Comparator<? super E> comparator) {
-        final List<E> list = toList();
+    public default @Nonnull FiniteIterable<E> sorted(@Nonnull Comparator<? super E> comparator) {
+        final @Nonnull List<E> list = toList();
         Collections.sort(list, comparator);
         return FiniteIterable.of(list);
     }
@@ -567,7 +584,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public default FiniteIterable<E> sorted() {
+    public default @Nonnull FiniteIterable<E> sorted() {
         return sorted((a, b) -> a == null ? 1 : (b == null ? -1 : ( ((Comparable<? super E>) a).compareTo(b) )));
     }
     
@@ -577,7 +594,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the elements of this iterable in reversed order.
      */
     @Pure
-    public default FiniteIterable<E> reversed() {
+    public default @Nonnull FiniteIterable<E> reversed() {
         return () -> ReversingIterator.with(toArray());
     }
     
@@ -587,7 +604,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the distinct elements of this iterable.
      */
     @Pure
-    public default FiniteIterable<E> distinct() {
+    public default @Nonnull FiniteIterable<E> distinct() {
         return FiniteIterable.of(toSet());
     }
     
@@ -597,7 +614,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the elements of this iterable repeated indefinitely.
      */
     @Pure
-    public default InfiniteIterable<E> repeated() {
+    public default @Nonnull InfiniteIterable<E> repeated() {
         return () -> CyclingIterator.with(this);
     }
     
@@ -607,11 +624,11 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the elements of this iterable joined by the given delimiter with the given prefix and suffix or the given empty string if this iterable is empty.
      */
     @Pure
-    public default String join(CharSequence prefix, CharSequence suffix, CharSequence empty, CharSequence delimiter) {
+    public default @Nonnull String join(@Nonnull CharSequence prefix, @Nonnull CharSequence suffix, @Nonnull CharSequence empty, @Nonnull CharSequence delimiter) {
         if (isEmpty()) {
             return String.valueOf(empty);
         } else {
-            final StringBuilder result = new StringBuilder(prefix);
+            final @Nonnull StringBuilder result = new StringBuilder(prefix);
             boolean first = true;
             for (E element : this) {
                 if (first) { first = false; }
@@ -626,7 +643,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the elements of this iterable joined by the given delimiter with the given fixes or the given empty string if this iterable is empty.
      */
     @Pure
-    public default String join(Fixes fixes, CharSequence empty, CharSequence delimiter) {
+    public default @Nonnull String join(@Nullable Fixes fixes, @Nonnull CharSequence empty, @Nonnull CharSequence delimiter) {
         if (fixes == null) { return join("", "", empty, delimiter); }
         else { return join(fixes.getPrefix(), fixes.getSuffix(), empty, delimiter); }
     }
@@ -635,7 +652,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the elements of this iterable joined by commas with the given fixes or the given empty string if this iterable is empty.
      */
     @Pure
-    public default String join(Fixes fixes, CharSequence empty) {
+    public default @Nonnull String join(@Nullable Fixes fixes, @Nonnull CharSequence empty) {
         return join(fixes, empty, ", ");
     }
     
@@ -643,7 +660,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the elements of this iterable joined by commas with the given fixes.
      */
     @Pure
-    public default String join(Fixes fixes) {
+    public default @Nonnull String join(@Nullable Fixes fixes) {
         return join(fixes, fixes != null ? fixes.getBoth() : "");
     }
     
@@ -651,7 +668,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the elements of this iterable joined by commas.
      */
     @Pure
-    public default String join() {
+    public default @Nonnull String join() {
         return join(null);
     }
     

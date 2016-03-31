@@ -2,6 +2,8 @@ package net.ditialid.utility.concurrency;
 
 import java.util.Set;
 
+import net.digitalid.utility.annotations.type.Mutable;
+
 /**
  * Extends Java's {@link java.util.Set} interface.
  * 
@@ -9,4 +11,5 @@ import java.util.Set;
  * 
  * @see ConcurrentHashSet
  */
+@Mutable
 public interface ConcurrentSet<E> extends Set<E> {}

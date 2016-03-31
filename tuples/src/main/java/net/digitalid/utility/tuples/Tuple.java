@@ -9,8 +9,14 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.reference.Capturable;
+import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
@@ -41,7 +47,7 @@ public abstract class Tuple implements Collection<Object> {
      * @throws IndexOutOfBoundsException if the index is negative or greater or equal to the size of this tuple.
      */
     @Pure
-    public abstract Object get(@Index int index);
+    public abstract @NonCapturable Object get(@Index int index);
     
     /* -------------------------------------------------- Iterator -------------------------------------------------- */
     
@@ -56,12 +62,14 @@ public abstract class Tuple implements Collection<Object> {
             return cursor < size();
         }
         
+        @Impure
         @Override
-        public Object next() {
+        public @NonCapturable Object next() {
             if (hasNext()) { return get(cursor++); }
             else { throw new NoSuchElementException(); }
         }
         
+        @Pure
         @Override
         public void remove() {
             throw new UnsupportedOperationException();
@@ -85,7 +93,7 @@ public abstract class Tuple implements Collection<Object> {
     
     @Pure
     @Override
-    public boolean contains(@Nullable Object object) {
+    public boolean contains(@NonCaptured @Unmodified @Nullable Object object) {
         for (@Nullable Object element : this) {
             if (Objects.equals(object, element)) { return true; }
         }
@@ -94,7 +102,7 @@ public abstract class Tuple implements Collection<Object> {
     
     @Pure
     @Override
-    public boolean containsAll(@Nonnull Collection<?> collection) {
+    public boolean containsAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
         for (@Nullable Object element : collection) {
             if (!contains(element)) { return false; }
         }
@@ -115,7 +123,7 @@ public abstract class Tuple implements Collection<Object> {
     @Pure
     @Override
     @SuppressWarnings("unchecked")
-    public <T> @Capturable @Nonnull T[] toArray(T[] array) {
+    public <T> @Capturable @Nonnull T[] toArray(@NonCaptured @Modified T[] array) {
         final int size = size();
         final @Nonnull T[] result = array.length >= size ? array : (T[]) Array.newInstance(array.getClass().getComponentType(), size);
         for (int i = 0; i < size(); i++) {
@@ -126,31 +134,37 @@ public abstract class Tuple implements Collection<Object> {
     
     /* -------------------------------------------------- Unsupported Operations -------------------------------------------------- */
     
+    @Pure
     @Override
-    public boolean add(Object object) {
+    public boolean add(@Captured Object object) {
         throw new UnsupportedOperationException();
     }
     
+    @Pure
     @Override
-    public boolean remove(Object object) {
+    public boolean remove(@NonCaptured @Unmodified Object object) {
         throw new UnsupportedOperationException();
     }
     
+    @Pure
     @Override
-    public boolean addAll(@Nonnull Collection<?> collection) {
+    public boolean addAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
         throw new UnsupportedOperationException();
     }
     
+    @Pure
     @Override
-    public boolean removeAll(@Nonnull Collection<?> collection) {
+    public boolean removeAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
         throw new UnsupportedOperationException();
     }
     
+    @Pure
     @Override
-    public boolean retainAll(@Nonnull Collection<?> collection) {
+    public boolean retainAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
         throw new UnsupportedOperationException();
     }
     
+    @Pure
     @Override
     public void clear() {
         throw new UnsupportedOperationException();

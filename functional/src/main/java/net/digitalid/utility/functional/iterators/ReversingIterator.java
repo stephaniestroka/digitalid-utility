@@ -2,21 +2,29 @@ package net.digitalid.utility.functional.iterators;
 
 import java.util.NoSuchElementException;
 
+import javax.annotation.Nonnull;
+
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
+import net.digitalid.utility.annotations.type.Mutable;
 
 /**
  * This class implements a reversing iterator that iterates over the given elements in reverse order.
  */
+@Mutable
 public class ReversingIterator<E> implements ReadOnlyIterator<E> {
     
     /* -------------------------------------------------- Elements -------------------------------------------------- */
     
-    protected final E[] elements;
+    protected final @Nonnull E[] elements;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     @SafeVarargs
-    protected ReversingIterator(E... elements) {
+    protected ReversingIterator(@Captured E... elements) {
         this.elements = elements;
         this.cursor = elements.length - 1;
     }
@@ -26,7 +34,7 @@ public class ReversingIterator<E> implements ReadOnlyIterator<E> {
      */
     @Pure
     @SafeVarargs
-    public static <E> ReversingIterator<E> with(E... elements) {
+    public static <E> @Capturable @Nonnull ReversingIterator<E> with(@Captured E... elements) {
         return new ReversingIterator<>(elements);
     }
     
@@ -40,8 +48,9 @@ public class ReversingIterator<E> implements ReadOnlyIterator<E> {
         return cursor >= 0;
     }
     
+    @Impure
     @Override
-    public E next() {
+    public @NonCapturable E next() {
         if (hasNext()) { return elements[cursor--]; }
         else { throw new NoSuchElementException(); }
     }

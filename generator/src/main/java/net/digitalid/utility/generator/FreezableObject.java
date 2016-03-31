@@ -7,7 +7,7 @@ import net.digitalid.utility.freezable.ReadOnly;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.reference.Capturable;
+import net.digitalid.utility.annotations.ownership.Capturable;
 
 /**
  * This class implements the freezing mechanism which can be reused with inheritance.

@@ -9,6 +9,8 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation indicates that the annotated class is thread-safe.
+ * 
+ * @see Mutable
  */
 @Inherited
 @Documented

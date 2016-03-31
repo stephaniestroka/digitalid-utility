@@ -7,7 +7,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation indicates that a method has no side-effects (other than caching) on the called object and the method parameters.
+ * This annotation indicates that the annotated method has no side-effects (other than caching) on the called object (or class).
+ * A pure method may, however, modify its parameters, which is indicated by the {@link Modified} and {@link Unmodified} annotations.
+ * A pure method is guaranteed to return the same result on repeated invocations (unless other threads modify the object in the meantime).
+ * 
+ * @see Impure
  */
 @Documented
 @Target(ElementType.METHOD)
