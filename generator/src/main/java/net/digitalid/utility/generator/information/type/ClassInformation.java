@@ -27,6 +27,7 @@ import net.digitalid.utility.generator.exceptions.FailedClassGenerationException
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleParameterBasedFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.generator.information.field.GeneratedFieldInformation;
 import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleParameterBasedFieldInformation;
 import net.digitalid.utility.generator.information.field.ParameterBasedFieldInformation;
@@ -38,6 +39,7 @@ import net.digitalid.utility.generator.query.MethodSignatureMatcher;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
+import net.digitalid.utility.processing.utility.TypeNameVisitor;
 import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.size.MinSize;
@@ -136,7 +138,7 @@ public class ClassInformation extends TypeInformation {
     
     @Override 
     public @Nonnull FiniteIterable<RepresentingFieldInformation> getRepresentingFieldInformation() {
-        return directlyAccessibleParameterBasedFieldInformation.map(field -> (RepresentingFieldInformation) field).combine(nonDirectlyAccessibleParameterBasedFieldInformation);
+        return directlyAccessibleParameterBasedFieldInformation.map(field -> (RepresentingFieldInformation) field).combine(nonDirectlyAccessibleParameterBasedFieldInformation).combine(generatedFieldInformation);
     }
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
@@ -247,6 +249,8 @@ public class ClassInformation extends TypeInformation {
     
     /* -------------------------------------------------- Non-directly Accessible Fields -------------------------------------------------- */
     
+    private static TypeNameVisitor typeNameVisitor = new TypeNameVisitor();
+    
     /**
      * Retrieves declared field information objects for fields in a type.
      */
@@ -255,7 +259,7 @@ public class ClassInformation extends TypeInformation {
                 field.getModifiers().contains(Modifier.PRIVATE) && 
                 hasGetter(field.getSimpleName().toString(), methodInformation)
         )).map(field -> 
-                NonDirectlyAccessibleDeclaredFieldInformation.of(field, containingType, getGetterOf(field.getSimpleName().toString(), methodInformation), getSetterOf(field.getSimpleName().toString(), StaticProcessingEnvironment.getTypeUtils().asElement(field.asType()).toString(), methodInformation))
+                NonDirectlyAccessibleDeclaredFieldInformation.of(field, containingType, getGetterOf(field.getSimpleName().toString(), methodInformation), getSetterOf(field.getSimpleName().toString(), typeNameVisitor.visit(field.asType()).toString(), methodInformation))
         );
     }
     
@@ -278,7 +282,7 @@ public class ClassInformation extends TypeInformation {
         
         this.implementedGetters = indexMethodInformation(methodInformationIterable.filter(method -> (!method.isAbstract() && method.isGetter())));
         
-        this.overriddenMethods = methodInformationIterable.filter(method -> !method.isDeclaredInRuntimeEnvironment()).filter(method -> !method.isFinal()).filter(method -> !method.isAbstract()).filter(method -> !method.isAbstract());
+        this.overriddenMethods = methodInformationIterable.filter(method -> !method.isDeclaredInRuntimeEnvironment()).filter(method -> !method.isFinal()).filter(method -> !method.isAbstract()).filter(method -> !method.isStatic());
         
         FiniteIterable<MethodInformation> methodsMatchingTheRecoverMethodMatcher = methodInformationIterable.filter(recoverMethodMatcher);
         if (methodsMatchingTheRecoverMethodMatcher.size() > 1) {
@@ -308,18 +312,21 @@ public class ClassInformation extends TypeInformation {
         final @Nonnull Map<String, DirectlyAccessibleDeclaredFieldInformation> indexedDirectlyAccessibleDeclaredFields = indexFieldInformation(directlyAccessibleDeclaredFields);
     
         final @Nonnull Map<String, NonDirectlyAccessibleDeclaredFieldInformation> indexedNonDirectlyAccessibleDeclaredFields = indexFieldInformation(nonDirectlyAccessibleDeclaredFields);
-        
-        checkRepresentingFields(typeElement, parameterVariables, indexedDirectlyAccessibleDeclaredFields, indexedNonDirectlyAccessibleDeclaredFields);
+    
+        final @Nonnull Map<String, GeneratedFieldInformation> indexedGeneratedFields = indexFieldInformation(generatedFieldInformation);
+    
+        checkRepresentingFields(typeElement, parameterVariables, indexedDirectlyAccessibleDeclaredFields, indexedNonDirectlyAccessibleDeclaredFields, indexedGeneratedFields);
         
         this.directlyAccessibleParameterBasedFieldInformation = parameterVariables.filter(variableElement -> (
-                !indexedDirectlyAccessibleDeclaredFields.get(variableElement.getSimpleName().toString()).isPrivate()
+                indexedDirectlyAccessibleDeclaredFields.containsKey(variableElement.getSimpleName().toString()) && !indexedDirectlyAccessibleDeclaredFields.get(variableElement.getSimpleName().toString()).isPrivate()
                 )
         ).map(variableElement -> (
                 DirectlyAccessibleParameterBasedFieldInformation.of(variableElement, indexedDirectlyAccessibleDeclaredFields.get(variableElement.getSimpleName().toString()))
                 )
         );
         this.nonDirectlyAccessibleParameterBasedFieldInformation = parameterVariables.filter(variableElement -> (
-                indexedDirectlyAccessibleDeclaredFields.get(variableElement.getSimpleName().toString()).isPrivate() &&
+                indexedNonDirectlyAccessibleDeclaredFields.containsKey(variableElement.getSimpleName().toString()) && 
+                indexedNonDirectlyAccessibleDeclaredFields.get(variableElement.getSimpleName().toString()).isPrivate() &&
                         hasGetter(variableElement.getSimpleName().toString(), methodInformationIterable)
                 )
         ).map(variableElement -> (
