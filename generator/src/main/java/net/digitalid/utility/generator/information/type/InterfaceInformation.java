@@ -6,13 +6,13 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 
-import net.digitalid.utility.functional.iterable.old.NonNullableIterable;
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
-import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This type collects the relevant information about an interface for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
@@ -23,24 +23,24 @@ public class InterfaceInformation extends TypeInformation {
     
     @Pure
     @Override
-    public @Nonnull NonNullableIterable<ConstructorInformation> getConstructors() {
-        return NonNullableIterable.ofNonNullableElements(Collections.<ConstructorInformation>emptyList());
+    public @Nonnull FiniteIterable<@Nonnull ConstructorInformation> getConstructors() {
+        return FiniteIterable.of(Collections.<ConstructorInformation>emptyList());
     }
     
     /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Nonnull NonNullableIterable<RepresentingFieldInformation> getRepresentingFieldInformation() {
-        return generatedFieldInformation.map(toRepresentingFieldInformation);
+    public @Nonnull FiniteIterable<@Nonnull RepresentingFieldInformation> getRepresentingFieldInformation() {
+        return generatedFieldInformation.map(field -> (RepresentingFieldInformation) field);
     }
     
     /* -------------------------------------------------- Overriden Methods -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Nonnull NonNullableIterable<MethodInformation> getOverriddenMethods() {
-        return NonNullableIterable.ofNonNullableElements(Collections.<MethodInformation>emptyList());
+    public @Nonnull FiniteIterable<@Nonnull MethodInformation> getOverriddenMethods() {
+        return FiniteIterable.of(Collections.<MethodInformation>emptyList());
     }
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */

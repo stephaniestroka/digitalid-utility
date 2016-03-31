@@ -6,7 +6,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 
 import net.digitalid.utility.generator.information.method.MethodInformation;
-import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
+import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.annotations.method.Pure;
 
 /**

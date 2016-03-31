@@ -7,8 +7,8 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
-import net.digitalid.utility.logging.processing.ProcessingLog;
-import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
+import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.annotations.method.Pure;
 
 /**

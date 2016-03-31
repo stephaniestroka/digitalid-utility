@@ -1,4 +1,4 @@
-package net.digitalid.utility.logging.processing;
+package net.digitalid.utility.processing.logging;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;

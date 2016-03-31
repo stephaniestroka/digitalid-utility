@@ -12,25 +12,23 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.ElementFilter;
 
-import net.digitalid.utility.functional.function.unary.NonNullToNonNullUnaryFunction;
-import net.digitalid.utility.functional.function.unary.NonNullToNullableUnaryFunction;
-import net.digitalid.utility.functional.iterable.old.NonNullableIterable;
-import net.digitalid.utility.functional.iterable.old.NullableIterable;
-import net.digitalid.utility.functional.predicate.NonNullablePredicate;
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.functional.iterables.InfiniteIterable;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
+import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
+import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedFieldInformation;
 import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
-import net.digitalid.utility.logging.processing.ProcessingLog;
-import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
-import net.digitalid.utility.tuples.NonNullablePair;
-import net.digitalid.utility.tuples.NullablePair;
+import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.logging.SourcePosition;
+import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This type collects the relevant information about a type for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
@@ -46,7 +44,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns an iterable of constructor information objects.
      */
     @Pure
-    public abstract @Nonnull NonNullableIterable<ConstructorInformation> getConstructors();
+    public abstract @Nonnull FiniteIterable<ConstructorInformation> getConstructors();
     
     /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
     
@@ -54,7 +52,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns an iterable of the representing field information objects.
      */
     @Pure
-    public abstract @Nonnull NonNullableIterable<RepresentingFieldInformation> getRepresentingFieldInformation();
+    public abstract @Nonnull FiniteIterable<RepresentingFieldInformation> getRepresentingFieldInformation();
     
     /* -------------------------------------------------- Overridden Methods -------------------------------------------------- */
     
@@ -62,7 +60,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns an iterable of the overridden method information objects.
      */
     @Pure
-    public abstract @Nonnull NonNullableIterable<MethodInformation> getOverriddenMethods();
+    public abstract @Nonnull FiniteIterable<MethodInformation> getOverriddenMethods();
     
     /* -------------------------------------------------- Element -------------------------------------------------- */
     
@@ -104,68 +102,12 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         return getPackageName() + "." + getSimpleNameOfGeneratedBuilder();
     }
     
-    /* -------------------------------------------------- Generatable -------------------------------------------------- */
-    
-    /**
-     * This flag indicates whether a subclass can be generated for this type.
-     */
-    private final boolean generatable;
-    
-    /**
-     * Returns whether a subclass can be generated for this type.
-     */
-    @Pure
-    public boolean isGeneratable() {
-        return generatable;
-    }
-    
     /* -------------------------------------------------- Generated Field Information -------------------------------------------------- */
     
     /**
      * An iterable of all generated field information objects.
      */
-    public final @Nonnull NonNullableIterable<GeneratedFieldInformation> generatedFieldInformation;
-    
-    private static final @Nonnull NonNullToNonNullUnaryFunction<NullablePair<MethodInformation, MethodInformation>, GeneratedFieldInformation> getterToFieldFunction = new NonNullToNonNullUnaryFunction<NullablePair<MethodInformation, MethodInformation>, GeneratedFieldInformation>() {
-        
-        @Override
-        public @Nonnull GeneratedFieldInformation apply(@Nonnull NullablePair<MethodInformation, MethodInformation> triplet) {
-            final @Nullable MethodInformation getter = triplet.get0();
-            final @Nullable MethodInformation setter = triplet.get1();
-            assert getter != null : "The getter method should not be null.";
-            return GeneratedFieldInformation.of(getter.getContainingType(), getter, setter);
-        }
-        
-    };
-    
-    /* -------------------------------------------------- Abstract Method -------------------------------------------------- */
-    
-    /**
-     * The predicate checks whether a given method information is an abstract getter.
-     */
-    private final static @Nonnull NonNullablePredicate<MethodInformation> abstractMethodPredicate = new NonNullablePredicate<MethodInformation>() {
-    
-        @Override public boolean apply(@Nonnull MethodInformation methodInformation) {
-            return methodInformation.isAbstract();
-        }
-        
-    };
-    
-    /**
-     * The function nulls method information objects that are getters or setters.
-     */
-    private final static @Nonnull NonNullToNullableUnaryFunction<MethodInformation, MethodInformation> removeAbstractGettersAndSetters = new NonNullToNullableUnaryFunction<MethodInformation, MethodInformation>() {
-        
-        @Override
-        public @Nullable MethodInformation apply(@Nonnull MethodInformation element) {
-            if (element.isGetter() || element.isSetter()) {
-                return null;
-            } else {
-                return element;
-            }
-        }
-        
-    };
+    public final @Nonnull FiniteIterable<GeneratedFieldInformation> generatedFieldInformation;
     
     /* -------------------------------------------------- Abstract Getter -------------------------------------------------- */
     
@@ -174,18 +116,6 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      */
     public final @Nonnull @NonNullableElements Map<String, MethodInformation> abstractGetters;
     
-    /**
-     * The predicate checks whether a given method information is an abstract getter.
-     */
-    private final static @Nonnull NonNullablePredicate<MethodInformation> abstractGetterPredicate = new NonNullablePredicate<MethodInformation>() {
-        
-        @Override
-        public boolean apply(@Nonnull MethodInformation methodInformation) {
-            return methodInformation.isGetter() && methodInformation.isAbstract();
-        }
-        
-    };
-    
     /* -------------------------------------------------- Abstract Setter -------------------------------------------------- */
     
     /**
@@ -193,24 +123,12 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      */
     public final @Nonnull @NonNullableElements Map<String, MethodInformation> abstractSetters;
     
-    /**
-     * The predicate checks whether a given method information is an abstract setter.
-     */
-    private final static @Nonnull NonNullablePredicate<MethodInformation> abstractSetterPredicate = new NonNullablePredicate<MethodInformation>() {
-        
-        @Override
-        public boolean apply(@Nonnull MethodInformation object) {
-            return object.isSetter() && object.isAbstract();
-        }
-        
-    };
-    
     /* -------------------------------------------------- Method Information -------------------------------------------------- */
     
     /**
      * The method indexes method information objects with the field name of the method.
      */
-    protected @Nonnull @NonNullableElements Map<String, MethodInformation> indexMethodInformation(@Nonnull NonNullableIterable<MethodInformation> iterable) {
+    protected @Nonnull @NonNullableElements Map<String, MethodInformation> indexMethodInformation(@Nonnull FiniteIterable<MethodInformation> iterable) {
         final @Nonnull @NonNullableElements Map<String, MethodInformation> indexedMethods = new HashMap<>();
         for (@Nonnull MethodInformation method : iterable) {
             indexedMethods.put(method.getFieldName(), method);
@@ -218,41 +136,21 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         return indexedMethods;
     }
     
-    /**
-     * The function transforms executable elements to method information elements.
-     */
-    protected static final @Nonnull NonNullToNonNullUnaryFunction<NonNullablePair<ExecutableElement, DeclaredType>, MethodInformation> toMethodInformation = new NonNullToNonNullUnaryFunction<NonNullablePair<ExecutableElement, DeclaredType>, MethodInformation>() {
-        
-        @Override
-        public @Nonnull MethodInformation apply(@Nonnull NonNullablePair<ExecutableElement, DeclaredType> pair) {
-            final @Nonnull ExecutableElement element = pair.get0();
-            final @Nonnull DeclaredType containingType = pair.get1();
-            return MethodInformation.of(element, containingType);
+    protected @Nonnull @NonNullableElements <F extends FieldInformation> Map<String, F> indexFieldInformation(@Nonnull FiniteIterable<F> iterable) {
+        final @Nonnull @NonNullableElements Map<String, F> indexedFields = new HashMap<>();
+        for (@Nonnull F method : iterable) {
+            indexedFields.put(method.getName(), method);
         }
-        
-    };
+        return indexedFields;
+    }
     
     /**
      * Returns an iterable of method information objects for a given type element and declared type.
      */
-    protected @Nonnull @NonNullableElements NonNullableIterable<MethodInformation> getMethodInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
+    protected @Nonnull FiniteIterable<@Nonnull MethodInformation> getMethodInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
         final @Nonnull List<ExecutableElement> allMethods = ElementFilter.methodsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement));
-        return NullableIterable.ofNonNullableElements(allMethods).zipNonNull(NonNullableIterable.ofNonNullableElement(containingType)).map(toMethodInformation);
+        return FiniteIterable.of(allMethods).zipShortest(InfiniteIterable.repeat(containingType)).map((pair) -> (MethodInformation.of(pair.get0(), pair.get1())));
     }
-    
-    /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
-    
-    /**
-     * This function receives a subtype of representing field information and returns a representing field information object.
-     */
-    protected static @Nonnull NonNullToNonNullUnaryFunction<? super RepresentingFieldInformation, RepresentingFieldInformation> toRepresentingFieldInformation = new NonNullToNonNullUnaryFunction<RepresentingFieldInformation, RepresentingFieldInformation>() {
-        
-        @Override 
-        public @Nonnull RepresentingFieldInformation apply(@Nonnull RepresentingFieldInformation element) {
-            return element;
-        }
-        
-    };
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
@@ -262,36 +160,33 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     protected TypeInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
         super(typeElement, typeElement.asType(), containingType);
         
-        boolean generatable = true;
+        final @Nonnull FiniteIterable<@Nonnull MethodInformation> methodInformation = getMethodInformation(typeElement, containingType);
         
-        final @Nonnull NonNullableIterable<MethodInformation> methodInformation = getMethodInformation(typeElement, containingType);
-        
-        this.abstractGetters = indexMethodInformation(methodInformation.filter(abstractGetterPredicate));
+        this.abstractGetters = indexMethodInformation(methodInformation.filter((method) -> (method.isGetter() && method.isAbstract())));
     
-        this.abstractSetters = indexMethodInformation(methodInformation.filter(abstractSetterPredicate));
+        this.abstractSetters = indexMethodInformation(methodInformation.filter((method) -> (method.isSetter() && method.isAbstract())));
         
-        final @Nonnull @NonNullableElements List<NullablePair<MethodInformation, MethodInformation>> gettersAndSetters = new ArrayList<>();
+        final @Nonnull List<@Nonnull Pair<@Nonnull MethodInformation, @Nullable MethodInformation>> gettersAndSetters = new ArrayList<>();
         
         for (@Nonnull Map.Entry<String, MethodInformation> indexedGetter : abstractGetters.entrySet()) {
             final @Nonnull MethodInformation getter = indexedGetter.getValue();
             final @Nullable MethodInformation setter = abstractSetters.get(indexedGetter.getKey());
             ProcessingLog.debugging("For field '" + indexedGetter.getKey() + "', adding getter: '" + getter + "' and setter '" + setter + "'.");
-            gettersAndSetters.add(Pair.withNullable(getter, setter));
+            gettersAndSetters.add(Pair.of(getter, setter));
         }
         
-        this.generatedFieldInformation = NonNullableIterable.ofNonNullableElements(gettersAndSetters).map(getterToFieldFunction);
+        this.generatedFieldInformation = FiniteIterable.of(gettersAndSetters).map((pair) -> (GeneratedFieldInformation.of(pair.get0().getContainingType(), pair.get0(), pair.get1())));
         
-        final @Nonnull NonNullableIterable<MethodInformation> allRemainingAbstractMethods = methodInformation.filter(abstractMethodPredicate).map(removeAbstractGettersAndSetters).filterNonNull();
+        final @Nonnull FiniteIterable<MethodInformation> allRemainingAbstractMethods = methodInformation.filter((method) -> (method.isAbstract() && !method.isSetter() && !method.isGetter()));
         
         if (allRemainingAbstractMethods.size() != 0) {
             ProcessingLog.debugging("Found abstract methods which cannot be generated: ", allRemainingAbstractMethods.size());
             for (MethodInformation remainingAbstractMethod : allRemainingAbstractMethods) {
                 ProcessingLog.debugging("Remaining method $ cannot be generated", remainingAbstractMethod);
             }
-            generatable = false;
+            throw FailedClassGenerationException.with("Found abstract methods which cannot be generates: ", SourcePosition.of(typeElement), allRemainingAbstractMethods.join());
         }
         
-        this.generatable = generatable;
     }
     
 }

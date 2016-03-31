@@ -3,10 +3,9 @@ package net.digitalid.utility.generator.information.field;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
 
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.logging.processing.SourcePosition;
+import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.annotations.method.Pure;
 
 /**

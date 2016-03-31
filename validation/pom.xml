@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-logging</artifactId>
+            <artifactId>utility-processing</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>

@@ -12,16 +12,17 @@ import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.annotations.Interceptor;
 import net.digitalid.utility.generator.annotations.Recover;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
-import net.digitalid.utility.logging.processing.ProcessingLog;
-import net.digitalid.utility.logging.processing.SourcePosition;
-import net.digitalid.utility.validation.processing.ProcessingUtility;
+import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 
 /**
@@ -154,7 +155,7 @@ public class MethodInformation extends ExecutableInformation {
         
         Require.that(element.getKind() == ElementKind.METHOD).orThrow("The element $ has to be a method.", SourcePosition.of(element));
         
-        this.interceptors = ProcessingUtility.getAnnotationHandlers(element, Interceptor.class, MethodInterceptor.class);
+        this.interceptors = ValidatorProcessingUtility.getAnnotationHandlers(element, Interceptor.class, MethodInterceptor.class);
         
         if (isDeclaredInDigitalIDLibrary()) {
             if (isGetter() && !hasAnnotation(Pure.class)) { ProcessingLog.error("A getter has to be '@Pure':", SourcePosition.of(element)); }
@@ -171,7 +172,7 @@ public class MethodInformation extends ExecutableInformation {
             if (errorMessage != null) { ProcessingLog.error(errorMessage, SourcePosition.of(element)); }
             ProcessingLog.verbose("Found the recover method", SourcePosition.of(element));
         }
-        this.methodValidators = ProcessingUtility.getMethodValidators(this.getElement());
+        this.methodValidators = ValidatorProcessingUtility.getMethodValidators(this.getElement());
     }
     
     /**

@@ -6,7 +6,7 @@ import javax.lang.model.element.Element;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.processing.utility.TypeImporter;
 
 /**
  * A contract generator generates the contract for an annotation during annotation processing.

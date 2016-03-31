@@ -31,8 +31,8 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.exceptions.UnexpectedValueException;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.logging.processing.ProcessingLog;
-import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
+import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 import net.digitalid.utility.processor.generator.annotations.OnlyPossibleIn;
 import net.digitalid.utility.string.FormatString;
@@ -41,7 +41,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.processing.utility.TypeImporter;
 
 import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.*;
 

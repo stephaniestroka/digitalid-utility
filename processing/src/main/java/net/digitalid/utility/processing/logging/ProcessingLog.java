@@ -1,4 +1,4 @@
-package net.digitalid.utility.logging.processing;
+package net.digitalid.utility.processing.logging;
 
 import java.util.Set;
 
@@ -13,6 +13,7 @@ import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
+import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.string.FormatString;
 
 /**

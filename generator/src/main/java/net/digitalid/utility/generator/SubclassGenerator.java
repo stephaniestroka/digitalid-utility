@@ -10,12 +10,12 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
+import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
+import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
-import net.digitalid.utility.functional.iterable.old.NonNullableIterable;
-import net.digitalid.utility.functional.string.Brackets;
-import net.digitalid.utility.functional.string.IterableConverter;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedFieldInformation;
@@ -28,14 +28,14 @@ import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.type.exceptions.UnsupportedTypeException;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.generator.interceptor.MethodUtility;
-import net.digitalid.utility.logging.processing.ProcessingLog;
+import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.processing.ProcessingUtility;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
@@ -103,10 +103,9 @@ public class SubclassGenerator extends JavaFileGenerator {
     };
     
     private void generateConstructor(@Nullable List<? extends TypeMirror> throwTypes, @Nullable String superStatement) throws UnsupportedTypeException {
-         final @Nonnull NonNullableIterable<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
+         final @Nonnull FiniteIterable<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
         
-        final @Nonnull NonNullableIterable<SubclassGenerator> infiniteThis = NonNullableIterable.ofNonNullableElement(this);
-        beginConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + IterableConverter.toString(representingFieldInformation.zipNonNull(infiniteThis).map(elementInformationToDeclarationFunction), Brackets.ROUND) + (throwTypes == null || throwTypes.isEmpty() ? "" : " throws " + IterableConverter.toString(throwTypes, importingTypeVisitor.TYPE_MAPPER)));
+        beginConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + representingFieldInformation.map(element -> this.importIfPossible(element.getType()) + " " + element.getName()).join(Brackets.ROUND) + (throwTypes == null || throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(type -> importingTypeVisitor.visit(type).toString()).join()));
 
         if (superStatement != null) {
             addStatement(superStatement);
@@ -123,7 +122,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         if (typeInformation instanceof ClassInformation) {
             for (@Nonnull ConstructorInformation constructor : typeInformation.getConstructors()) {
                 ClassInformation classInformation = (ClassInformation) typeInformation;
-                generateConstructor(constructor.getElement().getThrownTypes(), "super" + IterableConverter.toString(classInformation.parameterBasedFieldInformation.map(elementInformationToStringFunction), Brackets.ROUND));
+                generateConstructor(constructor.getElement().getThrownTypes(), "super" + classInformation.parameterBasedFieldInformation.map(elementInformationToStringFunction).join(Brackets.ROUND));
             }
         } else if (typeInformation instanceof InterfaceInformation) {
             generateConstructor(null, null);
@@ -165,7 +164,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         addAnnotation(Override.class);
         MethodUtility.generateBeginMethod(this, method, null, returnedValue);
         for (@Nonnull VariableElement parameter : method.getElement().getParameters()) {
-            for (@Nonnull Map.Entry<AnnotationMirror, ValueAnnotationValidator> entry : ProcessingUtility.getValueValidators(parameter).entrySet()) {
+            for (@Nonnull Map.Entry<AnnotationMirror, ValueAnnotationValidator> entry : ValidatorProcessingUtility.getValueValidators(parameter).entrySet()) {
                 addPrecondition(entry.getValue().generateContract(parameter, entry.getKey(), this));
             }
         }
@@ -265,8 +264,6 @@ public class SubclassGenerator extends JavaFileGenerator {
      */
     @Pure
     public static void generateSubclassOf(@Nonnull TypeInformation typeInformation) {
-        Require.that(typeInformation.isGeneratable()).orThrow("No subclass can be generated for " + typeInformation);
-        
         new SubclassGenerator(typeInformation).write();
     }
     
