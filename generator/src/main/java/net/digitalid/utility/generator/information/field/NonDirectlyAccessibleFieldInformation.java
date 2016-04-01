@@ -3,13 +3,12 @@ package net.digitalid.utility.generator.information.field;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.information.method.MethodInformation;
-import net.digitalid.utility.logging.processing.SourcePosition;
+import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.annotations.method.Pure;
 
 /**

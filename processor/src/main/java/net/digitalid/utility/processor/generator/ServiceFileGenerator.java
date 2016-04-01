@@ -18,13 +18,13 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 import net.digitalid.utility.annotations.type.Mutable;
-import net.digitalid.utility.logging.processing.ProcessingLog;
-import net.digitalid.utility.logging.processing.SourcePosition;
-import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
+import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.logging.SourcePosition;
+import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.validation.processing.ProcessingUtility;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 
 /**
  * This class generates files in the "META-INF/services" directory.

@@ -19,7 +19,7 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.processing.ProcessingUtility;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.validator.ContractGenerator;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 

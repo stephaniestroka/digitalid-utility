@@ -3,11 +3,10 @@ package net.digitalid.utility.generator.interceptor;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.functional.iterable.NullableIterable;
 import net.digitalid.utility.functional.fixes.Brackets;
-import net.digitalid.utility.functional.fixes.IterableConverter;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.method.MethodInformation;
-import net.digitalid.utility.logging.processing.ProcessingLog;
+import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.annotations.method.Pure;
@@ -31,7 +30,7 @@ public final class MethodUtility {
         } else {
             methodName = method.getName();
         }
-        javaFileGenerator.beginMethod(method.getModifiersForOverridingMethod() + javaFileGenerator.importIfPossible(method.getType()) + " " + methodName + javaFileGenerator.importingTypeVisitor.reduceParametersDeclarationToString(method.getType(), method.getElement()) + (method.getElement().getThrownTypes().isEmpty() ? "" : " throws " + IterableConverter.toString(method.getElement().getThrownTypes(), javaFileGenerator.importingTypeVisitor.TYPE_MAPPER)));
+        javaFileGenerator.beginMethod(method.getModifiersForOverridingMethod() + javaFileGenerator.importIfPossible(method.getType()) + " " + methodName + javaFileGenerator.importingTypeVisitor.reduceParametersDeclarationToString(method.getType(), method.getElement()) + (method.getElement().getThrownTypes().isEmpty() ? "" : " throws " + FiniteIterable.of(method.getElement().getThrownTypes()).map(javaFileGenerator.importingTypeVisitor.TYPE_MAPPER).join()));
         if (resultVariable != null && method.hasReturnType()) {
             final @Nonnull String initialValue;
             if (method.getType().getReturnType().getKind().isPrimitive()) {
@@ -56,7 +55,7 @@ public final class MethodUtility {
      */
     @Pure
     private static @Nonnull String createMethodCallWithMethodName(@Nonnull MethodInformation method, @Nonnull String methodName, @Nullable String resultVariable) {
-        return (method.hasReturnType() ? resultVariable + " = " : "") + methodName + IterableConverter.toString(NullableIterable.ofNonNullableElements(method.getElement().getParameters()).map(JavaFileGenerator.parameterToStringFunction), Brackets.ROUND);
+        return (method.hasReturnType() ? resultVariable + " = " : "") + methodName + FiniteIterable.of(method.getElement().getParameters()).map(parameter -> parameter.getSimpleName().toString()).join(Brackets.ROUND);
     }
     
     /**

@@ -15,12 +15,12 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 
-import net.digitalid.utility.logging.processing.ProcessingLog;
-import net.digitalid.utility.logging.processing.SourcePosition;
-import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
+import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.logging.SourcePosition;
+import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.validation.processing.ProcessingUtility;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
 
 /**

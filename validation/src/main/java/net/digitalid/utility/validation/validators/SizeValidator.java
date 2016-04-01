@@ -11,8 +11,8 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.interfaces.Countable;
-import net.digitalid.utility.validation.processing.ProcessingUtility;
-import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**

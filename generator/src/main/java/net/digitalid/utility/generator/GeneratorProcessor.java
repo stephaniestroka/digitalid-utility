@@ -11,16 +11,17 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 
+import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.type.ClassInformation;
 import net.digitalid.utility.generator.information.type.InterfaceInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
-import net.digitalid.utility.logging.processing.ProcessingLog;
+import net.digitalid.utility.logging.Log;
+import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.string.PrefixString;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This annotation processor generates a subclass for each non-final type to implement common methods and aspects.
@@ -70,14 +71,16 @@ public class GeneratorProcessor extends CustomProcessor {
             
             typeInformation = InterfaceInformation.of(typeElement, containingType);
         }
-        if (typeInformation.isGeneratable()) {
+        try {
             ProcessingLog.debugging("Type $ is generatable", typeInformation);
             SubclassGenerator.generateSubclassOf(typeInformation);
             BuilderGenerator.generateBuilderFor(typeInformation);
-        } else {
-            ProcessingLog.debugging("Type $ is NOT generatable", typeInformation);
-        }
-        return typeInformation.isGeneratable();
+            return true;
+        } catch (FailedClassGenerationException e) {
+            Log.information("The compilation failed due to the following problem:", e);
+            ProcessingLog.information("Type $ is NOT generatable: ", e.getSourcePosition(), typeInformation, e.getMessage());
+        } 
+        return false;
     }
     
     @Override

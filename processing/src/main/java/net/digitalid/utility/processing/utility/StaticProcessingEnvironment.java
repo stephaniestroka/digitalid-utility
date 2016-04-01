@@ -1,4 +1,4 @@
-package net.digitalid.utility.logging.processing;
+package net.digitalid.utility.processing.utility;
 
 
 import javax.annotation.processing.ProcessingEnvironment;

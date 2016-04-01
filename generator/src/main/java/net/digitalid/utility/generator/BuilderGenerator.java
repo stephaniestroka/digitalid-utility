@@ -10,18 +10,16 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
-import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.ConformityViolation;
+import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.functional.string.Brackets;
-import net.digitalid.utility.functional.string.IterableConverter;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.type.exceptions.UnsupportedTypeException;
-import net.digitalid.utility.logging.processing.ProcessingLog;
-import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
+import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -146,7 +144,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         
         final List<? extends TypeMirror> typeArguments = typeInformation.getType().getTypeArguments();
         
-        beginClass("static class " + nameOfBuilder + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeArguments) + (interfacesForRequiredFields.size() == 0 ? "" : " implements " + IterableConverter.toString(interfacesForRequiredFields) + importingTypeVisitor.getTypeVariablesWithoutBounds(typeArguments, false)));
+        beginClass("static class " + nameOfBuilder + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeArguments) + (interfacesForRequiredFields.size() == 0 ? "" : " implements " + FiniteIterable.of(interfacesForRequiredFields).join() + importingTypeVisitor.getTypeVariablesWithoutBounds(typeArguments, false)));
         
         for (@Nonnull FieldInformation field : typeInformation.getRepresentingFieldInformation()) {
             field.getAnnotations();
@@ -176,7 +174,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         
         
         final @Nonnull ExecutableType type = (ExecutableType) StaticProcessingEnvironment.getTypeUtils().asMemberOf(typeInformation.getType(), constructor);
-        addStatement("return new " + typeInformation.getQualifiedNameOfGeneratedSubclass() + IterableConverter.toString(typeInformation.getRepresentingFieldInformation().map(fieldToStringFunction), Brackets.ROUND));
+        addStatement("return new " + typeInformation.getQualifiedNameOfGeneratedSubclass() + typeInformation.getRepresentingFieldInformation().map(fieldToStringFunction).join(Brackets.ROUND));
         
         endMethod();
         
@@ -248,8 +246,6 @@ public class BuilderGenerator extends JavaFileGenerator {
      * Generates a new builder class for the given type information.
      */
     public static void generateBuilderFor(@Nonnull TypeInformation typeInformation) {
-        Require.that(typeInformation.isGeneratable()).orThrow("No subclass can be generated for " + typeInformation);
-        
         ProcessingLog.debugging("generateBuilderFor(" + typeInformation + ")");
         new BuilderGenerator(typeInformation).write();
     }

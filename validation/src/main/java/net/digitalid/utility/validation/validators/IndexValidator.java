@@ -5,11 +5,11 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
 import net.digitalid.utility.immutable.collections.ImmutableSet;
-import net.digitalid.utility.logging.processing.ProcessingLog;
-import net.digitalid.utility.logging.processing.SourcePosition;
+import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
-import net.digitalid.utility.validation.processing.ProcessingUtility;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**

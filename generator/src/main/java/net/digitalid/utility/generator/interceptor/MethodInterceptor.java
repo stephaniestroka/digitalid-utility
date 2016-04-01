@@ -9,7 +9,7 @@ import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.processing.TypeImporter;
+import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 
 public abstract class MethodInterceptor extends MethodAnnotationValidator {

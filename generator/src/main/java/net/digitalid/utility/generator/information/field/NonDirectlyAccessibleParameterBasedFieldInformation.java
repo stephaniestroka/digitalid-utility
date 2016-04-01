@@ -5,7 +5,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.VariableElement;
 
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.logging.processing.SourcePosition;
+import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.annotations.method.Pure;
 
 /**
@@ -23,8 +23,8 @@ public class NonDirectlyAccessibleParameterBasedFieldInformation extends NonDire
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected NonDirectlyAccessibleParameterBasedFieldInformation(@Nonnull VariableElement parameter, @Nonnull NonDirectlyAccessibleFieldInformation generatedFieldInformation) {
-        super(parameter, parameter.asType(), generatedFieldInformation.getContainingType(), generatedFieldInformation.getGetter(), generatedFieldInformation.getSetter());
+    protected NonDirectlyAccessibleParameterBasedFieldInformation(@Nonnull VariableElement parameter, @Nonnull NonDirectlyAccessibleFieldInformation nonDirectlyAccessibleFieldInformation) {
+        super(parameter, parameter.asType(), nonDirectlyAccessibleFieldInformation.getContainingType(), nonDirectlyAccessibleFieldInformation.getGetter(), nonDirectlyAccessibleFieldInformation.getSetter());
         
         Require.that(parameter.getKind() == ElementKind.PARAMETER).orThrow("The element $ has to be a parameter.", SourcePosition.of(parameter));
     }

@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.processing;
+package net.digitalid.utility.processing.utility;
 
 import javax.annotation.Nonnull;
 import javax.lang.model.element.Element;

@@ -24,8 +24,8 @@ import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.logging.Log;
-import net.digitalid.utility.logging.processing.ProcessingLog;
-import net.digitalid.utility.logging.processing.StaticProcessingEnvironment;
+import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.string.NumberString;
 import net.digitalid.utility.string.PrefixString;

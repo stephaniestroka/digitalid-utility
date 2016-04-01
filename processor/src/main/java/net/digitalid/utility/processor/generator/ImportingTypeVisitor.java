@@ -8,21 +8,20 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.SimpleTypeVisitor7;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.processing.utility.TypeNameVisitor;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -32,7 +31,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * TODO: Transform into an inner, non-static class of JavaFileGenerator.
  */
 @Immutable
-public class ImportingTypeVisitor extends SimpleTypeVisitor7<StringBuilder, StringBuilder> {
+public class ImportingTypeVisitor extends TypeNameVisitor {
     
     /* -------------------------------------------------- Java File Generator -------------------------------------------------- */
     
@@ -117,14 +116,6 @@ public class ImportingTypeVisitor extends SimpleTypeVisitor7<StringBuilder, Stri
         return FiniteIterable.of(mapParametersDeclarationToStrings(type, element)).join(Brackets.ROUND);
     }
     
-    /* -------------------------------------------------- Default Action -------------------------------------------------- */
-    
-    @Pure
-    @Override
-    protected @Nonnull StringBuilder defaultAction(@Nonnull TypeMirror type, @Nullable StringBuilder string) {
-        return get(string).append(type.toString());
-    }
-    
     /* -------------------------------------------------- Visit -------------------------------------------------- */
     
     @Pure
@@ -166,12 +157,6 @@ public class ImportingTypeVisitor extends SimpleTypeVisitor7<StringBuilder, Stri
     @Override
     public @Nonnull StringBuilder visitExecutable(@Nonnull ExecutableType type, @Nullable StringBuilder string) {
         return visit(type.getReturnType(), get(string).append(reduceTypeVariablesWithBoundsToString(type.getTypeVariables())).append(type.getTypeVariables().isEmpty() ? "" : " "));
-    }
-    
-    @Pure
-    @Override
-    public @Nonnull StringBuilder visitArray(@Nonnull ArrayType type, @Nullable StringBuilder string) {
-        return visit(type.getComponentType(), get(string)).append("[]");
     }
     
 }

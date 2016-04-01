@@ -22,10 +22,10 @@ import javax.lang.model.type.TypeKind;
 
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.Initializer;
-import net.digitalid.utility.logging.processing.ProcessingLog;
-import net.digitalid.utility.logging.processing.SourcePosition;
+import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processor.CustomProcessor;
-import net.digitalid.utility.validation.processing.ProcessingUtility;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.processor.generator.ServiceFileGenerator;

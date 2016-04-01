@@ -8,7 +8,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.logging.processing.SourcePosition;
+import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.annotations.method.Pure;
 
 /**
