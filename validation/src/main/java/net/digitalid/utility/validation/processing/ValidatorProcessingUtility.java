@@ -41,6 +41,69 @@ public class ValidatorProcessingUtility {
     private static final @NonNullableElements @Nonnull Map<String, AnnotationHandler> cachedAnnotationHandlers = new HashMap<>();
     
     /**
+     * Returns the cache key for a given annotation and meta-annotation.
+     */
+    @Pure
+    private static @Nonnull String getAnnotationHandlerCacheKey(@Nonnull AnnotationMirror annotationMirror, @Nonnull Class<? extends Annotation> metaAnnotationType) {
+        final @Nonnull String qualifiedAnnotationName = ProcessingUtility.getQualifiedName(annotationMirror);
+        return qualifiedAnnotationName + "$" + metaAnnotationType.getCanonicalName();
+    }
+    
+    /**
+     * Returns an instance of an annotation handler for a certain annotation with a given meta annotation type, or null if no annotation handler for this annotation and meta-annotation type was found.
+     */
+    private static @Nullable <G extends AnnotationHandler> AnnotationHandler getCachedAnnotationHandler(@Nonnull AnnotationMirror annotationMirror, @Nonnull Class<? extends Annotation> metaAnnotationType, @Nonnull Class<G> annotationHandlerType) {
+        final @Nonnull String cacheKey = getAnnotationHandlerCacheKey(annotationMirror, metaAnnotationType);
+        final @Nullable AnnotationHandler cachedAnnotationHandler = cachedAnnotationHandlers.get(cacheKey);
+        if (cachedAnnotationHandler == null || !annotationHandlerType.isInstance(cachedAnnotationHandler)) {
+            return null;
+        } else {
+            return cachedAnnotationHandler;
+        }
+    }
+    
+    /**
+     * Returns the binary name of the annotation handler implementation/
+     */
+    private static @Nullable String getAnnotationHandlerImplementationBinaryName(@Nonnull AnnotationMirror annotationMirror, @Nonnull Class<? extends Annotation> metaAnnotationType) {
+        final @Nonnull TypeElement annotationElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
+        final @Nullable AnnotationValue metaAnnotationValue = ProcessingUtility.getAnnotationValue(annotationElement, metaAnnotationType);
+        if (metaAnnotationValue != null) {
+            final @Nonnull DeclaredType annotationHandlerImplementationType = (DeclaredType) metaAnnotationValue.getValue();
+            ProcessingLog.verbose("The declared annotation handler type is $.", annotationHandlerImplementationType);
+            final @Nonnull TypeElement annotationHandlerImplementationElement = (TypeElement) annotationHandlerImplementationType.asElement();
+            final @Nonnull String annotationHandlerImplementationBinaryName = StaticProcessingEnvironment.getElementUtils().getBinaryName(annotationHandlerImplementationElement).toString();
+            return annotationHandlerImplementationBinaryName;
+        } else {
+            final @Nonnull String annotationName = "@" + annotationElement.getSimpleName();
+            final @Nonnull String metaAnnotationName = "@" + metaAnnotationType.getSimpleName();
+            ProcessingLog.debugging("No value declared for meta-annotation $ in annotation $", metaAnnotationName, annotationName);
+            return null;
+        }
+    }
+    
+    /**
+     * Returns an instance of the annotation handler class for a given annotatin handler implementation binary name.
+     */
+    @Pure
+    @SuppressWarnings("unchecked")
+    private static <G extends AnnotationHandler> @Nonnull G getAnnotationHandlerImplementation(@Nonnull String annotationHandlerImplementationBinaryName) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        ProcessingLog.debugging("Trying to retrieve class for name $", annotationHandlerImplementationBinaryName);
+        final @Nonnull Class<?> annotationHandlerImplementationClass = Class.forName(annotationHandlerImplementationBinaryName);
+        ProcessingLog.debugging("Annotation handler class: $", annotationHandlerImplementationClass);
+            return (G) annotationHandlerImplementationClass.newInstance();
+    }
+    
+    /**
+     * Returns the simple name of the annotation.
+     */
+    @Pure
+    private static String getAnnotationName(@Nonnull AnnotationMirror annotationMirror) {
+        final @Nonnull TypeElement annotationElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
+        return "@" + annotationElement.getSimpleName();
+    }
+    
+    /**
      * Returns the annotation handlers of the given type which are found with the given meta-annotation type on the annotations of the given element.
      */
     @Pure
@@ -48,34 +111,23 @@ public class ValidatorProcessingUtility {
     public static @Nonnull @NonNullableElements <G extends AnnotationHandler> Map<AnnotationMirror, G> getAnnotationHandlers(@Nonnull Element element, @Nonnull Class<? extends Annotation> metaAnnotationType, @Nonnull Class<G> annotationHandlerType) {
         final @Nonnull @NonNullableElements Map<AnnotationMirror, G> result = new LinkedHashMap<>();
         for (@Nonnull AnnotationMirror annotationMirror : StaticProcessingEnvironment.getElementUtils().getAllAnnotationMirrors(element)) {
-            final @Nonnull String qualifiedAnnotationName = ProcessingUtility.getQualifiedName(annotationMirror);
-            final @Nullable AnnotationHandler cachedAnnotationHandler = cachedAnnotationHandlers.get(qualifiedAnnotationName);
+            final @Nullable AnnotationHandler cachedAnnotationHandler = getCachedAnnotationHandler(annotationMirror, metaAnnotationType, annotationHandlerType);
+            
             if (cachedAnnotationHandler != null) {
-                if (annotationHandlerType.isInstance(cachedAnnotationHandler)) {
-                    cachedAnnotationHandler.checkUsage(element, annotationMirror);
-                    result.put(annotationMirror, (G) cachedAnnotationHandler);
-                }
+                cachedAnnotationHandler.checkUsage(element, annotationMirror);
+                result.put(annotationMirror, (G) cachedAnnotationHandler);
             } else {
-                final @Nonnull TypeElement annotationElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
-                final @Nonnull String annotationName = "@" + annotationElement.getSimpleName();
-                final @Nullable AnnotationValue metaAnnotationValue = ProcessingUtility.getAnnotationValue(annotationElement, metaAnnotationType);
-                if (metaAnnotationValue != null) {
-                    final @Nonnull DeclaredType annotationHandlerImplementationType = (DeclaredType) metaAnnotationValue.getValue();
-                    ProcessingLog.verbose("The declared annotation handler type is $.", annotationHandlerImplementationType);
-                    final @Nonnull TypeElement annotationHandlerImplementationElement = (TypeElement) annotationHandlerImplementationType.asElement();
-                    final @Nonnull String annotationHandlerImplementationBinaryName = StaticProcessingEnvironment.getElementUtils().getBinaryName(annotationHandlerImplementationElement).toString();
+                final @Nullable String annotationHandlerImplementationBinaryName = getAnnotationHandlerImplementationBinaryName(annotationMirror, metaAnnotationType);
+                if (annotationHandlerImplementationBinaryName != null) {
                     try {
-                        ProcessingLog.debugging("Trying to retrieve class for name $", annotationHandlerImplementationBinaryName);
-                        final @Nonnull Class<?> annotationHandlerImplementationClass = Class.forName(annotationHandlerImplementationBinaryName);
-                        ProcessingLog.debugging("Annotation handler class: $", annotationHandlerImplementationClass);
-                        if (annotationHandlerType.isAssignableFrom(annotationHandlerImplementationClass)) {
-                            final @Nonnull G annotationHandler = (G) annotationHandlerImplementationClass.newInstance();
-                            cachedAnnotationHandlers.put(qualifiedAnnotationName, annotationHandler);
+                        final @Nonnull G annotationHandler = getAnnotationHandlerImplementation(annotationHandlerImplementationBinaryName);
+                        if (annotationHandlerType.isAssignableFrom(annotationHandler.getClass())) {
+                            cachedAnnotationHandlers.put(getAnnotationHandlerCacheKey(annotationMirror, metaAnnotationType), annotationHandler);
+                            ProcessingLog.debugging("Found the annotation handler $ for", SourcePosition.of(element), getAnnotationName(annotationMirror));
                             annotationHandler.checkUsage(element, annotationMirror);
                             result.put(annotationMirror, annotationHandler);
-                            ProcessingLog.debugging("Found the annotation handler $ for", SourcePosition.of(element), annotationName);
                         } else {
-                            ProcessingLog.error("The annotation handler $ is not assignable to $:", SourcePosition.of(element), annotationName, annotationHandlerImplementationClass.getCanonicalName());
+                            ProcessingLog.error("The annotation handler $ is not assignable to $:", SourcePosition.of(element), getAnnotationName(annotationMirror), annotationHandler.getClass().getCanonicalName());
                         }
                     } catch (@Nonnull ClassNotFoundException | InstantiationException | IllegalAccessException exception) {
                         ProcessingLog.error("Could not instantiate the annotation handler $ for", SourcePosition.of(element), annotationHandlerImplementationBinaryName);
@@ -86,6 +138,7 @@ public class ValidatorProcessingUtility {
         }
         return Collections.unmodifiableMap(result);
     }
+    
     
     /**
      * Returns the method validators mapped from their corresponding annotation mirror with which the given element is annotated.
