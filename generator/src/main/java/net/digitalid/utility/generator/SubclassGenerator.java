@@ -2,6 +2,7 @@ package net.digitalid.utility.generator;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -10,6 +11,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
@@ -17,6 +19,7 @@ import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.ElementInformation;
+import net.digitalid.utility.generator.information.field.DirectlyAccessibleFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedFieldInformation;
 import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
@@ -33,8 +36,7 @@ import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.tuples.Pair;
-import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.tuples.Triplet;
 import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
@@ -178,65 +180,106 @@ public class SubclassGenerator extends JavaFileGenerator {
         endMethod();
     }
     
+    private static @Nonnull GenerateComparisonTypeVisitor generateComparisonTypeVisitor = new GenerateComparisonTypeVisitor();
+    
+    /**
+     * Generates a hashCode method that generate a hashCode from all representing fields.
+     */
+    protected void generateToStringMethod() {
+        if (typeInformation instanceof ClassInformation && ((ClassInformation) typeInformation).toStringMethod != null) {
+            return;
+        }
+        addAnnotation(Pure.class);
+        addAnnotation(Override.class);
+        beginMethod("public String toString()");
+        addStatement("return \"" + typeInformation.getRepresentingFieldInformation().map(field -> field.getName() + " : \" + " + importIfPossible(Objects.class) + ".toString(" + field.getAccessCode() + ") + \"").join(Brackets.JSON) + "\"");
+        endMethod();
+    }
+    
+    private void generateValidateMethod() {
+        ProcessingLog.debugging("generateValidateMethod()");
+        addAnnotation(Pure.class);
+        addAnnotation(Override.class);
+        beginMethod("public void validate()");
+        final @Nonnull ClassInformation classInformation = (ClassInformation) typeInformation; 
+        for (@Nonnull DirectlyAccessibleFieldInformation field : classInformation.writableAccessibleFields) {
+            for (@Nonnull Map.Entry<AnnotationMirror, ValueAnnotationValidator> entry : ValidatorProcessingUtility.getValueValidators(field.getElement()).entrySet()) {
+                addInvariant(entry.getValue().generateContract(field.getElement(), entry.getKey(), this));
+            }
+        }
+        endMethod();
+    }
+    
+    /**
+     * Generates a hashCode method that generate a hashCode from all representing fields.
+     */
+    protected void generateHashCodeMethod() {
+        if (typeInformation instanceof ClassInformation && ((ClassInformation) typeInformation).hashCodeMethod != null) {
+            return;
+        }
+        beginJavadoc();
+        addJavadoc("Computes and returns the hash code of this object, using the fields of the class which are handed to the class via the recovery method or the constructor.");
+        endJavadoc();
+        addAnnotation(Pure.class);
+        addAnnotation(Override.class);
+        beginMethod("public int hashCode()");
+        addStatement("int prime = 92821");
+        addStatement("int result = 46411");
+        final @Nonnull FiniteIterable<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
+        for (@Nonnull RepresentingFieldInformation field : representingFieldInformation) {
+            addStatement("result = prime * result + " + importIfPossible(Objects.class) + ".hashCode(" + field.getAccessCode() + ")");
+        }
+        addStatement("return result");
+        endMethod();
+    }
+    
+    /**
+     * Generates an equal method that compares all representing fields.
+     */
+    protected void generateEqualsMethod() {
+        if (typeInformation instanceof ClassInformation && ((ClassInformation) typeInformation).equalsMethod != null) {
+            return;
+        }
+        beginJavadoc();
+        addJavadoc("Returns false if the given object is not equal to the current object, using the heuristics that fields of a class, which are handed to the class via the recovery method or the constructor, must be equal to each other, so that the objects are considered equal.");
+        endJavadoc();
+        addAnnotation(Pure.class);
+        addAnnotation(Override.class);
+        beginMethod("public boolean equals(@" + importIfPossible(Nullable.class) + " Object other)");
+        beginIf("other == null || !other.getClass().equals(this.getClass())");
+        addStatement("return false");
+        endIf();
+        addStatement("@" + importIfPossible(Nonnull.class)+ " " + typeInformation.getName() + " otherObject = (" + typeInformation.getName() + ") other");
+        addStatement("boolean result = true");
+        final @Nonnull FiniteIterable<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
+        ProcessingLog.debugging("generating equals method...");
+        for (@Nonnull RepresentingFieldInformation field : representingFieldInformation) {
+            ProcessingLog.debugging("...with representing field/method $", field.getAccessCode());
+            final @Nonnull String accessCode = field.getAccessCode();
+            generateComparisonTypeVisitor.visit(field.getType(), Triplet.of("this." + accessCode, "otherObject." + accessCode, this));
+        }
+        addStatement("return result");
+        endMethod();
+    }
+    
     protected void generateMethods() {
         addSection("Generated Methods");
-    
+        generateEqualsMethod();
+        generateHashCodeMethod();
+        generateToStringMethod();
+        generateValidateMethod();
     }
     
     /* Copied from the former root class. */
     
 //    /**
-//     * Returns false if the given object is not equal to the current object, using the heuristics that fields of a class,
-//     * which are handed to the class via the recovery method or the constructor, must be equal to each other so that the objects are considered equal.
+//     * 
 //     */
-//    @Pure
-//    @Override
-//    public boolean equals(@Nullable Object other) {
-//        if (other == null || !other.getClass().equals(this.getClass())) {
-//            return false;
-//        }
-//        try {
-//            for (@Nonnull Field field : classFields) {
-//                field.setAccessible(true);
-//                @Nullable Object fieldValueThis = field.get(this);
-//                @Nullable Object fieldValueOther = field.get(other);
-//                if (fieldValueThis == null && fieldValueOther == null) {
-//                    continue;
-//                } else if (fieldValueThis == null || fieldValueOther == null) {
-//                    return false;
-//                } else if (!fieldValueThis.equals(fieldValueOther)) {
-//                    return false;
-//                }
-//            }
-//            return true;
-//        } catch (IllegalAccessException e) {
-//            return super.equals(other);
-//        }
-//    }
 //    
 //    /**
 //     * Computes and returns the hash code of this object, using the fields of the class which are handed to the class via the recovery method or the constructor.
 //     */
-//    @Pure
-//    @Override
-//    public int hashCode() {
-//        try {
-//            int prime = 92821;
-//            int result = 46411;
-//            for (@Nonnull Field field : classFields) {
-//                     field.setAccessible(true);
-//                int c = 0;
-//                @Nullable Object fieldValue = field.get(this);
-//                if (fieldValue != null) {
-//                    c = fieldValue.hashCode();
-//                }
-//                result = prime * result + c;
-//            }
-//            return result;
-//        } catch (IllegalAccessException e) {
-//            return super.hashCode();
-//        }
-//    }
+
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     

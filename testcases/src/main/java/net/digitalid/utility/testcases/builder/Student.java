@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.annotations.method.Pure;
@@ -18,7 +19,7 @@ import net.digitalid.utility.validation.annotations.size.MaxSize;
  * - Instead of @Ignore or @Representation, interpret non-abstract methods as the former and abstract methods as the latter. What about mutable fields (due to setters)?
  */
 @Mutable
-public abstract class Student /* implements Convertible */ {
+public abstract class Student extends RootClass /* implements Convertible */ {
     
     public interface AnInterface {
     }

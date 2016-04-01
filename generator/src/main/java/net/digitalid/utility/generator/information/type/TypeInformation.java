@@ -24,6 +24,7 @@ import net.digitalid.utility.generator.information.field.GeneratedFieldInformati
 import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
+import net.digitalid.utility.generator.query.MethodSignatureMatcher;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
@@ -177,7 +178,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         
         this.generatedFieldInformation = FiniteIterable.of(gettersAndSetters).map((pair) -> (GeneratedFieldInformation.of(pair.get0().getContainingType(), pair.get0(), pair.get1())));
         
-        final @Nonnull FiniteIterable<MethodInformation> allRemainingAbstractMethods = methodInformation.filter((method) -> (method.isAbstract() && !method.isSetter() && !method.isGetter()));
+        final @Nonnull FiniteIterable<MethodInformation> allRemainingAbstractMethods = methodInformation.filter((method) -> (method.isAbstract() && !method.isSetter() && !method.isGetter())).filter(MethodSignatureMatcher.of("equals", Object.class).and(MethodSignatureMatcher.of("toString")).and(MethodSignatureMatcher.of("hashCode")));
         
         if (allRemainingAbstractMethods.size() != 0) {
             ProcessingLog.debugging("Found abstract methods which cannot be generated: ", allRemainingAbstractMethods.size());

@@ -273,16 +273,22 @@ public class ClassInformation extends TypeInformation {
         
         final @Nonnull FiniteIterable<MethodInformation> methodInformationIterable = getMethodInformation(typeElement, containingType);
         
-        this.equalsMethod = methodInformationIterable.findFirst(MethodSignatureMatcher.of("equals", Object.class).and(method -> !method.isFinal()));
-        this.hashCodeMethod = methodInformationIterable.findFirst(MethodSignatureMatcher.of("hashCode").and(method -> !method.isFinal()));
-        this.toStringMethod = methodInformationIterable.findFirst(MethodSignatureMatcher.of("toString").and(method -> !method.isFinal()));
-        this.compareToMethod = methodInformationIterable.findFirst(MethodSignatureMatcher.of("compareTo", StaticProcessingEnvironment.getTypeUtils().asElement(typeElement.asType()).toString()).and(method -> !method.isFinal()));
-        this.cloneMethod = methodInformationIterable.findFirst(MethodSignatureMatcher.of("clone").and(method -> !method.isFinal()));
-        this.validateMethod = methodInformationIterable.findFirst(MethodSignatureMatcher.of("validate").and(method -> !method.isFinal()));
+        final @Nonnull Predicate<MethodInformation> equalsPredicate = MethodSignatureMatcher.of("equals", Object.class).and(method -> !method.isFinal()).and(method -> !method.isAbstract());
+        final @Nonnull Predicate<MethodInformation> hashCodePredicate = MethodSignatureMatcher.of("hashCode").and(method -> !method.isFinal()).and(method -> !method.isAbstract());
+        final @Nonnull Predicate<MethodInformation> toStringPredicate = MethodSignatureMatcher.of("toString").and(method -> !method.isFinal()).and(method -> !method.isAbstract());
+        final @Nonnull Predicate<MethodInformation> compareToPredicate = MethodSignatureMatcher.of("compareTo", StaticProcessingEnvironment.getTypeUtils().asElement(typeElement.asType()).toString()).and(method -> !method.isFinal());
+        final @Nonnull Predicate<MethodInformation> clonePredicate = MethodSignatureMatcher.of("clone").and(method -> !method.isFinal());
+        final @Nonnull Predicate<MethodInformation> validatePredicate = MethodSignatureMatcher.of("validate").and(method -> !method.isFinal());
+        this.equalsMethod = methodInformationIterable.findFirst(equalsPredicate);
+        this.hashCodeMethod = methodInformationIterable.findFirst(hashCodePredicate);
+        this.toStringMethod = methodInformationIterable.findFirst(toStringPredicate);
+        this.compareToMethod = methodInformationIterable.findFirst(compareToPredicate);
+        this.cloneMethod = methodInformationIterable.findFirst(clonePredicate);
+        this.validateMethod = methodInformationIterable.findFirst(validatePredicate);
         
         this.implementedGetters = indexMethodInformation(methodInformationIterable.filter(method -> (!method.isAbstract() && method.isGetter())));
         
-        this.overriddenMethods = methodInformationIterable.filter(method -> !method.isDeclaredInRuntimeEnvironment()).filter(method -> !method.isFinal()).filter(method -> !method.isAbstract()).filter(method -> !method.isStatic());
+        this.overriddenMethods = methodInformationIterable.filter(method -> !method.isDeclaredInRuntimeEnvironment()).filter(method -> !method.isFinal()).filter(method -> !method.isAbstract()).filter(method -> !method.isStatic()).filter(equalsPredicate.negate().and(hashCodePredicate.negate()).and(toStringPredicate.negate()).and(compareToPredicate.negate()).and(clonePredicate.negate()).and(validatePredicate.negate()));
         
         FiniteIterable<MethodInformation> methodsMatchingTheRecoverMethodMatcher = methodInformationIterable.filter(recoverMethodMatcher);
         if (methodsMatchingTheRecoverMethodMatcher.size() > 1) {

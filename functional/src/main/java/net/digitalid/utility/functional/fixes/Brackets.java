@@ -31,7 +31,12 @@ public enum Brackets implements Fixes {
     /**
      * The pointy brackets '<' and '>'.
      */
-    POINTY("<", ">");
+    POINTY("<", ">"),
+    
+    /**
+     * The curly brackets with a space after the opening and before the closing bracket.
+     */
+    JSON("{ ", " }");
     
     /* -------------------------------------------------- Prefix -------------------------------------------------- */
     

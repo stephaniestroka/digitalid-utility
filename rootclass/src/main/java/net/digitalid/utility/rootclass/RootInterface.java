@@ -8,4 +8,15 @@ import net.digitalid.utility.validation.validatable.Validatable;
  * 
  * @see RootClass
  */
-public interface RootInterface extends Castable, Validatable {}
+public interface RootInterface extends Castable, Validatable {
+    
+    @Override
+    public boolean equals(Object e);
+    
+    @Override
+    public int hashCode();
+    
+    @Override
+    public String toString();
+    
+}

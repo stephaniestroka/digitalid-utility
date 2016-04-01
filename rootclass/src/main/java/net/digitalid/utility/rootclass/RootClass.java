@@ -11,6 +11,18 @@ public abstract class RootClass extends CastableClass implements RootInterface {
     
     @Pure
     @Override
+    public abstract boolean equals(Object e);
+    
+    @Pure
+    @Override
+    public abstract int hashCode();
+    
+    @Pure
+    @Override
+    public abstract String toString();
+    
+    @Pure
+    @Override
     @CallSuper
     public void validate() {}
     

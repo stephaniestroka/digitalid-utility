@@ -5,11 +5,12 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.rootclass.RootClass;
 
 /**
  * Description.
  */
-public class GenericClass<G extends GenericClass<G>> {
+public abstract class GenericClass<G extends GenericClass<G>> extends RootClass {
     
     public <T> T test(@Nonnull T object) {
         return object;
