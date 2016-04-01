@@ -1,43 +1,46 @@
 package net.digitalid.utility.configuration.exceptions;
 
+import javax.annotation.Nonnull;
+
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This exception indicates that the configurations have cyclic dependencies.
  */
+@Immutable
 public class CyclicDependenciesException extends InitializationException {
     
     /* -------------------------------------------------- Configuration -------------------------------------------------- */
     
-    private final Configuration<?> configuration;
+    private final @Nonnull Configuration<?> configuration;
     
     /**
      * Returns the configuration to which the dependency should have been added.
-     * 
-     * @ensure result != null : "The returned configuration may not be null.";
      */
-    public Configuration<?> getConfiguration() {
+    @Pure
+    public @Nonnull Configuration<?> getConfiguration() {
         return configuration;
     }
     
     /* -------------------------------------------------- Dependency -------------------------------------------------- */
     
-    private final Configuration<?> dependency;
+    private final @Nonnull Configuration<?> dependency;
     
     /**
      * Returns the dependency which should have been added to the configuration.
-     * 
-     * @ensure result != null : "The returned configuration may not be null.";
      */
-    public Configuration<?> getDependency() {
+    @Pure
+    public @Nonnull Configuration<?> getDependency() {
         return dependency;
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     @SuppressWarnings("null")
-    protected CyclicDependenciesException(Configuration<?> configuration, Configuration<?> dependency) {
+    protected CyclicDependenciesException(@Nonnull Configuration<?> configuration, @Nonnull Configuration<?> dependency) {
         super("Could not add $ as a dependency of $, as $ already depends on $.", dependency, configuration, dependency, configuration, dependency.getDependencyChainAsString(configuration));
         
         Require.that(configuration != null).orThrow("The configuration may not be null.");
@@ -52,11 +55,9 @@ public class CyclicDependenciesException extends InitializationException {
      * 
      * @param configuration the configuration to which the dependency should have been added.
      * @param dependency the dependency which should have been added to the configuration.
-     * 
-     * @require configuration != null : "The configuration may not be null.";
-     * @require dependency != null : "The dependency may not be null.";
      */
-    public static CyclicDependenciesException with(Configuration<?> configuration, Configuration<?> dependency) {
+    @Pure
+    public static @Nonnull CyclicDependenciesException with(@Nonnull Configuration<?> configuration, @Nonnull Configuration<?> dependency) {
         return new CyclicDependenciesException(configuration, dependency);
     }
     

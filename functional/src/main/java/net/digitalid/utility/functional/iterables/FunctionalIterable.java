@@ -14,7 +14,7 @@ import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
-import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.Updating;
 
 /**
  * This interface extends the {@link Iterable} interface with functional methods.
@@ -22,7 +22,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see InfiniteIterable
  * @see FiniteIterable
  */
-@Immutable
+@Updating
 public interface FunctionalIterable<E> extends Iterable<E> {
     
     /* -------------------------------------------------- Size -------------------------------------------------- */

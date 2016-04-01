@@ -23,6 +23,7 @@ import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.state.Modifiable;
 import net.digitalid.utility.functional.fixes.Fixes;
@@ -46,14 +47,14 @@ import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.math.relative.GreaterThanOrEqualTo;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Functional;
-import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.Updating;
 
 /**
  * This interface extends the functional iterable interface to model finite iterables.
  * 
  * @see CollectionIterable
  */
-@Immutable
+@Updating
 @Functional
 public interface FiniteIterable<E> extends FunctionalIterable<E> {
     
@@ -63,7 +64,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Wraps the given collection as a finite iterable.
      */
     @Pure
-    public static <E> @Nonnull FiniteIterable<E> of(@Captured @Unmodified @Nonnull Collection<? extends E> collection) {
+    public static <E> @Nonnull FiniteIterable<E> of(@Referenced @Unmodified @Nonnull Collection<? extends E> collection) {
         return new CollectionBasedIterable<>(collection);
     }
     
@@ -72,7 +73,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     @SafeVarargs
-    public static <E> @Nonnull FiniteIterable<E> of(@Captured E... elements) {
+    public static <E> @Nonnull FiniteIterable<E> of(@Referenced @Unmodified @Captured E... elements) {
         return () -> ArrayIterator.with(elements);
     }
     
@@ -670,11 +671,19 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     }
     
     /**
+     * Returns the elements of this iterable joined by the given delimiter.
+     */
+    @Pure
+    public default @Nonnull String join(@Nonnull CharSequence delimiter) {
+        return join(null, "", delimiter);
+    }
+    
+    /**
      * Returns the elements of this iterable joined by commas.
      */
     @Pure
     public default @Nonnull String join() {
-        return join(null);
+        return join((Fixes) null);
     }
     
 }

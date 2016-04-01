@@ -2,9 +2,9 @@ package net.digitalid.utility.freezable;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.freezable.annotations.NonFrozen;
 
 /**
  * Interfaces that extend this interface provide read-only access to their objects.

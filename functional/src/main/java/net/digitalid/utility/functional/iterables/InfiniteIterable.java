@@ -4,6 +4,8 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.parameter.Referenced;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.interfaces.Producer;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
@@ -20,12 +22,12 @@ import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Functional;
-import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.Updating;
 
 /**
  * This interface extends the functional iterable interface to model infinite iterables.
  */
-@Immutable
+@Updating
 @Functional
 public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
@@ -43,7 +45,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
      * Returns a new infinite iterable that generates an infinite number of elements with the given producer.
      */
     @Pure
-    public static <E> @Nonnull InfiniteIterable<E> generate(@Captured @Nonnull Producer<? extends E> producer) {
+    public static <E> @Nonnull InfiniteIterable<E> generate(@Referenced @Unmodified @Nonnull Producer<? extends E> producer) {
         return () -> GeneratingIterator.with(producer);
     }
     
