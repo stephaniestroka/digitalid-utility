@@ -1,13 +1,20 @@
 package net.digitalid.utility.contracts.exceptions;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+
 /**
  * This exception indicates a violated invariant.
  */
+@Immutable
 public class InvariantViolationException extends ContractViolationException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected InvariantViolationException(String message, Object... arguments) {
+    protected InvariantViolationException(@Nullable String message, @Nullable Object... arguments) {
         super(message, arguments);
     }
     
@@ -15,7 +22,8 @@ public class InvariantViolationException extends ContractViolationException {
      * Returns an invariant violation exception with the given message.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static InvariantViolationException with(String message, Object... arguments) {
+    @Pure
+    public static @Nonnull InvariantViolationException with(@Nullable String message, @Nullable Object... arguments) {
         return new InvariantViolationException(message, arguments);
     }
     
