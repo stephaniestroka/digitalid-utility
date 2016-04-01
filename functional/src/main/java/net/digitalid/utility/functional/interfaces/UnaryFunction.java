@@ -40,4 +40,22 @@ public interface UnaryFunction<I, O> {
         return object -> evaluate(function.evaluate(object));
     }
     
+    /* -------------------------------------------------- Null Handling -------------------------------------------------- */
+    
+    /**
+     * Returns a new function based on this function that propagates null instead of evaluating it.
+     */
+    @Pure
+    public default @Nonnull UnaryFunction<I, O> propagateNull() {
+        return object -> object != null ? evaluate(object) : null;
+    }
+    
+    /**
+     * Returns a new function based on this function that returns the given default value for null.
+     */
+    @Pure
+    public default @Nonnull UnaryFunction<I, O> replaceNull(@Nonnull O defaultValue) {
+        return object -> object != null ? evaluate(object) : defaultValue;
+    }
+    
 }

@@ -49,4 +49,22 @@ public interface BinaryFunction<I0, I1, O> {
         return (object0, object1) -> evaluate(function0.evaluate(object0), function1.evaluate(object1));
     }
     
+    /* -------------------------------------------------- Null Handling -------------------------------------------------- */
+    
+    /**
+     * Returns a new function based on this function that propagates null instead of evaluating it.
+     */
+    @Pure
+    public default @Nonnull BinaryFunction<I0, I1, O> propagateNull() {
+        return (object0, object1) -> object0 != null && object1 != null ? evaluate(object0, object1) : null;
+    }
+    
+    /**
+     * Returns a new function based on this function that returns the given default value for null.
+     */
+    @Pure
+    public default @Nonnull BinaryFunction<I0, I1, O> replaceNull(@Nonnull O defaultValue) {
+        return (object0, object1) -> object0 != null && object1 != null ? evaluate(object0, object1) : defaultValue;
+    }
+    
 }

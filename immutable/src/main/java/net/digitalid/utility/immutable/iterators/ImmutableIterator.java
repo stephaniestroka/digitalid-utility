@@ -6,6 +6,7 @@ import java.util.Objects;
 /**
  * This class implements an immutable iterator.
  */
+
 public class ImmutableIterator<E> implements Iterator<E> {
     
     /* -------------------------------------------------- Iterator -------------------------------------------------- */

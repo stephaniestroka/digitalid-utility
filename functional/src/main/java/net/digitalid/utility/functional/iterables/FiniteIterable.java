@@ -16,6 +16,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
@@ -43,6 +44,7 @@ import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.math.relative.GreaterThanOrEqualTo;
+import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -100,8 +102,8 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default @Nonnull FiniteIterable<E> skip(@Positive long number) {
-        return () -> PruningIterator.with(iterator(), number, Long.MAX_VALUE);
+    public default @Nonnull FiniteIterable<E> skip(@Positive int number) {
+        return () -> PruningIterator.with(iterator(), number, Integer.MAX_VALUE);
     }
     
     /* -------------------------------------------------- Zipping -------------------------------------------------- */
@@ -122,7 +124,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default <F> @Nonnull FiniteIterable<F> flatten(@Positive long level) {
+    public default <F> @Nonnull FiniteIterable<F> flatten(@Positive int level) {
         return () -> FlatteningIterator.with(iterator(), level);
     }
     
@@ -135,7 +137,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     @Pure
     @Override
     public default <F> @Nonnull FiniteIterable<F> flattenAll() {
-        return flatten(Long.MAX_VALUE);
+        return flatten(Integer.MAX_VALUE);
     }
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
@@ -144,8 +146,8 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the size of this iterable.
      */
     @Pure
-    public default @NonNegative long size() {
-        return size(Long.MAX_VALUE);
+    public default @NonNegative int size() {
+        return size(Integer.MAX_VALUE);
     }
     
     /* -------------------------------------------------- Element -------------------------------------------------- */
@@ -175,8 +177,8 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the index of the first occurrence of the given object in this iterable or -1 if this iterable does not contain the given object.
      */
     @Pure
-    public default @GreaterThanOrEqualTo(-1) long getFirstIndexOf(@NonCaptured @Unmodified E object) {
-        long index = 0;
+    public default @GreaterThanOrEqualTo(-1) int getFirstIndexOf(@NonCaptured @Unmodified E object) {
+        int index = 0;
         for (E element : this) {
             if (Objects.equals(object, element)) { return index; }
             index += 1;
@@ -188,9 +190,9 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the index of the last occurrence of the given object in this iterable or -1 if this iterable does not contain the given object.
      */
     @Pure
-    public default @GreaterThanOrEqualTo(-1) long getLastIndexOf(@NonCaptured @Unmodified E object) {
-        long lastIndex = -1;
-        long currentIndex = 0;
+    public default @GreaterThanOrEqualTo(-1) int getLastIndexOf(@NonCaptured @Unmodified E object) {
+        int lastIndex = -1;
+        int currentIndex = 0;
         for (E element : this) {
             if (Objects.equals(object, element)) { lastIndex = currentIndex; }
             currentIndex += 1;
@@ -204,8 +206,8 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the number of elements in this iterable that equal the given object.
      */
     @Pure
-    public default @NonNegative long count(@NonCaptured @Unmodified E object) {
-        long count = 0;
+    public default @NonNegative int count(@NonCaptured @Unmodified E object) {
+        int count = 0;
         for (E element : this) {
             if (Objects.equals(object, element)) { count++; }
         }
@@ -478,7 +480,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     public default <K> @Capturable @Modifiable @Nonnull Map<K, @Nonnull List<E>> groupBy(@Nonnull UnaryFunction<? super E, ? extends K> function) {
-        final @Nonnull Map<K, List<E>> result = new LinkedHashMap<>((int) size());
+        final @Nonnull Map<K, List<E>> result = new LinkedHashMap<>(size());
         for (E element : this) {
             final K key = function.evaluate(element);
             @Nullable List<E> list = result.get(key);
@@ -505,10 +507,13 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     /* -------------------------------------------------- Action -------------------------------------------------- */
     
     /**
-     * Performs the given action for each element of this iterable.
+     * Performs the given action for each element of this iterable and returns this iterable.
      */
-    public default void forEach(@NonCaptured @Modified @Nonnull Consumer<? super E> action) {
+    @Impure
+    @Chainable
+    public default FiniteIterable<E> forEach(@NonCaptured @Modified @Nonnull Consumer<? super E> action) {
         for (E element : this) { action.consume(element); }
+        return this;
     }
     
     /* -------------------------------------------------- Exports -------------------------------------------------- */
@@ -519,7 +524,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     @Pure
     @SuppressWarnings("unchecked")
     public default @Capturable @Nonnull E[] toArray() {
-        final @Nonnull Object[] array = new Object[(int) size()];
+        final @Nonnull Object[] array = new Object[size()];
         int index = 0;
         for (E element : this) {
             array[index++] = element;

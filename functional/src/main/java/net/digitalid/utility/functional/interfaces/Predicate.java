@@ -99,4 +99,22 @@ public interface Predicate<T> {
         return object -> evaluate(object);
     }
     
+    /* -------------------------------------------------- Null Handling -------------------------------------------------- */
+    
+    /**
+     * Returns a new predicate based on this predicate that propagates null instead of evaluating it.
+     */
+    @Pure
+    public default @Nonnull Predicate<T> propagateNull() {
+        return object -> object != null ? evaluate(object) : null;
+    }
+    
+    /**
+     * Returns a new predicate based on this predicate that returns the given default value for null.
+     */
+    @Pure
+    public default @Nonnull Predicate<T> replaceNull(boolean defaultValue) {
+        return object -> object != null ? evaluate(object) : defaultValue;
+    }
+    
 }

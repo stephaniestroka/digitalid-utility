@@ -41,10 +41,10 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * @throws IndexOutOfBoundsException if the given limit is non-positive.
      */
     @Pure
-    public default @NonNegative long size(@Positive long limit) {
+    public default @NonNegative int size(@Positive int limit) {
         if (limit <= 0) { throw new IndexOutOfBoundsException("The limit has to be positive but was " + limit + "."); }
         
-        long size = 0;
+        int size = 0;
         final @Nonnull Iterator<E> iterator = iterator();
         while (iterator.hasNext() && size < limit) {
             iterator.next();
@@ -57,7 +57,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns whether this iterable has the given number of elements.
      */
     @Pure
-    public default boolean isSize(@NonNegative long number) {
+    public default boolean isSize(@NonNegative int number) {
         return size(number + 1) == number;
     }
     
@@ -65,7 +65,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns whether the size of this iterable is at most the given value.
      */
     @Pure
-    public default boolean sizeAtMost(@NonNegative long value) {
+    public default boolean sizeAtMost(@NonNegative int value) {
         return size(value + 1) <= value;
     }
     
@@ -73,7 +73,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns whether the size of this iterable is at least the given value.
      */
     @Pure
-    public default boolean sizeAtLeast(@Positive long value) {
+    public default boolean sizeAtLeast(@Positive int value) {
         return size(value) == value;
     }
     
@@ -85,8 +85,8 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * @throws IndexOutOfBoundsException if the given index is negative or greater or equal to the size of this iterable.
      */
     @Pure
-    public default @NonCapturable E get(@Index long index) {
-        long currentIndex = 0;
+    public default @NonCapturable E get(@Index int index) {
+        int currentIndex = 0;
         for (E element : this) {
             if (currentIndex == index) { return element; }
             currentIndex += 1;
@@ -122,21 +122,23 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns the elements of this iterable after discarding the given number of elements from the beginning.
      */
     @Pure
-    public @Nonnull FunctionalIterable<E> skip(@Positive long number);
+    public @Nonnull FunctionalIterable<E> skip(@Positive int number);
     
     /**
      * Returns the given number of elements from the beginning of this iterable.
      */
     @Pure
-    public default @Nonnull FiniteIterable<E> limit(@Positive long number) {
+    public default @Nonnull FiniteIterable<E> limit(@Positive int number) {
         return () -> PruningIterator.with(iterator(), 0, number);
     }
     
     /**
      * Returns the elements of this iterable from the given start index to but not including the given end index.
+     * If the end index is {@link Integer#MAX_VALUE}, the returned iterable iterates as long as this iterable does,
+     * which means calling {@code extract(startIndex, Integer.MAX_VALUE)} is the same as {@code skip(startIndex)}.
      */
     @Pure
-    public default @Nonnull FiniteIterable<E> extract(@Positive long startIndex, @Positive long endIndex) {
+    public default @Nonnull FiniteIterable<E> extract(@Positive int startIndex, @Positive int endIndex) {
         return () -> PruningIterator.with(iterator(), startIndex, endIndex);
     }
     
@@ -180,7 +182,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns the elements of this iterable with all collections up to the given level flattened.
      */
     @Pure
-    public <F> @Nonnull FunctionalIterable<F> flatten(@Positive long level);
+    public <F> @Nonnull FunctionalIterable<F> flatten(@Positive int level);
     
     /**
      * Returns the elements of this iterable with all collections directly contained in this iterable flattened.

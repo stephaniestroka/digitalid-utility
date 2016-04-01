@@ -16,19 +16,20 @@ import net.digitalid.utility.validation.annotations.math.Positive;
 
 /**
  * This class implements a pruning iterator that iterates over the elements of the given iterator from the given start index to but not including the given end index.
+ * If the end index is {@link Integer#MAX_VALUE}, this iterator returns values as long as the given iterator does, which is important for skipping infinite iterables.
  */
 @Mutable
 public class PruningIterator<E> extends SingleIteratorBasedIterator<E, E> {
     
     /* -------------------------------------------------- Indexes -------------------------------------------------- */
     
-    protected final @NonNegative long startIndex;
+    protected final @NonNegative int startIndex;
     
-    protected final @Positive long endIndex;
+    protected final @Positive int endIndex;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected PruningIterator(@Captured @Nonnull Iterator<? extends E> primaryIterator, @NonNegative long startIndex, @Positive long endIndex) {
+    protected PruningIterator(@Captured @Nonnull Iterator<? extends E> primaryIterator, @NonNegative int startIndex, @Positive int endIndex) {
         super(primaryIterator);
         
         this.startIndex = startIndex;
@@ -39,13 +40,13 @@ public class PruningIterator<E> extends SingleIteratorBasedIterator<E, E> {
      * Returns a new pruning iterator that iterates over the elements of the given iterator from the given start index to but not including the given end index.
      */
     @Pure
-    public static <E> @Capturable @Nonnull PruningIterator<E> with(@Captured @Nonnull Iterator<? extends E> iterator, @NonNegative long startIndex, @Positive long endIndex) {
+    public static <E> @Capturable @Nonnull PruningIterator<E> with(@Captured @Nonnull Iterator<? extends E> iterator, @NonNegative int startIndex, @Positive int endIndex) {
         return new PruningIterator<>(iterator, startIndex, endIndex);
     }
     
     /* -------------------------------------------------- Methods -------------------------------------------------- */
     
-    private @NonNegative long currentIndex = 0;
+    private @NonNegative int currentIndex = 0;
     
     @Pure
     @Override
@@ -54,14 +55,17 @@ public class PruningIterator<E> extends SingleIteratorBasedIterator<E, E> {
             primaryIterator.next();
             currentIndex += 1;
         }
-        return currentIndex < endIndex && primaryIterator.hasNext();
+        return (endIndex == Integer.MAX_VALUE || currentIndex < endIndex) && primaryIterator.hasNext();
     }
     
     @Impure
     @Override
     public @NonCapturable E next() {
         if (hasNext()) {
-            currentIndex += 1;
+            // This condition prevents an index overflow for infinite iterables:
+            if (endIndex != Integer.MAX_VALUE) {
+                currentIndex += 1;
+            }
             return primaryIterator.next();
         } else {
             throw new NoSuchElementException();
