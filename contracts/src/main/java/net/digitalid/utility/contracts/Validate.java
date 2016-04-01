@@ -1,11 +1,17 @@
 package net.digitalid.utility.contracts;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.exceptions.InvariantViolationException;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class makes it easier to validate class invariants.
  * Usage: {@code Validate.that(condition).orThrow(message)}.
  */
+@Immutable
 public final class Validate extends Constraint {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
@@ -16,16 +22,17 @@ public final class Validate extends Constraint {
     
     /* -------------------------------------------------- Instances -------------------------------------------------- */
     
-    private static final Validate FULFILLED = new Validate(true);
+    private static final @Nonnull Validate FULFILLED = new Validate(true);
     
-    private static final Validate VIOLATED = new Validate(false);
+    private static final @Nonnull Validate VIOLATED = new Validate(false);
     
     /* -------------------------------------------------- Evaluation -------------------------------------------------- */
     
     /**
      * Returns a non-nullable invariant with the given condition that needs to be checked with {@link #orThrow(java.lang.String)}.
      */
-    public static Validate that(boolean condition) {
+    @Pure
+    public static @Nonnull Validate that(boolean condition) {
         return condition ? FULFILLED : VIOLATED;
     }
     
@@ -33,7 +40,8 @@ public final class Validate extends Constraint {
      * Checks whether the invariant returned by {@link #that(boolean)} is fulfilled and throws an {@link InvariantViolationException} with the given message otherwise.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public void orThrow(String message, Object... arguments) throws InvariantViolationException {
+    @Pure
+    public void orThrow(@Nullable String message, @Nullable Object... arguments) throws InvariantViolationException {
         if (isViolated()) { throw InvariantViolationException.with(message, arguments); }
     }
     

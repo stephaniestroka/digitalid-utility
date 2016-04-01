@@ -1,11 +1,17 @@
 package net.digitalid.utility.contracts;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.exceptions.PostconditionViolationException;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class makes it easier to validate postconditions.
  * Usage: {@code Ensure.that(condition).orThrow(message)}.
  */
+@Immutable
 public final class Ensure extends Constraint {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
@@ -16,16 +22,17 @@ public final class Ensure extends Constraint {
     
     /* -------------------------------------------------- Instances -------------------------------------------------- */
     
-    private static final Ensure FULFILLED = new Ensure(true);
+    private static final @Nonnull Ensure FULFILLED = new Ensure(true);
     
-    private static final Ensure VIOLATED = new Ensure(false);
+    private static final @Nonnull Ensure VIOLATED = new Ensure(false);
     
     /* -------------------------------------------------- Evaluation -------------------------------------------------- */
     
     /**
-     * Returns a non-nullable postcondition with the given condition that needs to be checked with {@link #orThrow(java.lang.String)}.
+     * Returns a postcondition with the given condition that needs to be checked with {@link #orThrow(java.lang.String)}.
      */
-    public static Ensure that(boolean condition) {
+    @Pure
+    public static @Nonnull Ensure that(boolean condition) {
         return condition ? FULFILLED : VIOLATED;
     }
     
@@ -33,7 +40,8 @@ public final class Ensure extends Constraint {
      * Checks whether the postcondition returned by {@link #that(boolean)} is fulfilled and throws a {@link PostconditionViolationException} with the given message otherwise.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public void orThrow(String message, Object... arguments) throws PostconditionViolationException {
+    @Pure
+    public void orThrow(@Nullable String message, @Nullable Object... arguments) throws PostconditionViolationException {
         if (isViolated()) { throw PostconditionViolationException.with(message, arguments); }
     }
     
