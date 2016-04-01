@@ -23,7 +23,7 @@ public interface Consumer<T> {
      * Consumes the given object.
      */
     @Impure
-    public void consume(T object);
+    public void consume(@Captured T object);
     
     /* -------------------------------------------------- Composition -------------------------------------------------- */
     

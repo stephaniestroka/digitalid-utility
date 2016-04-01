@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
-import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
@@ -136,7 +135,7 @@ public abstract class Tuple implements Collection<Object> {
     
     @Pure
     @Override
-    public boolean add(@Captured Object object) {
+    public boolean add(@NonCaptured @Unmodified Object object) {
         throw new UnsupportedOperationException();
     }
     
@@ -148,19 +147,19 @@ public abstract class Tuple implements Collection<Object> {
     
     @Pure
     @Override
-    public boolean addAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
+    public boolean addAll(@NonCaptured @Unmodified Collection<?> collection) {
         throw new UnsupportedOperationException();
     }
     
     @Pure
     @Override
-    public boolean removeAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
+    public boolean removeAll(@NonCaptured @Unmodified Collection<?> collection) {
         throw new UnsupportedOperationException();
     }
     
     @Pure
     @Override
-    public boolean retainAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
+    public boolean retainAll(@NonCaptured @Unmodified Collection<?> collection) {
         throw new UnsupportedOperationException();
     }
     

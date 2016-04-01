@@ -10,6 +10,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.functional.iterators.SingleIteratorBasedIterator;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -24,17 +25,9 @@ public class CollectionBasedIterable<E> implements CollectionIterable<E> {
     
     private final @Nonnull Collection<? extends E> collection;
     
-    /**
-     * Returns the underlying collection of this iterable.
-     */
-    @Pure
-    public @NonCapturable @Nonnull Collection<? extends E> getCollection() {
-        return collection;
-    }
-    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected CollectionBasedIterable(@Captured @Nonnull Collection<? extends E> collection) {
+    protected CollectionBasedIterable(@Captured @Unmodified @Nonnull Collection<? extends E> collection) {
         this.collection = collection;
     }
     
@@ -64,7 +57,7 @@ public class CollectionBasedIterable<E> implements CollectionIterable<E> {
     
     @Pure
     @Override
-    public @NonNegative long size() {
+    public @NonNegative int size() {
         return collection.size();
     }
     

@@ -25,12 +25,12 @@ public interface CollectionIterable<E> extends FiniteIterable<E> {
     
     @Pure
     @Override
-    public default @NonNegative long size(@Positive long limit) {
+    public default @NonNegative int size(@Positive int limit) {
         return Math.min(size(), limit);
     }
     
     @Pure
     @Override
-    public @NonNegative long size();
+    public @NonNegative int size();
     
 }

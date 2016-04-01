@@ -24,24 +24,24 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.contracts.Constraint;
 import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.exceptions.UnexpectedValueException;
+import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
+import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 import net.digitalid.utility.processor.generator.annotations.OnlyPossibleIn;
-import net.digitalid.utility.string.FormatString;
-import net.digitalid.utility.string.QuoteString;
-import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.processing.utility.TypeImporter;
 
 import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.*;
 
@@ -443,7 +443,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     public void addAnnotation(@Nonnull Class<? extends Annotation> annotationType, @Nullable String optionalValues, @Nonnull Object... optionalArguments) {
         requireCurrentCodeBlock(NONE, CLASS, INTERFACE, ANONYMOUS_CLASS);
         
-        addCodeLineWithIndentation("@" + importIfPossible(annotationType) + (optionalValues != null ? "(" + FormatString.format(optionalValues, QuoteString.Mark.CODE, optionalArguments) + ")" : ""));
+        addCodeLineWithIndentation("@" + importIfPossible(annotationType) + (optionalValues != null ? "(" + Strings.format(optionalValues, Quotes.CODE, optionalArguments) + ")" : ""));
     }
     
     @NonWrittenRecipient
@@ -728,7 +728,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @NonWrittenRecipient
     @OnlyPossibleIn()
     protected void addContract(@Nonnull Class<? extends Constraint> contractType, @Nonnull Contract generatedContract) {
-        addStatement(importIfPossible(contractType) + ".that(" + generatedContract.getCondition() + ").orThrow(" + QuoteString.inDouble(generatedContract.getMessage()) + (generatedContract.getArguments().size() != 0 ? ", " + FiniteIterable.of(generatedContract.getArguments()).join() : "") + ")");
+        addStatement(importIfPossible(contractType) + ".that(" + generatedContract.getCondition() + ").orThrow(" + Quotes.inDouble(generatedContract.getMessage()) + (!generatedContract.getArguments().isEmpty() ? ", " + FiniteIterable.of(generatedContract.getArguments()).join() : "") + ")");
     }
     
     @NonWrittenRecipient

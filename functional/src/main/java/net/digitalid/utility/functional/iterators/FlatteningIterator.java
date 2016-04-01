@@ -24,11 +24,11 @@ public class FlatteningIterator<F, E> extends SingleIteratorBasedIterator<F, E> 
     
     /* -------------------------------------------------- Level -------------------------------------------------- */
     
-    protected final @NonNegative long level;
+    protected final @NonNegative int level;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected FlatteningIterator(@Captured @Nonnull Iterator<? extends E> primaryIterator, @NonNegative long level) {
+    protected FlatteningIterator(@Captured @Nonnull Iterator<? extends E> primaryIterator, @NonNegative int level) {
         super(primaryIterator);
         
         this.level = level;
@@ -38,7 +38,7 @@ public class FlatteningIterator<F, E> extends SingleIteratorBasedIterator<F, E> 
      * Returns a new flattening iterator that iterates over the elements of the given iterator with all collections up to the given level flattened.
      */
     @Pure
-    public static <F, E> @Capturable @Nonnull FlatteningIterator<F, E> with(@Captured @Nonnull Iterator<? extends E> iterator, @NonNegative long level) {
+    public static <F, E> @Capturable @Nonnull FlatteningIterator<F, E> with(@Captured @Nonnull Iterator<? extends E> iterator, @NonNegative int level) {
         return new FlatteningIterator<>(iterator, level);
     }
     

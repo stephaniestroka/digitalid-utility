@@ -1,7 +1,7 @@
 package net.digitalid.utility.exceptions;
 
 import net.digitalid.utility.immutable.collections.ImmutableList;
-import net.digitalid.utility.string.FormatString;
+import net.digitalid.utility.string.Strings;
 
 /**
  * An internal exception indicates a wrong use of the library.
@@ -29,7 +29,7 @@ public abstract class InternalException extends RuntimeException {
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     protected InternalException(String message, Exception cause, Object... arguments) {
-        super(message == null ? "An internal exception occurred." : FormatString.format(message, arguments), cause);
+        super(message == null ? "An internal exception occurred." : Strings.format(message, arguments), cause);
         
         this.arguments = ImmutableList.with(arguments);
     }

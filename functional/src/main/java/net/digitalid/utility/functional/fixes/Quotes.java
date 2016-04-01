@@ -1,8 +1,11 @@
 package net.digitalid.utility.functional.fixes;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -60,6 +63,50 @@ public enum Quotes implements Fixes {
     private Quotes(@Nonnull String prefix, @Nonnull String suffix) {
         this.prefix = prefix;
         this.suffix = suffix;
+    }
+    
+    /* -------------------------------------------------- Formatting -------------------------------------------------- */
+    
+    /**
+     * Returns the given object surrounded by the given quotes.
+     */
+    @Pure
+    public static @Nonnull String in(@Nullable Quotes quotes, @NonCaptured @Unmodified @Nullable Object object) {
+        if (quotes == null) { return String.valueOf(object); }
+        else if (quotes == Quotes.CODE) { return object instanceof CharSequence ? "\"" + String.valueOf(object) + "\"" : String.valueOf(object); }
+        else { return quotes.getPrefix() + String.valueOf(object) + quotes.getSuffix(); }
+    }
+    
+    /**
+     * Returns the given object in single quotes.
+     */
+    @Pure
+    public static @Nonnull String inSingle(@Nullable Object object) {
+        return in(Quotes.SINGLE, object);
+    }
+    
+    /**
+     * Returns the given object in double quotes.
+     */
+    @Pure
+    public static @Nonnull String inDouble(@Nullable Object object) {
+        return in(Quotes.DOUBLE, object);
+    }
+    
+    /**
+     * Returns the given object in angle quotes.
+     */
+    @Pure
+    public static @Nonnull String inAngle(@Nullable Object object) {
+        return in(Quotes.ANGLE, object);
+    }
+    
+    /**
+     * Returns the given object in double quotes if it is an instance of {@link CharSequence} or without quotes otherwise.
+     */
+    @Pure
+    public static @Nonnull String inCode(@Nullable Object object) {
+        return in(Quotes.CODE, object);
     }
     
 }

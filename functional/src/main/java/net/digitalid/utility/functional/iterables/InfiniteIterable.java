@@ -65,7 +65,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default @NonNegative long size(@Positive long limit) {
+    public default @NonNegative int size(@Positive int limit) {
         if (limit <= 0) { throw new IndexOutOfBoundsException("The limit has to be positive but was " + limit + "."); }
         
         return limit;
@@ -97,8 +97,8 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default @Nonnull InfiniteIterable<E> skip(@Positive long number) {
-        return () -> PruningIterator.with(iterator(), number, Long.MAX_VALUE);
+    public default @Nonnull InfiniteIterable<E> skip(@Positive int number) {
+        return () -> PruningIterator.with(iterator(), number, Integer.MAX_VALUE);
     }
     
     /* -------------------------------------------------- Zipping -------------------------------------------------- */
@@ -119,7 +119,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default <F> @Nonnull InfiniteIterable<F> flatten(@Positive long level) {
+    public default <F> @Nonnull InfiniteIterable<F> flatten(@Positive int level) {
         return () -> FlatteningIterator.with(iterator(), level);
     }
     
@@ -132,7 +132,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     @Pure
     @Override
     public default <F> @Nonnull InfiniteIterable<F> flattenAll() {
-        return flatten(Long.MAX_VALUE);
+        return flatten(Integer.MAX_VALUE);
     }
     
 }

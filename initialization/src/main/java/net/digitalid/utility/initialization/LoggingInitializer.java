@@ -2,11 +2,11 @@ package net.digitalid.utility.initialization;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.Initializer;
+import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.logging.Log;
-import net.digitalid.utility.string.QuoteString;
-import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
@@ -50,7 +50,7 @@ public abstract class LoggingInitializer extends Initializer {
     @Pure
     @Override
     public @Nonnull String toString() {
-        return QuoteString.inSingle(getClass().getSimpleName());
+        return Quotes.inSingle(getClass().getSimpleName());
     }
     
 }

@@ -20,18 +20,18 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.Initializer;
+import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
-import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.processor.generator.ServiceFileGenerator;
-import net.digitalid.utility.string.QuoteString;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This annotation processor generates a subclass of {@link Initializer} for each static method
@@ -63,7 +63,7 @@ public class InitializationProcessor extends CustomProcessor {
     @Pure
     protected @Nullable VariableElement getConfigurationField(@Nonnull AnnotationValue annotationValue) {
         final @Nonnull DeclaredType declaredType = (DeclaredType) annotationValue.getValue();
-        ProcessingLog.debugging("The declared type is " + QuoteString.inSingle(declaredType));
+        ProcessingLog.debugging("The declared type is " + Quotes.inSingle(declaredType));
         final @Nonnull TypeElement typeElement = (TypeElement) declaredType.asElement();
         return ProcessingUtility.getUniquePublicStaticFieldOfType(typeElement, Configuration.class);
     }

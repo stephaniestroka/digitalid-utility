@@ -14,7 +14,7 @@ import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
-import net.digitalid.utility.string.FormatString;
+import net.digitalid.utility.string.Strings;
 
 /**
  * This class makes it easier to log messages during annotation processing.
@@ -54,13 +54,13 @@ public class ProcessingLog {
         Logger.log(level, message + (position != null ? " " + position : ""), null, arguments);
         if (level.getValue() >= Level.INFORMATION.getValue() && StaticProcessingEnvironment.environment.isSet()) {
             if (position == null) {
-                StaticProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments));
+                StaticProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), Strings.format(message, arguments));
             } else if (position.getAnnotationValue() != null) {
-                StaticProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement(), position.getAnnotationMirror(), position.getAnnotationValue());
+                StaticProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), Strings.format(message, arguments), position.getElement(), position.getAnnotationMirror(), position.getAnnotationValue());
             } else if (position.getAnnotationMirror() != null) {
-                StaticProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement(), position.getAnnotationMirror());
+                StaticProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), Strings.format(message, arguments), position.getElement(), position.getAnnotationMirror());
             } else {
-                StaticProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), FormatString.format(message, arguments), position.getElement());
+                StaticProcessingEnvironment.environment.get().getMessager().printMessage(levelToKind.get(level), Strings.format(message, arguments), position.getElement());
             }
         }
     }

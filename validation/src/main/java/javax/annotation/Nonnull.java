@@ -9,12 +9,12 @@ import java.lang.annotation.Target;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.immutable.collections.ImmutableSet;
-import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.immutable.collections.ImmutableSet;
+import net.digitalid.utility.processing.utility.TypeImporter;
+import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**

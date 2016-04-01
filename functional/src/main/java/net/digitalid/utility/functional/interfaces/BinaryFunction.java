@@ -3,6 +3,8 @@ package net.digitalid.utility.functional.interfaces;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -21,7 +23,7 @@ public interface BinaryFunction<I0, I1, O> {
      * All implementations of this method have to be side-effect-free.
      */
     @Pure
-    public O evaluate(I0 object0, I1 object1);
+    public O evaluate(@NonCaptured @Unmodified I0 object0, @NonCaptured @Unmodified I1 object1);
     
     /**
      * Evaluates this function for the objects in the given pair.
@@ -47,6 +49,24 @@ public interface BinaryFunction<I0, I1, O> {
     @Pure
     public default <T0, T1> @Nonnull BinaryFunction<T0, T1, O> after(@Nonnull UnaryFunction<? super T0, ? extends I0> function0, @Nonnull UnaryFunction<? super T1, ? extends I1> function1) {
         return (object0, object1) -> evaluate(function0.evaluate(object0), function1.evaluate(object1));
+    }
+    
+    /* -------------------------------------------------- Null Handling -------------------------------------------------- */
+    
+    /**
+     * Returns a new function based on this function that propagates null instead of evaluating it.
+     */
+    @Pure
+    public default @Nonnull BinaryFunction<I0, I1, O> propagateNull() {
+        return (object0, object1) -> object0 != null && object1 != null ? evaluate(object0, object1) : null;
+    }
+    
+    /**
+     * Returns a new function based on this function that returns the given default value for null.
+     */
+    @Pure
+    public default @Nonnull BinaryFunction<I0, I1, O> replaceNull(@Nonnull O defaultValue) {
+        return (object0, object1) -> object0 != null && object1 != null ? evaluate(object0, object1) : defaultValue;
     }
     
 }

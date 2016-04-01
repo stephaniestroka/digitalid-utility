@@ -3,6 +3,8 @@ package net.digitalid.utility.functional.interfaces;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -20,7 +22,7 @@ public interface UnaryFunction<I, O> {
      * All implementations of this method have to be side-effect-free.
      */
     @Pure
-    public O evaluate(I object);
+    public O evaluate(@NonCaptured @Unmodified I object);
     
     /* -------------------------------------------------- Composition -------------------------------------------------- */
     
@@ -38,6 +40,24 @@ public interface UnaryFunction<I, O> {
     @Pure
     public default <T> @Nonnull UnaryFunction<T, O> after(@Nonnull UnaryFunction<? super T, ? extends I> function) {
         return object -> evaluate(function.evaluate(object));
+    }
+    
+    /* -------------------------------------------------- Null Handling -------------------------------------------------- */
+    
+    /**
+     * Returns a new function based on this function that propagates null instead of evaluating it.
+     */
+    @Pure
+    public default @Nonnull UnaryFunction<I, O> propagateNull() {
+        return object -> object != null ? evaluate(object) : null;
+    }
+    
+    /**
+     * Returns a new function based on this function that returns the given default value for null.
+     */
+    @Pure
+    public default @Nonnull UnaryFunction<I, O> replaceNull(@Nonnull O defaultValue) {
+        return object -> object != null ? evaluate(object) : defaultValue;
     }
     
 }

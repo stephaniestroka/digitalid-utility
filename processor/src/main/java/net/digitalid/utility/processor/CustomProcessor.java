@@ -22,17 +22,16 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.type.Mutable;
+import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
-import net.digitalid.utility.string.NumberString;
-import net.digitalid.utility.string.PrefixString;
-import net.digitalid.utility.string.QuoteString;
+import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
-import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This class is the parent of all custom annotation processors.
@@ -61,7 +60,7 @@ public abstract class CustomProcessor implements Processor {
                 qualifiedTypeNames.add(((QualifiedNameable) rootElement).getQualifiedName().toString());
             }
         }
-        final @Nonnull String longestCommonPrefixWithDot = PrefixString.longestCommonPrefix(qualifiedTypeNames.toArray(new String[qualifiedTypeNames.size()]));
+        final @Nonnull String longestCommonPrefixWithDot = Strings.longestCommonPrefix(qualifiedTypeNames.toArray(new String[qualifiedTypeNames.size()]));
         return longestCommonPrefixWithDot.contains(".") ? longestCommonPrefixWithDot.substring(0, longestCommonPrefixWithDot.lastIndexOf('.')) : longestCommonPrefixWithDot;
     }
     
@@ -112,11 +111,11 @@ public abstract class CustomProcessor implements Processor {
         
         if (round == 0) {
             final @Nonnull String projectName = getProjectName(roundEnvironment);
-            ProcessingLog.information(getClass().getSimpleName() + " invoked" + (projectName.isEmpty() ? "" : " for project " + QuoteString.inSingle(projectName)) + ":\n");
+            ProcessingLog.information(getClass().getSimpleName() + " invoked" + (projectName.isEmpty() ? "" : " for project " + Quotes.inSingle(projectName)) + ":\n");
         }
         
         if (round == 0 || !onlyInterestedInFirstRound) {
-            ProcessingLog.information("Process " + annotations + " in the " + NumberString.getOrdinal(round + 1) + " round.");
+            ProcessingLog.information("Process " + annotations + " in the " + Strings.getOrdinal(round + 1) + " round.");
             try {
                 process(annotations, roundEnvironment, round++);
             } catch (@Nonnull Throwable throwable) {
