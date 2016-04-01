@@ -8,8 +8,8 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
-import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
@@ -26,7 +26,7 @@ public final class MethodUtility {
     public static @Nonnull String generateBeginMethod(@Nonnull JavaFileGenerator javaFileGenerator, @Nonnull MethodInformation method, @Nullable String prefix, @Nullable String resultVariable) {
         final @Nonnull String methodName;
         if (prefix != null && !prefix.isEmpty()) {
-            methodName = prefix + StringCase.capitalizeFirstLetters(method.getName());
+            methodName = prefix + Strings.capitalizeFirstLetters(method.getName());
         } else {
             methodName = method.getName();
         }
@@ -71,7 +71,7 @@ public final class MethodUtility {
      */
     @Pure
     public static @Nonnull String createMethodCall(@Nonnull MethodInformation method, @Nullable String prefix, @Nullable String resultVariable) {
-        final @Nonnull String methodName = prefix != null ? prefix + StringCase.capitalizeFirstLetters(method.getName()) : method.getName();
+        final @Nonnull String methodName = prefix != null ? prefix + Strings.capitalizeFirstLetters(method.getName()) : method.getName();
         return createMethodCallWithMethodName(method, methodName, resultVariable);
     }
     

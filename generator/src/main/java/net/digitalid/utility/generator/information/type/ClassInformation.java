@@ -40,7 +40,7 @@ import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processing.utility.TypeNameVisitor;
-import net.digitalid.utility.string.StringCase;
+import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.size.MinSize;
 
@@ -200,7 +200,7 @@ public class ClassInformation extends TypeInformation {
      * A {@link ConformityViolation conformity violation exception} is thrown if the getter was not found.
      */
     private static @Nonnull MethodInformation getGetterOf(@Nonnull String fieldName, @Nonnull FiniteIterable<@Nonnull MethodInformation> methodsOfType) {
-        final @Nonnull String nameRegex = "(get|has|is)" + StringCase.capitalizeFirstLetters(fieldName);
+        final @Nonnull String nameRegex = "(get|has|is)" + Strings.capitalizeFirstLetters(fieldName);
         final @Nullable MethodInformation methodInformation = methodsOfType.findFirst(MethodSignatureMatcher.of(nameRegex));
         if (methodInformation == null) {
             throw ConformityViolation.with("Getter method for $ not found", fieldName);
@@ -213,7 +213,7 @@ public class ClassInformation extends TypeInformation {
      * Returns true iff a getter method was found in a list of methods of a type for a given field.
      */
     private static boolean hasGetter(@Nonnull String fieldName, @Nonnull FiniteIterable<@Nonnull MethodInformation> methodsOfType) {
-        final @Nonnull String nameRegex = "(get|has|is)" + StringCase.capitalizeFirstLetters(fieldName);
+        final @Nonnull String nameRegex = "(get|has|is)" + Strings.capitalizeFirstLetters(fieldName);
         final @Nullable MethodInformation methodInformation = methodsOfType.findFirst(MethodSignatureMatcher.of(nameRegex));
         return methodInformation != null;
     }
@@ -223,7 +223,7 @@ public class ClassInformation extends TypeInformation {
      * If the setter was not found, null is returned.
      */
     private static @Nullable MethodInformation getSetterOf(@Nonnull String fieldName, @Nonnull String fieldType, @Nonnull @NonNullableElements FiniteIterable<MethodInformation> methodsOfType) {
-        final @Nonnull String methodName = "set" + StringCase.capitalizeFirstLetters(fieldName);
+        final @Nonnull String methodName = "set" + Strings.capitalizeFirstLetters(fieldName);
         return methodsOfType.findFirst(MethodSignatureMatcher.of(methodName, fieldType));
     }
     

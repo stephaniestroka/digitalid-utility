@@ -21,7 +21,7 @@ import net.digitalid.utility.generator.information.type.exceptions.UnsupportedTy
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
-import net.digitalid.utility.string.StringCase;
+import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Utility;
@@ -52,7 +52,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      * Returns the name of the field builder interface for a given field.
      */
     private @Nonnull String getNameOfFieldBuilder(@Nonnull FieldInformation field) {
-        return StringCase.capitalizeFirstLetters(field.getName()) + typeInformation.getSimpleNameOfGeneratedBuilder();
+        return Strings.capitalizeFirstLetters(field.getName()) + typeInformation.getSimpleNameOfGeneratedBuilder();
     }
     
     /**
@@ -67,7 +67,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      */
     private @Nonnull String createInterfaceForField(@Nonnull FieldInformation field, @Nullable String nextInterface) {
         final @Nonnull String interfaceName = getNameOfFieldBuilder(field);
-        final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.getName());
+        final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
         beginInterface("interface " + interfaceName + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeInformation.getType().getTypeArguments()));
         ProcessingLog.debugging("addAnnotation");
         addAnnotation(Chainable.class);
@@ -104,7 +104,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      * Declares and implements the setter for the given field with the given return type and the given returned instance.
      */
     private void addSetterForField(@Nonnull FieldInformation field, @Nonnull String returnType, @Nonnull String returnedInstance) {
-        final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.getName());
+        final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
         beginMethod("public static " + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeInformation.getType().getTypeArguments()) + returnType + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")");
         addStatement("return new " + returnedInstance + "()." + methodName + "(" + field.getName() + ")");
         endMethod();
@@ -148,10 +148,10 @@ public class BuilderGenerator extends JavaFileGenerator {
         
         for (@Nonnull FieldInformation field : typeInformation.getRepresentingFieldInformation()) {
             field.getAnnotations();
-            addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize(field.getName())));
+            addSection(Strings.capitalizeFirstLetters(Strings.decamelize(field.getName())));
             // TODO: Add annotations.
             addField("private " + importIfPossible(field.getType()) + " " + field.getName());
-            final @Nonnull String methodName = "with" + StringCase.capitalizeFirstLetters(field.getName());
+            final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
             if (isFieldRequired(field)) {
                 addAnnotation(Override.class);
             }

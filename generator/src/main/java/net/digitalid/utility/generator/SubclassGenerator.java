@@ -16,6 +16,7 @@ import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.functional.fixes.Brackets;
+import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.ElementInformation;
@@ -33,8 +34,7 @@ import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.generator.interceptor.MethodUtility;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
-import net.digitalid.utility.string.QuoteString;
-import net.digitalid.utility.string.StringCase;
+import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.tuples.Triplet;
 import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
@@ -60,19 +60,19 @@ public class SubclassGenerator extends JavaFileGenerator {
     protected void generateFields() {
         for (@Nonnull GeneratedFieldInformation field : typeInformation.generatedFieldInformation) {
             ProcessingLog.verbose("Generating the field $.", field.getName());
-            addSection(StringCase.capitalizeFirstLetters(StringCase.decamelize(field.getName())));
+            addSection(Strings.capitalizeFirstLetters(Strings.decamelize(field.getName())));
             addField("private " + (field.isMutable() ? "" : "final ") + importIfPossible(field.getType()) + " " + field.getName());
             
             {
                 final @Nonnull MethodInformation getter = field.getGetter();
-                ProcessingLog.verbose("Implementing the getter " + QuoteString.inSingle(getter.getName()));
+                ProcessingLog.verbose("Implementing the getter " + Quotes.inSingle(getter.getName()));
                 final @Nonnull String statement = "result = this." + field.getName();
                 generateMethodWithStatement(getter, statement, "result");
             }
             
             if (field.hasSetter()) {
                 final @Nonnull MethodInformation setter = field.getNonNullSetter();
-                ProcessingLog.verbose("Implementing the setter " + QuoteString.inSingle(setter.getName()));
+                ProcessingLog.verbose("Implementing the setter " + Quotes.inSingle(setter.getName()));
                 final @Nonnull List<? extends VariableElement> parameters = setter.getElement().getParameters();
                 Require.that(parameters.size() == 1).orThrow("Found a setter with " + (parameters.size() == 0 ? "zero " : "more than one ") + "parameters.");
                 final @Nonnull VariableElement parameter = parameters.get(0);
@@ -143,7 +143,7 @@ public class SubclassGenerator extends JavaFileGenerator {
     protected void overrideMethods() {
         if (!typeInformation.getOverriddenMethods().isEmpty()) { addSection("Overridden Methods"); }
         for (final @Nonnull MethodInformation method : typeInformation.getOverriddenMethods()) {
-            ProcessingLog.verbose("Overriding the method " + QuoteString.inSingle(method.getName()));
+            ProcessingLog.verbose("Overriding the method " + Quotes.inSingle(method.getName()));
             
             final @Nonnull String callToSuperMethod = MethodUtility.createSuperCall(method, "result");
             final @Nonnull String firstMethodCall = implementCallToMethodInterceptors(method, callToSuperMethod, "result"); 
