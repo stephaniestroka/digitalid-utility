@@ -3,6 +3,8 @@ package net.digitalid.utility.functional.interfaces;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -21,7 +23,7 @@ public interface Predicate<T> {
      * All implementations of this method have to be side-effect-free.
      */
     @Pure
-    public boolean evaluate(T object);
+    public boolean evaluate(@NonCaptured @Unmodified T object);
     
     /* -------------------------------------------------- Conjunction -------------------------------------------------- */
     

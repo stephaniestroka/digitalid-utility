@@ -3,6 +3,8 @@ package net.digitalid.utility.functional.interfaces;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -21,7 +23,7 @@ public interface BinaryFunction<I0, I1, O> {
      * All implementations of this method have to be side-effect-free.
      */
     @Pure
-    public O evaluate(I0 object0, I1 object1);
+    public O evaluate(@NonCaptured @Unmodified I0 object0, @NonCaptured @Unmodified I1 object1);
     
     /**
      * Evaluates this function for the objects in the given pair.

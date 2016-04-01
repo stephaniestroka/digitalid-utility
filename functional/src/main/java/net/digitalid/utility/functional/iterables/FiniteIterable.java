@@ -63,7 +63,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Wraps the given collection as a finite iterable.
      */
     @Pure
-    public static <E> @Nonnull FiniteIterable<E> of(@Captured @Nonnull Collection<? extends E> collection) {
+    public static <E> @Nonnull FiniteIterable<E> of(@Captured @Unmodified @Nonnull Collection<? extends E> collection) {
         return new CollectionBasedIterable<>(collection);
     }
     
@@ -220,7 +220,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns whether this iterable contains the given object.
      */
     @Pure
-    public default boolean contains(@NonCaptured @Unmodified E object) {
+    public default boolean contains(@NonCaptured @Unmodified Object object) {
         for (E element : this) {
             if (Objects.equals(object, element)) { return true; }
         }
@@ -231,8 +231,8 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns whether this iterable contains all of the elements of the given iterable.
      */
     @Pure
-    public default boolean containsAll(@Nonnull FiniteIterable<? extends E> iterable) {
-        for (E element : iterable) {
+    public default boolean containsAll(@Nonnull FiniteIterable<?> iterable) {
+        for (Object element : iterable) {
             if (!contains(element)) { return false; }
         }
         return true;
@@ -362,7 +362,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the value reduced by the given operator or the given element if this iterable is empty.
      */
     @Pure
-    public default @Capturable E reduce(@Nonnull BinaryOperator<E> operator, @NonCaptured @Unmodified E element) {
+    public default @NonCapturable E reduce(@Nonnull BinaryOperator<E> operator, @NonCaptured @Unmodified E element) {
         final @Nonnull Iterator<E> iterator = iterator();
         if (iterator.hasNext()) {
             E result = iterator.next();
@@ -379,7 +379,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the value reduced by the given operator or null if this iterable is empty.
      */
     @Pure
-    public default @Capturable @Nullable E reduce(@Nonnull BinaryOperator<E> operator) {
+    public default @NonCapturable @Nullable E reduce(@Nonnull BinaryOperator<E> operator) {
         return reduce(operator, null);
     }
     
@@ -389,7 +389,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the minimum element of this iterable according to the given comparator or null if this iterable is empty.
      */
     @Pure
-    public default @Capturable @Nullable E min(@Nonnull Comparator<? super E> comparator) {
+    public default @NonCapturable @Nullable E min(@Nonnull Comparator<? super E> comparator) {
         return reduce(BinaryOperator.min(comparator));
     }
     
@@ -400,7 +400,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public default @Capturable @Nullable E min() {
+    public default @NonCapturable @Nullable E min() {
         return reduce((a, b) -> a == null ? b : (b == null ? a : ( ((Comparable<? super E>) a).compareTo(b) <= 0 ? a : b )));
     }
     
@@ -410,7 +410,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the maximum element of this iterable according to the given comparator or null if this iterable is empty.
      */
     @Pure
-    public default @Capturable @Nullable E max(@Nonnull Comparator<? super E> comparator) {
+    public default @NonCapturable @Nullable E max(@Nonnull Comparator<? super E> comparator) {
         return reduce(BinaryOperator.max(comparator));
     }
     
@@ -421,7 +421,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public default @Capturable @Nullable E max() {
+    public default @NonCapturable @Nullable E max() {
         return reduce((a, b) -> a == null ? b : (b == null ? a : ( ((Comparable<? super E>) a).compareTo(b) >= 0 ? a : b )));
     }
     

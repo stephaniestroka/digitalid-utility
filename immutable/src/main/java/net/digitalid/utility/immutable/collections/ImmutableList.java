@@ -12,6 +12,7 @@ import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.functional.iterables.CollectionIterable;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.iterators.ImmutableIterator;
 import net.digitalid.utility.immutable.iterators.ImmutableListIterator;
 import net.digitalid.utility.validation.annotations.index.Index;
@@ -26,19 +27,26 @@ public class ImmutableList<E> extends ArrayList<E> implements CollectionIterable
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ImmutableList(@NonCaptured @Unmodified Iterable<? extends E> iterable) {
+    protected ImmutableList(@NonCaptured @Unmodified @Nonnull Iterable<? extends E> iterable) {
         for (E element : iterable) {
             super.add(element);
         }
     }
     
     /**
-     * Returns an immutable list with the elements of the given iterable in the same order.
-     * The given iterable is not captured as its elements are copied to the immutable list.
+     * Returns an immutable list with the elements of the given collection in the same order.
+     * The given collection is not captured as its elements are copied to the immutable list.
      */
     @Pure
-    public static <E> ImmutableList<E> with(@NonCaptured @Unmodified Iterable<? extends E> iterable) {
-        // TODO: Only support FiniteIterable but add another constructing method for collections!
+    public static <E> @Nonnull ImmutableList<E> with(@NonCaptured @Unmodified @Nonnull Collection<? extends E> collection) {
+        return new ImmutableList<>(collection);
+    }
+    
+    /**
+     * Returns an immutable list with the elements of the given iterable in the same order.
+     */
+    @Pure
+    public static <E> @Nonnull ImmutableList<E> with(@Nonnull FiniteIterable<? extends E> iterable) {
         return new ImmutableList<>(iterable);
     }
     
@@ -48,7 +56,7 @@ public class ImmutableList<E> extends ArrayList<E> implements CollectionIterable
      */
     @Pure
     @SafeVarargs
-    public static <E> ImmutableList<E> with(@Captured E... elements) {
+    public static <E> @Nonnull ImmutableList<E> with(@Captured E... elements) {
         return new ImmutableList<>(Arrays.asList(elements));
     }
     
@@ -56,25 +64,25 @@ public class ImmutableList<E> extends ArrayList<E> implements CollectionIterable
     
     @Pure
     @Override
-    public @Capturable ImmutableIterator<E> iterator() {
+    public @Capturable @Nonnull ImmutableIterator<E> iterator() {
         return ImmutableIterator.with(super.iterator());
     }
     
     @Pure
     @Override
-    public @Capturable ImmutableListIterator<E> listIterator() {
+    public @Capturable @Nonnull ImmutableListIterator<E> listIterator() {
         return ImmutableListIterator.with(super.listIterator());
     }
     
     @Pure
     @Override
-    public @Capturable ImmutableListIterator<E> listIterator(@IndexForInsertion int index) {
+    public @Capturable @Nonnull ImmutableListIterator<E> listIterator(@IndexForInsertion int index) {
         return ImmutableListIterator.with(super.listIterator(index));
     }
     
     @Pure
     @Override
-    public ImmutableList<E> subList(@Index int fromIndex, @IndexForInsertion int toIndex) {
+    public @Nonnull ImmutableList<E> subList(@Index int fromIndex, @IndexForInsertion int toIndex) {
         // Copies the elements of this immutable list, which leads to some overhead but also prevents memory leaks.
         return ImmutableList.with(super.subList(fromIndex, toIndex));
     }
@@ -83,7 +91,7 @@ public class ImmutableList<E> extends ArrayList<E> implements CollectionIterable
     
     @Pure
     @Override
-    public final boolean add(@Captured E e) {
+    public final boolean add(@NonCaptured @Unmodified E e) {
         throw new UnsupportedOperationException();
     }
     
@@ -95,19 +103,19 @@ public class ImmutableList<E> extends ArrayList<E> implements CollectionIterable
     
     @Pure
     @Override
-    public final boolean addAll(Collection<? extends E> c) {
+    public final boolean addAll(@NonCaptured @Unmodified Collection<? extends E> c) {
         throw new UnsupportedOperationException();
     }
     
     @Pure
     @Override
-    public final boolean removeAll(Collection<?> c) {
+    public final boolean removeAll(@NonCaptured @Unmodified Collection<?> c) {
         throw new UnsupportedOperationException();
     }
     
     @Pure
     @Override
-    public final boolean retainAll(Collection<?> c) {
+    public final boolean retainAll(@NonCaptured @Unmodified Collection<?> c) {
         throw new UnsupportedOperationException();
     }
     
@@ -119,13 +127,13 @@ public class ImmutableList<E> extends ArrayList<E> implements CollectionIterable
     
     @Pure
     @Override
-    public final E set(int index, E element) {
+    public final E set(int index, @NonCaptured @Unmodified E element) {
         throw new UnsupportedOperationException();
     }
     
     @Pure
     @Override
-    public final void add(int index, E element) {
+    public final void add(int index, @NonCaptured @Unmodified E element) {
         throw new UnsupportedOperationException();
     }
     
@@ -155,7 +163,7 @@ public class ImmutableList<E> extends ArrayList<E> implements CollectionIterable
     
     @Pure
     @Override
-    public final boolean addAll(int index, Collection<? extends E> c) {
+    public final boolean addAll(int index, @NonCaptured @Unmodified Collection<? extends E> c) {
         throw new UnsupportedOperationException();
     }
     
