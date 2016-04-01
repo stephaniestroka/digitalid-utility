@@ -1,13 +1,20 @@
 package net.digitalid.utility.exceptions;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+
 /**
  * This exception indicates that an operation which should always succeed under normal circumstances failed.
  */
+@Immutable
 public class UnexpectedFailureException extends InternalException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected UnexpectedFailureException(String message, Exception cause, Object... arguments) {
+    protected UnexpectedFailureException(@Nullable String message, @Nullable Exception cause, @Nullable Object... arguments) {
         super(message, cause, arguments);
     }
     
@@ -15,7 +22,8 @@ public class UnexpectedFailureException extends InternalException {
      * Returns an unexpected failure exception with the given message and cause.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static UnexpectedFailureException with(String message, Exception cause, Object... arguments) {
+    @Pure
+    public static @Nonnull UnexpectedFailureException with(@Nullable String message, @Nullable Exception cause, @Nullable Object... arguments) {
         return new UnexpectedFailureException(message, cause, arguments);
     }
     
@@ -23,14 +31,16 @@ public class UnexpectedFailureException extends InternalException {
      * Returns an unexpected failure exception with the given message.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static UnexpectedFailureException with(String message, Object... arguments) {
+    @Pure
+    public static @Nonnull UnexpectedFailureException with(@Nullable String message, @Nullable Object... arguments) {
         return new UnexpectedFailureException(message, null, arguments);
     }
     
     /**
      * Returns an unexpected failure exception with the cause.
      */
-    public static UnexpectedFailureException with(Exception cause) {
+    @Pure
+    public static @Nonnull UnexpectedFailureException with(@Nullable Exception cause) {
         return new UnexpectedFailureException(null, cause);
     }
     

@@ -1,7 +1,12 @@
 package net.digitalid.utility.exceptions;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.immutable.collections.ImmutableList;
 import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * An internal exception indicates a wrong use of the library.
@@ -11,30 +16,32 @@ import net.digitalid.utility.string.Strings;
  * @see UnexpectedValueException
  * @see UnexpectedFailureException
  */
+@Immutable
 public abstract class InternalException extends RuntimeException {
     
     /* -------------------------------------------------- Arguments -------------------------------------------------- */
     
-    private final ImmutableList<Object> arguments;
+    private final @Nonnull ImmutableList<@Nullable Object> arguments;
     
     /**
      * Returns the arguments with which the message is formatted.
      * 
-     * @see FormatString#format(java.lang.CharSequence, java.lang.Object...)
+     * @see Strings#format(java.lang.CharSequence, java.lang.Object...)
      */
-    public ImmutableList<Object> getArguments() {
+    @Pure
+    public @Nonnull ImmutableList<@Nullable Object> getArguments() {
         return arguments;
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected InternalException(String message, Exception cause, Object... arguments) {
+    protected InternalException(@Nullable String message, @Nullable Exception cause, @Nullable Object... arguments) {
         super(message == null ? "An internal exception occurred." : Strings.format(message, arguments), cause);
         
         this.arguments = ImmutableList.with(arguments);
     }
     
-    protected InternalException(String message, Object... arguments) {
+    protected InternalException(@Nullable String message, @Nullable Object... arguments) {
         this(message, null, arguments);
     }
     
