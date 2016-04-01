@@ -19,9 +19,8 @@ import net.digitalid.utility.generator.annotations.Recover;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
-import net.digitalid.utility.string.StringCase;
+import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 
@@ -101,7 +100,7 @@ public class MethodInformation extends ExecutableInformation {
     public @Nonnull String getFieldName() {
         Require.that(isGetter() || isSetter()).orThrow("The method $ is neither a getter nor a setter.", getName());
         
-        return StringCase.lowerCaseFirstCharacter(getName().substring(getName().startsWith("is") ? 2 : 3));
+        return Strings.lowercaseFirstCharacter(getName().substring(getName().startsWith("is") ? 2 : 3));
     }
     
     /* -------------------------------------------------- Modifiers -------------------------------------------------- */

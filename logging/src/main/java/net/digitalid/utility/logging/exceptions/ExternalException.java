@@ -3,7 +3,7 @@ package net.digitalid.utility.logging.exceptions;
 import net.digitalid.utility.exceptions.InternalException;
 import net.digitalid.utility.immutable.collections.ImmutableList;
 import net.digitalid.utility.logging.Log;
-import net.digitalid.utility.string.FormatString;
+import net.digitalid.utility.string.Strings;
 
 /**
  * An external exception is caused by another party.
@@ -29,7 +29,7 @@ public abstract class ExternalException extends Exception {
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     protected ExternalException(String message, Exception cause, Object... arguments) {
-        super(message == null ? "An external exception occurred." : FormatString.format(message, arguments), cause);
+        super(message == null ? "An external exception occurred." : Strings.format(message, arguments), cause);
         
         this.arguments = ImmutableList.with(arguments);
         

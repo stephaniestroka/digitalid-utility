@@ -4,8 +4,8 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.string.StringCase;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
@@ -52,7 +52,7 @@ public abstract class AnnotationHandler {
      */
     @Pure
     public @Nonnull String getDecamelizedAnnotationName() {
-        return StringCase.decamelize(getAnnotationName());
+        return Strings.decamelize(getAnnotationName());
     }
     
 }

@@ -17,14 +17,14 @@ import javax.lang.model.type.TypeMirror;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.type.Mutable;
+import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
-import net.digitalid.utility.string.QuoteString;
-import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.processing.utility.ProcessingUtility;
 
 /**
  * This class generates files in the "META-INF/services" directory.
@@ -67,7 +67,7 @@ public class ServiceFileGenerator extends FileGenerator {
     protected ServiceFileGenerator(@Nonnull Class<?> service) {
         this.service = service;
         this.serviceMirror = StaticProcessingEnvironment.getElementUtils().getTypeElement(service.getCanonicalName()).asType();
-        ProcessingLog.verbose("Created the service loader file for the service " + QuoteString.inSingle(service.getName()));
+        ProcessingLog.verbose("Created the service loader file for the service " + Quotes.inSingle(service.getName()));
     }
     
     /**
@@ -95,7 +95,7 @@ public class ServiceFileGenerator extends FileGenerator {
         requireNotWritten();
         
         qualifiedProviderNames.add(qualifiedProviderName);
-        ProcessingLog.information("Added the provider " + QuoteString.inSingle(qualifiedProviderName) + " for the service " + QuoteString.inSingle(service.getName()));
+        ProcessingLog.information("Added the provider " + Quotes.inSingle(qualifiedProviderName) + " for the service " + Quotes.inSingle(service.getName()));
     }
     
     /**

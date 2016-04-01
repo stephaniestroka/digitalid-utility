@@ -10,16 +10,15 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.contracts.exceptions.ContractViolationException;
-import net.digitalid.utility.string.FormatString;
-import net.digitalid.utility.string.QuoteString;
-import net.digitalid.utility.string.StringCase;
+import net.digitalid.utility.functional.fixes.Quotes;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.validator.ContractGenerator;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
@@ -92,7 +91,7 @@ public class Contract {
     @Pure
     public static @Nonnull Contract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element, @Nonnull String suffix) {
         final @Nonnull String name = ValueAnnotationValidator.getName(element);
-        return new Contract(condition.replace("#", name), message.replace("#", StringCase.decamelize(name)), name + (suffix.isEmpty() ? "" : " == null ? null : " + name + suffix));
+        return new Contract(condition.replace("#", name), message.replace("#", Strings.decamelize(name)), name + (suffix.isEmpty() ? "" : " == null ? null : " + name + suffix));
     }
     
     /**
@@ -115,8 +114,8 @@ public class Contract {
     public static @Nonnull Contract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull String suffix) {
         final @Nonnull String name = ValueAnnotationValidator.getName(element);
         final @Nullable AnnotationValue annotationValue = ProcessingUtility.getAnnotationValue(annotationMirror);
-        final @Nonnull String value = QuoteString.inCode(annotationValue != null ? annotationValue.getValue() : null);
-        return new Contract(condition.replace("#", name).replace("@", value), message.replace("#", StringCase.decamelize(name)).replace("@", value), name + (suffix.isEmpty() ? "" : " == null ? null : " + name + suffix));
+        final @Nonnull String value = Quotes.inCode(annotationValue != null ? annotationValue.getValue() : null);
+        return new Contract(condition.replace("#", name).replace("@", value), message.replace("#", Strings.decamelize(name)).replace("@", value), name + (suffix.isEmpty() ? "" : " == null ? null : " + name + suffix));
     }
     
     /**

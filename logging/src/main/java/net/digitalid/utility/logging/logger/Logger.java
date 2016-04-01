@@ -6,7 +6,7 @@ import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.Version;
-import net.digitalid.utility.string.FormatString;
+import net.digitalid.utility.string.Strings;
 
 /**
  * The logger logs messages of various {@link Level levels}.
@@ -18,12 +18,7 @@ public abstract class Logger {
     /* -------------------------------------------------- Initialization -------------------------------------------------- */
     
     static {
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread thread, Throwable throwable) {
-                Log.error("The following issue caused this thread to terminate.", throwable);
-            }
-        });
+        Thread.setDefaultUncaughtExceptionHandler((Thread thread, Throwable throwable) -> Log.error("The following issue caused this thread to terminate.", throwable));
     }
     
     /* -------------------------------------------------- Configuration -------------------------------------------------- */
@@ -52,7 +47,7 @@ public abstract class Logger {
         if (level.getValue() >= Level.threshold.get().getValue()) {
             final String originalMessage = message.toString();
             final boolean addNoPeriod = originalMessage.endsWith(".") || originalMessage.endsWith(":") || originalMessage.endsWith("\n");
-            logger.get().log(level, Caller.get(), FormatString.format(originalMessage, arguments) + (addNoPeriod ? "" : "."), throwable);
+            logger.get().log(level, Caller.get(), Strings.format(originalMessage, arguments) + (addNoPeriod ? "" : "."), throwable);
         }
     }
     
