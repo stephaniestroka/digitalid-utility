@@ -11,13 +11,15 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.processing.utility.TypeImporter;
+import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.interfaces.Numerical;
-import net.digitalid.utility.processing.utility.ProcessingUtility;
-import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.validators.ModuloValidator;
 
 /**
@@ -26,9 +28,9 @@ import net.digitalid.utility.validation.validators.ModuloValidator;
  * @see Uneven
  */
 @Documented
+@Target(ElementType.TYPE_USE)
 @ValueValidator(Even.Validator.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface Even {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
@@ -41,7 +43,7 @@ public @interface Even {
         
         @Pure
         @Override
-        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
             if (ProcessingUtility.isAssignable(element, Numerical.class)) {
                 return Contract.with("# == null || #.getValue().getLowestSetBit() != 0", "The # has to be null or even but was $.", element);
             } else if (ProcessingUtility.isAssignable(element, BigInteger.class)) {

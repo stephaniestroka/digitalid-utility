@@ -63,7 +63,7 @@ public class ValidatorProcessingUtility {
     }
     
     /**
-     * Returns the binary name of the annotation handler implementation/
+     * Returns the binary name of the annotation handler implementation.
      */
     private static @Nullable String getAnnotationHandlerImplementationBinaryName(@Nonnull AnnotationMirror annotationMirror, @Nonnull Class<? extends Annotation> metaAnnotationType) {
         final @Nonnull TypeElement annotationElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
@@ -83,7 +83,7 @@ public class ValidatorProcessingUtility {
     }
     
     /**
-     * Returns an instance of the annotation handler class for a given annotatin handler implementation binary name.
+     * Returns an instance of the annotation handler class for a given annotation handler implementation binary name.
      */
     @Pure
     @SuppressWarnings("unchecked")
@@ -91,7 +91,7 @@ public class ValidatorProcessingUtility {
         ProcessingLog.debugging("Trying to retrieve class for name $", annotationHandlerImplementationBinaryName);
         final @Nonnull Class<?> annotationHandlerImplementationClass = Class.forName(annotationHandlerImplementationBinaryName);
         ProcessingLog.debugging("Annotation handler class: $", annotationHandlerImplementationClass);
-            return (G) annotationHandlerImplementationClass.newInstance();
+        return (G) annotationHandlerImplementationClass.newInstance();
     }
     
     /**
@@ -138,7 +138,6 @@ public class ValidatorProcessingUtility {
         }
         return Collections.unmodifiableMap(result);
     }
-    
     
     /**
      * Returns the method validators mapped from their corresponding annotation mirror with which the given element is annotated.

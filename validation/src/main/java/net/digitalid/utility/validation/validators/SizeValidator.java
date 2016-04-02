@@ -6,13 +6,15 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.immutable.collections.ImmutableSet;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.immutable.collections.ImmutableSet;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.interfaces.Countable;
-import net.digitalid.utility.processing.utility.ProcessingUtility;
-import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
@@ -25,11 +27,11 @@ public abstract class SizeValidator extends ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableSet<Class<?>> targetTypes = ImmutableSet.with(Collection.class, Countable.class, Object[].class, CharSequence.class);
+    private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.with(Collection.class, Countable.class, Object[].class, CharSequence.class);
     
     @Pure
     @Override
-    public @Nonnull ImmutableSet<Class<?>> getTargetTypes() {
+    public @Nonnull ImmutableSet<@Nonnull Class<?>> getTargetTypes() {
         return targetTypes;
     }
     
@@ -60,7 +62,7 @@ public abstract class SizeValidator extends ValueAnnotationValidator {
     
     @Pure
     @Override
-    public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+    public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
         // TODO: isAssignable() does not yet work for arrays.
         /*if (ProcessingUtility.isAssignable(element, Object[].class)) {
             return generateContract("# == null || #.length " + getSizeComparison(), "The length of the # has to be " + getMessageCondition() + " but was $.", element, annotationMirror, ".length");

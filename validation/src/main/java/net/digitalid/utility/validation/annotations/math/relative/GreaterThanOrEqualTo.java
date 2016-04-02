@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.validators.ValueRelativeNumericalValueValidator;
 
@@ -21,9 +21,9 @@ import net.digitalid.utility.validation.validators.ValueRelativeNumericalValueVa
  * @see LessThanOrEqualTo
  */
 @Documented
+@Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(GreaterThanOrEqualTo.Validator.class)
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface GreaterThanOrEqualTo {
     
     /* -------------------------------------------------- Value -------------------------------------------------- */

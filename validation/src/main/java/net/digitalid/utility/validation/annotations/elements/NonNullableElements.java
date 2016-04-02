@@ -12,10 +12,13 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.validators.IterableValidator;
 
 /**
@@ -25,9 +28,9 @@ import net.digitalid.utility.validation.validators.IterableValidator;
  * @see NullableElements
  */
 @Documented
+@Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(NonNullableElements.Validator.class)
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface NonNullableElements {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
@@ -42,7 +45,7 @@ public @interface NonNullableElements {
          * Returns whether all elements in the given iterable are non-null.
          */
         @Pure
-        public static boolean validate(@Nullable Iterable<?> iterable) {
+        public static boolean validate(@NonCaptured @Unmodified @Nullable Iterable<?> iterable) {
             if (iterable == null) { return true; }
             for (@Nullable Object element : iterable) {
                 if (element == null) { return false; }
@@ -54,7 +57,7 @@ public @interface NonNullableElements {
          * Returns whether all elements in the given array are non-null.
          */
         @Pure
-        public static boolean validate(@Nullable Object[] array) {
+        public static boolean validate(@NonCaptured @Unmodified @Nullable Object[] array) {
             if (array == null) { return true; }
             for (@Nullable Object element : array) {
                 if (element == null) { return false; }
@@ -64,7 +67,7 @@ public @interface NonNullableElements {
         
         @Pure
         @Override
-        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
             return Contract.with(typeImporter.importIfPossible(NonNullableElements.class) + ".Generator.validate(#)", "The # may not contain null.", element);
         }
         

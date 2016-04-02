@@ -19,9 +19,9 @@ import net.digitalid.utility.validation.validators.NumericalValueValidator;
  * @see Positive
  */
 @Documented
+@Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(NonPositive.Validator.class)
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface NonPositive {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */

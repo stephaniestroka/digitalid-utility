@@ -6,12 +6,14 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 
-import net.digitalid.utility.immutable.collections.ImmutableSet;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.validation.annotations.type.Stateless;
-import net.digitalid.utility.validation.contract.Contract;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.immutable.collections.ImmutableSet;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
+import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
@@ -24,11 +26,11 @@ public abstract class NestingKindValidator extends ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableSet<Class<?>> targetTypes = ImmutableSet.with(Class.class, TypeElement.class);
+    private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.with(Class.class, TypeElement.class);
     
     @Pure
     @Override
-    public @Nonnull ImmutableSet<Class<?>> getTargetTypes() {
+    public @Nonnull ImmutableSet<@Nonnull Class<?>> getTargetTypes() {
         return targetTypes;
     }
     
@@ -46,7 +48,7 @@ public abstract class NestingKindValidator extends ValueAnnotationValidator {
      * Returns the condition for the given element depending on the type of the element.
      */
     @Pure
-    public static @Nonnull String getCondition(@Nonnull Element element, @Nonnull NestingKind kind, @Nonnull TypeImporter typeImporter) {
+    public static @Nonnull String getCondition(@Nonnull Element element, @Nonnull NestingKind kind, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
         if (ProcessingUtility.isAssignable(element, Class.class)) {
             switch (kind) {
                 case ANONYMOUS: return "#.isAnonymousClass()";
@@ -64,7 +66,7 @@ public abstract class NestingKindValidator extends ValueAnnotationValidator {
     
     @Pure
     @Override
-    public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+    public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
         return Contract.with("# == null || " + getCondition(element, getKind(), typeImporter), "The # has to be null or have the nesting kind '" + getKind().name().toLowerCase().replace("_", "-") + "' but was $.", element);
     }
     

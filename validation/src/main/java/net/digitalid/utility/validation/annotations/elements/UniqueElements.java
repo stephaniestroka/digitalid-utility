@@ -12,20 +12,23 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.processing.utility.TypeImporter;
+import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.validators.IterableValidator;
 
 /**
  * This annotation indicates that an {@link Iterable iterable} does not contain duplicates.
  */
 @Documented
+@Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(UniqueElements.Validator.class)
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface UniqueElements {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
@@ -40,7 +43,7 @@ public @interface UniqueElements {
          * Returns whether all elements in the given iterable are unique.
          */
         @Pure
-        public static boolean validate(@Nullable Iterable<?> iterable) {
+        public static boolean validate(@NonCaptured @Unmodified @Nullable Iterable<?> iterable) {
             if (iterable == null) { return true; }
             final @Nonnull HashSet<Object> set = new HashSet<>();
             for (@Nullable Object element : iterable) {
@@ -54,7 +57,7 @@ public @interface UniqueElements {
          * Returns whether all elements in the given array are unique.
          */
         @Pure
-        public static boolean validate(@Nullable Object[] array) {
+        public static boolean validate(@NonCaptured @Unmodified @Nullable Object[] array) {
             if (array == null) { return true; }
             final @Nonnull HashSet<Object> set = new HashSet<>();
             for (@Nullable Object element : array) {
@@ -66,7 +69,7 @@ public @interface UniqueElements {
         
         @Pure
         @Override
-        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
             return Contract.with(typeImporter.importIfPossible(UniqueElements.class) + ".Generator.validate(#)", "The # may not contain duplicates.", element);
         }
         
