@@ -125,7 +125,8 @@ public class BuilderGenerator extends JavaFileGenerator {
         return listOfInterfaces;
     }
     
-    public final static UnaryFunction<@Nonnull RepresentingFieldInformation, @Nonnull String> fieldToStringFunction = new UnaryFunction<@Nonnull RepresentingFieldInformation, @Nonnull String>() {
+    // NetBeans 8.1 crashes if you use type annotations on anonymous classes and lambda expressions!
+    public final static UnaryFunction<@Nonnull RepresentingFieldInformation, @Nonnull String> fieldToStringFunction = new UnaryFunction<RepresentingFieldInformation, String>() {
         
         @Override
         public @Nonnull String evaluate(@Nonnull RepresentingFieldInformation element) {

@@ -117,7 +117,7 @@ public class Strings {
      */
     @Pure
     public static @Nonnull String uppercaseFirstCharacter(@Nonnull String string) {
-        return string.isEmpty() ? "" : string.substring(0, 1).toUpperCase()+ string.substring(1);
+        return string.isEmpty() ? "" : string.substring(0, 1).toUpperCase() + string.substring(1);
     }
     
     /* -------------------------------------------------- Prefixes -------------------------------------------------- */

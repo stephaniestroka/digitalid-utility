@@ -1,13 +1,19 @@
 package net.digitalid.utility.logging;
 
+import javax.annotation.Nonnull;
+
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.logging.logger.Logger;
+import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class enumerates the various levels of log messages.
  * 
  * @see Log
  */
+@Immutable
 public enum Level {
     
     /* -------------------------------------------------- Constants -------------------------------------------------- */
@@ -44,9 +50,6 @@ public enum Level {
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
-    /**
-     * Stores the byte representation of this level.
-     */
     private final byte value;
     
     /**
@@ -58,19 +61,16 @@ public enum Level {
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
-    /**
-     * Creates a level with the given value.
-     */
     private Level(int value) {
         this.value = (byte) value;
     }
     
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
+    @Pure
     @Override
-    public String toString() {
-        final String string = name().toLowerCase();
-        return string.substring(0, 1).toUpperCase() + string.substring(1);
+    public @Nonnull String toString() {
+        return Strings.uppercaseFirstCharacter(name().toLowerCase());
     }
     
     /* -------------------------------------------------- Configuration -------------------------------------------------- */
@@ -78,6 +78,6 @@ public enum Level {
     /**
      * Stores the level above (and including) which the messages are logged.
      */
-    public static final Configuration<Level> threshold = Configuration.with(INFORMATION).addDependency(Logger.logger);
+    public static final @Nonnull Configuration<Level> threshold = Configuration.with(INFORMATION).addDependency(Logger.logger);
     
 }

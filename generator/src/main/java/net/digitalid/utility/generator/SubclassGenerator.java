@@ -83,8 +83,9 @@ public class SubclassGenerator extends JavaFileGenerator {
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
-     
-    private static UnaryFunction<@Nonnull Pair<@Nonnull RepresentingFieldInformation, @Nonnull SubclassGenerator>, @Nonnull String> elementInformationToDeclarationFunction = new UnaryFunction<@Nonnull Pair<RepresentingFieldInformation, SubclassGenerator>, @Nonnull String>() {
+    
+    // NetBeans 8.1 crashes if you use type annotations on anonymous classes and lambda expressions!
+    private static UnaryFunction<@Nonnull Pair<@Nonnull RepresentingFieldInformation, @Nonnull SubclassGenerator>, @Nonnull String> elementInformationToDeclarationFunction = new UnaryFunction<Pair<RepresentingFieldInformation, SubclassGenerator>, String>() {
         
         @Override
         public @Nonnull String evaluate(@Nonnull Pair<RepresentingFieldInformation, SubclassGenerator> pair) {
@@ -95,7 +96,8 @@ public class SubclassGenerator extends JavaFileGenerator {
         
     };
     
-    private static UnaryFunction<@Nonnull ElementInformation, @Nonnull String> elementInformationToStringFunction = new UnaryFunction<@Nonnull ElementInformation, @Nonnull String>() {
+    // NetBeans 8.1 crashes if you use type annotations on anonymous classes and lambda expressions!
+    private static UnaryFunction<@Nonnull ElementInformation, @Nonnull String> elementInformationToStringFunction = new UnaryFunction<ElementInformation, String>() {
         
         @Override
         public @Nonnull String evaluate(@Nonnull ElementInformation element) {

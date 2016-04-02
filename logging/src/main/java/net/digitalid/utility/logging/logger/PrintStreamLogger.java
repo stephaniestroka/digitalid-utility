@@ -5,6 +5,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Version;
@@ -15,32 +23,26 @@ import net.digitalid.utility.logging.Version;
  * @see StandardOutputLogger
  * @see FileLogger
  */
+@Mutable
 public abstract class PrintStreamLogger extends Logger {
     
     /* -------------------------------------------------- Time Format -------------------------------------------------- */
     
-    /**
-     * Stores the date format of the message time.
-     */
-    private static final ThreadLocal<DateFormat> timeFormat = new ThreadLocal<DateFormat>() {
-        @Override protected DateFormat initialValue() {
+    private static final @Nonnull ThreadLocal<@Nonnull DateFormat> timeFormat = new ThreadLocal<DateFormat>() {
+        @Pure @Override protected @Capturable @Nonnull DateFormat initialValue() {
             return new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss.SSS");
         }
     };
     
     /* -------------------------------------------------- Print Stream -------------------------------------------------- */
     
-    /**
-     * Stores the non-nullable print stream to which the messages are printed.
-     */
-    private PrintStream printStream;
+    private @Nonnull PrintStream printStream;
     
     /**
-     * Sets the non-nullable print stream to which the messages are printed.
-     * 
-     * @require printStream != null : "The print stream may not be null.";
+     * Sets the print stream to which the messages are printed.
      */
-    protected void setPrintStream(PrintStream printStream) {
+    @Impure
+    protected void setPrintStream(@Captured @Nonnull PrintStream printStream) {
         Require.that(printStream != null).orThrow("The print stream may not be null.");
         
         this.printStream = printStream;
@@ -49,11 +51,9 @@ public abstract class PrintStreamLogger extends Logger {
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
-     * Creates a print stream logger that logs the messages to the given non-nullable print stream.
-     * 
-     * @require printStream != null : "The print stream may not be null.";
+     * Creates a print stream logger that logs the messages to the given print stream.
      */
-    protected PrintStreamLogger(PrintStream printStream) {
+    protected PrintStreamLogger(@Captured @Nonnull PrintStream printStream) {
         Require.that(printStream != null).orThrow("The print stream may not be null.");
         
         this.printStream = printStream;
@@ -61,10 +61,11 @@ public abstract class PrintStreamLogger extends Logger {
     
     /* -------------------------------------------------- Logging -------------------------------------------------- */
     
+    @Impure
     @Override
-    protected synchronized void log(Level level, String tag, String message, Throwable throwable) {
-        final String version = Version.string.get();
-        printStream.println(timeFormat.get().format(new Date()) + (version.isEmpty() ? "" : " in " + version) + " [" + Thread.currentThread().getName() + "] (" + level + ") <" + tag + ">: " + message);
+    protected synchronized void log(@Nonnull Level level, @Nonnull String caller, @Nonnull String message, @Nullable Throwable throwable) {
+        final @Nonnull String version = Version.string.get();
+        printStream.println(timeFormat.get().format(new Date()) + (version.isEmpty() ? "" : " in " + version) + " [" + Thread.currentThread().getName() + "] (" + level + ") <" + caller + ">: " + message);
         if (throwable != null) {
             printStream.println();
             throwable.printStackTrace(printStream);
