@@ -24,6 +24,7 @@ import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.state.Modifiable;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
@@ -127,7 +128,7 @@ public class ProcessingUtility {
      */
     @Pure
     public static @Nullable AnnotationValue getAnnotationValue(@Nonnull AnnotationMirror annotationMirror, @Nonnull String methodName) {
-        for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationEntry : StaticProcessingEnvironment.getElementUtils().getElementValuesWithDefaults(annotationMirror).entrySet()) {
+        for (Map.@Nonnull Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationEntry : StaticProcessingEnvironment.getElementUtils().getElementValuesWithDefaults(annotationMirror).entrySet()) {
             if (annotationEntry.getKey().getSimpleName().contentEquals(methodName)) {
                 return annotationEntry.getValue();
             }
@@ -226,20 +227,16 @@ public class ProcessingUtility {
         return isAssignable(element.asType(), type);
     }
     
-    
-    
     /* -------------------------------------------------- Fields of Type -------------------------------------------------- */
-    
-    private static TypeNameVisitor typeNameVisitor = new TypeNameVisitor();
     
     /**
      * Returns a list of all the fields with the given type in the given class.
      */
     @Pure
-    public static @Capturable @Nonnull List<VariableElement> getFieldsOfType(@Nonnull TypeElement classElement, @Nonnull Class<?> fieldType) {
-        final @Nonnull List<VariableElement> fields = new LinkedList<>();
+    public static @Capturable @Modifiable @Nonnull List<@Nonnull VariableElement> getFieldsOfType(@Nonnull TypeElement classElement, @Nonnull Class<?> fieldType) {
+        final @Nonnull List<@Nonnull VariableElement> fields = new LinkedList<>();
         for (@Nonnull VariableElement field : ElementFilter.fieldsIn(classElement.getEnclosedElements())) {
-            final @Nonnull String fieldTypeName = typeNameVisitor.visit(field.asType()).toString();
+            final @Nonnull String fieldTypeName = TypeNameVisitor.INSTANCE.visit(field.asType()).toString();
             ProcessingLog.verbose("Found with the type $ the field", SourcePosition.of(field), fieldTypeName);
             if (fieldTypeName.equals(fieldType.getCanonicalName())) { fields.add(field); }
         }
@@ -252,7 +249,7 @@ public class ProcessingUtility {
      */
     @Pure
     public static @Nullable VariableElement getUniquePublicStaticFieldOfType(@Nonnull TypeElement classElement, @Nonnull Class<?> fieldType) {
-        final @Nonnull List<VariableElement> fields = getFieldsOfType(classElement, fieldType);
+        final @Nonnull List<@Nonnull VariableElement> fields = getFieldsOfType(classElement, fieldType);
         if (fields.size() != 1) {
             ProcessingLog.warning("There is not exactly one field of type $ in the class", SourcePosition.of(classElement), fieldType.getCanonicalName());
         } else {

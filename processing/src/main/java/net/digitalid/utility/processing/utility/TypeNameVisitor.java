@@ -2,25 +2,40 @@ package net.digitalid.utility.processing.utility;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleTypeVisitor7;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
- *
+ * This type visitor returns the qualified name of the given type.
  */
-@Immutable
-public class TypeNameVisitor extends SimpleTypeVisitor7<StringBuilder, StringBuilder> {
+@Stateless
+public class TypeNameVisitor extends SimpleTypeVisitor7<@Nonnull StringBuilder, @Nullable StringBuilder> {
     
-    private static @Nonnull StringBuilder get(@Nullable StringBuilder string) {
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
+    
+    protected TypeNameVisitor() {}
+    
+    /**
+     * Stores an instance of the stateless type name visitor.
+     */
+    public static final @Nonnull TypeNameVisitor INSTANCE = new TypeNameVisitor();
+    
+    /* -------------------------------------------------- Utility -------------------------------------------------- */
+    
+    /**
+     * Returns the given string builder if it is not null or a new string builder otherwise.
+     */
+    @Pure
+    protected static @Capturable @Nonnull StringBuilder get(@NonCaptured @Unmodified @Nullable StringBuilder string) {
         return string == null ? new StringBuilder() : string;
     }
     
@@ -42,16 +57,8 @@ public class TypeNameVisitor extends SimpleTypeVisitor7<StringBuilder, StringBui
     
     @Pure
     @Override
-    public @Nonnull StringBuilder visitPrimitive(@Nonnull PrimitiveType type, @Nullable StringBuilder string) {
-        return get(string).append(type.toString());
-    }
-    
     public @Nonnull StringBuilder visitDeclared(@Nonnull DeclaredType type, @Nullable StringBuilder string) {
-        final @Nonnull Element typeElement = type.asElement();
-        Require.that(typeElement.getKind().isClass() || typeElement.getKind().isInterface()).orThrow("The element $ has to be a type.", typeElement);
-        
-        final @Nonnull String qualifiedNameOfType = ((QualifiedNameable) typeElement).getQualifiedName().toString();
-        return get(string).append(qualifiedNameOfType);
+        return get(string).append(((QualifiedNameable) type.asElement()).getQualifiedName());
     }
     
 }

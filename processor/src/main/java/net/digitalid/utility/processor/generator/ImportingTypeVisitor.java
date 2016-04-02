@@ -16,13 +16,13 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.utility.TypeNameVisitor;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -49,10 +49,6 @@ public class ImportingTypeVisitor extends TypeNameVisitor {
     }
     
     /* -------------------------------------------------- Utility -------------------------------------------------- */
-    
-    private static @Nonnull StringBuilder get(@Nullable StringBuilder string) {
-        return string == null ? new StringBuilder() : string;
-    }
     
     public final @Nonnull UnaryFunction<TypeMirror, String> TYPE_MAPPER = (type) -> (visit(type).toString());
     
@@ -123,7 +119,7 @@ public class ImportingTypeVisitor extends TypeNameVisitor {
     public @Nonnull StringBuilder visitDeclared(@Nonnull DeclaredType type, @Nullable StringBuilder string) {
         final @Nonnull Element element = type.asElement();
         final @Nonnull StringBuilder result = get(string).append(javaFileGenerator.importIfPossible(element));
-        final @Nonnull @NonNullableElements List<? extends TypeMirror> typeArguments = type.getTypeArguments();
+        final @Nonnull List<@Nonnull ? extends TypeMirror> typeArguments = type.getTypeArguments();
         if (!typeArguments.isEmpty()) {
             result.append("<");
             boolean first = true;

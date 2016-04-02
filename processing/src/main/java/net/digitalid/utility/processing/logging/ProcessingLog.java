@@ -2,11 +2,16 @@ package net.digitalid.utility.processing.logging;
 
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
+import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.immutable.collections.ImmutableMap;
 import net.digitalid.utility.logging.Caller;
@@ -15,18 +20,21 @@ import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
  * This class makes it easier to log messages during annotation processing.
  */
+@Utility
 public class ProcessingLog {
     
     /* -------------------------------------------------- Setup -------------------------------------------------- */
     
     /**
-     * Sets the output file of the logger to the given non-nullable name.
+     * Sets the output file of the logger to the given name.
      */
-    public static void setUp(String name) {
+    @Impure
+    public static void setUp(@Nonnull String name) {
         Require.that(name != null).orThrow("The name may not be null.");
         
         Logger.logger.set(FileLogger.with("target/processor-logs/" + name + ".log"));
@@ -39,15 +47,16 @@ public class ProcessingLog {
     /**
      * Stores a mapping from this library's logging levels to the corresponding diagnostic kind.
      */
-    private static final ImmutableMap<Level, Diagnostic.Kind> levelToKind = ImmutableMap.with(Level.VERBOSE, Diagnostic.Kind.OTHER).with(Level.DEBUGGING, Diagnostic.Kind.OTHER).with(Level.INFORMATION, Diagnostic.Kind.NOTE).with(Level.WARNING, Diagnostic.Kind.WARNING).with(Level.ERROR, Diagnostic.Kind.ERROR).build();
+    private static final @Nonnull ImmutableMap<@Nonnull Level, Diagnostic.@Nonnull Kind> levelToKind = ImmutableMap.with(Level.VERBOSE, Diagnostic.Kind.OTHER).with(Level.DEBUGGING, Diagnostic.Kind.OTHER).with(Level.INFORMATION, Diagnostic.Kind.NOTE).with(Level.WARNING, Diagnostic.Kind.WARNING).with(Level.ERROR, Diagnostic.Kind.ERROR).build();
     
     /* -------------------------------------------------- Logging -------------------------------------------------- */
     
     /**
-     * Logs the given non-nullable message with the given nullable position at the given non-nullable level.
+     * Logs the given message with the given position at the given level.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    private static void log(Level level, CharSequence message, SourcePosition position, Object... arguments) {
+    @Impure
+    private static void log(@Nonnull Level level, @Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nullable Object... arguments) {
         Require.that(level != null).orThrow("The level may not be null.");
         Require.that(message != null).orThrow("The message may not be null.");
         
@@ -68,121 +77,128 @@ public class ProcessingLog {
     /* -------------------------------------------------- Error -------------------------------------------------- */
     
     /**
-     * Logs the given non-nullable message with the given nullable position as an error.
+     * Logs the given message with the given position as an error.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void error(CharSequence message, SourcePosition position, Object... arguments) {
+    @Impure
+    public static void error(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nullable Object... arguments) {
         log(Level.ERROR, message, position, arguments);
     }
     
     /**
-     * Logs the given non-nullable message as an error.
+     * Logs the given message as an error.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void error(CharSequence message, Object... arguments) {
+    @Impure
+    public static void error(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
         log(Level.ERROR, message, null, arguments);
     }
     
     /* -------------------------------------------------- Warning -------------------------------------------------- */
     
     /**
-     * Logs the given non-nullable message with the given nullable position as a warning.
+     * Logs the given message with the given position as a warning.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void warning(CharSequence message, SourcePosition position, Object... arguments) {
+    @Impure
+    public static void warning(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nullable Object... arguments) {
         log(Level.WARNING, message, position, arguments);
     }
     
     /**
-     * Logs the given non-nullable message as a warning.
+     * Logs the given message as a warning.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void warning(CharSequence message, Object... arguments) {
+    @Impure
+    public static void warning(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
         log(Level.WARNING, message, null, arguments);
     }
     
     /* -------------------------------------------------- Information -------------------------------------------------- */
     
     /**
-     * Logs the given non-nullable message with the given nullable position as information.
+     * Logs the given message with the given position as information.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void information(CharSequence message, SourcePosition position, Object... arguments) {
+    @Impure
+    public static void information(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nullable Object... arguments) {
         log(Level.INFORMATION, message, position, arguments);
     }
     
     /**
-     * Logs the given non-nullable message as information.
+     * Logs the given message as information.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void information(CharSequence message, Object... arguments) {
+    @Impure
+    public static void information(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
         log(Level.INFORMATION, message, null, arguments);
     }
     
     /* -------------------------------------------------- Debugging -------------------------------------------------- */
     
     /**
-     * Logs the given non-nullable message with the given nullable position for debugging.
+     * Logs the given message with the given position for debugging.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void debugging(CharSequence message, SourcePosition position, Object... arguments) {
+    @Impure
+    public static void debugging(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nullable Object... arguments) {
         log(Level.DEBUGGING, message, position, arguments);
     }
     
     /**
-     * Logs the given non-nullable message for debugging.
+     * Logs the given message for debugging.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void debugging(CharSequence message, Object... arguments) {
+    @Impure
+    public static void debugging(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
         log(Level.DEBUGGING, message, null, arguments);
     }
     
     /* -------------------------------------------------- Verbose -------------------------------------------------- */
     
     /**
-     * Logs the given non-nullable message with the given nullable position only in verbose mode.
+     * Logs the given message with the given position only in verbose mode.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void verbose(CharSequence message, SourcePosition position, Object... arguments) {
+    @Impure
+    public static void verbose(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nullable Object... arguments) {
         log(Level.VERBOSE, message, position, arguments);
     }
     
     /**
-     * Logs the given non-nullable message only in verbose mode.
+     * Logs the given message only in verbose mode.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void verbose(CharSequence message, Object... arguments) {
+    @Impure
+    public static void verbose(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
         log(Level.VERBOSE, message, null, arguments);
     }
     
     /* -------------------------------------------------- Utility -------------------------------------------------- */
     
     /**
-     * Logs the elements which are annotated with one of the given annotations of the given non-nullable round environment.
-     * 
-     * @require annotations != null : "The annotations may not be null.";
-     * @require roundEnvironment != null : "The round environment may not be null.";
+     * Logs the elements which are annotated with one of the given annotations of the given round environment.
      */
-    public static void annotatedElements(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
+    @Impure
+    public static void annotatedElements(@Nonnull Set<@Nonnull ? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
         Require.that(annotations != null).orThrow("The annotations may not be null.");
         Require.that(roundEnvironment != null).orThrow("The round environment may not be null.");
         
-        for (TypeElement annotation : annotations) {
-            for (Element element : roundEnvironment.getElementsAnnotatedWith(annotation)) {
+        for (@Nonnull TypeElement annotation : annotations) {
+            for (@Nonnull Element element : roundEnvironment.getElementsAnnotatedWith(annotation)) {
                 ProcessingLog.information("Found $ on", SourcePosition.of(element), "@" + annotation.getSimpleName());
             }
         }
     }
     
     /**
-     * Logs the root elements of the given non-nullable round environment.
-     * 
-     * @require roundEnvironment != null : "The round environment may not be null.";
+     * Logs the root elements of the given round environment.
      */
-    public static void rootElements(RoundEnvironment roundEnvironment) {
+    @Impure
+    public static void rootElements(@Nonnull RoundEnvironment roundEnvironment) {
         Require.that(roundEnvironment != null).orThrow("The round environment may not be null.");
         
-        for (Element rootElement : roundEnvironment.getRootElements()) {
+        for (@Nonnull Element rootElement : roundEnvironment.getRootElements()) {
             ProcessingLog.information("Found the " + rootElement.getKind().toString().toLowerCase() + " $.", rootElement.asType());
         }
     }
