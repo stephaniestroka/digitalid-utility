@@ -1,6 +1,5 @@
 package net.digitalid.utility.processing.logging;
 
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,6 +12,7 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.collections.ImmutableMap;
 import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
@@ -180,7 +180,7 @@ public class ProcessingLog {
      * Logs the elements which are annotated with one of the given annotations of the given round environment.
      */
     @Impure
-    public static void annotatedElements(@Nonnull Set<@Nonnull ? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
+    public static void annotatedElements(@Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
         Require.that(annotations != null).orThrow("The annotations may not be null.");
         Require.that(roundEnvironment != null).orThrow("The round environment may not be null.");
         

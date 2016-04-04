@@ -1,6 +1,5 @@
 package net.digitalid.utility.generator;
 
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.processing.RoundEnvironment;
@@ -11,7 +10,10 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 
+import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.fixes.Quotes;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.type.ClassInformation;
 import net.digitalid.utility.generator.information.type.InterfaceInformation;
@@ -21,7 +23,6 @@ import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.string.Strings;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 
 /**
  * This annotation processor generates a subclass for each non-final type to implement common methods and aspects.
@@ -51,6 +52,7 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
  * Setters could/should be made chainable by returning this.
  * Delegate all interface methods to an instance (e.g. stored in a field).
  */
+@Mutable
 @SupportedOptions({"release"})
 @SupportedAnnotations(prefix = "")
 public class GeneratorProcessor extends CustomProcessor {
@@ -83,8 +85,9 @@ public class GeneratorProcessor extends CustomProcessor {
         return false;
     }
     
+    @Impure
     @Override
-    public void processFirstRound(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
+    public void processFirstRound(@Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
         for (@Nonnull Element rootElement : roundEnvironment.getRootElements()) {
             if (rootElement.getKind() == ElementKind.CLASS || rootElement.getKind() == ElementKind.INTERFACE) {
                 // TODO: In order to just generate a builder, the class can actually be final.
@@ -98,41 +101,6 @@ public class GeneratorProcessor extends CustomProcessor {
             }
         }
     }
-    
-    /* -------------------------------------------------- Validator lookup -------------------------------------------------- */
-    
-//    /**
-//     * The map of validators registered for validator annotations.
-//     */
-//    private static final @Nonnull Map<Class<? extends Annotation>, AnnotationValidator<?>> validators = new HashMap<>();
-//    
-//    public static @Nonnull AnnotationValidator<? extends Annotation> getOrCreateValidator(@Nonnull Class<? extends Annotation> annotationClass) throws ValidationFailedException {
-//        @Nullable AnnotationValidator<? extends Annotation> validator = validators.get(annotationClass);
-//        if (validator == null) {
-//            synchronized (AnnotationValidator.class) {
-//                validator = validators.get(annotationClass);
-//                if (validator == null) {
-//                    final @Nonnull ValidateWith validateWith = annotationClass.getAnnotation(ValidateWith.class);
-//                    final @Nonnull Class<? extends AnnotationValidator<? extends Annotation>> validatorClass = validateWith.value();
-//                    try {
-//                        final @Nonnull Method validatorGetter = validatorClass.getMethod("get");
-//                        validator = (AnnotationValidator<? extends Annotation>) validatorGetter.invoke(null);
-//                        validators.put(annotationClass, validator);
-//                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-//                        throw ValidationFailedException.get("Failed to initiate validator for annotation '" + annotationClass.getSimpleName() + "'", e);
-//                    }
-//                }
-//            }
-//        }
-//        return validator;
-//    }
-//    
-//    /**
-//     * Checks whether the given annotation can be validated.
-//     */
-//    private static boolean canBeValidated(Class<? extends Annotation> annotationClass) {
-//        return annotationClass.isAnnotationPresent(ValidateWith.class);
-//    }
     
 }
 

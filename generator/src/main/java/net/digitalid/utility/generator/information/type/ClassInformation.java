@@ -38,8 +38,8 @@ import net.digitalid.utility.generator.information.type.exceptions.UnsupportedTy
 import net.digitalid.utility.generator.query.MethodSignatureMatcher;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
-import net.digitalid.utility.processing.utility.TypeNameVisitor;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.size.MinSize;
@@ -249,8 +249,6 @@ public class ClassInformation extends TypeInformation {
     
     /* -------------------------------------------------- Non-directly Accessible Fields -------------------------------------------------- */
     
-    private static TypeNameVisitor typeNameVisitor = new TypeNameVisitor();
-    
     /**
      * Retrieves declared field information objects for fields in a type.
      */
@@ -259,7 +257,7 @@ public class ClassInformation extends TypeInformation {
                 field.getModifiers().contains(Modifier.PRIVATE) && 
                 hasGetter(field.getSimpleName().toString(), methodInformation)
         )).map(field -> 
-                NonDirectlyAccessibleDeclaredFieldInformation.of(field, containingType, getGetterOf(field.getSimpleName().toString(), methodInformation), getSetterOf(field.getSimpleName().toString(), typeNameVisitor.visit(field.asType()).toString(), methodInformation))
+                NonDirectlyAccessibleDeclaredFieldInformation.of(field, containingType, getGetterOf(field.getSimpleName().toString(), methodInformation), getSetterOf(field.getSimpleName().toString(), ProcessingUtility.getQualifiedName(field.asType()), methodInformation))
         );
     }
     

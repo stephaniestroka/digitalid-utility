@@ -95,6 +95,14 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
         return () -> MappingIterator.with(iterator(), function);
     }
     
+    /* -------------------------------------------------- Instance -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public default <T> @Nonnull InfiniteIterable<T> instanceOf(@Nonnull Class<T> type) {
+        return filter(type::isInstance).map(type::cast);
+    }
+    
     /* -------------------------------------------------- Pruning -------------------------------------------------- */
     
     @Pure

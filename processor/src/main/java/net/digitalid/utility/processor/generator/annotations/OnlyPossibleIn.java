@@ -18,8 +18,6 @@ import net.digitalid.utility.processor.generator.JavaFileGenerator;
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-// TODO: The following method validator meta-annotation is used to identify which contract generator to use in order to check whether a code block is created at the expected point in the code. However, we cannot apply that for the java file generator, so what's the use of this annotation here?
-//@MethodValidator(JavaFileGenerator.class)
 public @interface OnlyPossibleIn {
     
     /**
@@ -28,6 +26,6 @@ public @interface OnlyPossibleIn {
      * {@link JavaFileGenerator.CodeBlock#allowsStatements() allows statements}
      * is fine. For this reason, the value defaults to an empty array.
      */
-    @Nonnull JavaFileGenerator.CodeBlock[] value() default {};
+    JavaFileGenerator.@Nonnull CodeBlock[] value() default {};
     
 }

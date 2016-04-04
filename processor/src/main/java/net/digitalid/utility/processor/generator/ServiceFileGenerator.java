@@ -17,7 +17,9 @@ import javax.lang.model.type.TypeMirror;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.processing.logging.ProcessingLog;
@@ -74,7 +76,7 @@ public class ServiceFileGenerator extends FileGenerator {
      * Returns a service file generator for the given service.
      */
     @Pure
-    public static @Nonnull ServiceFileGenerator forService(@Nonnull Class<?> service) {
+    public static @Capturable @Nonnull ServiceFileGenerator forService(@Nonnull Class<?> service) {
         return new ServiceFileGenerator(service);
     }
     
@@ -83,13 +85,14 @@ public class ServiceFileGenerator extends FileGenerator {
     /**
      * Stores the qualified binary names of the providers for the specified service.
      */
-    private final @Nonnull List<String> qualifiedProviderNames = new LinkedList<>();
+    private final @Nonnull List<@Nonnull String> qualifiedProviderNames = new LinkedList<>();
     
     /**
      * Adds the provider with the given qualified binary name to the list of providers for the specified service.
      * 
      * @param qualifiedProviderName the name has to be in binary form (i.e. with a dollar sign for inner classes).
      */
+    @Impure
     @NonWrittenRecipient
     public void addProvider(@Nonnull String qualifiedProviderName) {
         requireNotWritten();
@@ -101,6 +104,7 @@ public class ServiceFileGenerator extends FileGenerator {
     /**
      * Adds the given element as a provider for the specified service after performing numerous checks.
      */
+    @Impure
     @NonWrittenRecipient
     public void addProvider(@Nonnull Element providerElement) {
         @Nullable String errorMessage = null;
@@ -118,6 +122,7 @@ public class ServiceFileGenerator extends FileGenerator {
     
     /* -------------------------------------------------- Writing -------------------------------------------------- */
     
+    @Impure
     @Override
     @NonWrittenRecipient
     protected void writeOnce() throws IOException {

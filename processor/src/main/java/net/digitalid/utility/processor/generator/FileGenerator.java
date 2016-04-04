@@ -4,11 +4,12 @@ import java.io.IOException;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
 import net.digitalid.utility.processing.logging.ProcessingLog;
-import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 
 /**
@@ -60,12 +61,14 @@ public abstract class FileGenerator {
      * Writes the generated file to the file system.
      * This method is guaranteed to be called only once.
      */
+    @Impure
     @NonWrittenRecipient
     protected abstract void writeOnce() throws IOException;
     
     /**
      * Writes the generated file to the file system and returns whether it was successful.
      */
+    @Impure
     @NonWrittenRecipient
     public final boolean write() {
         requireNotWritten();

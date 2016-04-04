@@ -16,18 +16,20 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import javax.lang.model.util.SimpleTypeVisitor7;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.ownership.Capturable;
-import net.digitalid.utility.annotations.state.Modifiable;
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
+import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
@@ -51,7 +53,7 @@ public class ProcessingUtility {
      */
     @Pure
     public static boolean isDeclaredInRuntimeEnvironment(@Nonnull Element element) {
-        // Matches java. and javax. packages.
+        // Matches both 'java.*' and 'javax.*' packages.
         return getPackageName(element).startsWith("java");
     }
     
@@ -227,20 +229,60 @@ public class ProcessingUtility {
         return isAssignable(element.asType(), type);
     }
     
+    /* -------------------------------------------------- Type Visitor -------------------------------------------------- */
+    
+    /**
+     * This type visitor returns the qualified name of the given type.
+     */
+    @Stateless
+    public static class TypeVisitor extends SimpleTypeVisitor7<@Nonnull String, @Nullable Void> {
+        
+        protected TypeVisitor() {}
+        
+        @Pure
+        @Override
+        protected @Nonnull String defaultAction(@Nonnull TypeMirror type, @Nullable Void none) {
+            return type.toString();
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull String visitArray(@Nonnull ArrayType type, @Nullable Void none) {
+            return visit(type.getComponentType()) + "[]";
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull String visitDeclared(@Nonnull DeclaredType type, @Nullable Void none) {
+            return ((QualifiedNameable) type.asElement()).getQualifiedName().toString();
+        }
+        
+    }
+    
+    private static final @Nonnull TypeVisitor TYPE_VISITOR = new TypeVisitor();
+    
+    /**
+     * Returns the qualified name of the given type mirror.
+     */
+    @Pure
+    public static @Nonnull String getQualifiedName(@Nonnull TypeMirror typeMirror) {
+        return TYPE_VISITOR.visit(typeMirror);
+    }
+    
     /* -------------------------------------------------- Fields of Type -------------------------------------------------- */
     
     /**
      * Returns a list of all the fields with the given type in the given class.
      */
     @Pure
-    public static @Capturable @Modifiable @Nonnull List<@Nonnull VariableElement> getFieldsOfType(@Nonnull TypeElement classElement, @Nonnull Class<?> fieldType) {
+    public static @Nonnull FiniteIterable<@Nonnull VariableElement> getFieldsOfType(@Nonnull TypeElement classElement, @Nonnull Class<?> fieldType) {
         final @Nonnull List<@Nonnull VariableElement> fields = new LinkedList<>();
         for (@Nonnull VariableElement field : ElementFilter.fieldsIn(classElement.getEnclosedElements())) {
-            final @Nonnull String fieldTypeName = TypeNameVisitor.INSTANCE.visit(field.asType()).toString();
+            final @Nonnull String fieldTypeName = getQualifiedName(field.asType());
             ProcessingLog.verbose("Found with the type $ the field", SourcePosition.of(field), fieldTypeName);
             if (fieldTypeName.equals(fieldType.getCanonicalName())) { fields.add(field); }
         }
-        return fields;
+        return FiniteIterable.of(fields);
     }
     
     /**
@@ -249,18 +291,18 @@ public class ProcessingUtility {
      */
     @Pure
     public static @Nullable VariableElement getUniquePublicStaticFieldOfType(@Nonnull TypeElement classElement, @Nonnull Class<?> fieldType) {
-        final @Nonnull List<@Nonnull VariableElement> fields = getFieldsOfType(classElement, fieldType);
-        if (fields.size() != 1) {
-            ProcessingLog.warning("There is not exactly one field of type $ in the class", SourcePosition.of(classElement), fieldType.getCanonicalName());
-        } else {
-            final @Nonnull VariableElement field = fields.get(0);
-            if (!fields.get(0).getModifiers().contains(Modifier.PUBLIC)) {
+        final @Nonnull FiniteIterable<@Nonnull VariableElement> fields = getFieldsOfType(classElement, fieldType);
+        if (fields.isSingle()) {
+            final @Nonnull VariableElement field = fields.getFirst();
+            if (!field.getModifiers().contains(Modifier.PUBLIC)) {
                 ProcessingLog.warning("The field of type $ has to be public:", SourcePosition.of(field), fieldType.getCanonicalName());
-            } else if (!fields.get(0).getModifiers().contains(Modifier.STATIC)) {
+            } else if (!field.getModifiers().contains(Modifier.STATIC)) {
                 ProcessingLog.warning("The field of type $ has to be static:", SourcePosition.of(field), fieldType.getCanonicalName());
             } else {
                 return field;
             }
+        } else {
+            ProcessingLog.warning("There is not exactly one field of type $ in the class", SourcePosition.of(classElement), fieldType.getCanonicalName());
         }
         return null;
     }

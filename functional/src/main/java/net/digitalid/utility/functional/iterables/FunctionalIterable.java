@@ -62,6 +62,14 @@ public interface FunctionalIterable<E> extends Iterable<E> {
     }
     
     /**
+     * Returns whether this iterable contains a single element.
+     */
+    @Pure
+    public default boolean isSingle() {
+        return isSize(1);
+    }
+    
+    /**
      * Returns whether the size of this iterable is at most the given value.
      */
     @Pure
@@ -115,6 +123,14 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      */
     @Pure
     public <F> @Nonnull FunctionalIterable<F> map(@Nonnull UnaryFunction<? super E, ? extends F> function);
+    
+    /* -------------------------------------------------- Instance -------------------------------------------------- */
+    
+    /**
+     * Returns the elements of this iterable which are an instance of the given type.
+     */
+    @Pure
+    public <T> @Nonnull FunctionalIterable<T> instanceOf(@Nonnull Class<T> type);
     
     /* -------------------------------------------------- Pruning -------------------------------------------------- */
     

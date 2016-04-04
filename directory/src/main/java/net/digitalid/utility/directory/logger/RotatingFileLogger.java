@@ -7,8 +7,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-import net.digitalid.utility.configuration.Configuration;
+import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.directory.Directory;
 import net.digitalid.utility.initialization.Initialize;
 import net.digitalid.utility.logging.Level;
@@ -16,11 +20,11 @@ import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
 import net.digitalid.utility.logging.logger.StandardOutputLogger;
-import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This class implements a logger that logs the messages to a rotating file.
  */
+@Mutable
 public class RotatingFileLogger extends FileLogger {
     
     /* -------------------------------------------------- File Format -------------------------------------------------- */
@@ -56,6 +60,7 @@ public class RotatingFileLogger extends FileLogger {
     /**
      * Rotates the log file.
      */
+    @Impure
     private void rotate() {
         this.currentDate = new Date();
         try {
@@ -64,17 +69,6 @@ public class RotatingFileLogger extends FileLogger {
             throw new RuntimeException("Could not open or create the log file '" + getCurrentFile().getAbsolutePath() + "'.", exception);
         }
     }
-    
-    /* -------------------------------------------------- Observer -------------------------------------------------- */
-    
-    /**
-     * Stores the observer, which changes the log file to the new root directory.
-     */
-    private final @Nonnull Configuration.Observer<File> observer = new Configuration.Observer<File>() {
-        @Override public void replaced(@Nonnull Configuration<File> configuration, @Nonnull File oldFile, @Nonnull File newFile) {
-            rotate();
-        }
-    };
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
@@ -87,7 +81,7 @@ public class RotatingFileLogger extends FileLogger {
         super(file);
         
         this.currentDate = new Date();
-        Directory.configuration.register(observer);
+        Directory.configuration.register((configuration, oldFile, newFile) -> rotate());
     }
     
     /**
@@ -96,18 +90,19 @@ public class RotatingFileLogger extends FileLogger {
      * @throws FileNotFoundException if the current file cannot be opened or created.
      */
     @Pure
-    public static @Nonnull RotatingFileLogger withDefaultDirectory() throws FileNotFoundException {
+    public static @Capturable @Nonnull RotatingFileLogger withDefaultDirectory() throws FileNotFoundException {
         return new RotatingFileLogger(getCurrentFile());
     }
     
     /* -------------------------------------------------- Logging -------------------------------------------------- */
     
+    @Impure
     @Override
     @SuppressWarnings("deprecation")
-    protected synchronized void log(Level level, String tag, String message, Throwable throwable) {
+    protected synchronized void log(@Nonnull Level level, @Nonnull String caller, @Nonnull String message, @Nullable Throwable throwable) {
         final Date date = new Date();
         if (date.getDate() != this.currentDate.getDate()) { rotate(); }
-        super.log(level, tag, message, throwable);
+        super.log(level, caller, message, throwable);
     }
     
     /* -------------------------------------------------- Initialization -------------------------------------------------- */
@@ -115,6 +110,7 @@ public class RotatingFileLogger extends FileLogger {
     /**
      * Initializes the logger with a rotating file logger.
      */
+    @Impure
     @Initialize(target = Logger.class, dependencies = {Directory.class})
     public static void initialize() throws FileNotFoundException {
         if (Logger.logger.get() instanceof StandardOutputLogger) {
