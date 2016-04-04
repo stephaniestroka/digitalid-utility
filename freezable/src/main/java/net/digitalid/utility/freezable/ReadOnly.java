@@ -5,12 +5,14 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.validation.annotations.type.Updating;
 
 /**
  * Interfaces that extend this interface provide read-only access to their objects.
  * 
  * @see Freezable
  */
+@Updating
 public interface ReadOnly extends Cloneable {
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */

@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -44,6 +45,7 @@ public class NamedThreadFactory implements ThreadFactory {
     
     /* -------------------------------------------------- Method -------------------------------------------------- */
     
+    @Impure
     @Override
     public @Nonnull Thread newThread(@Nonnull Runnable runnable) {
         return new Thread(runnable, prefix + number.getAndIncrement());
