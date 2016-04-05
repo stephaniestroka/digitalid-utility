@@ -11,7 +11,6 @@ import java.lang.annotation.Target;
  * This annotation indicates that a {@link File file} {@link File#exists() exists}.
  */
 @Documented
-// TODO: @TargetTypes(File.class)
+@Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.CLASS)
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface Existing {}

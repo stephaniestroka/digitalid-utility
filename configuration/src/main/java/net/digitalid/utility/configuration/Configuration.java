@@ -1,17 +1,29 @@
 package net.digitalid.utility.configuration;
 
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
+import net.digitalid.utility.annotations.state.Modifiable;
+import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.configuration.exceptions.CyclicDependenciesException;
 import net.digitalid.utility.configuration.exceptions.InitializedConfigurationException;
 import net.digitalid.utility.configuration.exceptions.MaskingInitializationException;
 import net.digitalid.utility.configuration.exceptions.UninitializedConfigurationException;
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.validation.annotations.method.Chainable;
+import net.digitalid.utility.validation.annotations.type.Functional;
 
 /**
  * The configuration of a service is given by a provider.
@@ -19,6 +31,7 @@ import net.digitalid.utility.contracts.Require;
  * 
  * @param <P> the type of the provider for some service.
  */
+@Mutable
 public class Configuration<P> {
     
     /* -------------------------------------------------- Interface -------------------------------------------------- */
@@ -26,60 +39,54 @@ public class Configuration<P> {
     /**
      * Objects that implement this interface can be used to observe a {@link Configuration configuration}.
      */
+    @Functional
     public static interface Observer<P> {
         
         /**
          * This method is called on {@link Configuration#register(net.digitalid.utility.configuration.Configuration.Observer) registered} observers when the provider of the given configuration has been replaced.
          * 
-         * @param configuration the non-nullable configuration whose provider has been replaced.
-         * @param oldProvider the nullable old provider of the given configuration.
-         * @param newProvider the non-nullable new provider of the given configuration.
-         * 
          * @require !newProvider.equals(oldProvider) : "The new provider may not the same as the old provider.";
          */
-        public void replaced(Configuration<P> configuration, P oldProvider, P newProvider);
+        public void replaced(@Nonnull Configuration<P> configuration, @Nullable P oldProvider, @Nonnull P newProvider);
         
     }
     
     /* -------------------------------------------------- Observers -------------------------------------------------- */
     
     /**
-     * Stores the non-nullable set of registered observers of this configuration.
+     * Stores the set of registered observers of this configuration.
      */
-    private final Set<Observer<P>> observers = new LinkedHashSet<>();
+    private final @Nonnull Set<@Nonnull Observer<P>> observers = new LinkedHashSet<>();
     
     /**
-     * Registers the given non-nullable observer for this configuration.
+     * Registers the given observer for this configuration.
      * 
      * @return whether the given observer was not already registered.
-     * 
-     * @require observer != null : "The observer may not be null.";
      */
-    public boolean register(Observer<P> observer) {
+    @Impure
+    public boolean register(@Nonnull Observer<P> observer) {
         Require.that(observer != null).orThrow("The observer may not be null.");
         
         return observers.add(observer);
     }
     
     /**
-     * Deregisters the given non-nullable observer for this configuration.
+     * Deregisters the given observer for this configuration.
      * 
      * @return whether the given observer was actually registered.
-     * 
-     * @require observer != null : "The observer may not be null.";
      */
-    public boolean deregister(Observer<P> observer) {
+    @Impure
+    public boolean deregister(@Nonnull Observer<P> observer) {
         Require.that(observer != null).orThrow("The observer may not be null.");
         
         return observers.remove(observer);
     }
     
     /**
-     * Returns whether the given non-nullable observer is registered for this configuration.
-     * 
-     * @require observer != null : "The observer may not be null.";
+     * Returns whether the given observer is registered for this configuration.
      */
-    public boolean isRegistered(Observer<P> observer) {
+    @Pure
+    public boolean isRegistered(@Nonnull Observer<P> observer) {
         Require.that(observer != null).orThrow("The observer may not be null.");
         
         return observers.contains(observer);
@@ -91,30 +98,28 @@ public class Configuration<P> {
      * Stores the provider of this configuration.
      * The provider is null until it is once set.
      */
-    private P provider;
+    private @Nullable P provider;
     
     /**
      * Returns the provider of this configuration.
      * 
-     * @ensure result != null : "The returned provider may not be null.";
-     * 
      * @throws UninitializedConfigurationException if no provider was set for this configuration.
      */
-    public P get() {
+    @Pure
+    public @Nonnull P get() {
         if (provider == null) { throw UninitializedConfigurationException.with(this); }
         return provider;
     }
     
     /**
      * Sets the provider of this configuration and notifies all observers.
-     * 
-     * @require provider != null : "The provider may not be null.";
      */
-    public void set(P provider) {
+    @Impure
+    public void set(@Captured @Nonnull P provider) {
         Require.that(provider != null).orThrow("The provider may not be null.");
         
         if (!provider.equals(this.provider)) {
-            for (Observer<P> observer : observers) {
+            for (@Nonnull Observer<P> observer : observers) {
                 observer.replaced(this, this.provider, provider);
             }
             this.provider = provider;
@@ -124,27 +129,30 @@ public class Configuration<P> {
     /**
      * Returns whether the provider of this configuration is set.
      */
+    @Pure
     public boolean isSet() {
         return provider != null;
     }
     
     /* -------------------------------------------------- Declaration -------------------------------------------------- */
     
-    private final String qualifiedClassName;
+    private final @Nonnull String qualifiedClassName;
     
     /**
-     * Returns the non-nullable qualified name of the class where this configuration is declared.
+     * Returns the qualified name of the class where this configuration is declared.
      */
-    public String getQualifiedClassName() {
+    @Pure
+    public @Nonnull String getQualifiedClassName() {
         return qualifiedClassName;
     }
     
     private final String className;
     
     /**
-     * Returns the non-nullable simple name of the class where this configuration is declared.
+     * Returns the simple name of the class where this configuration is declared.
      */
-    public String getClassName() {
+    @Pure
+    public @Nonnull String getClassName() {
         return className;
     }
     
@@ -153,29 +161,30 @@ public class Configuration<P> {
     /**
      * Returns the line number on which this configuration is declared.
      */
+    @Pure
     public int getLineNumber() {
         return lineNumber;
     }
     
+    @Pure
     @Override
-    public String toString() {
+    public @Nonnull String toString() {
         return getClassName();
     }
     
     /* -------------------------------------------------- Configurations -------------------------------------------------- */
     
     /**
-     * Stores the non-nullable set of all configurations that were created.
+     * Stores the set of all configurations that were created.
      */
-    private static final Set<Configuration<?>> configurations = new LinkedHashSet<>();
+    private static final @Nonnull Set<@Nonnull Configuration<?>> configurations = new LinkedHashSet<>();
     
     /**
-     * Returns an unmodifiable set of all configurations that were created.
-     * 
-     * @ensure result != null : "The returned set may not be null.";
+     * Returns a finite iterable of all configurations that were created.
      */
-    public static Set<Configuration<?>> getAllConfigurations() {
-        return Collections.unmodifiableSet(configurations);
+    @Pure
+    public static @Nonnull FiniteIterable<@Nonnull Configuration<?>> getAllConfigurations() {
+        return FiniteIterable.of(configurations);
     }
     
     /**
@@ -183,15 +192,16 @@ public class Configuration<P> {
      * 
      * @throws InitializationException if a problem occurs.
      */
+    @Impure
     public static void initializeAllConfigurations() {
-        for (Initializer initializer : ServiceLoader.load(Initializer.class)) {
+        for (@Nonnull Initializer initializer : ServiceLoader.load(Initializer.class)) {
             initializer.toString(); // Just to remove the unused variable warning.
         }
         try {
-            for (Configuration<?> configuration : configurations) {
+            for (@Nonnull Configuration<?> configuration : configurations) {
                 configuration.initialize();
             }
-        } catch (Exception exception) {
+        } catch (@Nonnull Exception exception) {
             throw MaskingInitializationException.with(exception);
         }
     }
@@ -201,10 +211,10 @@ public class Configuration<P> {
     /**
      * Creates a configuration with the given nullable provider.
      */
-    protected Configuration(P provider) {
+    protected Configuration(@Nonnull P provider) {
         this.provider = provider;
         
-        final StackTraceElement element = Thread.currentThread().getStackTrace()[3];
+        final @Nonnull StackTraceElement element = Thread.currentThread().getStackTrace()[3];
         this.qualifiedClassName = element.getClassName();
         this.className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf('.') + 1);
         this.lineNumber = element.getLineNumber();
@@ -213,11 +223,10 @@ public class Configuration<P> {
     }
     
     /**
-     * Returns a configuration with the given non-nullable provider.
-     * 
-     * @require provider != null : "The provider may not be null.";
+     * Returns a configuration with the given provider.
      */
-    public static <P> Configuration<P> with(P provider) {
+    @Impure
+    public static <P> @NonCapturable @Nonnull Configuration<P> with(@Nonnull P provider) {
         Require.that(provider != null).orThrow("The provider may not be null.");
         
         return new Configuration<>(provider);
@@ -226,25 +235,25 @@ public class Configuration<P> {
     /**
      * Returns a configuration whose provider still needs to be set.
      */
-    public static <P> Configuration<P> withUnknownProvider() {
+    @Impure
+    public static <P> @NonCapturable @Nonnull Configuration<P> withUnknownProvider() {
         return new Configuration<>(null);
     }
     
     /* -------------------------------------------------- Initializers -------------------------------------------------- */
     
     /**
-     * Stores the non-nullable set of initializers which need to be executed by this configuration.
+     * Stores the set of initializers which need to be executed by this configuration.
      */
-    private final Set<Initializer> initializers = new LinkedHashSet<>();
+    private final @Nonnull Set<@Nonnull Initializer> initializers = new LinkedHashSet<>();
     
     /**
-     * Adds the given non-nullable initializer to the set of initializers for this configuration.
+     * Adds the given initializer to the set of initializers for this configuration.
      * 
      * @throws InitializedConfigurationException if this configuration has already been initialized.
-     * 
-     * @require initializer != null : "The initializer may not be null.";
      */
-    protected void addInitializer(Initializer initializer) {
+    @Impure
+    protected void addInitializer(@Nonnull Initializer initializer) {
         Require.that(initializer != null).orThrow("The initializer may not be null.");
         
         if (isInitialized) { throw InitializedConfigurationException.with(this); }
@@ -254,84 +263,72 @@ public class Configuration<P> {
     /* -------------------------------------------------- Dependencies -------------------------------------------------- */
     
     /**
-     * Stores the non-nullable set of configurations which need to be initialized before this configuration.
+     * Stores the set of configurations which need to be initialized before this configuration.
      */
-    private final Set<Configuration<?>> dependencies = new LinkedHashSet<>();
+    private final @Nonnull Set<@Nonnull Configuration<?>> dependencies = new LinkedHashSet<>();
     
     /**
-     * Returns whether this configuration depends on the given non-nullable configuration (directly or indirectly).
-     * 
-     * @require configuration != null : "The configuration may not be null.";
+     * Returns whether this configuration depends on the given configuration (directly or indirectly).
      */
-    public boolean dependsOn(Configuration<?> configuration) {
+    @Pure
+    public boolean dependsOn(@Nonnull Configuration<?> configuration) {
         Require.that(configuration != null).orThrow("The configuration may not be null.");
         
         if (configuration.equals(this)) { return true; }
-        for (Configuration<?> dependency : dependencies) {
+        for (@Nonnull Configuration<?> dependency : dependencies) {
             if (dependency.dependsOn(configuration)) { return true; }
         }
         return false;
     }
     
-    private static final List<Configuration<?>> EMPTY_LIST = Collections.unmodifiableList(new LinkedList<Configuration<?>>());
-    
     /**
-     * Returns a non-nullable list of configurations through which this configuration depends on the given configuration.
+     * Returns a list of configurations through which this configuration depends on the given configuration.
      * The returned list is empty if (and only if) this configuration does not depend on the given configuration.
      * Otherwise, the first element in the returned list is this configuration and the last the given configuration.
-     * If (and only if) the returned list is not empty, it is modifiable and can be captured by the caller.
-     * 
-     * @require configuration != null : "The configuration may not be null.";
      */
-    public List<Configuration<?>> getDependencyChain(Configuration<?> configuration) {
+    @Pure
+    public @Capturable @Modifiable @Nonnull List<@Nonnull Configuration<?>> getDependencyChain(@Nonnull Configuration<?> configuration) {
         Require.that(configuration != null).orThrow("The configuration may not be null.");
         
         if (configuration.equals(this)) {
-            final LinkedList<Configuration<?>> result = new LinkedList<>();
+            final @Nonnull LinkedList<@Nonnull Configuration<?>> result = new LinkedList<>();
             result.add(this);
             return result;
         }
         
-        for (Configuration<?> dependency : dependencies) {
-            final List<Configuration<?>> dependencyChain = dependency.getDependencyChain(configuration);
+        for (@Nonnull Configuration<?> dependency : dependencies) {
+            final @Nonnull List<@Nonnull Configuration<?>> dependencyChain = dependency.getDependencyChain(configuration);
             if (!dependencyChain.isEmpty()) {
                 dependencyChain.add(0, this);
                 return dependencyChain;
             }
         }
         
-        return EMPTY_LIST;
+        return new LinkedList<>();
     }
     
     /**
-     * Returns the {@link #getDependencyChain(net.digitalid.utility.configuration.Configuration) dependency chain} as a non-nullable string.
+     * Returns the {@link #getDependencyChain(net.digitalid.utility.configuration.Configuration) dependency chain} as a string.
      * 
-     * @require configuration != null : "The configuration may not be null.";
      * @require dependsOn(configuration) : "This configuration has to depend on the given configuration.";
      */
-    public String getDependencyChainAsString(Configuration<?> configuration) {
+    @Pure
+    public @Nonnull String getDependencyChainAsString(@Nonnull Configuration<?> configuration) {
         Require.that(configuration != null).orThrow("The configuration may not be null.");
         Require.that(dependsOn(configuration)).orThrow("This configuration $ has to depend on the given configuration $.", this, configuration);
         
-        final StringBuilder result = new StringBuilder();
-        final List<Configuration<?>> dependencyChain = getDependencyChain(configuration);
-        for (Configuration<?> dependency : dependencyChain) {
-            if (result.length() == 0) { result.append(" -> "); }
-            result.append(dependency);
-        }
-        return result.toString();
+        return FiniteIterable.of(getDependencyChain(configuration)).join(" -> ");
     }
     
     /**
-     * Adds the given non-nullable dependency to the set of dependencies and returns this configuration.
+     * Adds the given dependency to the set of dependencies and returns this configuration.
      * 
      * @throws InitializedConfigurationException if this configuration has already been initialized.
      * @throws CyclicDependenciesException if the given dependency depends on this configuration.
-     * 
-     * @require dependency != null : "The dependency may not be null.";
-     * @ensure result == this : "The returned configuration is this.";
      */
-    public Configuration<P> addDependency(Configuration<?> dependency) {
+    @Impure
+    @Chainable
+    public @NonCapturable @Nonnull Configuration<P> addDependency(@Nonnull Configuration<?> dependency) {
         Require.that(dependency != null).orThrow("The dependency may not be null.");
         
         if (isInitialized) { throw InitializedConfigurationException.with(this); }
@@ -352,14 +349,11 @@ public class Configuration<P> {
      * 
      * @throws Exception if any problems occur.
      */
+    @Impure
     public void initialize() throws Exception {
         if (!isInitialized) {
-            for (Configuration<?> dependency : dependencies) {
-                dependency.initialize();
-            }
-            for (Initializer initializer : initializers) {
-                initializer.execute();
-            }
+            for (@Nonnull Configuration<?> dependency : dependencies) { dependency.initialize(); }
+            for (@Nonnull Initializer initializer : initializers) { initializer.execute(); }
             this.isInitialized = true;
         }
     }

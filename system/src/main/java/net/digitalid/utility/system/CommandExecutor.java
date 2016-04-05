@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
@@ -20,6 +21,7 @@ public final class CommandExecutor {
     /**
      * Executes the given command and returns the first line of the command's output.
      */
+    @Impure
     public static @Nullable String execute(@Nonnull String command) throws IOException {
         final @Nonnull Process process = Runtime.getRuntime().exec(command);
         final @Nonnull BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));

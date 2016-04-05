@@ -14,17 +14,19 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.immutable.collections.ImmutableSet;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.meta.ValueValidator;
-import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.validation.annotations.type.Stateless;
-import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.meta.ValueValidator;
+import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 import net.digitalid.utility.validation.validators.ElementKindValidator;
 
@@ -36,9 +38,9 @@ import static javax.lang.model.element.ElementKind.*;
  * @see ElementKind
  */
 @Documented
+@Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(TypeOf.Validator.class)
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface TypeOf {
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
@@ -56,11 +58,11 @@ public @interface TypeOf {
     @Stateless
     public static class Validator extends ValueAnnotationValidator {
         
-        private static final @Nonnull ImmutableSet<Class<?>> targetTypes = ImmutableSet.with(Class.class, Element.class);
+        private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.with(Class.class, Element.class);
         
         @Pure
         @Override
-        public @Nonnull ImmutableSet<Class<?>> getTargetTypes() {
+        public @Nonnull ImmutableSet<@Nonnull Class<?>> getTargetTypes() {
             return targetTypes;
         }
         
@@ -78,7 +80,7 @@ public @interface TypeOf {
         
         @Pure
         @Override
-        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
             final @Nonnull StringBuilder condition = new StringBuilder("# == null");
             for (@Nonnull ElementKind kind : element.getAnnotation(TypeOf.class).value()) {
                 condition.append(" || ").append(ElementKindValidator.getCondition(element, kind, typeImporter));

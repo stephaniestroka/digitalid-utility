@@ -19,21 +19,33 @@ import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.WildcardType;
+import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.contracts.Constraint;
 import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.exceptions.UnexpectedValueException;
+import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.immutable.collections.ImmutableList;
 import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
@@ -90,6 +102,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         return packageName;
     }
     
+    @Impure
     protected void printPackage(@Nonnull PrintWriter printWriter) {
         printWriter.println("package " + packageName + ";");
         printWriter.println();
@@ -108,7 +121,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
      * Returns a Java file generator that generates the class with the given qualified name for the given source class.
      */
     @Pure
-    public static @Nonnull JavaFileGenerator forClass(@Nonnull String qualifiedClassName, @Nonnull TypeElement sourceClassElement) {
+    public static @Capturable @Nonnull JavaFileGenerator forClass(@Nonnull String qualifiedClassName, @Nonnull TypeElement sourceClassElement) {
         return new JavaFileGenerator(qualifiedClassName, sourceClassElement);
     }
     
@@ -126,14 +139,14 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
             this.prefix = prefix;
         }
         
-        final @Nonnull @NonNullableElements Set<String> imports = new HashSet<>();
+        final @Nonnull Set<@Nonnull String> imports = new HashSet<>();
         
     }
     
     /**
      * Stores the import groups which will be separated by an empty line in the desired order.
      */
-    private final @Nonnull @NonNullableElements ImportGroup[] importGroups = {
+    private final @Nonnull ImmutableList<@Nonnull ImportGroup> importGroups = ImmutableList.with(
         new ImportGroup("java."),
         new ImportGroup("javax."),
         new ImportGroup("net.digitalid.utility."),
@@ -141,8 +154,9 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         new ImportGroup("net.digitalid.core"),
         new ImportGroup("static "),
         new ImportGroup("")
-    };
+    );
     
+    @Impure
     protected void printImports(@Nonnull PrintWriter printWriter) {
         for (@Nonnull ImportGroup importGroup : importGroups) {
             if (!importGroup.imports.isEmpty()) {
@@ -163,6 +177,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
      * 
      * @require qualifiedName.contains(".") : "The name has to be qualified.";
      */
+    @Impure
     @NonWrittenRecipient
     protected boolean addImport(@Nonnull String qualifiedName) {
         Require.that(qualifiedName.contains(".")).orThrow("The name $ has to be qualified.", qualifiedName);
@@ -186,6 +201,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
      * 
      * @return whether the member with the given qualified name has not already been imported.
      */
+    @Impure
     @NonWrittenRecipient
     protected boolean addStaticImport(@Nonnull String qualifiedMemberName) {
         return addImport("static " + qualifiedMemberName);
@@ -193,7 +209,37 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Type Visitor -------------------------------------------------- */
     
-    // TODO: Implement the type visitor here as an inner class.
+    /**
+     * This type visitor imports the given type mirror with its generic parameters if their simple names are not yet mapped to different types.
+     */
+    @Immutable
+    public class TypeVisitor extends ProcessingUtility.TypeVisitor {
+        
+        protected TypeVisitor() {}
+        
+        @Pure
+        @Override
+        public @Nonnull String visitDeclared(@Nonnull DeclaredType type, @Nullable Void none) {
+            return importIfPossible(type.asElement()) + FiniteIterable.of(type.getTypeArguments()).map(this::visit).join(Brackets.POINTY, "");
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull String visitWildcard(@Nonnull WildcardType type, @Nullable Void none) {
+            if (type.getSuperBound() != null) { return "? super " + visit(type.getSuperBound()); }
+            if (type.getExtendsBound() != null) { return "? extends " + visit(type.getExtendsBound()); }
+            return "?";
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull String visitExecutable(@Nonnull ExecutableType type, @Nullable Void none) {
+            return FiniteIterable.of(type.getTypeVariables()).map(JavaFileGenerator.this::importWithBounds).join("<", "> ", "") + visit(type.getReturnType());
+        }
+        
+    }
+    
+    private final @Nonnull TypeVisitor typeVisitor = new TypeVisitor();
     
     /* -------------------------------------------------- Type Importer -------------------------------------------------- */
     
@@ -202,6 +248,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
      */
     private final @Nonnull @NonNullableElements Map<String, String> nameSpace = new HashMap<>();
     
+    @Impure
     @Override
     @NonWrittenRecipient
     public @Nonnull String importIfPossible(@Nonnull String qualifiedTypeName) {
@@ -217,12 +264,14 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         }
     }
     
+    @Impure
     @Override
     @NonWrittenRecipient
     public @Nonnull String importIfPossible(@Nonnull Class<?> type) {
         return importIfPossible(type.getCanonicalName());
     }
     
+    @Impure
     @Override
     @NonWrittenRecipient
     public @Nonnull String importIfPossible(@Nonnull Element typeElement) {
@@ -231,14 +280,14 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         return importIfPossible(((QualifiedNameable) typeElement).getQualifiedName().toString());
     }
     
-    public final @Nonnull ImportingTypeVisitor importingTypeVisitor = ImportingTypeVisitor.with(this);
-    
+    @Impure
     @Override
     @NonWrittenRecipient
     public @Nonnull String importIfPossible(@Nonnull TypeMirror typeMirror) {
-        return importingTypeVisitor.visit(typeMirror).toString();
+        return typeVisitor.visit(typeMirror);
     }
     
+    @Impure
     @Override
     @NonWrittenRecipient
     public @Nonnull String importStaticallyIfPossible(@Nonnull String qualifiedMemberName) {
@@ -252,6 +301,46 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         } else {
             return qualifiedMemberName;
         }
+    }
+    
+    /* -------------------------------------------------- Special Imports -------------------------------------------------- */
+    
+    /**
+     * Imports the given type variable with its bounds if their simple names are not yet mapped to different types.
+     * 
+     * @return the given type variable with the simple names of its bounds if they could be imported without a naming conflict and the qualified name of its bounds otherwise.
+     */
+    @Impure
+    @NonWrittenRecipient
+    public @Nonnull String importWithBounds(@Nonnull TypeVariable typeVariable) {
+        if (typeVariable.getLowerBound().getKind() != TypeKind.NULL) { return typeVariable.toString() + " super " + importIfPossible(typeVariable.getLowerBound()); }
+        if (!typeVariable.getUpperBound().toString().equals("java.lang.Object")) { return typeVariable.toString() + " extends " + importIfPossible(typeVariable.getUpperBound()); }
+        return typeVariable.toString();
+    }
+    
+    /**
+     * Imports the given type arguments with their bounds if their simple names are not yet mapped to different types.
+     * 
+     * @return the given type arguments with the simple names of their bounds if they could be imported without a naming conflict and the qualified name of their bounds otherwise.
+     */
+    @Impure
+    @NonWrittenRecipient
+    public @Nonnull String importWithBounds(@Nonnull FiniteIterable<@Nonnull TypeVariable> typeArguments) {
+        return typeArguments.map(this::importWithBounds).join(Brackets.POINTY, "");
+    }
+    
+    /**
+     * Returns the declaration of the parameters of the given executable type and element in round brackets.
+     * The type is required to declare the parameters in subclasses correctly (see {@link Types#asMemberOf(javax.lang.model.type.DeclaredType, javax.lang.model.element.Element)}).
+     * 
+     * @require executableType.getParameterTypes().size() == executableElement.getParameters().size() : "The executable type and the executable element have to have the same number of parameters.";
+     */
+    @Impure
+    @NonWrittenRecipient
+    public @Nonnull String declareParameters(@Nonnull ExecutableType executableType, @Nonnull ExecutableElement executableElement) {
+        Require.that(executableType.getParameterTypes().size() == executableElement.getParameters().size()).orThrow("The executable type and the executable element have to have the same number of parameters.");
+        
+        return FiniteIterable.of(executableType.getParameterTypes()).zipShortest(FiniteIterable.of(executableElement.getParameters())).map(pair -> importIfPossible(pair.get0()) + " " + pair.get1().getSimpleName()).join(Brackets.ROUND);
     }
     
     /* -------------------------------------------------- Code Blocks -------------------------------------------------- */
@@ -306,6 +395,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     /**
      * Returns the code block which is currently on top of the stack or {@link CodeBlock#NONE} if the stack is empty.
      */
+    @Pure
     public @Nonnull CodeBlock getCurrentCodeBlock() {
         return codeBlocksStack.empty() ? CodeBlock.NONE : codeBlocksStack.peek();
     }
@@ -322,7 +412,6 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         requireNotWritten();
         
         if (codeBlocks.length == 0) {
-            // TODO: It is a bit scruffy that we're assuming that the caller is "addStatement", but well, at least it's documented.
             Require.that(getCurrentCodeBlock().allowsStatements()).orThrow("The current code block (" + getCurrentCodeBlock() + ") should allow statements but does not.");
         } else {
             Require.that(Arrays.asList(codeBlocks).contains(getCurrentCodeBlock())).orThrow("The current code block should have been one of " + Arrays.toString(codeBlocks) + " but was " + getCurrentCodeBlock());
@@ -336,6 +425,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
      */
     private final @Nonnull StringBuilder sourceCode = new StringBuilder();
     
+    @Impure
     protected void printSourceCode(@Nonnull PrintWriter printWriter) {
         printWriter.append(sourceCode);
     }
@@ -343,6 +433,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     /**
      * Adds the given code to the source code on a new line with the right indentation.
      */
+    @Impure
     @NonWrittenRecipient
     protected void addCodeLineWithIndentation(@Nonnull String code) {
         requireNotWritten();
@@ -356,6 +447,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     /**
      * Begins the given code block with the given declaration and a brace.
      */
+    @Impure
     @NonWrittenRecipient
     protected void beginBlock(@Nonnull String declaration, @Nonnull CodeBlock codeBlock, @Nonnull CodeBlock... requiredCurrentCodeBlocks) {
         requireCurrentCodeBlock(requiredCurrentCodeBlocks);
@@ -367,6 +459,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     /**
      * Begins the given code block with the given keyword and condition in parentheses before a brace.
      */
+    @Impure
     @NonWrittenRecipient
     protected void beginBlock(@Nonnull String keyword, @Nonnull String condition, @Nonnull CodeBlock codeBlock, @Nonnull CodeBlock... requiredCurrentCodeBlocks) {
         beginBlock(keyword + " (" + condition + ")", codeBlock, requiredCurrentCodeBlocks);
@@ -375,6 +468,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     /**
      * Ends the current code block by adding the closing brace on a new line with less indentation.
      */
+    @Impure
     @NonWrittenRecipient
     protected void endBlock(@Nonnull CodeBlock... requiredCurrentCodeBlocks) {
         requireCurrentCodeBlock(requiredCurrentCodeBlocks);
@@ -385,6 +479,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Empty Line -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     public void addEmptyLine() {
         addCodeLineWithIndentation("");
@@ -392,6 +487,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Comment -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     public void addComment(@Nonnull String comment) {
         addCodeLineWithIndentation("// " + comment);
@@ -399,6 +495,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Section -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn(CLASS)
     public void addSection(@Nonnull String name) {
@@ -410,6 +507,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Javadoc -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({NONE, CLASS, INTERFACE})
     public void beginJavadoc() {
@@ -419,6 +517,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         codeBlocksStack.push(JAVADOC);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn(JAVADOC)
     public void addJavadoc(@Nonnull String javadoc) {
@@ -427,6 +526,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         addCodeLineWithIndentation(javadoc);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn(JAVADOC)
     public void endJavadoc() {
@@ -438,6 +538,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Annotation -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({NONE, CLASS, INTERFACE, ANONYMOUS_CLASS})
     public void addAnnotation(@Nonnull Class<? extends Annotation> annotationType, @Nullable String optionalValues, @Nonnull Object... optionalArguments) {
@@ -446,6 +547,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         addCodeLineWithIndentation("@" + importIfPossible(annotationType) + (optionalValues != null ? "(" + Strings.format(optionalValues, Quotes.CODE, optionalArguments) + ")" : ""));
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({NONE, CLASS, INTERFACE, ANONYMOUS_CLASS})
     public void addAnnotation(@Nonnull Class<? extends Annotation> annotationType) {
@@ -454,6 +556,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Class or Interface -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({NONE, CLASS, INTERFACE})
     private void beginClassOrInterface(@Nonnull String declaration, @Nonnull CodeBlock classOrInterface) {
@@ -471,6 +574,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         addEmptyLine();
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({CLASS, INTERFACE})
     public void endClassOrInterface(@Nonnull CodeBlock classOrInterface) {
@@ -485,6 +589,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     /**
      * Begins an interface block in a Java source file.
      */
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({NONE, CLASS, INTERFACE})
     public void beginInterface(@Nonnull String declaration) {
@@ -497,6 +602,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         beginClassOrInterface(declaration, CodeBlock.INTERFACE);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({INTERFACE})
     public void endInterface() {
@@ -506,6 +612,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Class -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({NONE, CLASS, INTERFACE})
     public void beginClass(@Nonnull String declaration) {
@@ -513,6 +620,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         beginClassOrInterface(declaration, CodeBlock.CLASS);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({CLASS})
     public void endClass() {
@@ -522,6 +630,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Anonymous Class -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({CLASS, METHOD})
     public void beginAnonymousClass(@Nonnull String declaration) {
@@ -531,6 +640,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         addEmptyLine();
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({ANONYMOUS_CLASS})
     public void endAnonymousClass() {
@@ -540,6 +650,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Field -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({CLASS, ANONYMOUS_CLASS})
     public void addField(@Nonnull String declaration) {
@@ -551,12 +662,14 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Block -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({CLASS, ANONYMOUS_CLASS})
     public void beginBlock(boolean withStaticModifier) {
         beginBlock(withStaticModifier ? "static" : "", BLOCK, CLASS, ANONYMOUS_CLASS);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn(BLOCK)
     public void endBlock() {
@@ -565,12 +678,14 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({CLASS, ANONYMOUS_CLASS})
     public void beginConstructor(@Nonnull String declaration) {
         beginBlock(declaration, CONSTRUCTOR, CLASS, ANONYMOUS_CLASS);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn(CONSTRUCTOR)
     public void endConstructor() {
@@ -580,6 +695,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Method Declaration -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({CLASS, INTERFACE})
     public void addMethodDeclaration(@Nonnull String declaration) {
@@ -590,12 +706,14 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Method -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({CLASS, ANONYMOUS_CLASS})
     public void beginMethod(@Nonnull String declaration) {
         beginBlock(declaration, METHOD, CLASS, ANONYMOUS_CLASS);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn(METHOD)
     public void endMethod() {
@@ -605,12 +723,14 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- If -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn()
     public void beginIf(@Nonnull String condition) {
         beginBlock("if", condition, IF);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn(IF)
     public void endIf() {
@@ -619,6 +739,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Else -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({IF, ELSE_IF})
     public void endIfBeginElse() {
@@ -628,6 +749,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         beginBlock("} else", ELSE);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn(ELSE)
     public void endElse() {
@@ -636,6 +758,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Else If -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({IF, ELSE_IF})
     public void endIfBeginElseIf(@Nonnull String condition) {
@@ -645,6 +768,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         beginBlock("} else if", condition, ELSE_IF);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn(ELSE_IF)
     public void endElseIf() {
@@ -653,12 +777,14 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- For Loop -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn()
     public void beginForLoop(@Nonnull String condition) {
         beginBlock("for", condition, FOR_LOOP);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn(FOR_LOOP)
     public void endForLoop() {
@@ -667,12 +793,14 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- While Loop -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn()
     public void beginWhileLoop(@Nonnull String condition) {
         beginBlock("while", condition, WHILE_LOOP);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn(WHILE_LOOP)
     public void endWhileLoop() {
@@ -681,12 +809,14 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Try - Catch -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({CONSTRUCTOR, METHOD, BLOCK})
     public void beginTry() {
         beginBlock("try", TRY);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn(TRY)
     public void endTryBeginCatch() {
@@ -694,6 +824,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         beginBlock("catch", TRY_CATCH, METHOD);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({TRY, TRY_CATCH})
     public void endTryOrTryCatchBeginFinally() {
@@ -701,12 +832,14 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         beginBlock("finally", TRY_FINALLY, METHOD);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn(TRY_FINALLY)
     public void endTryFinally() {
         endBlock(TRY_FINALLY);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn(TRY_CATCH)
     public void endTryCatch() {
@@ -715,6 +848,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Statement -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn()
     public void addStatement(@Nonnull String statement) {
@@ -725,18 +859,21 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Contracts -------------------------------------------------- */
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn()
     protected void addContract(@Nonnull Class<? extends Constraint> contractType, @Nonnull Contract generatedContract) {
         addStatement(importIfPossible(contractType) + ".that(" + generatedContract.getCondition() + ").orThrow(" + Quotes.inDouble(generatedContract.getMessage()) + (!generatedContract.getArguments().isEmpty() ? ", " + FiniteIterable.of(generatedContract.getArguments()).join() : "") + ")");
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn()
     public void addPrecondition(@Nonnull Contract generatedContract) {
         addContract(Require.class, generatedContract);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn()
     public void addPostcondition(@Nonnull Contract generatedContract) {
@@ -744,6 +881,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         addContract(Ensure.class, generatedContract);
     }
     
+    @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn()
     public void addInvariant(@Nonnull Contract generatedContract) {
@@ -752,6 +890,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Writing -------------------------------------------------- */
     
+    @Impure
     @Override
     @NonWrittenRecipient
     protected void writeOnce() throws IOException {

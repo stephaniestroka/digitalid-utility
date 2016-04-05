@@ -2,8 +2,9 @@ package net.digitalid.utility.casting.exceptions;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.exceptions.InternalException;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.exceptions.InternalException;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -38,7 +39,7 @@ public class InvalidClassCastException extends InternalException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected InvalidClassCastException(@Nonnull Object object, @Nonnull Class<?> targetClass) {
+    protected InvalidClassCastException(@Captured @Nonnull Object object, @Nonnull Class<?> targetClass) {
         super("An object is of type $ and cannot be cast to $.", object.getClass().getSimpleName(), targetClass.getSimpleName());
         
         this.object = object;
@@ -52,7 +53,7 @@ public class InvalidClassCastException extends InternalException {
      * @param targetClass the class to which the object should have been casted.
      */
     @Pure
-    public static @Nonnull InvalidClassCastException get(@Nonnull Object object, @Nonnull Class<?> targetClass) {
+    public static @Nonnull InvalidClassCastException get(@Captured @Nonnull Object object, @Nonnull Class<?> targetClass) {
         return new InvalidClassCastException(object, targetClass);
     }
     

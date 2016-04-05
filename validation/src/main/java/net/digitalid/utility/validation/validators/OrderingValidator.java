@@ -9,13 +9,16 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
-import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.validation.annotations.type.Stateless;
-import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
+import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.contract.Contract;
 
 /**
  * This class implements common methods for all ordering-related validators.
@@ -60,7 +63,7 @@ public abstract class OrderingValidator extends IterableValidator {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public static boolean validate(@Nullable Iterable<?> iterable, boolean strictly, boolean ascending) {
+    public static boolean validate(@Nullable Iterable<@Nullable ?> iterable, boolean strictly, boolean ascending) {
         if (iterable == null) { return true; }
         @Nullable Object lastElement = null;
         for (final @Nullable Object element : iterable) {
@@ -85,7 +88,7 @@ public abstract class OrderingValidator extends IterableValidator {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public static boolean validate(@Nullable Object[] array, boolean strictly, boolean ascending) {
+    public static boolean validate(@Nullable @NullableElements Object[] array, boolean strictly, boolean ascending) {
         if (array == null) { return true; }
         @Nullable Object lastElement = null;
         for (final @Nullable Object element : array) {
@@ -112,7 +115,7 @@ public abstract class OrderingValidator extends IterableValidator {
     
     @Pure
     @Override
-    public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+    public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
         return Contract.with(typeImporter.importIfPossible(OrderingValidator.class) + ".validate(#, " + isStrictly() + ", " + isAscending() + ")", "The # has to be ordered.", element);
     }
     

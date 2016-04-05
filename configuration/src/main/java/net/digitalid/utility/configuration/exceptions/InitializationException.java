@@ -1,24 +1,27 @@
 package net.digitalid.utility.configuration.exceptions;
 
+import javax.annotation.Nullable;
+
 import net.digitalid.utility.exceptions.InternalException;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This exception indicates a failed initialization.
  * 
+ * @see ConfigurationException
  * @see CyclicDependenciesException
  * @see MaskingInitializationException
- * @see InitializedConfigurationException
- * @see UninitializedConfigurationException
  */
+@Immutable
 public class InitializationException extends InternalException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected InitializationException(String message, Exception cause, Object... arguments) {
+    protected InitializationException(@Nullable String message, @Nullable Exception cause, @Nullable Object... arguments) {
         super(message, cause, arguments);
     }
     
-    protected InitializationException(String message, Object... arguments) {
+    protected InitializationException(@Nullable String message, @Nullable Object... arguments) {
         this(message, null, arguments);
     }
     

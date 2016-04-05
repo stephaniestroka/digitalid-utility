@@ -4,12 +4,12 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.immutable.collections.ImmutableSet;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
-import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
@@ -22,11 +22,11 @@ public abstract class IndexValidator extends ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableSet<Class<?>> targetTypes = ImmutableSet.<Class<?>>with(int.class);
+    private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.<Class<?>>with(int.class);
     
     @Pure
     @Override
-    public @Nonnull ImmutableSet<Class<?>> getTargetTypes() {
+    public @Nonnull ImmutableSet<@Nonnull Class<?>> getTargetTypes() {
         return targetTypes;
     }
     

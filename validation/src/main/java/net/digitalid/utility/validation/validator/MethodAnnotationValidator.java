@@ -5,12 +5,12 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
-import net.digitalid.utility.validation.annotations.meta.MethodValidator;
-import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.validation.annotations.meta.MethodValidator;
+import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
  * A method annotation validator validates the state in which the annotated method is called.

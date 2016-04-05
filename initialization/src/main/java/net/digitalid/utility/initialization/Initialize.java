@@ -21,8 +21,6 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
  * @see InitializationProcessor
  */
 @Documented
-// TODO: the following annotation does not exist anymore. Find out why.
-//@TargetTypes(Void.class)
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Initialize {

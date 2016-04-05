@@ -2,6 +2,7 @@ package net.digitalid.utility.freezable;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -9,6 +10,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 /**
  * Classes that implement this interface allow their objects to transition from a mutable into an {@link Immutable immutable} state.
  */
+@Mutable
 public interface Freezable extends ReadOnly {
     
     /**

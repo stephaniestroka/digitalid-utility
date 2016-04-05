@@ -6,13 +6,15 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.immutable.collections.ImmutableSet;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.immutable.collections.ImmutableSet;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.interfaces.Numerical;
-import net.digitalid.utility.processing.utility.ProcessingUtility;
-import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
@@ -25,11 +27,11 @@ public abstract class NumericalValueValidator extends ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableSet<Class<?>> targetTypes = ImmutableSet.with(byte.class, short.class, int.class, long.class, float.class, double.class, BigInteger.class, Numerical.class);
+    private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.with(byte.class, short.class, int.class, long.class, float.class, double.class, BigInteger.class, Numerical.class);
     
     @Pure
     @Override
-    public @Nonnull ImmutableSet<Class<?>> getTargetTypes() {
+    public @Nonnull ImmutableSet<@Nonnull Class<?>> getTargetTypes() {
         return targetTypes;
     }
     
@@ -45,7 +47,7 @@ public abstract class NumericalValueValidator extends ValueAnnotationValidator {
     
     @Pure
     @Override
-    public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+    public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
         if (ProcessingUtility.isAssignable(element, Numerical.class)) {
             return Contract.with("# == null || #.getValue().compareTo(" + typeImporter.importIfPossible(BigInteger.class) + ".ZERO) " + getComparisonOperator() + " 0", "The # has to be null or " + getDecamelizedAnnotationName().replace(" ", "-") + " but was $.", element);
         } else if (ProcessingUtility.isAssignable(element, BigInteger.class)) {

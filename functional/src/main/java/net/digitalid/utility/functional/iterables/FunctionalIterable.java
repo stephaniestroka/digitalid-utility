@@ -14,7 +14,7 @@ import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
-import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.Updating;
 
 /**
  * This interface extends the {@link Iterable} interface with functional methods.
@@ -22,7 +22,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see InfiniteIterable
  * @see FiniteIterable
  */
-@Immutable
+@Updating
 public interface FunctionalIterable<E> extends Iterable<E> {
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
@@ -59,6 +59,14 @@ public interface FunctionalIterable<E> extends Iterable<E> {
     @Pure
     public default boolean isSize(@NonNegative int number) {
         return size(number + 1) == number;
+    }
+    
+    /**
+     * Returns whether this iterable contains a single element.
+     */
+    @Pure
+    public default boolean isSingle() {
+        return isSize(1);
     }
     
     /**
@@ -115,6 +123,14 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      */
     @Pure
     public <F> @Nonnull FunctionalIterable<F> map(@Nonnull UnaryFunction<? super E, ? extends F> function);
+    
+    /* -------------------------------------------------- Instance -------------------------------------------------- */
+    
+    /**
+     * Returns the elements of this iterable which are an instance of the given type.
+     */
+    @Pure
+    public <T> @Nonnull FunctionalIterable<T> instanceOf(@Nonnull Class<T> type);
     
     /* -------------------------------------------------- Pruning -------------------------------------------------- */
     

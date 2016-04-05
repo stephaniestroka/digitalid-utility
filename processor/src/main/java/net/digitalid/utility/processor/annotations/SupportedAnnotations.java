@@ -20,8 +20,6 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
  */
 @Documented
 @Target(ElementType.TYPE)
-// TODO: How does a method validator look like for this annotation? We can't generate code here, so maybe the method validator annotation is misplaced?
-// @MethodValidator(Processor.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SupportedAnnotations {
     

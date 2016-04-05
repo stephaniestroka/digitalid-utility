@@ -6,8 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.validators.OrderingValidator;
 
@@ -19,9 +19,9 @@ import net.digitalid.utility.validation.validators.OrderingValidator;
  * @see StrictlyDescending
  */
 @Documented
+@Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(Descending.Validator.class)
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface Descending {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */

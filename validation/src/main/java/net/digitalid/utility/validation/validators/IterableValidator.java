@@ -2,8 +2,8 @@ package net.digitalid.utility.validation.validators;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.immutable.collections.ImmutableSet;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.immutable.collections.ImmutableSet;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
@@ -17,11 +17,11 @@ public abstract class IterableValidator extends ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableSet<Class<?>> targetTypes = ImmutableSet.with(Iterable.class, Object[].class);
+    private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.with(Iterable.class, Object[].class);
     
     @Pure
     @Override
-    public @Nonnull ImmutableSet<Class<?>> getTargetTypes() {
+    public @Nonnull ImmutableSet<@Nonnull Class<?>> getTargetTypes() {
         return targetTypes;
     }
     

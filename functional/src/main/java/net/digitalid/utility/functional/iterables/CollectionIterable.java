@@ -4,14 +4,14 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Functional;
-import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.Updating;
 
 /**
  * This interface extends the finite iterable interface to provide a faster {@link #size()} implementation.
  * 
  * @see CollectionBasedIterable
  */
-@Immutable
+@Updating
 @Functional
 public interface CollectionIterable<E> extends FiniteIterable<E> {
     

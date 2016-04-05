@@ -22,9 +22,15 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.fixes.Quotes;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
@@ -41,6 +47,7 @@ public abstract class CustomProcessor implements Processor {
     
     /* -------------------------------------------------- Initialization -------------------------------------------------- */
     
+    @Impure
     @Override
     public void init(@Nonnull ProcessingEnvironment processingEnvironment) throws IllegalStateException {
         StaticProcessingEnvironment.environment.set(processingEnvironment);
@@ -53,8 +60,8 @@ public abstract class CustomProcessor implements Processor {
      */
     @Pure
     protected @Nonnull String getProjectName(@Nonnull RoundEnvironment roundEnvironment) {
-        final @Nonnull Set<? extends Element> rootElements = roundEnvironment.getRootElements();
-        final @Nonnull List<String> qualifiedTypeNames = new ArrayList<>(rootElements.size());
+        final @Nonnull Set<@Nonnull ? extends Element> rootElements = roundEnvironment.getRootElements();
+        final @Nonnull List<@Nonnull String> qualifiedTypeNames = new ArrayList<>(rootElements.size());
         for (@Nonnull Element rootElement : rootElements) {
             if (rootElement.getKind().isClass() || rootElement.getKind().isInterface()) {
                 qualifiedTypeNames.add(((QualifiedNameable) rootElement).getQualifiedName().toString());
@@ -71,7 +78,8 @@ public abstract class CustomProcessor implements Processor {
      * 
      * @see #process(java.util.Set, javax.annotation.processing.RoundEnvironment)
      */
-    protected void processFirstRound(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
+    @Impure
+    protected void processFirstRound(@Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
         ProcessingLog.annotatedElements(annotations, roundEnvironment);
     }
     
@@ -87,7 +95,8 @@ public abstract class CustomProcessor implements Processor {
      * 
      * @see #process(java.util.Set, javax.annotation.processing.RoundEnvironment)
      */
-    protected void process(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment, @NonNegative int round) {
+    @Impure
+    protected void process(@Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment, @NonNegative int round) {
         if (round == 0) { processFirstRound(annotations, roundEnvironment); }
         this.onlyInterestedInFirstRound = true;
     }
@@ -96,7 +105,7 @@ public abstract class CustomProcessor implements Processor {
      * Returns whether the given annotations are claimed by this annotation processor with the given round environment.
      */
     @Pure
-    protected boolean consumeAnnotations(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
+    protected boolean consumeAnnotations(@Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
         return false;
     }
     
@@ -105,8 +114,9 @@ public abstract class CustomProcessor implements Processor {
      */
     private int round = 0;
     
+    @Impure
     @Override
-    public final boolean process(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
+    public final boolean process(@NonCaptured @Unmodified @Nonnull Set<@Nonnull ? extends TypeElement> typeElements, @Nonnull RoundEnvironment roundEnvironment) {
         ProcessingLog.setUp(getClass().getSimpleName());
         
         if (round == 0) {
@@ -114,6 +124,7 @@ public abstract class CustomProcessor implements Processor {
             ProcessingLog.information(getClass().getSimpleName() + " invoked" + (projectName.isEmpty() ? "" : " for project " + Quotes.inSingle(projectName)) + ":\n");
         }
         
+        final @Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations = FiniteIterable.of(typeElements);
         if (round == 0 || !onlyInterestedInFirstRound) {
             ProcessingLog.information("Process " + annotations + " in the " + Strings.getOrdinal(round + 1) + " round.");
             try {
@@ -131,10 +142,10 @@ public abstract class CustomProcessor implements Processor {
     /* -------------------------------------------------- Annotations -------------------------------------------------- */
     
     /**
-     * Converts the given non-nullable array to an unmodifiable set.
+     * Converts the given array to an unmodifiable set.
      */
     @Pure
-    protected @Nonnull <T> Set<T> convertArrayToUnmodifiableSet(@Nonnull @NonNullableElements T[] array) {
+    protected <T> @Capturable @Unmodifiable @Nonnull Set<@Nonnull T> convertArrayToUnmodifiableSet(@NonCaptured @Unmodified @Nonnull @NonNullableElements T[] array) {
         final @Nonnull @NonNullableElements Set<T> set = new HashSet<>(array.length);
         for (@Nonnull T s : array) { set.add(s); }
         return Collections.unmodifiableSet(set);
@@ -142,7 +153,7 @@ public abstract class CustomProcessor implements Processor {
     
     @Pure
     @Override
-    public @Nonnull Set<String> getSupportedOptions() {
+    public @Capturable @Unmodifiable @Nonnull Set<@Nonnull String> getSupportedOptions() {
         final @Nullable SupportedOptions supportedOptions = getClass().getAnnotation(SupportedOptions.class);
         if (supportedOptions != null) {
             return convertArrayToUnmodifiableSet(supportedOptions.value());
@@ -153,10 +164,10 @@ public abstract class CustomProcessor implements Processor {
     
     @Pure
     @Override
-    public @Nonnull Set<String> getSupportedAnnotationTypes() {
+    public @Capturable @Unmodifiable @Nonnull Set<@Nonnull String> getSupportedAnnotationTypes() {
         final @Nullable SupportedAnnotations supportedAnnotations = getClass().getAnnotation(SupportedAnnotations.class);
         if  (supportedAnnotations != null) {
-            final @Nonnull @NonNullableElements Set<String> result = new HashSet<>(supportedAnnotations.value().length + supportedAnnotations.prefix().length);
+            final @Nonnull Set<@Nonnull String> result = new HashSet<>(supportedAnnotations.value().length + supportedAnnotations.prefix().length);
             for (@Nonnull Class<? extends Annotation> annotation : supportedAnnotations.value()) {
                 result.add(annotation.getCanonicalName());
             }
@@ -183,8 +194,8 @@ public abstract class CustomProcessor implements Processor {
     
     @Pure
     @Override
-    public @Nonnull Iterable<? extends Completion> getCompletions(@Nonnull Element element, @Nonnull AnnotationMirror annotation, @Nonnull ExecutableElement member, @Nonnull String userText) {
-        return Collections.emptyList();
+    public @Nonnull FiniteIterable<? extends Completion> getCompletions(@Nonnull Element element, @Nonnull AnnotationMirror annotation, @Nonnull ExecutableElement member, @Nonnull String userText) {
+        return FiniteIterable.of();
     }
     
 }

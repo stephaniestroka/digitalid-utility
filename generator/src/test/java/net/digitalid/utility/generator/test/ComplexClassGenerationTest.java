@@ -19,7 +19,7 @@ import static net.digitalid.utility.testing.CustomAssert.*;
  */
 public class ComplexClassGenerationTest {
     
-    public @Nonnull ComplexClassBuilder.InnerComplexClassBuilder prepareBuilder() {
+    public ComplexClassBuilder.@Nonnull InnerComplexClassBuilder prepareBuilder() {
         final @Nonnull SimpleClass simpleClass = SimpleClassBuilder.withNumber(1).build();
         final @Nonnull String[] arrayOfStrings = new String[] { "first", "second", "third" };
         final @Nonnull List<Integer> listOfIntegers = new ArrayList<>();

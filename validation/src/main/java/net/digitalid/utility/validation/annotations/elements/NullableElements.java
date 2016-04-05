@@ -12,10 +12,12 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.validators.IterableValidator;
 
 /**
@@ -25,9 +27,9 @@ import net.digitalid.utility.validation.validators.IterableValidator;
  * @see NonNullableElements
  */
 @Documented
+@Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(NullableElements.Validator.class)
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface NullableElements {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
@@ -40,7 +42,7 @@ public @interface NullableElements {
         
         @Pure
         @Override
-        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
             return Contract.with("true", "The # may contain null.", element);
         }
         

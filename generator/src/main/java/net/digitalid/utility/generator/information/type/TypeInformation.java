@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.annotations.method.Pure;
@@ -77,6 +78,14 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     @Override
     public @Nonnull DeclaredType getType() {
         return (DeclaredType) super.getType();
+    }
+    
+    /**
+     * Returns the type arguments of the represented declared type.
+     */
+    @Pure
+    public @Nonnull FiniteIterable<@Nonnull TypeVariable> getTypeArguments() {
+        return FiniteIterable.of(getType().getTypeArguments()).instanceOf(TypeVariable.class);
     }
     
     /* -------------------------------------------------- Subclass -------------------------------------------------- */
@@ -169,7 +178,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         
         final @Nonnull List<@Nonnull Pair<@Nonnull MethodInformation, @Nullable MethodInformation>> gettersAndSetters = new ArrayList<>();
         
-        for (@Nonnull Map.Entry<String, MethodInformation> indexedGetter : abstractGetters.entrySet()) {
+        for (Map.@Nonnull Entry<String, MethodInformation> indexedGetter : abstractGetters.entrySet()) {
             final @Nonnull MethodInformation getter = indexedGetter.getValue();
             final @Nullable MethodInformation setter = abstractSetters.get(indexedGetter.getKey());
             ProcessingLog.debugging("For field '" + indexedGetter.getKey() + "', adding getter: '" + getter + "' and setter '" + setter + "'.");

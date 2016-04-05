@@ -2,7 +2,11 @@ package net.digitalid.utility.initialization;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.Initializer;
 import net.digitalid.utility.functional.fixes.Quotes;
@@ -20,7 +24,7 @@ public abstract class LoggingInitializer extends Initializer {
     /**
      * Creates and registers this initializer with the given target and dependencies.
      */
-    protected LoggingInitializer(@Nonnull Configuration<?> target, @Nonnull Configuration<?>... dependencies) {
+    protected LoggingInitializer(@NonCaptured @Modified @Nonnull Configuration<?> target, @NonCaptured @Unmodified @Nonnull Configuration<?>... dependencies) {
         super(target, dependencies);
         
         Log.debugging("The initializer " + this + " was loaded.");
@@ -34,8 +38,10 @@ public abstract class LoggingInitializer extends Initializer {
      * 
      * @throws Exception if any problems occur.
      */
+    @Impure
     protected abstract void executeWithoutLogging() throws Exception;
     
+    @Impure
     @Override
     protected final void execute() throws Exception {
         Log.debugging("The initializer " + this + " begins its execution.");

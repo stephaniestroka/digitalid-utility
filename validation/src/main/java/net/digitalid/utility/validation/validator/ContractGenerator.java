@@ -5,8 +5,8 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.processing.utility.TypeImporter;
+import net.digitalid.utility.validation.contract.Contract;
 
 /**
  * A contract generator generates the contract for an annotation during annotation processing.

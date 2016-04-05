@@ -23,6 +23,7 @@ import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.state.Modifiable;
 import net.digitalid.utility.functional.fixes.Fixes;
@@ -46,14 +47,14 @@ import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.math.relative.GreaterThanOrEqualTo;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Functional;
-import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.Updating;
 
 /**
  * This interface extends the functional iterable interface to model finite iterables.
  * 
  * @see CollectionIterable
  */
-@Immutable
+@Updating
 @Functional
 public interface FiniteIterable<E> extends FunctionalIterable<E> {
     
@@ -63,7 +64,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Wraps the given collection as a finite iterable.
      */
     @Pure
-    public static <E> @Nonnull FiniteIterable<E> of(@Captured @Unmodified @Nonnull Collection<? extends E> collection) {
+    public static <E> @Nonnull FiniteIterable<E> of(@Referenced @Unmodified @Nonnull Collection<? extends E> collection) {
         return new CollectionBasedIterable<>(collection);
     }
     
@@ -72,7 +73,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     @SafeVarargs
-    public static <E> @Nonnull FiniteIterable<E> of(@Captured E... elements) {
+    public static <E> @Nonnull FiniteIterable<E> of(@Referenced @Unmodified @Captured E... elements) {
         return () -> ArrayIterator.with(elements);
     }
     
@@ -96,6 +97,14 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     @Override
     public default <F> @Nonnull FiniteIterable<F> map(@Nonnull UnaryFunction<? super E, ? extends F> function) {
         return () -> MappingIterator.with(iterator(), function);
+    }
+    
+    /* -------------------------------------------------- Instance -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public default <T> @Nonnull FiniteIterable<T> instanceOf(@Nonnull Class<T> type) {
+        return filter(type::isInstance).map(type::cast);
     }
     
     /* -------------------------------------------------- Pruning -------------------------------------------------- */
@@ -279,14 +288,34 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     /* -------------------------------------------------- Finding -------------------------------------------------- */
     
     /**
+     * Returns the first element of this iterable that fulfills the given predicate or the given default element if no such element is found.
+     */
+    @Pure
+    public default @NonCapturable E findFirst(@Nonnull Predicate<? super E> predicate, @NonCaptured @Unmodified E defaultElement) {
+        for (E element : this) {
+            if (predicate.evaluate(element)) { return element; }
+        }
+        return defaultElement;
+    }
+    
+    /**
      * Returns the first element of this iterable that fulfills the given predicate or null if no such element is found.
      */
     @Pure
     public default @NonCapturable @Nullable E findFirst(@Nonnull Predicate<? super E> predicate) {
+        return findFirst(predicate, null);
+    }
+    
+    /**
+     * Returns the last element of this iterable that fulfills the given predicate or the given default element if no such element is found.
+     */
+    @Pure
+    public default @NonCapturable E findLast(@Nonnull Predicate<? super E> predicate, @NonCaptured @Unmodified E defaultElement) {
+        @Nullable E lastElement = defaultElement;
         for (E element : this) {
-            if (predicate.evaluate(element)) { return element; }
+            if (predicate.evaluate(element)) { lastElement = element; }
         }
-        return null;
+        return lastElement;
     }
     
     /**
@@ -294,11 +323,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      */
     @Pure
     public default @NonCapturable @Nullable E findLast(@Nonnull Predicate<? super E> predicate) {
-        @Nullable E lastElement = null;
-        for (E element : this) {
-            if (predicate.evaluate(element)) { lastElement = element; }
-        }
-        return lastElement;
+        return findLast(predicate, null);
     }
     
     /**
@@ -386,11 +411,30 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     /* -------------------------------------------------- Minimum -------------------------------------------------- */
     
     /**
+     * Returns the minimum element of this iterable according to the given comparator or the given default element if this iterable is empty.
+     */
+    @Pure
+    public default @NonCapturable E min(@Nonnull Comparator<? super E> comparator, @NonCaptured @Unmodified E defaultElement) {
+        return reduce(BinaryOperator.min(comparator), defaultElement);
+    }
+    
+    /**
      * Returns the minimum element of this iterable according to the given comparator or null if this iterable is empty.
      */
     @Pure
     public default @NonCapturable @Nullable E min(@Nonnull Comparator<? super E> comparator) {
-        return reduce(BinaryOperator.min(comparator));
+        return min(comparator, null);
+    }
+    
+    /**
+     * Returns the minimum element of this iterable according to the natural order or the given default element if this iterable is empty.
+     * 
+     * @throws ClassCastException if the elements of this iterable are not comparable.
+     */
+    @Pure
+    @SuppressWarnings("unchecked")
+    public default @NonCapturable E min(@NonCaptured @Unmodified E defaultElement) {
+        return reduce((a, b) -> a == null ? b : (b == null ? a : ( ((Comparable<? super E>) a).compareTo(b) <= 0 ? a : b )), defaultElement);
     }
     
     /**
@@ -399,19 +443,37 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * @throws ClassCastException if the elements of this iterable are not comparable.
      */
     @Pure
-    @SuppressWarnings("unchecked")
     public default @NonCapturable @Nullable E min() {
-        return reduce((a, b) -> a == null ? b : (b == null ? a : ( ((Comparable<? super E>) a).compareTo(b) <= 0 ? a : b )));
+        return min((E) null);
     }
     
     /* -------------------------------------------------- Maximum -------------------------------------------------- */
+    
+    /**
+     * Returns the maximum element of this iterable according to the given comparator or the given default element if this iterable is empty.
+     */
+    @Pure
+    public default @NonCapturable E max(@Nonnull Comparator<? super E> comparator, @NonCaptured @Unmodified E defaultElement) {
+        return reduce(BinaryOperator.max(comparator), defaultElement);
+    }
     
     /**
      * Returns the maximum element of this iterable according to the given comparator or null if this iterable is empty.
      */
     @Pure
     public default @NonCapturable @Nullable E max(@Nonnull Comparator<? super E> comparator) {
-        return reduce(BinaryOperator.max(comparator));
+        return max(comparator, null);
+    }
+    
+    /**
+     * Returns the maximum element of this iterable according to the natural order or the given default element if this iterable is empty.
+     * 
+     * @throws ClassCastException if the elements of this iterable are not comparable.
+     */
+    @Pure
+    @SuppressWarnings("unchecked")
+    public default @NonCapturable E max(@NonCaptured @Unmodified E defaultElement) {
+        return reduce((a, b) -> a == null ? b : (b == null ? a : ( ((Comparable<? super E>) a).compareTo(b) >= 0 ? a : b )), defaultElement);
     }
     
     /**
@@ -420,9 +482,8 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * @throws ClassCastException if the elements of this iterable are not comparable.
      */
     @Pure
-    @SuppressWarnings("unchecked")
     public default @NonCapturable @Nullable E max() {
-        return reduce((a, b) -> a == null ? b : (b == null ? a : ( ((Comparable<? super E>) a).compareTo(b) >= 0 ? a : b )));
+        return max((E) null);
     }
     
     /* -------------------------------------------------- Summation -------------------------------------------------- */
@@ -645,6 +706,22 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     }
     
     /**
+     * Returns the elements of this iterable joined by commas with the given prefix and suffix or the given empty string if this iterable is empty.
+     */
+    @Pure
+    public default @Nonnull String join(@Nonnull CharSequence prefix, @Nonnull CharSequence suffix, @Nonnull CharSequence empty) {
+        return join(prefix, suffix, empty, ", ");
+    }
+    
+    /**
+     * Returns the elements of this iterable joined by commas with the given prefix and suffix.
+     */
+    @Pure
+    public default @Nonnull String join(@Nonnull CharSequence prefix, @Nonnull CharSequence suffix) {
+        return join(prefix, suffix, prefix.toString() + suffix.toString());
+    }
+    
+    /**
      * Returns the elements of this iterable joined by the given delimiter with the given fixes or the given empty string if this iterable is empty.
      */
     @Pure
@@ -670,11 +747,19 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     }
     
     /**
+     * Returns the elements of this iterable joined by the given delimiter.
+     */
+    @Pure
+    public default @Nonnull String join(@Nonnull CharSequence delimiter) {
+        return join((Fixes) null, "", delimiter);
+    }
+    
+    /**
      * Returns the elements of this iterable joined by commas.
      */
     @Pure
     public default @Nonnull String join() {
-        return join(null);
+        return join((Fixes) null);
     }
     
 }

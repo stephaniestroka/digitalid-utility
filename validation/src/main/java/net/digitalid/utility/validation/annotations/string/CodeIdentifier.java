@@ -12,20 +12,22 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.processing.utility.TypeImporter;
+import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.validators.StringValidator;
 
 /**
  * This annotation indicates that a string is a valid identifier in most languages like Java or SQL.
  */
 @Documented
+@Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(CodeIdentifier.Validator.class)
-@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.METHOD})
 public @interface CodeIdentifier {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
@@ -49,7 +51,7 @@ public @interface CodeIdentifier {
         
         @Pure
         @Override
-        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
             return Contract.with(typeImporter.importIfPossible(CodeIdentifier.class) + ".Validator.validate(#)", "The # has to be a valid code identifier but was $.", element);
         }
         

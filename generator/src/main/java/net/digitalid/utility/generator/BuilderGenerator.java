@@ -6,18 +6,19 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.exceptions.ConformityViolation;
 import net.digitalid.utility.functional.fixes.Brackets;
-import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.field.FieldInformation;
-import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.type.exceptions.UnsupportedTypeException;
 import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -66,7 +67,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     private @Nonnull String createInterfaceForField(@Nonnull FieldInformation field, @Nullable String nextInterface) {
         final @Nonnull String interfaceName = getNameOfFieldBuilder(field);
         final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
-        beginInterface("public interface " + interfaceName + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeInformation.getType().getTypeArguments()));
+        beginInterface("public interface " + interfaceName + importWithBounds(typeInformation.getTypeArguments()));
         ProcessingLog.debugging("addAnnotation");
         addAnnotation(Chainable.class);
         ProcessingLog.debugging("addMethodDeclaration");
@@ -103,7 +104,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      */
     private void addSetterForField(@Nonnull FieldInformation field, @Nonnull String returnType, @Nonnull String returnedInstance) {
         final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
-        beginMethod("public static " + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeInformation.getType().getTypeArguments()) + returnType + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")");
+        beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + returnType + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")");
         addStatement("return new " + returnedInstance + "()." + methodName + "(" + field.getName() + ")");
         endMethod();
     }
@@ -123,26 +124,15 @@ public class BuilderGenerator extends JavaFileGenerator {
         return listOfInterfaces;
     }
     
-    public final static UnaryFunction<@Nonnull RepresentingFieldInformation, @Nonnull String> fieldToStringFunction = new UnaryFunction<@Nonnull RepresentingFieldInformation, @Nonnull String>() {
-        
-        @Override
-        public @Nonnull String evaluate(@Nonnull RepresentingFieldInformation element) {
-            return element.getName();
-        }
-        
-    };
-    
     /**
      * Creates a builder that collects all fields and provides a build() method, which returns an instance of the type that the builder builds.
      */
     // TODO: improve exception handling
     protected void createInnerClassForFields(@Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) throws UnsupportedTypeException {
-        
         ProcessingLog.debugging("createInnerClassForFields()");
         
-        final List<? extends TypeMirror> typeArguments = typeInformation.getType().getTypeArguments();
-        
-        beginClass("public static class " + nameOfBuilder + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeArguments) + (interfacesForRequiredFields.size() == 0 ? "" : " implements " + FiniteIterable.of(interfacesForRequiredFields).join() + importingTypeVisitor.getTypeVariablesWithoutBounds(typeArguments, false)));
+        final @Nonnull FiniteIterable<@Nonnull TypeVariable> typeArguments = typeInformation.getTypeArguments();
+        beginClass("public static class " + nameOfBuilder + importWithBounds(typeArguments) + (interfacesForRequiredFields.isEmpty() ? "" : " implements " + FiniteIterable.of(interfacesForRequiredFields).join() + typeArguments.join(Brackets.POINTY, "")));
         
         for (@Nonnull FieldInformation field : typeInformation.getRepresentingFieldInformation()) {
             field.getAnnotations();
@@ -168,9 +158,10 @@ public class BuilderGenerator extends JavaFileGenerator {
         }
         final @Nonnull ExecutableElement constructor = constructors.get(0);
         final @Nonnull List<? extends TypeMirror> throwTypes = constructor.getThrownTypes();
-        beginMethod("public " + typeInformation.getName() + " build()" + (throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(importingTypeVisitor.TYPE_MAPPER).join()));
+        beginMethod("public " + typeInformation.getName() + " build()" + (throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()));
         
-        addStatement("return new " + importIfPossible(typeInformation.getQualifiedNameOfGeneratedSubclass()) + typeInformation.getRepresentingFieldInformation().map(fieldToStringFunction).join(Brackets.ROUND));
+        final @Nonnull ExecutableType type = (ExecutableType) StaticProcessingEnvironment.getTypeUtils().asMemberOf(typeInformation.getType(), constructor);
+        addStatement("return new " + typeInformation.getQualifiedNameOfGeneratedSubclass() + typeInformation.getRepresentingFieldInformation().map(element -> element.getName()).join(Brackets.ROUND));
         
         endMethod();
         
@@ -187,8 +178,6 @@ public class BuilderGenerator extends JavaFileGenerator {
      */
     // TODO: improve exception handling
     protected void createStaticEntryMethod(@Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<FieldInformation> requiredFields, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) throws UnsupportedTypeException {
-        final List<? extends TypeMirror> typeArguments = typeInformation.getType().getTypeArguments();
-        
         if (requiredFields.size() > 0) {
             final @Nonnull FieldInformation entryField = requiredFields.get(0);
             final @Nonnull String secondInterface;
@@ -202,7 +191,7 @@ public class BuilderGenerator extends JavaFileGenerator {
             for (@Nonnull FieldInformation optionalField : typeInformation.getRepresentingFieldInformation()) {
                 addSetterForField(optionalField, nameOfBuilder, nameOfBuilder);
             }
-            beginMethod("public static " + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeArguments) + nameOfBuilder + " get()");
+            beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + nameOfBuilder + " get()");
             addStatement("return new " + nameOfBuilder + "()");
             endMethod();
         }
@@ -221,7 +210,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         
         this.typeInformation = typeInformation;
         
-        beginClass("public class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importingTypeVisitor.reduceTypeVariablesWithBoundsToString(typeInformation.getType().getTypeArguments()));
+        beginClass("public class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importWithBounds(typeInformation.getTypeArguments()));
         
         try {
             final @Nonnull @NonNullableElements List<FieldInformation> requiredFields = getRequiredFields();

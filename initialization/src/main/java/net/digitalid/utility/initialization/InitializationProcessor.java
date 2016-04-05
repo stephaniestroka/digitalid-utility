@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,10 +19,12 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.Initializer;
 import net.digitalid.utility.functional.fixes.Quotes;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
@@ -31,7 +32,6 @@ import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.processor.generator.ServiceFileGenerator;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 
 /**
  * This annotation processor generates a subclass of {@link Initializer} for each static method
@@ -69,11 +69,12 @@ public class InitializationProcessor extends CustomProcessor {
     }
     
     /**
-     * Generates the initializer for the given annotated method with the given target and dependency configuration fields.
+     * Generates the initializer for the given annotated method with the given configuration fields.
      * 
      * @return the qualified name of the generated initializer.
      */
-    protected @Nonnull String generateInitializer(@Nonnull ExecutableElement annotatedMethod, @Nonnull VariableElement targetConfigurationField, @Nonnull @NonNullableElements List<VariableElement> dependencyConfigurationFields) {
+    @Impure
+    protected @Nonnull String generateInitializer(@Nonnull ExecutableElement annotatedMethod, @Nonnull FiniteIterable<@Nonnull VariableElement> configurationFields) {
         final @Nonnull TypeElement sourceClassElement = (TypeElement) annotatedMethod.getEnclosingElement();
         
         final @Nonnull String qualifiedSourceClassName = sourceClassElement.getQualifiedName().toString();
@@ -90,14 +91,7 @@ public class InitializationProcessor extends CustomProcessor {
         javaSourceFile.endJavadoc();
         
         javaSourceFile.beginConstructor("public " + simpleGeneratedClassName + "()");
-        final @Nonnull StringBuilder parameters = new StringBuilder();
-        parameters.append(javaSourceFile.importIfPossible(targetConfigurationField.getEnclosingElement())).append(".").append(targetConfigurationField.getSimpleName());
-        if (!dependencyConfigurationFields.isEmpty()) {
-            for (@Nonnull VariableElement dependencyFieldElement : dependencyConfigurationFields) {
-                parameters.append(", ").append(javaSourceFile.importIfPossible(dependencyFieldElement.getEnclosingElement())).append(".").append(dependencyFieldElement.getSimpleName());
-            }
-        }
-        javaSourceFile.addStatement("super(" + parameters + ")");
+        javaSourceFile.addStatement(configurationFields.map(field -> javaSourceFile.importIfPossible(field.getEnclosingElement()) + "." + field.getSimpleName()).join("super(", ")"));
         javaSourceFile.endConstructor();
         
         javaSourceFile.addAnnotation(Override.class);
@@ -111,8 +105,9 @@ public class InitializationProcessor extends CustomProcessor {
         return qualifiedGeneratedClassName;
     }
     
+    @Impure
     @Override
-    public void processFirstRound(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
+    public void processFirstRound(@Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
         final @Nonnull ServiceFileGenerator serviceLoaderFile = ServiceFileGenerator.forService(Initializer.class);
         for (@Nonnull Element annotatedElement : roundEnvironment.getElementsAnnotatedWith(Initialize.class)) {
             // Enforced by the compiler due to the '@Target' meta-annotation:
@@ -127,9 +122,9 @@ public class InitializationProcessor extends CustomProcessor {
             // TODO: It should be possible to ensure during compile-time that there are no cyclic dependencies.
             
             @Nullable VariableElement targetConfigurationField = null;
-            @Nullable @NonNullableElements List<VariableElement> dependencyConfigurationFields = null;
+            @Nullable List<@Nonnull VariableElement> dependencyConfigurationFields = null;
             
-            for (@Nonnull Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationMirror.getElementValues().entrySet()) {
+            for (Map.@Nonnull Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : annotationMirror.getElementValues().entrySet()) {
                 if (entry.getKey().getSimpleName().contentEquals("target")) {
                     targetConfigurationField = getConfigurationField(entry.getValue());
                     if (targetConfigurationField == null) {
@@ -152,7 +147,7 @@ public class InitializationProcessor extends CustomProcessor {
             if (targetConfigurationField == null) { continue; }
             if (dependencyConfigurationFields == null) { dependencyConfigurationFields = new LinkedList<>(); }
             
-            final @Nonnull String qualifiedGeneratedClassName = generateInitializer(annotatedMethod, targetConfigurationField, dependencyConfigurationFields);
+            final @Nonnull String qualifiedGeneratedClassName = generateInitializer(annotatedMethod, FiniteIterable.of(targetConfigurationField).combine(FiniteIterable.of(dependencyConfigurationFields)));
             serviceLoaderFile.addProvider(qualifiedGeneratedClassName);
         }
         serviceLoaderFile.write();
@@ -160,7 +155,7 @@ public class InitializationProcessor extends CustomProcessor {
     
     @Pure
     @Override
-    protected boolean consumeAnnotations(@Nonnull @NonNullableElements Set<? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
+    protected boolean consumeAnnotations(@Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
         return true;
     }
     

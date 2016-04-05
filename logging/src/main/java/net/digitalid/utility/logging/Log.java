@@ -1,10 +1,18 @@
 package net.digitalid.utility.logging;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.logging.logger.Logger;
+import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
- * This class makes it easier to {@link Logger#log(net.digitalid.utility.logging.Level, java.lang.String, java.lang.Throwable) log} messages.
+ * This class makes it easier to {@link Logger#log(net.digitalid.utility.logging.Level, java.lang.CharSequence, java.lang.Throwable, java.lang.Object...) log} messages.
  */
+@Utility
 public final class Log {
     
     /* -------------------------------------------------- Error -------------------------------------------------- */
@@ -13,7 +21,8 @@ public final class Log {
      * Logs the given message and throwable as an error.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void error(CharSequence message, Throwable throwable, Object... arguments) {
+    @Impure
+    public static void error(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nullable Object... arguments) {
         Logger.log(Level.ERROR, message, throwable);
     }
     
@@ -21,7 +30,8 @@ public final class Log {
      * Logs the given message as an error.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void error(CharSequence message, Object... arguments) {
+    @Impure
+    public static void error(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
         Logger.log(Level.ERROR, message, null);
     }
     
@@ -31,7 +41,8 @@ public final class Log {
      * Logs the given message and throwable as a warning.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void warning(CharSequence message, Throwable throwable, Object... arguments) {
+    @Impure
+    public static void warning(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nullable Object... arguments) {
         Logger.log(Level.WARNING, message, throwable);
     }
     
@@ -39,7 +50,8 @@ public final class Log {
      * Logs the given message as a warning.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void warning(CharSequence message, Object... arguments) {
+    @Impure
+    public static void warning(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
         Logger.log(Level.WARNING, message, null);
     }
     
@@ -49,7 +61,8 @@ public final class Log {
      * Logs the given message and throwable as information.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void information(CharSequence message, Throwable throwable, Object... arguments) {
+    @Impure
+    public static void information(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nullable Object... arguments) {
         Logger.log(Level.INFORMATION, message, throwable);
     }
     
@@ -57,7 +70,8 @@ public final class Log {
      * Logs the given message as information.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void information(CharSequence message, Object... arguments) {
+    @Impure
+    public static void information(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
         Logger.log(Level.INFORMATION, message, null);
     }
     
@@ -67,7 +81,8 @@ public final class Log {
      * Logs the given message and throwable for debugging.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void debugging(CharSequence message, Throwable throwable, Object... arguments) {
+    @Impure
+    public static void debugging(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nullable Object... arguments) {
         Logger.log(Level.DEBUGGING, message, throwable);
     }
     
@@ -75,7 +90,8 @@ public final class Log {
      * Logs the given message for debugging.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void debugging(CharSequence message, Object... arguments) {
+    @Impure
+    public static void debugging(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
         Logger.log(Level.DEBUGGING, message, null);
     }
     
@@ -85,7 +101,8 @@ public final class Log {
      * Logs the given message and throwable only in verbose mode.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void verbose(CharSequence message, Throwable throwable, Object... arguments) {
+    @Impure
+    public static void verbose(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nullable Object... arguments) {
         Logger.log(Level.VERBOSE, message, throwable);
     }
     
@@ -93,7 +110,8 @@ public final class Log {
      * Logs the given message only in verbose mode.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
-    public static void verbose(CharSequence message, Object... arguments) {
+    @Impure
+    public static void verbose(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
         Logger.log(Level.VERBOSE, message, null);
     }
     

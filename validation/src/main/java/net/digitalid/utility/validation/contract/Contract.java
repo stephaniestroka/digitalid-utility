@@ -16,7 +16,6 @@ import net.digitalid.utility.contracts.exceptions.ContractViolationException;
 import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.string.Strings;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.validator.ContractGenerator;
@@ -56,13 +55,13 @@ public class Contract {
     
     /* -------------------------------------------------- Arguments -------------------------------------------------- */
     
-    private final @Unmodifiable @Nonnull @NonNullableElements List<String> arguments;
+    private final @Unmodifiable @Nonnull List<@Nonnull String> arguments;
     
     /**
      * Returns the arguments with which the {@link #getMessage() message} is {@link FormatString#format(java.lang.CharSequence, java.lang.Object...) formatted}.
      */
     @Pure
-    public @Unmodifiable @Nonnull @NonNullableElements List<String> getArguments() {
+    public @Unmodifiable @Nonnull List<@Nonnull String> getArguments() {
         return arguments;
     }
     
