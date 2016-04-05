@@ -36,7 +36,7 @@ public abstract class DirectlyAccessibleFieldInformation extends FieldInformatio
     @Pure
     @Override
     public @Nonnull String getAccessCode() {
-        return "this." + field.getSimpleName();
+        return field.getSimpleName().toString();
     }
     
     /* -------------------------------------------------- Mutability -------------------------------------------------- */

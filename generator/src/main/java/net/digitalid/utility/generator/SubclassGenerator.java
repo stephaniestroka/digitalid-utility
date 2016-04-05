@@ -32,10 +32,14 @@ import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.type.exceptions.UnsupportedTypeException;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.generator.interceptor.MethodUtility;
+import net.digitalid.utility.generator.typevisitors.GenerateComparisonTypeVisitor;
+import net.digitalid.utility.generator.typevisitors.GenerateHashCodeTypeVisitor;
+import net.digitalid.utility.generator.typevisitors.GenerateToStringTypeVisitor;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Pair;
+import net.digitalid.utility.tuples.Quartet;
 import net.digitalid.utility.tuples.Triplet;
 import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
@@ -47,7 +51,6 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * @see GeneratorProcessor
  * @see TypeInformation
  */
-// TODO: generate validate() method
 @Mutable
 public class SubclassGenerator extends JavaFileGenerator {
     
@@ -182,6 +185,7 @@ public class SubclassGenerator extends JavaFileGenerator {
     
     private static @Nonnull GenerateComparisonTypeVisitor generateComparisonTypeVisitor = new GenerateComparisonTypeVisitor();
     
+    private static @Nonnull GenerateToStringTypeVisitor generateToStringTypeVisitor = new GenerateToStringTypeVisitor();
     /**
      * Generates a hashCode method that generate a hashCode from all representing fields.
      */
@@ -192,7 +196,8 @@ public class SubclassGenerator extends JavaFileGenerator {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
         beginMethod("public String toString()");
-        addStatement("return \"" + typeInformation.getRepresentingFieldInformation().map(field -> field.getName() + " : \" + " + importIfPossible(Objects.class) + ".toString(" + field.getAccessCode() + ") + \"").join(Brackets.JSON) + "\"");
+        importIfPossible(Objects.class);
+        addStatement("return \"" + typeInformation.getName() + typeInformation.getRepresentingFieldInformation().map(field -> field.getName() + "=\" + " + generateToStringTypeVisitor.visit(field.getType(), field.getAccessCode()) + " + \"").join(Brackets.ROUND) + "\"");
         endMethod();
     }
     
@@ -209,6 +214,8 @@ public class SubclassGenerator extends JavaFileGenerator {
         }
         endMethod();
     }
+    
+    private final @Nonnull GenerateHashCodeTypeVisitor generateHashCodeTypeVisitor = new GenerateHashCodeTypeVisitor();
     
     /**
      * Generates a hashCode method that generate a hashCode from all representing fields.
@@ -227,7 +234,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         addStatement("int result = 46411");
         final @Nonnull FiniteIterable<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
         for (@Nonnull RepresentingFieldInformation field : representingFieldInformation) {
-            addStatement("result = prime * result + " + importIfPossible(Objects.class) + ".hashCode(" + field.getAccessCode() + ")");
+            generateHashCodeTypeVisitor.visit(field.getType(), Triplet.of(field.getAccessCode(), this, "result"));
         }
         addStatement("return result");
         endMethod();
@@ -256,10 +263,32 @@ public class SubclassGenerator extends JavaFileGenerator {
         for (@Nonnull RepresentingFieldInformation field : representingFieldInformation) {
             ProcessingLog.debugging("...with representing field/method $", field.getAccessCode());
             final @Nonnull String accessCode = field.getAccessCode();
-            generateComparisonTypeVisitor.visit(field.getType(), Triplet.of("this." + accessCode, "otherObject." + accessCode, this));
+            generateComparisonTypeVisitor.visit(field.getType(), Quartet.of("this." + accessCode, "otherObject." + accessCode, this, "result"));
         }
         addStatement("return result");
         endMethod();
+    }
+    
+    /**
+     * Generates a compare to method. This method should be implemented by the super class if the
+     * comparison algorithm is more complex and if the fields of the type do not implement Comparable.
+     */
+    protected void generateCompareToMethod() {
+        if (typeInformation instanceof ClassInformation && ((ClassInformation) typeInformation).compareToMethod != null) {
+            // only generated if the compareTo method is defined somewhere, but not yet implemented
+            addAnnotation(Pure.class);
+            addAnnotation(Override.class);
+            beginMethod("public int compareTo(@" + importIfPossible(Nonnull.class) + " " + typeInformation.getName() + " other)");
+            final @Nonnull FiniteIterable<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
+            addStatement("int result = 0");
+            for (@Nonnull RepresentingFieldInformation field : representingFieldInformation) {
+                addStatement("result += " + field.getAccessCode() + ".compareTo(other." + field.getAccessCode() + ")");
+            }
+            addStatement("return result");
+            endMethod();
+        } else {
+            ProcessingLog.debugging("compareTo method not found for class $", typeInformation.getName());
+        }
     }
     
     protected void generateMethods() {
@@ -268,6 +297,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         generateHashCodeMethod();
         generateToStringMethod();
         generateValidateMethod();
+        generateCompareToMethod();
     }
     
     /* Copied from the former root class. */

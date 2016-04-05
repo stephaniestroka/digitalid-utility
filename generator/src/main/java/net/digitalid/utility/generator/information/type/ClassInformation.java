@@ -273,10 +273,14 @@ public class ClassInformation extends TypeInformation {
         
         final @Nonnull FiniteIterable<MethodInformation> methodInformationIterable = getMethodInformation(typeElement, containingType);
         
+        ProcessingLog.debugging("All methods of type $: $", containingType, methodInformationIterable.join());
+        
+        
         final @Nonnull Predicate<MethodInformation> equalsPredicate = MethodSignatureMatcher.of("equals", Object.class).and(method -> !method.isFinal()).and(method -> !method.isAbstract());
         final @Nonnull Predicate<MethodInformation> hashCodePredicate = MethodSignatureMatcher.of("hashCode").and(method -> !method.isFinal()).and(method -> !method.isAbstract());
         final @Nonnull Predicate<MethodInformation> toStringPredicate = MethodSignatureMatcher.of("toString").and(method -> !method.isFinal()).and(method -> !method.isAbstract());
-        final @Nonnull Predicate<MethodInformation> compareToPredicate = MethodSignatureMatcher.of("compareTo", StaticProcessingEnvironment.getTypeUtils().asElement(typeElement.asType()).toString()).and(method -> !method.isFinal());
+        ProcessingLog.debugging("compare to method signature using type: $", StaticProcessingEnvironment.getTypeUtils().asElement(containingType).toString());
+        final @Nonnull Predicate<MethodInformation> compareToPredicate = MethodSignatureMatcher.of("compareTo", "?").and(method -> !method.isFinal()).and(MethodInformation::isAbstract);
         final @Nonnull Predicate<MethodInformation> clonePredicate = MethodSignatureMatcher.of("clone").and(method -> !method.isFinal());
         final @Nonnull Predicate<MethodInformation> validatePredicate = MethodSignatureMatcher.of("validate").and(method -> !method.isFinal());
         this.equalsMethod = methodInformationIterable.findFirst(equalsPredicate);

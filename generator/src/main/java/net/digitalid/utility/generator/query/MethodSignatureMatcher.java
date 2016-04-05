@@ -6,14 +6,10 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
-import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processing.utility.TypeNameVisitor;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 
@@ -101,7 +97,10 @@ public class MethodSignatureMatcher implements Predicate<MethodInformation> {
             for (int i = 0; i < methodParameters.size(); i++) {
                 final @Nonnull String nameOfDeclaredType = typeNameVisitor.visit(methodParameters.get(i).asType()).toString();
                 ProcessingLog.debugging("name of type: $", nameOfDeclaredType);
-                matches = matches && nameOfDeclaredType.equals(parameters[i]);
+                final @Nonnull String parameter = parameters[i];
+                if (!parameter.equals("?")) {
+                    matches = matches && nameOfDeclaredType.equals(parameter);
+                }
             }
         } else {
             matches = false;
