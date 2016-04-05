@@ -3,9 +3,12 @@ package net.digitalid.utility.testing;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.collaboration.annotations.Review;
 import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 
+import net.digitalid.collaboration.enumerations.Author;
+import net.digitalid.collaboration.enumerations.Priority;
 import org.junit.Assert;
 
 import static org.hamcrest.core.IsEqual.*;
@@ -15,6 +18,7 @@ import static org.hamcrest.core.IsNull.*;
 /**
  * Provides a set of custom assert methods that make testing easier and produces clear error messages.
  */
+@Review(date = "2016-04-05", author = Author.KASPAR_ETTER, assignee = Author.KASPAR_ETTER, priority = Priority.MIDDLE)
 public abstract class CustomAssert {
     
     /* -------------------------------------------------- ExpectationEvaluator -------------------------------------------------- */

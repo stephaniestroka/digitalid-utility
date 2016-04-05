@@ -15,7 +15,6 @@ import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
-import net.digitalid.utility.functional.fixes.IterableConverter;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.annotations.method.Pure;
@@ -251,7 +250,7 @@ final class BackedFreezableList<E> extends BackedFreezableCollection<E> implemen
     @Pure
     @Override
     public @Nonnull String toString() {
-        return IterableConverter.toString(this, Brackets.SQUARE);
+        return join(Brackets.SQUARE);
     }
     
 }

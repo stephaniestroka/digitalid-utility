@@ -4,7 +4,7 @@
                              http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <artifactId>utility-generator</artifactId>
+    <artifactId>utility-collaboration</artifactId>
     <packaging>jar</packaging>
     
     <parent>
@@ -16,19 +16,8 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-processor</artifactId>
+            <artifactId>utility-bootstrap</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-freezable</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-testing</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
     

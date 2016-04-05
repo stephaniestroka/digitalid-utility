@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-bootstrap</artifactId>
+            <artifactId>utility-collaboration</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

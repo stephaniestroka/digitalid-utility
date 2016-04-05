@@ -5,13 +5,14 @@ import java.util.Collection;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.collections.freezable.FreezableArray;
 import net.digitalid.utility.collections.freezable.FreezableCollection;
 import net.digitalid.utility.freezable.Freezable;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.functional.iterables.CollectionIterable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This interface provides read-only access to {@link Collection collections} and should <em>never</em> be cast away (unless external code requires it).
@@ -21,7 +22,7 @@ import net.digitalid.utility.annotations.method.Pure;
  * 
  * @see FreezableCollection
  */
-public interface ReadOnlyCollection<E> extends ReadOnlyIterable<E> {
+public interface ReadOnlyCollection<E> extends ReadOnlyIterable<E>, CollectionIterable<E> {
     
     /* -------------------------------------------------- Collection -------------------------------------------------- */
     
