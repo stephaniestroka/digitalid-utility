@@ -13,7 +13,7 @@ import net.digitalid.utility.annotations.type.Mutable;
  * @see DoubleIteratorBasedIterator
  */
 @Mutable
-public abstract class SingleIteratorBasedIterator<O, I0> implements ReadOnlyIterator<O> {
+public abstract class SingleIteratorBasedIterator<O, I0> extends ReadOnlyIterator<O> {
     
     /* -------------------------------------------------- Primary Iterator -------------------------------------------------- */
     

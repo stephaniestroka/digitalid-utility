@@ -53,9 +53,9 @@
         <module>validation</module>
         <module>system</module>
         <module>threading</module>
-        <module>freezable</module>
         <module>casting</module>
         <module>rootclass</module>
+        <module>freezable</module>
         <module>processor</module>
         <module>initialization</module>
         <module>directory</module>

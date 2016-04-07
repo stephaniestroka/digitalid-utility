@@ -5,16 +5,18 @@ import java.util.Iterator;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterators.PruningIterator;
+import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
 import net.digitalid.utility.functional.iterators.ZippingIterator;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
-import net.digitalid.utility.validation.annotations.type.Updating;
+import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
 /**
  * This interface extends the {@link Iterable} interface with functional methods.
@@ -22,8 +24,14 @@ import net.digitalid.utility.validation.annotations.type.Updating;
  * @see InfiniteIterable
  * @see FiniteIterable
  */
-@Updating
+@ReadOnly
 public interface FunctionalIterable<E> extends Iterable<E> {
+    
+    /* -------------------------------------------------- Iterable -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public @Capturable @Nonnull ReadOnlyIterator<E> iterator();
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
     
@@ -106,6 +114,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
     
     /**
      * Returns the elements of this iterable filtered by the given predicate.
+     * The returned iterable contains all the elements of this iterable that satisfy the given predicate.
      */
     @Pure
     public @Nonnull FunctionalIterable<E> filter(@Nonnull Predicate<? super E> predicate);

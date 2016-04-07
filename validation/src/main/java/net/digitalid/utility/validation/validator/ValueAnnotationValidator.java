@@ -6,7 +6,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.immutable.collections.ImmutableSet;
+import net.digitalid.utility.immutable.ImmutableSet;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;

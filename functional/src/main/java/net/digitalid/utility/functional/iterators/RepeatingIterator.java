@@ -13,7 +13,7 @@ import net.digitalid.utility.annotations.type.Mutable;
  * This class implements a repeating iterator that repeats the given object infinitely.
  */
 @Mutable
-public class RepeatingIterator<E> implements InfiniteIterator<E> {
+public class RepeatingIterator<E> extends InfiniteIterator<E> {
     
     /* -------------------------------------------------- Object -------------------------------------------------- */
     

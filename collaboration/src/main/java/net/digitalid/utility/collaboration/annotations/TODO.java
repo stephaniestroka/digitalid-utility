@@ -19,7 +19,7 @@ import net.digitalid.collaboration.enumerations.Priority;
  */
 @Documented
 @Retention(RetentionPolicy.SOURCE)
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR})
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.FIELD})
 public @interface TODO {
     
     /**

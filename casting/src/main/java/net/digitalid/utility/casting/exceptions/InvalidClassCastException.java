@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.exceptions.InternalException;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -21,7 +22,7 @@ public class InvalidClassCastException extends InternalException {
      * Returns the object which should have been casted to the target class.
      */
     @Pure
-    public @Nonnull Object getObject() {
+    public @NonCapturable @Nonnull Object getObject() {
         return object;
     }
     

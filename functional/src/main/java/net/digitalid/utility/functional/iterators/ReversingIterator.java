@@ -15,7 +15,7 @@ import net.digitalid.utility.annotations.type.Mutable;
  * This class implements a reversing iterator that iterates over the given elements in reverse order.
  */
 @Mutable
-public class ReversingIterator<E> implements ReadOnlyIterator<E> {
+public class ReversingIterator<E> extends ReadOnlyIterator<E> {
     
     /* -------------------------------------------------- Elements -------------------------------------------------- */
     

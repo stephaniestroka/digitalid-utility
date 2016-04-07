@@ -2,11 +2,13 @@ package net.digitalid.utility.validation.validatable;
 
 import net.digitalid.utility.annotations.method.CallSuper;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.contracts.exceptions.InvariantViolationException;
 
 /**
  * This interface allows to validate the invariant of implementing classes.
  */
+@Mutable
 public interface Validatable {
     
     /**
@@ -20,6 +22,6 @@ public interface Validatable {
      */
     @Pure
     @CallSuper
-    public void validate();
+    public default void validate() {}
     
 }

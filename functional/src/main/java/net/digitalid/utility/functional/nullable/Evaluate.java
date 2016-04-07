@@ -15,6 +15,8 @@ import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
  * This utility class allows to evaluate functional interfaces only in case their input is not null.
+ * 
+ * @see Get
  */
 @Utility
 public class Evaluate {
@@ -25,7 +27,7 @@ public class Evaluate {
      * Lets the given consumer consume the given input if it is not null.
      */
     @Pure
-    public static <I> void ifNotNull(@Captured @Nullable I input, @Nonnull Consumer<? super I> consumer) {
+    public static <I> void consumerIfNotNull(@Captured @Nullable I input, @Nonnull Consumer<? super I> consumer) {
         if (input != null) { consumer.consume(input); }
     }
     
@@ -35,7 +37,7 @@ public class Evaluate {
      * Evaluates the given predicate for the given input if it is not null or returns the given default output otherwise.
      */
     @Pure
-    public static <I> boolean ifNotNull(@NonCaptured @Unmodified @Nullable I input, @Nonnull Predicate<? super I> predicate, boolean defaultOutput) {
+    public static <I> boolean predicateIfNotNull(@NonCaptured @Unmodified @Nullable I input, @Nonnull Predicate<? super I> predicate, boolean defaultOutput) {
         return input != null ? predicate.evaluate(input) : defaultOutput;
     }
     
@@ -43,8 +45,8 @@ public class Evaluate {
      * Evaluates the given predicate for the given input if it is not null or returns false otherwise.
      */
     @Pure
-    public static <I> boolean ifNotNull(@NonCaptured @Unmodified @Nullable I input, @Nonnull Predicate<? super I> predicate) {
-        return ifNotNull(input, predicate, false);
+    public static <I> boolean predicateIfNotNull(@NonCaptured @Unmodified @Nullable I input, @Nonnull Predicate<? super I> predicate) {
+        return Evaluate.predicateIfNotNull(input, predicate, false);
     }
     
     /* -------------------------------------------------- Unary Function -------------------------------------------------- */
@@ -53,7 +55,7 @@ public class Evaluate {
      * Evaluates the given function for the given input if it is not null or returns the given default output otherwise.
      */
     @Pure
-    public static <I, O> O ifNotNull(@NonCaptured @Unmodified @Nullable I input, @Nonnull UnaryFunction<? super I, ? extends O> function, @NonCaptured @Unmodified O defaultOutput) {
+    public static <I, O> O functionIfNotNull(@NonCaptured @Unmodified @Nullable I input, @Nonnull UnaryFunction<? super I, ? extends O> function, @NonCaptured @Unmodified O defaultOutput) {
         return input != null ? function.evaluate(input) : defaultOutput;
     }
     
@@ -61,8 +63,8 @@ public class Evaluate {
      * Evaluates the given function for the given input if it is not null or propagates null otherwise.
      */
     @Pure
-    public static <I, O> O ifNotNull(@NonCaptured @Unmodified @Nullable I input, @Nonnull UnaryFunction<? super I, ? extends O> function) {
-        return ifNotNull(input, function, null);
+    public static <I, O> @Nullable O functionIfNotNull(@NonCaptured @Unmodified @Nullable I input, @Nonnull UnaryFunction<? super I, ? extends O> function) {
+        return Evaluate.functionIfNotNull(input, function, null);
     }
     
     /* -------------------------------------------------- Binary Function -------------------------------------------------- */
@@ -71,7 +73,7 @@ public class Evaluate {
      * Evaluates the given function for the given inputs if the first input is not null or returns the given default output otherwise.
      */
     @Pure
-    public static <I0, I1, O> O ifFirstNotNull(@NonCaptured @Unmodified @Nullable I0 input0, @NonCaptured @Unmodified I1 input1, @Nonnull BinaryFunction<? super I0, ? super I1, ? extends O> function, @NonCaptured @Unmodified O defaultOutput) {
+    public static <I0, I1, O> O functionIfFirstNotNull(@NonCaptured @Unmodified @Nullable I0 input0, @NonCaptured @Unmodified I1 input1, @Nonnull BinaryFunction<? super I0, ? super I1, ? extends O> function, @NonCaptured @Unmodified O defaultOutput) {
         return input0 != null ? function.evaluate(input0, input1) : defaultOutput;
     }
     
@@ -79,15 +81,15 @@ public class Evaluate {
      * Evaluates the given function for the given inputs if the first input is not null or propagates null otherwise.
      */
     @Pure
-    public static <I0, I1, O> O ifFirstNotNull(@NonCaptured @Unmodified @Nullable I0 input0, @NonCaptured @Unmodified I1 input1, @Nonnull BinaryFunction<? super I0, ? super I1, ? extends O> function) {
-        return ifFirstNotNull(input0, input1, function, null);
+    public static <I0, I1, O> @Nullable O functionIfFirstNotNull(@NonCaptured @Unmodified @Nullable I0 input0, @NonCaptured @Unmodified I1 input1, @Nonnull BinaryFunction<? super I0, ? super I1, ? extends O> function) {
+        return Evaluate.functionIfFirstNotNull(input0, input1, function, null);
     }
     
     /**
      * Evaluates the given function for the given inputs if both inputs are not null or returns the given default output otherwise.
      */
     @Pure
-    public static <I0, I1, O> O ifBothNotNull(@NonCaptured @Unmodified @Nullable I0 input0, @NonCaptured @Unmodified @Nullable I1 input1, @Nonnull BinaryFunction<? super I0, ? super I1, ? extends O> function, @NonCaptured @Unmodified O defaultOutput) {
+    public static <I0, I1, O> O functionIfBothNotNull(@NonCaptured @Unmodified @Nullable I0 input0, @NonCaptured @Unmodified @Nullable I1 input1, @Nonnull BinaryFunction<? super I0, ? super I1, ? extends O> function, @NonCaptured @Unmodified O defaultOutput) {
         return input0 != null && input1 != null ? function.evaluate(input0, input1) : defaultOutput;
     }
     
@@ -95,8 +97,8 @@ public class Evaluate {
      * Evaluates the given function for the given inputs if both inputs are not null or propagates null otherwise.
      */
     @Pure
-    public static <I0, I1, O> O ifBothNotNull(@NonCaptured @Unmodified @Nullable I0 input0, @NonCaptured @Unmodified @Nullable I1 input1, @Nonnull BinaryFunction<? super I0, ? super I1, ? extends O> function) {
-        return ifBothNotNull(input0, input1, function, null);
+    public static <I0, I1, O> @Nullable O functionIfBothNotNull(@NonCaptured @Unmodified @Nullable I0 input0, @NonCaptured @Unmodified @Nullable I1 input1, @Nonnull BinaryFunction<? super I0, ? super I1, ? extends O> function) {
+        return Evaluate.functionIfBothNotNull(input0, input1, function, null);
     }
     
 }

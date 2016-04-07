@@ -13,7 +13,7 @@ import net.digitalid.utility.functional.interfaces.Producer;
  * This class implements a generating iterator that generates an infinite number of elements with the given producer.
  */
 @Mutable
-public class GeneratingIterator<E> implements InfiniteIterator<E> {
+public class GeneratingIterator<E> extends InfiniteIterator<E> {
     
     /* -------------------------------------------------- Object -------------------------------------------------- */
     

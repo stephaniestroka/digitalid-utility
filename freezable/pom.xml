@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-validation</artifactId>
+            <artifactId>utility-rootclass</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

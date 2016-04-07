@@ -43,7 +43,7 @@ import net.digitalid.utility.exceptions.UnexpectedValueException;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.immutable.collections.ImmutableList;
+import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;

@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
-import net.digitalid.utility.immutable.collections.ImmutableList;
+import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 

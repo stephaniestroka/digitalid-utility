@@ -22,12 +22,12 @@ import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Functional;
-import net.digitalid.utility.validation.annotations.type.Updating;
+import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
 /**
  * This interface extends the functional iterable interface to model infinite iterables.
  */
-@Updating
+@ReadOnly
 @Functional
 public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     

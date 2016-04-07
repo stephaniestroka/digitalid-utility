@@ -2,18 +2,18 @@ package net.digitalid.utility.generator;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.freezable.Freezable;
-import net.digitalid.utility.freezable.ReadOnly;
-import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.freezable.FreezableInterface;
+import net.digitalid.utility.freezable.ReadOnlyInterface;
+import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.freezable.annotations.NonFrozen;
 
 /**
  * This class implements the freezing mechanism which can be reused with inheritance.
  */
 @Deprecated // TODO: Generate this implementation instead.
-public class FreezableObject implements Freezable {
+public abstract class FreezableObject implements FreezableInterface {
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
@@ -29,7 +29,7 @@ public class FreezableObject implements Freezable {
     }
     
     @Override
-    public @Nonnull @Frozen ReadOnly freeze() {
+    public @Nonnull @Frozen ReadOnlyInterface freeze() {
         frozen = true;
         return this;
     }
@@ -38,8 +38,6 @@ public class FreezableObject implements Freezable {
     
     @Pure
     @Override
-    public @Capturable @Nonnull @NonFrozen FreezableObject clone() {
-        return new FreezableObject();
-    }
+    public abstract @Capturable @Nonnull @NonFrozen FreezableObject clone();
     
 }

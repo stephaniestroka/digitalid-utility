@@ -13,8 +13,8 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.immutable.collections.ImmutableList;
-import net.digitalid.utility.immutable.collections.ImmutableMap;
+import net.digitalid.utility.immutable.ImmutableList;
+import net.digitalid.utility.immutable.ImmutableMap;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Utility;
 

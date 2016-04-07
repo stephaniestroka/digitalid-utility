@@ -13,7 +13,7 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.immutable.collections.ImmutableMap;
+import net.digitalid.utility.immutable.ImmutableMap;
 import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.logger.FileLogger;

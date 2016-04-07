@@ -10,6 +10,8 @@ import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
  * This utility class allows to replace nullable values with non-nullable default values.
+ * 
+ * @see Evaluate
  */
 @Utility
 public class Get {

@@ -15,7 +15,7 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
  * This class implements a cycling iterator that iterates over the elements of the given iterable indefinitely.
  */
 @Mutable
-public class CyclingIterator<E> implements ReadOnlyIterator<E> {
+public class CyclingIterator<E> extends ReadOnlyIterator<E> {
     
     /* -------------------------------------------------- Iterable -------------------------------------------------- */
     

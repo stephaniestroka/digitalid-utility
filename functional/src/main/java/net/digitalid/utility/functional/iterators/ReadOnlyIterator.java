@@ -6,16 +6,16 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.type.Mutable;
 
 /**
- * This interface models an iterator whose elements can only be read.
+ * This interface models an iterator whose elements cannot be removed.
  */
 @Mutable
-public interface ReadOnlyIterator<E> extends Iterator<E> {
+public abstract class ReadOnlyIterator<E> implements Iterator<E> {
     
     /* -------------------------------------------------- Unsupported Operations -------------------------------------------------- */
     
     @Pure
     @Override
-    public default void remove() {
+    public final void remove() {
         throw new UnsupportedOperationException();
     }
     

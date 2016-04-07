@@ -13,9 +13,9 @@ import javax.lang.model.element.Element;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.freezable.Freezable;
-import net.digitalid.utility.freezable.ReadOnly;
-import net.digitalid.utility.immutable.collections.ImmutableSet;
+import net.digitalid.utility.freezable.FreezableInterface;
+import net.digitalid.utility.freezable.ReadOnlyInterface;
+import net.digitalid.utility.immutable.ImmutableSet;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -26,7 +26,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * This annotation indicates that a freezable object is {@link Freezable#isFrozen() frozen}.
  * 
  * @see NonFrozen
- * @see Freezable
+ * @see FreezableInterface
  */
 @Documented
 @Target(ElementType.TYPE_USE)
@@ -42,7 +42,7 @@ public @interface Frozen {
     @Stateless
     public static class Validator extends ValueAnnotationValidator {
         
-        private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.<Class<?>>with(ReadOnly.class);
+        private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.<Class<?>>with(ReadOnlyInterface.class);
         
         @Pure
         @Override
