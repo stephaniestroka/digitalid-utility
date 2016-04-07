@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.collaboration.enumerations.Author;
-import net.digitalid.collaboration.enumerations.Priority;
+import net.digitalid.utility.collaboration.enumerations.Author;
+import net.digitalid.utility.collaboration.enumerations.Priority;
 
 /**
  * This annotation indicates that the annotated element should be reviewed.

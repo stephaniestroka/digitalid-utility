@@ -15,7 +15,7 @@ import org.junit.Test;
 import static net.digitalid.utility.testing.CustomAssert.*;
 
 /**
- *
+ * 
  */
 public class ComplexClassGenerationTest {
     

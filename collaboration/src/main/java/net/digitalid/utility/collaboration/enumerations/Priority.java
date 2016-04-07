@@ -1,4 +1,4 @@
-package net.digitalid.collaboration.enumerations;
+package net.digitalid.utility.collaboration.enumerations;
 
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
