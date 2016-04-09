@@ -4,11 +4,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.collaboration.annotations.Review;
+import net.digitalid.utility.collaboration.enumerations.Author;
+import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 
-import net.digitalid.collaboration.enumerations.Author;
-import net.digitalid.collaboration.enumerations.Priority;
 import org.junit.Assert;
 
 import static org.hamcrest.core.IsEqual.*;

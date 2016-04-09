@@ -20,11 +20,12 @@ import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.validation.annotations.math.relative.GreaterThanOrEqualTo;
+import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This interface models a {@link List list} that can be {@link FreezableInterface frozen}.
- * It is recommended to use only {@link Freezable} or {@link Immutable} types for the elements.
+ * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  * 
  * @see BackedFreezableList
  * @see FreezableArrayList
@@ -37,7 +38,7 @@ public interface FreezableList<E> extends ReadOnlyList<E>, List<E>, FreezableCol
     
     @Impure
     @Override
-    public @Nonnull @Frozen ReadOnlyList<E> freeze();
+    public @Chainable @Nonnull @Frozen ReadOnlyList<E> freeze();
     
     /* -------------------------------------------------- List -------------------------------------------------- */
     

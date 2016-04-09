@@ -12,21 +12,21 @@ import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.functional.iterables.CollectionIterable;
-import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
 /**
- * This class implements a read-only entry set that returns an iterator which produces read-only entries.
+ * This class implements a read-only entry set that returns an iterator which returns read-only entries.
  */
 @ReadOnly
 public class ReadOnlyEntrySet<K, V> implements Set<Map.@Nonnull Entry<K, V>>, CollectionIterable<Map.@Nonnull Entry<K, V>> {
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
-    private final @Nonnull Set<Map.@Nonnull Entry<K, V>> set;
+    private final @Referenced @Nonnull Set<Map.@Nonnull Entry<K, V>> set;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
@@ -38,7 +38,7 @@ public class ReadOnlyEntrySet<K, V> implements Set<Map.@Nonnull Entry<K, V>>, Co
      * Returns a new read-only entry set that is backed by the given set.
      */
     @Pure
-    public static <K, V> @Nonnull ReadOnlyEntrySet<K, V> with(@Nonnull Set<Map.@Nonnull Entry<K, V>> set) {
+    public static <K, V> @Nonnull ReadOnlyEntrySet<K, V> with(@Referenced @Nonnull Set<Map.@Nonnull Entry<K, V>> set) {
         return new ReadOnlyEntrySet<>(set);
     }
     
@@ -46,8 +46,8 @@ public class ReadOnlyEntrySet<K, V> implements Set<Map.@Nonnull Entry<K, V>>, Co
     
     @Pure
     @Override
-    public @Capturable @Nonnull ReadOnlyIterator<Map.@Nonnull Entry<K, V>> iterator() {
-        return null; //new ReadOnlyEntrySetIterator<>(super.iterator());
+    public @Capturable @Nonnull ReadOnlyEntrySetIterator<K, V> iterator() {
+        return new ReadOnlyEntrySetIterator<>(set.iterator());
     }
     
     /* -------------------------------------------------- Delegated Operations -------------------------------------------------- */

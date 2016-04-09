@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
@@ -15,11 +16,12 @@ import net.digitalid.utility.collections.collection.FreezableCollection;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This interface models a {@link Set set} that can be {@link FreezableInterface frozen}.
- * It is recommended to use only {@link Freezable} or {@link Immutable} types for the elements.
+ * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  * 
  * @see BackedFreezableSet
  * @see FreezableHashSet
@@ -30,8 +32,9 @@ public interface FreezableSet<E> extends ReadOnlySet<E>, Set<E>, FreezableCollec
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
+    @Impure
     @Override
-    public @Nonnull @Frozen ReadOnlySet<E> freeze();
+    public @Chainable @Nonnull @Frozen ReadOnlySet<E> freeze();
     
     /* -------------------------------------------------- Conflicts -------------------------------------------------- */
     

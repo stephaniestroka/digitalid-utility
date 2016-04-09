@@ -6,59 +6,34 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
-import net.digitalid.utility.collections.readonly.ReadOnlyMap;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
+import net.digitalid.utility.collections.collection.BackedFreezableCollection;
+import net.digitalid.utility.collections.collection.FreezableCollection;
+import net.digitalid.utility.collections.set.BackedFreezableSet;
+import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.FreezableInterface;
+import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
-import net.digitalid.utility.functional.fixes.ElementConverter;
-import net.digitalid.utility.functional.fixes.IterableConverter;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.elements.NullableElements;
+import net.digitalid.utility.immutable.entry.ReadOnlyEntrySet;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
+import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- * This class extends the {@link HashMap} and makes it {@link FreezableInterface}.
- * Be careful when treating instances of this class as normal {@link Map maps} because all modifying methods may fail with an {@link AssertionError}.
- * <p>
- * <em>Important:</em> Only use {@link Immutable immutable} or {@link FreezableInterface frozen} objects as keys!
+ * This class extends the {@link HashMap} and makes it {@link FreezableInterface freezable}.
+ * It is recommended to use only {@link Immutable} types for the keys
+ * and {@link ReadOnly} or {@link Immutable} types for the values.
  */
+@Freezable(ReadOnlyMap.class)
 public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMap<K, V> {
-    
-    /* -------------------------------------------------- Freezable -------------------------------------------------- */
-    
-    /**
-     * Stores whether this object is frozen.
-     */
-    private boolean frozen = false;
-    
-    @Pure
-    @Override
-    public final boolean isFrozen() {
-        return frozen;
-    }
-    
-    @Override
-    public @Nonnull @Frozen ReadOnlyMap<K,V> freeze() {
-        if (!frozen) {
-            frozen = true;
-            // Assuming that the keys are already immutable.
-            for (final @Nullable V value : values()) {
-                if (value instanceof FreezableInterface) {
-                    ((FreezableInterface) value).freeze();
-                } else {
-                    break;
-                }
-            }
-        }
-        return this;
-    }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
@@ -116,28 +91,54 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
         return map == null ? null : getNonNullable(map);
     }
     
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
+    
+    private boolean frozen = false;
+    
+    @Pure
+    @Override
+    public boolean isFrozen() {
+        return frozen;
+    }
+    
+    @Impure
+    @Override
+    public @Chainable @Nonnull @Frozen ReadOnlyMap<K,V> freeze() {
+        this.frozen = true;
+        return this;
+    }
+    
+    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public @Capturable @Nonnull @NonFrozen FreezableHashMap<K,V> clone() {
+        return new FreezableHashMap<>(this);
+    }
+    
     /* -------------------------------------------------- Entries -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Nonnull @NullableElements FreezableSet<K> keySet() {
-        return BackedFreezableSet.get(this, super.keySet());
+    public @NonCapturable @Nonnull FreezableSet<K> keySet() {
+        return BackedFreezableSet.with(this, super.keySet());
     }
     
     @Pure
     @Override
-    public @Nonnull @NullableElements FreezableCollection<V> values() {
-        return BackedFreezableCollection.get(this, super.values());
+    public @NonCapturable @Nonnull FreezableCollection<V> values() {
+        return BackedFreezableCollection.with(this, super.values());
     }
     
     @Pure
     @Override
-    public @Nonnull @NonNullableElements FreezableSet<Map.Entry<K,V>> entrySet() {
-        return BackedFreezableSet.get(this, super.entrySet());
+    public @NonCapturable @Nonnull ReadOnlyEntrySet<K, V> entrySet() {
+        return ReadOnlyEntrySet.with(super.entrySet());
     }
     
     /* -------------------------------------------------- Operations -------------------------------------------------- */
     
+    @Impure
     @Override
     @NonFrozenRecipient
     public @Nullable V put(@Nullable K key, @Nullable V value) {
@@ -146,6 +147,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
         return super.put(key, value);
     }
     
+    @Impure
     @Override
     @NonFrozenRecipient
     public void putAll(@Nonnull Map<? extends K,? extends V> map) {
@@ -154,6 +156,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
         super.putAll(map);
     }
     
+    @Impure
     @Override
     @NonFrozenRecipient
     public @Nonnull V putIfAbsentOrNullElseReturnPresent(@Nonnull K key, @Nonnull V value) {
@@ -165,6 +168,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
         return value;
     }
     
+    @Impure
     @Override
     @NonFrozenRecipient
     public @Nullable V remove(@Nullable Object object) {
@@ -173,6 +177,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
         return super.remove(object);
     }
     
+    @Impure
     @Override
     @NonFrozenRecipient
     public void clear() {
@@ -181,20 +186,12 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
         super.clear();
     }
     
-    /* -------------------------------------------------- Cloneable -------------------------------------------------- */
-    
-    @Pure
-    @Override
-    public @Capturable @Nonnull @NonFrozen FreezableHashMap<K,V> clone() {
-        return new FreezableHashMap<>(this);
-    }
-    
     /* -------------------------------------------------- Object -------------------------------------------------- */
     
     @Pure
     @Override
     public @Nonnull String toString() {
-        return IterableConverter.toString(entrySet(), new ElementConverter<Entry<K, V>>() { @Pure @Override public String toString(@Nullable Entry<K, V> entry) { return entry == null ? "null" : entry.getKey() + ": " + entry.getValue(); } }, Brackets.CURLY);
+        return entrySet().map(entry -> entry == null ? "null" : entry.getKey() + ": " + entry.getValue()).join(Brackets.CURLY);
     }
     
 }

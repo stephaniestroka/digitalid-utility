@@ -13,7 +13,7 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
 /**
  * This interface provides read-only access to arrays and should <em>never</em> be cast away.
- * It is recommended to use only {@link Freezable} or {@link Immutable} types for the elements.
+ * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
 @ReadOnly(FreezableArray.class)
 public interface ReadOnlyArray<E> extends ReadOnlyIterable<E> {

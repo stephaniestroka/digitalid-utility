@@ -2,7 +2,6 @@ package net.digitalid.utility.immutable;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +18,7 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.annotations.type.Mutable;
-import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
+import net.digitalid.utility.immutable.entry.ReadOnlyEntrySet;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -58,84 +57,10 @@ public class ImmutableMap<K, V> extends LinkedHashMap<K, V> {
         return Collections.unmodifiableCollection(super.values());
     }
     
-    /* -------------------------------------------------- Entry Set -------------------------------------------------- */
-    
-    @Immutable
-    public static class ImmutableEntry<K, V> implements Map.Entry<K, V> {
-        
-        protected final Map.@Nonnull Entry<K, V> entry;
-        
-        protected ImmutableEntry(@Captured Map.@Nonnull Entry<K, V> entry) {
-            this.entry = entry;
-        }
-        
-        @Pure
-        @Override
-        public K getKey() {
-            return entry.getKey();
-        }
-        
-        @Pure
-        @Override
-        public V getValue() {
-            return entry.getValue();
-        }
-        
-        @Pure
-        @Override
-        public V setValue(@NonCaptured @Unmodified V value) {
-            throw new UnsupportedOperationException();
-        }
-        
-        @Pure
-        @Override
-        @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
-        public boolean equals(@NonCaptured @Unmodified @Nullable Object object) {
-            return entry.equals(object);
-        }
-        
-        @Pure
-        @Override
-        public int hashCode() {
-            return entry.hashCode();
-        }
-        
-    }
-    
-    @Mutable
-    public static class ImmutableEntrySetIterator<K, V> extends ReadOnlyIterableIterator<Map.@Nonnull Entry<K, V>> {
-        
-        protected ImmutableEntrySetIterator(@Captured @Nonnull Iterator<Map.Entry<K, V>> iterator) {
-            super(iterator);
-        }
-        
-        @Impure
-        @Override
-        public @Nonnull ImmutableEntry<K, V> next() {
-            return new ImmutableEntry<>(super.next());
-        }
-        
-    }
-    
-    @Immutable
-    public static class ImmutableEntrySet<K, V> extends ImmutableSet<Map.@Nonnull Entry<K, V>> {
-        
-        protected ImmutableEntrySet(@NonCaptured @Unmodified @Nonnull Collection<Map.@Nonnull Entry<K, V>> collection) {
-            super(collection);
-        }
-        
-        @Pure
-        @Override
-        public @Capturable @Nonnull ImmutableEntrySetIterator<K, V> iterator() {
-            return new ImmutableEntrySetIterator<>(super.iterator());
-        }
-        
-    }
-    
     @Pure
     @Override
-    public final @Nonnull ImmutableEntrySet<K, V> entrySet() {
-        return new ImmutableEntrySet<>(super.entrySet());
+    public final @Nonnull ReadOnlyEntrySet<K, V> entrySet() {
+        return ReadOnlyEntrySet.with(super.entrySet());
     }
     
     /* -------------------------------------------------- Unsupported Operations -------------------------------------------------- */

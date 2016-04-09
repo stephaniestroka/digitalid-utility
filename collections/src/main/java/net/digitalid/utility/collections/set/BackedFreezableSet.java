@@ -21,7 +21,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class implements a {@link Set set} that can be {@link FreezableInterface frozen}.
- * It is recommended to use only {@link Freezable} or {@link Immutable} types for the elements.
+ * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  * The implementation is backed by an ordinary {@link Set set}. 
  */
 @Freezable(ReadOnlySet.class)
@@ -46,7 +46,7 @@ public class BackedFreezableSet<E> extends BackedFreezableCollection<E> implemen
      * Returns a new freezable set backed by the given freezable and set.
      */
     @Pure
-    static <E> @Capturable @Nonnull BackedFreezableSet<E> with(@Referenced @Modified @Nonnull FreezableInterface freezable, @Captured @Nonnull Set<E> set) {
+    public static <E> @Capturable @Nonnull BackedFreezableSet<E> with(@Referenced @Modified @Nonnull FreezableInterface freezable, @Captured @Nonnull Set<E> set) {
         return new BackedFreezableSet<>(freezable, set);
     }
     

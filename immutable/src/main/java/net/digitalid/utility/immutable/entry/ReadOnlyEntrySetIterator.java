@@ -1,25 +1,33 @@
 package net.digitalid.utility.immutable.entry;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.type.Mutable;
+import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 
 /**
- * Description.
+ * This class implements an iterator that returns only read-only entries.
  */
 @Mutable
-public class ReadOnlyEntrySetIterator {
+public class ReadOnlyEntrySetIterator<K, V> extends ReadOnlyIterableIterator<Map.@Nonnull Entry<K, V>> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ReadOnlyEntrySetIterator() {
-        
+    protected ReadOnlyEntrySetIterator(@Captured @Nonnull Iterator<? extends Map.@Nonnull Entry<K, V>> iterator) {
+        super(iterator);
     }
     
-    @Pure
-    public static @Nonnull ReadOnlyEntrySetIterator with() {
-        return new ReadOnlyEntrySetIterator();
+    /* -------------------------------------------------- Operations -------------------------------------------------- */
+    
+    @Impure
+    @Override
+    public @Nonnull ReadOnlyEntry<K, V> next() {
+        return new ReadOnlyEntry<>(super.next());
     }
     
 }

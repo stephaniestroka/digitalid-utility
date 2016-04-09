@@ -31,7 +31,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class extends the {@link ArrayList} and makes it {@link FreezableInterface freezable}.
- * It is recommended to use only {@link Freezable} or {@link Immutable} types for the elements.
+ * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
 @Freezable(ReadOnlyList.class)
 public class FreezableArrayList<E> extends ArrayList<E> implements FreezableList<E> {

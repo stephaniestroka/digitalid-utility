@@ -16,12 +16,13 @@ import net.digitalid.utility.collections.list.FreezableList;
 import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
 /**
  * This interface models a {@link Collection collection} that can be {@link FreezableInterface frozen}.
- * It is recommended to use only {@link Freezable} or {@link Immutable} types for the elements.
+ * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  * 
  * @see FreezableList
  * @see FreezableSet
@@ -33,7 +34,7 @@ public interface FreezableCollection<E> extends ReadOnlyCollection<E>, Collectio
     
     @Impure
     @Override
-    public @Nonnull @Frozen ReadOnlyCollection<E> freeze();
+    public @Chainable @Nonnull @Frozen ReadOnlyCollection<E> freeze();
     
     /* -------------------------------------------------- Conflicts -------------------------------------------------- */
     

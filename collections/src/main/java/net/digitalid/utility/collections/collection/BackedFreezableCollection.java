@@ -14,7 +14,9 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.collections.list.BackedFreezableList;
 import net.digitalid.utility.collections.list.FreezableArrayList;
+import net.digitalid.utility.collections.set.BackedFreezableSet;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
@@ -28,7 +30,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class implements a {@link Collection collection} that can be {@link FreezableInterface frozen}.
- * It is recommended to use only {@link Freezable} or {@link Immutable} types for the elements.
+ * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  * The implementation is backed by an ordinary {@link Collection collection}. 
  * 
  * @see BackedFreezableList

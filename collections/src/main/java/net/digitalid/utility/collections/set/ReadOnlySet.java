@@ -14,7 +14,7 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
 /**
  * This interface provides read-only access to {@link Set sets} and should <em>never</em> be cast away (unless external code requires it).
- * It is recommended to use only {@link Freezable} or {@link Immutable} types for the elements.
+ * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
 @ReadOnly(FreezableSet.class)
 public interface ReadOnlySet<E> extends ReadOnlyCollection<E> {

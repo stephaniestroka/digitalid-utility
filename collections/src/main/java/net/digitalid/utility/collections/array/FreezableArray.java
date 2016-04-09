@@ -14,6 +14,8 @@ import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
+import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.collections.iterable.FreezableIterable;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.FreezableInterface;
@@ -30,12 +32,9 @@ import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
-import net.digitalid.collaboration.enumerations.Author;
-import net.digitalid.collaboration.enumerations.Priority;
-
 /**
  * This class models {@link FreezableInterface freezable} arrays.
- * It is recommended to use only {@link Freezable} or {@link Immutable} types for the elements.
+ * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
 @Freezable(ReadOnlyArray.class)
 public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, FreezableIterable<E> {

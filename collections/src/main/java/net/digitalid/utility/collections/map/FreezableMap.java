@@ -4,57 +4,61 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.collections.readonly.ReadOnlyMap;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
+import net.digitalid.utility.collections.collection.FreezableCollection;
+import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.freezable.FreezableInterface;
+import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
+import net.digitalid.utility.immutable.entry.ReadOnlyEntrySet;
+import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
 /**
  * This interface models a {@link Map map} that can be {@link FreezableInterface frozen}.
- * As a consequence, all modifying methods may fail with an {@link AssertionError}.
- * <p>
- * Please note that {@link Map#entrySet()} is not supported because every entry would need
- * to be replaced with a freezable entry and such a set can no longer be backed.
- * <p>
- * <em>Important:</em> Only use immutable types for the keys and freezable or immutable types for the values!
- * (The types are not restricted to {@link FreezableInterface} or {@link Immutable} so that library types can also be used.)
+ * Please note that the method {@link Map#entrySet()} is only supported in a read-only mode.
+ * It is recommended to use only {@link Immutable} types for the keys
+ * and {@link ReadOnly} or {@link Immutable} types for the values.
+ * 
+ * @see FreezableHashMap
+ * @see FreezableLinkedHashMap
  */
-public interface FreezableMap<K,V> extends ReadOnlyMap<K,V>, Map<K,V>, FreezableInterface {
+@Freezable(ReadOnlyMap.class)
+public interface FreezableMap<K, V> extends ReadOnlyMap<K, V>, Map<K, V>, FreezableInterface {
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
+    @Impure
     @Override
-    public @Nonnull @Frozen ReadOnlyMap<K,V> freeze();
+    public @Chainable @Nonnull @Frozen ReadOnlyMap<K,V> freeze();
     
     /* -------------------------------------------------- Map -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Nonnull FreezableSet<K> keySet();
+    public @NonCapturable @Nonnull FreezableSet<K> keySet();
     
     @Pure
     @Override
-    public @Nonnull FreezableCollection<V> values();
+    public @NonCapturable @Nonnull FreezableCollection<V> values();
     
-    /**
-     * <em>Important:</em> Never call {@code Map.Entry#setValue(java.lang.Object)} on the elements!
-     */
     @Pure
     @Override
-    public @Nonnull FreezableSet<Map.Entry<K,V>> entrySet();
+    public @NonCapturable @Nonnull ReadOnlyEntrySet<K, V> entrySet();
     
     /**
      * Associates the given value with the given key, if the
      * given key is not already associated with a value or null.
      * 
-     * @param key the key to be associated with the given value.
-     * @param value the value to be associated with the given key.
-     * 
      * @return the value that is now associated with the given key.
      */
+    @Impure
     @NonFrozenRecipient
-    public @Nonnull V putIfAbsentOrNullElseReturnPresent(@Nonnull K key, @Nonnull V value);
+    public @NonCapturable @Nonnull V putIfAbsentOrNullElseReturnPresent(@Captured @Nonnull K key, @Captured @Nonnull V value);
     
 }
