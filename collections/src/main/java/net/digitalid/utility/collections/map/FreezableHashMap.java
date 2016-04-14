@@ -10,6 +10,8 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.collections.collection.BackedFreezableCollection;
 import net.digitalid.utility.collections.collection.FreezableCollection;
 import net.digitalid.utility.collections.set.BackedFreezableSet;
@@ -37,58 +39,44 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    /**
-     * @see HashMap#HashMap(int, float)
-     */
     protected FreezableHashMap(@NonNegative int initialCapacity, @Positive float loadFactor) {
         super(initialCapacity, loadFactor);
     }
     
     /**
-     * @see HashMap#HashMap(int, float)
+     * Returns a new freezable hash map with the given initial capacity and load factor.
      */
     @Pure
-    public static @Capturable @Nonnull @NonFrozen <K, V> FreezableHashMap<K, V> get(@NonNegative int initialCapacity, @Positive float loadFactor) {
+    public static <K, V> @Capturable @Nonnull @NonFrozen FreezableHashMap<K, V> with(@NonNegative int initialCapacity, @Positive float loadFactor) {
         return new FreezableHashMap<>(initialCapacity, loadFactor);
     }
     
     /**
-     * @see HashMap#HashMap(int)
+     * Returns a new freezable hash map with the given initial capacity.
      */
     @Pure
-    public static @Capturable @Nonnull @NonFrozen <K, V> FreezableHashMap<K, V> get(@NonNegative int initialCapacity) {
-        return get(initialCapacity, 0.75f);
+    public static <K, V> @Capturable @Nonnull @NonFrozen FreezableHashMap<K, V> with(@NonNegative int initialCapacity) {
+        return FreezableHashMap.with(initialCapacity, 0.75f);
     }
     
     /**
-     * @see HashMap#HashMap()
+     * Returns a new freezable hash map with the default capacity.
      */
     @Pure
-    public static @Capturable @Nonnull @NonFrozen <K, V> FreezableHashMap<K, V> get() {
-        return get(16);
+    public static <K, V> @Capturable @Nonnull @NonFrozen FreezableHashMap<K, V> withDefaultCapacity() {
+        return with(16);
     }
     
-    /**
-     * @see HashMap#HashMap(java.util.Map)
-     */
-    protected FreezableHashMap(@Nonnull Map<? extends K, ? extends V> map) {
+    protected FreezableHashMap(@NonCaptured @Unmodified @Nonnull Map<? extends K, ? extends V> map) {
         super(map);
     }
     
     /**
-     * @see HashMap#HashMap(java.util.Map)
+     * Returns a new freezable hash map with the mappings of the given map or null if the given map is null.
      */
     @Pure
-    public static @Capturable @Nonnull @NonFrozen <K, V> FreezableHashMap<K, V> getNonNullable(@Nonnull Map<? extends K, ? extends V> map) {
-        return new FreezableHashMap<>(map);
-    }
-    
-    /**
-     * @see HashMap#HashMap(java.util.Map)
-     */
-    @Pure
-    public static @Capturable @Nullable @NonFrozen <K, V> FreezableHashMap<K, V> getNullable(@Nullable Map<? extends K, ? extends V> map) {
-        return map == null ? null : getNonNullable(map);
+    public static <K, V> @Capturable @NonFrozen FreezableHashMap<K, V> with(@NonCaptured @Unmodified Map<? extends K, ? extends V> map) {
+        return map == null ? null : new FreezableHashMap<>(map);
     }
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */

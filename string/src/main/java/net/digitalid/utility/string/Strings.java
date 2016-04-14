@@ -195,7 +195,7 @@ public class Strings {
      * Returns the given number as an ordinal string (written-out if smaller than 13).
      */
     @Pure
-    public static final @Nonnull String getOrdinal(@Positive int number) {
+    public static @Nonnull String getOrdinal(@Positive int number) {
         if (number >= 1 && number <= 12) { return ordinalNumbersWithEnglishRoot.get(number - 1); }
         final int mod10 = number % 10;
         if (mod10 == 1) { return String.valueOf(number) + "st"; }
@@ -212,7 +212,7 @@ public class Strings {
      * Returns the given number as an ordinal string with Latin root (written-out if smaller than 13).
      */
     @Pure
-    public static final @Nonnull String getOrdinalWithLatinRoot(@Positive int number) {
+    public static @Nonnull String getOrdinalWithLatinRoot(@Positive int number) {
         if (number >= 1 && number <= 12) { return ordinalNumbersWithLatinRoot.get(number - 1); }
         return String.valueOf(number) + ".";
     }

@@ -65,7 +65,7 @@ public interface ReadOnlyIterable<E> extends CollectionIterable<E>, ReadOnlyInte
      */
     @Pure
     public default <K> @Capturable @Nonnull @NonFrozen FreezableMap<K, E> toFreezableMap(@Nonnull UnaryFunction<? super E, ? extends K> function) {
-        final @Nonnull FreezableMap<K, E> result = FreezableLinkedHashMap.get();
+        final @Nonnull FreezableMap<K, E> result = FreezableLinkedHashMap.withDefaultCapacity();
         for (E element : this) {
             result.put(function.evaluate(element), element);
         }
