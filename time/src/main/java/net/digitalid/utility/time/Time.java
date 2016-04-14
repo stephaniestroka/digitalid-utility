@@ -4,455 +4,329 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.generator.annotations.DefaultValue;
+import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-
-import net.digitalid.utility.rootclass.RootComparable;
 
 /**
  * This class models time in milliseconds for both dates and intervals.
  * Dates are calculated as milliseconds since 1 January 1970, 00:00:00 GMT.
  */
 @Immutable
-public final class Time extends RootComparable<Time> implements Convertible {
+public abstract class Time extends RootClass implements Comparable<Time> {
     
     /* -------------------------------------------------- Constants -------------------------------------------------- */
     
     /**
      * Stores the time of a decade (10 tropical years).
      */
-    public static final @Nonnull Time DECADE = new Time(315_569_251_900l);
+    public static final @Nonnull Time DECADE = new GeneratedTime(315_569_251_900l);
     
     /**
      * Stores the time of two years (2 tropical years).
      */
-    public static final @Nonnull Time TWO_YEARS = new Time(63_113_850_380l);
+    public static final @Nonnull Time TWO_YEARS = new GeneratedTime(63_113_850_380l);
     
     /**
      * Stores the time of a tropical year (default).
      */
-    public static final @Nonnull Time TROPICAL_YEAR = new Time(31_556_925_190l);
+    public static final @Nonnull Time TROPICAL_YEAR = new GeneratedTime(31_556_925_190l);
     
     /**
      * Stores the time of a calendar year (365 days).
      */
-    public static final @Nonnull Time CALENDAR_YEAR = new Time(31_536_000_000l);
+    public static final @Nonnull Time CALENDAR_YEAR = new GeneratedTime(31_536_000_000l);
     
     /**
      * Stores the time of a month (30 days).
      */
-    public static final @Nonnull Time MONTH = new Time(2_592_000_000l);
+    public static final @Nonnull Time MONTH = new GeneratedTime(2_592_000_000l);
     
     /**
      * Stores the time of a week (7 days).
      */
-    public static final @Nonnull Time WEEK = new Time(604_800_000l);
+    public static final @Nonnull Time WEEK = new GeneratedTime(604_800_000l);
     
     /**
      * Stores the time of a day (24 hours).
      */
-    public static final @Nonnull Time DAY = new Time(86_400_000l);
+    public static final @Nonnull Time DAY = new GeneratedTime(86_400_000l);
     
     /**
      * Stores the time of a half-day (12 hours).
      */
-    public static final @Nonnull Time HALF_DAY = new Time(43_200_000l);
+    public static final @Nonnull Time HALF_DAY = new GeneratedTime(43_200_000l);
     
     /**
      * Stores the time of an hour (60 minutes).
      */
-    public static final @Nonnull Time HOUR = new Time(3_600_000l);
+    public static final @Nonnull Time HOUR = new GeneratedTime(3_600_000l);
     
     /**
      * Stores the time of a half-hour (30 minutes).
      */
-    public static final @Nonnull Time HALF_HOUR = new Time(1_800_000l);
+    public static final @Nonnull Time HALF_HOUR = new GeneratedTime(1_800_000l);
     
     /**
      * Stores the time of a quarter-hour (15 minutes).
      */
-    public static final @Nonnull Time QUARTER_HOUR = new Time(900_000l);
+    public static final @Nonnull Time QUARTER_HOUR = new GeneratedTime(900_000l);
     
     /**
      * Stores the time of a minute (60 seconds).
      */
-    public static final @Nonnull Time MINUTE = new Time(60_000l);
+    public static final @Nonnull Time MINUTE = new GeneratedTime(60_000l);
     
     /**
      * Stores the time of a second (1000 milliseconds).
      */
-    public static final @Nonnull Time SECOND = new Time(1_000l);
+    public static final @Nonnull Time SECOND = new GeneratedTime(1_000l);
     
     /* -------------------------------------------------- Boundaries -------------------------------------------------- */
     
     /**
      * Stores the earliest possible time.
      */
-    public static final @Nonnull Time MIN = new Time(0l);
+    public static final @Nonnull Time MIN = new GeneratedTime(0l);
     
     /**
      * Stores the latest possible time.
      */
-    public static final @Nonnull Time MAX = new Time(Long.MAX_VALUE);
+    public static final @Nonnull Time MAX = new GeneratedTime(Long.MAX_VALUE);
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
     /**
-     * Stores the time in milliseconds.
-     */
-    private final long value;
-    
-    /**
-     * Returns the time in milliseconds.
-     * 
-     * @return the time in milliseconds.
+     * Returns the value of this time in milliseconds.
      */
     @Pure
-    public long getValue() {
-        return value;
-    }
-    
-    /* -------------------------------------------------- Constructor -------------------------------------------------- */
-    
-    /**
-     * Creates a new time with the given value.
-     * 
-     * @param value the time in milliseconds.
-     */
-    private Time(long value) {
-        this.value = value;
-    }
-    
-    /**
-     * Returns the time with the given value.
-     * 
-     * @param value the time in milliseconds.
-     * 
-     * @return the time with the given value.
-     */
-    @Pure
-    public static @Nonnull Time get(long value) {
-        return new Time(value);
-    }
-    
-    /**
-     * Returns the current time in milliseconds.
-     * 
-     * @return the current time in milliseconds.
-     */
-    @Pure
-    public static @Nonnull Time getCurrent() {
-        return new Time(System.currentTimeMillis());
-    }
+    @DefaultValue("System.currentTimeMillis()")
+    public abstract long getValue();
     
     /* -------------------------------------------------- Relative Time -------------------------------------------------- */
     
     /**
      * Returns this interval ago now.
-     * 
-     * @return this interval ago now.
      */
     @Pure
     public @Nonnull Time ago() {
-        return new Time(System.currentTimeMillis() - value);
+        return new GeneratedTime(System.currentTimeMillis() - getValue());
     }
     
     /**
      * Returns this interval ahead of now.
-     * 
-     * @return this interval ahead of now.
      */
     @Pure
     public @Nonnull Time ahead() {
-        return new Time(System.currentTimeMillis() + value);
+        return new GeneratedTime(System.currentTimeMillis() + getValue());
     }
     
     /* -------------------------------------------------- Arithmetic Operations -------------------------------------------------- */
     
     /**
      * Adds the given time to this time.
-     * 
-     * @param time the time to be added.
-     * 
-     * @return the sum of the two times.
      */
     @Pure
     public @Nonnull Time add(@Nonnull Time time) {
-        return new Time(this.value + time.value);
+        return new GeneratedTime(getValue() + time.getValue());
     }
     
     /**
      * Subtracts the given time from this time.
-     * 
-     * @param time the time to be subtracted.
-     * 
-     * @return the difference of the two times.
      */
     @Pure
     public @Nonnull Time subtract(@Nonnull Time time) {
-        return new Time(this.value - time.value);
+        return new GeneratedTime(getValue() - time.getValue());
     }
     
     /**
      * Multiplies this time by the given factor.
-     * 
-     * @param factor the factor to multiply with.
-     * 
-     * @return the product of this time and the factor.
      */
     @Pure
     public @Nonnull Time multiply(int factor) {
-        return new Time(this.value * factor);
+        return new GeneratedTime(getValue() * factor);
     }
     
     /**
      * Divides this time by the given divisor.
-     * 
-     * @param divisor the divisor to divide by.
-     * 
-     * @return the quotient of this time and the divisor.
      */
     @Pure
     public @Nonnull Time divide(int divisor) {
-        return new Time(this.value / divisor);
+        return new GeneratedTime(getValue() / divisor);
     }
     
     /**
      * Rounds this time to the given interval.
-     * 
-     * @param interval the interval to round to.
-     * 
-     * @return this time rounded to the given interval.
      */
     @Pure
     public @Nonnull Time round(@Nonnull Time interval) {
-        return new Time((this.value + (this.value > 0 ? 1 : -1) * interval.value / 2) / interval.value * interval.value);
+        return new GeneratedTime((getValue() + (getValue() > 0 ? 1 : -1) * interval.getValue() / 2) / interval.getValue() * interval.getValue());
     }
     
     /**
      * Rounds this time down to the given interval.
-     * 
-     * @param interval the interval to round down to.
-     * 
-     * @return this time rounded down to the given interval.
      */
     @Pure
     public @Nonnull Time roundDown(@Nonnull Time interval) {
-        return new Time(this.value / interval.value * interval.value);
+        return new GeneratedTime(getValue() / interval.getValue() * interval.getValue());
     }
     
     /**
      * Returns whether this time is a multiple of the given interval.
-     * 
-     * @param interval the interval to compare this time with.
-     * 
-     * @return whether this time is a multiple of the given interval.
      */
     @Pure
     public boolean isMultipleOf(@Nonnull Time interval) {
-        return this.value % interval.value == 0;
+        return getValue() % interval.getValue() == 0;
     }
     
     /* -------------------------------------------------- Sign Checks -------------------------------------------------- */
     
     /**
      * Returns whether this time is negative.
-     * 
-     * @return whether this time is negative.
      */
     @Pure
     public boolean isNegative() {
-        return this.value < 0;
+        return getValue() < 0;
     }
     
     /**
      * Returns whether this time is non-negative.
-     * 
-     * @return whether this time is non-negative.
      */
     @Pure
     public boolean isNonNegative() {
-        return this.value >= 0;
+        return getValue() >= 0;
     }
     
     /**
      * Returns whether this time is positive.
-     * 
-     * @return whether this time is positive.
      */
     @Pure
     public boolean isPositive() {
-        return this.value > 0;
+        return getValue() > 0;
     }
     
     /**
      * Returns whether this time is non-positive.
-     * 
-     * @return whether this time is non-positive.
      */
     @Pure
     public boolean isNonPositive() {
-        return this.value <= 0;
+        return getValue() <= 0;
     }
     
     /* -------------------------------------------------- Comparisons -------------------------------------------------- */
     
+    // TODO: Make these methods default methods in a custom comparable interface!
+    
     /**
      * Returns whether this time is equal to the given time.
-     * 
-     * @param time the time to compare this time with.
-     * 
-     * @return whether this time is equal to the given time.
      */
     @Pure
     public boolean isEqualTo(@Nonnull Time time) {
-        return this.value == time.value;
+        return getValue() == time.getValue();
     }
     
     /**
      * Returns whether this time is greater than the given time.
-     * 
-     * @param time the time to compare this time with.
-     * 
-     * @return whether this time is greater than the given time.
      */
     @Pure
     public boolean isGreaterThan(@Nonnull Time time) {
-        return this.value > time.value;
+        return getValue() > time.getValue();
     }
     
     /**
      * Returns whether this time is greater than or equal to the given time.
-     * 
-     * @param time the time to compare this time with.
-     * 
-     * @return whether this time is greater than or equal to the given time.
      */
     @Pure
     public boolean isGreaterThanOrEqualTo(@Nonnull Time time) {
-        return this.value >= time.value;
+        return getValue() >= time.getValue();
     }
     
     /**
      * Returns whether this time is less than the given time.
-     * 
-     * @param time the time to compare this time with.
-     * 
-     * @return whether this time is less than the given time.
      */
     @Pure
     public boolean isLessThan(@Nonnull Time time) {
-        return this.value < time.value;
+        return getValue() < time.getValue();
     }
     
     /**
      * Returns whether this time is less than or equal to the given time.
-     * 
-     * @param time the time to compare this time with.
-     * 
-     * @return whether this time is less than or equal to the given time.
      */
     @Pure
     public boolean isLessThanOrEqualTo(@Nonnull Time time) {
-        return this.value <= time.value;
-    }
-    
-    @Pure
-    @Override
-    public int compareTo(@Nonnull Time time) {
-        return Long.compare(this.value, time.value);
+        return getValue() <= time.getValue();
     }
     
     /* -------------------------------------------------- Retrievals -------------------------------------------------- */
     
     /**
      * Returns the number of calendar years in this time.
-     * 
-     * @return the number of calendar years in this time.
      */
     @Pure
     public long getYears() {
-        return this.value / CALENDAR_YEAR.value;
+        return getValue() / CALENDAR_YEAR.getValue();
     }
     
     /**
      * Returns the number of months in this time (without the years).
-     * 
-     * @return the number of months in this time (without the years).
      */
     @Pure
     public long getMonths() {
-        return this.value % CALENDAR_YEAR.value / MONTH.value;
+        return getValue() % CALENDAR_YEAR.getValue() / MONTH.getValue();
     }
     
     /**
      * Returns the number of weeks in this time (without the years and months).
-     * 
-     * @return the number of weeks in this time (without the years and months).
      */
     @Pure
     public long getWeeks() {
-        return this.value % CALENDAR_YEAR.value % MONTH.value / WEEK.value;
+        return getValue() % CALENDAR_YEAR.getValue() % MONTH.getValue() / WEEK.getValue();
     }
     
     /**
      * Returns the number of days in this time (without the years, months and weeks).
-     * 
-     * @return the number of days in this time (without the years, months and weeks).
      */
     @Pure
     public long getDays() {
-        return this.value % CALENDAR_YEAR.value % MONTH.value % WEEK.value / DAY.value;
+        return getValue() % CALENDAR_YEAR.getValue() % MONTH.getValue() % WEEK.getValue() / DAY.getValue();
     }
     
     /**
      * Returns the number of hours in this time (without the days).
-     * 
-     * @return the number of hours in this time (without the days).
      */
     @Pure
     public long getHours() {
-        return this.value % DAY.value / HOUR.value;
+        return getValue() % DAY.getValue() / HOUR.getValue();
     }
     
     /**
      * Returns the number of minutes in this time (without the hours).
-     * 
-     * @return the number of minutes in this time (without the hours).
      */
     @Pure
     public long getMinutes() {
-        return this.value % HOUR.value / MINUTE.value;
+        return getValue() % HOUR.getValue() / MINUTE.getValue();
     }
     
     /**
      * Returns the number of seconds in this time (without the minutes).
-     * 
-     * @return the number of seconds in this time (without the minutes).
      */
     @Pure
     public long getSeconds() {
-        return this.value % MINUTE.value / SECOND.value;
+        return getValue() % MINUTE.getValue() / SECOND.getValue();
     }
     
     /**
      * Returns the number of milliseconds in this time (without the seconds).
-     * 
-     * @return the number of milliseconds in this time (without the seconds).
      */
     @Pure
     public long getMilliseconds() {
-        return this.value % SECOND.value;
+        return getValue() % SECOND.getValue();
     }
     
     /* -------------------------------------------------- Formatting -------------------------------------------------- */
     
-    /**
-     * Stores the date formatter.
-     */
     private static final @Nonnull ThreadLocal<DateFormat> formatter = new ThreadLocal<DateFormat>() {
         @Override protected DateFormat initialValue() {
             return DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG);
@@ -460,25 +334,19 @@ public final class Time extends RootComparable<Time> implements Convertible {
     };
     
     /**
+     * Returns this time as a date with the given formatter.
+     */
+    @Pure
+    public @Nonnull String asDate(@Nonnull DateFormat formatter) {
+        return formatter.format(new Date(getValue()));
+    }
+    
+    /**
      * Returns this time as a date.
-     * 
-     * @return this time as a date.
      */
     @Pure
     public @Nonnull String asDate() {
         return asDate(formatter.get());
-    }
-    
-    /**
-     * Returns this time as a date with the given formatter.
-     * 
-     * @param formatter the formatter determining the format.
-     * 
-     * @return this time as a date with the given formatter.
-     */
-    @Pure
-    public @Nonnull String asDate(@Nonnull DateFormat formatter) {
-        return formatter.format(new Date(value));
     }
     
     /**
@@ -498,8 +366,6 @@ public final class Time extends RootComparable<Time> implements Convertible {
     
     /**
      * Returns this time as an interval.
-     * 
-     * @return this time as an interval.
      */
     @Pure
     public @Nonnull String asInterval() {
@@ -517,36 +383,10 @@ public final class Time extends RootComparable<Time> implements Convertible {
     
     /**
      * Returns this time as a date or an interval.
-     * 
-     * @return this time as a date or an interval.
      */
     @Pure
     public @Nonnull String asString() {
         return isGreaterThan(DECADE) ? asDate() : asInterval();
     }
     
-    /* -------------------------------------------------- Object -------------------------------------------------- */
-
-    // TODO: implement in rootobject
-    @Pure
-    @Override
-    public boolean equals(@Nullable Object object) {
-        if (object == this) { return true; }
-        if (object == null || !(object instanceof Time)) { return false; }
-        final @Nonnull Time other = (Time) object;
-        return this.value == other.value;
-    }
-    
-    @Pure
-    @Override
-    public int hashCode() {
-        return (int) (value ^ (value >>> 32));
-    }
-    
-    @Pure
-    @Override
-    public @Nonnull String toString() {
-        return String.valueOf(value);
-    }
-
 }

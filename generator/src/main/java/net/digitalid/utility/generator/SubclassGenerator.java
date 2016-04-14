@@ -126,10 +126,12 @@ public class SubclassGenerator extends JavaFileGenerator {
     /* -------------------------------------------------- Overridden Methods -------------------------------------------------- */
     
     protected void overrideMethods() {
+        // TODO: I had the problem that the generator also tried to override private methods.
         if (!typeInformation.getOverriddenMethods().isEmpty()) { addSection("Overridden Methods"); }
         for (final @Nonnull MethodInformation method : typeInformation.getOverriddenMethods()) {
             ProcessingLog.verbose("Overriding the method " + Quotes.inSingle(method.getName()));
             
+            // TODO: Why is the result first declared and only then assigned (with the real value and not just null)?
             final @Nonnull String callToSuperMethod = MethodUtility.createSuperCall(method, "result");
             final @Nonnull String firstMethodCall = implementCallToMethodInterceptors(method, callToSuperMethod, "result"); 
             addAnnotation(Override.class);
@@ -179,7 +181,8 @@ public class SubclassGenerator extends JavaFileGenerator {
         addAnnotation(Override.class);
         beginMethod("public String toString()");
         importIfPossible(Objects.class);
-        addStatement("return \"" + typeInformation.getName() + typeInformation.getRepresentingFieldInformation().map(field -> field.getName() + "=\" + " + generateToStringTypeVisitor.visit(field.getType(), field.getAccessCode()) + " + \"").join(Brackets.ROUND) + "\"");
+        // TODO: Rather use String.valueOf(object) instead of Objects.toString(object) because the latter forwards to the former anyway and primitive types need not to be boxed.
+        addStatement("return \"" + typeInformation.getName() + typeInformation.getRepresentingFieldInformation().map(field -> field.getName() + ": \" + " + generateToStringTypeVisitor.visit(field.getType(), field.getAccessCode()) + " + \"").join(Brackets.ROUND) + "\"");
         endMethod();
     }
     
@@ -214,6 +217,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         beginMethod("public int hashCode()");
         addStatement("int prime = 92821");
         addStatement("int result = 46411");
+        // TODO: Primitive types are auto-boxed right now. Is the hash of an auto-boxed value always the same?
         final @Nonnull FiniteIterable<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
         for (@Nonnull RepresentingFieldInformation field : representingFieldInformation) {
             generateHashCodeTypeVisitor.visit(field.getType(), Triplet.of(field.getAccessCode(), this, "result"));
@@ -234,18 +238,21 @@ public class SubclassGenerator extends JavaFileGenerator {
         endJavadoc();
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
-        beginMethod("public boolean equals(@" + importIfPossible(Nullable.class) + " Object other)");
-        beginIf("other == null || !other.getClass().equals(this.getClass())");
+        beginMethod("public boolean equals(@" + importIfPossible(Nullable.class) + " Object object)");
+        // TODO: if (object == this) { return true; } first might be valuable for performance reasons.
+        // TODO: Kaspar is not sure whether the equals on the classes is preferable to an instanceof check.
+        beginIf("object == null || !object.getClass().equals(this.getClass())");
         addStatement("return false");
         endIf();
-        addStatement("@" + importIfPossible(Nonnull.class)+ " " + typeInformation.getName() + " otherObject = (" + typeInformation.getName() + ") other");
+        addStatement("final @" + importIfPossible(Nonnull.class)+ " " + typeInformation.getName() + " that = (" + typeInformation.getName() + ") object");
         addStatement("boolean result = true");
         final @Nonnull FiniteIterable<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
         ProcessingLog.debugging("generating equals method...");
         for (@Nonnull RepresentingFieldInformation field : representingFieldInformation) {
             ProcessingLog.debugging("...with representing field/method $", field.getAccessCode());
             final @Nonnull String accessCode = field.getAccessCode();
-            generateComparisonTypeVisitor.visit(field.getType(), Quartet.of("this." + accessCode, "otherObject." + accessCode, this, "result"));
+            // TODO: Maybe we should compare primitive values directly instead of boxing them.
+            generateComparisonTypeVisitor.visit(field.getType(), Quartet.of("this." + accessCode, "that." + accessCode, this, "result"));
         }
         addStatement("return result");
         endMethod();
@@ -264,6 +271,7 @@ public class SubclassGenerator extends JavaFileGenerator {
             final @Nonnull FiniteIterable<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
             addStatement("int result = 0");
             for (@Nonnull RepresentingFieldInformation field : representingFieldInformation) {
+                // TODO: Doesn't work for primitive values! And shouldn't the next field only be used if the comparison of the previous field was 0?
                 addStatement("result += " + field.getAccessCode() + ".compareTo(other." + field.getAccessCode() + ")");
             }
             addStatement("return result");
