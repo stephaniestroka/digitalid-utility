@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.configuration.Configuration;
-import net.digitalid.utility.generator.annotations.DefaultValue;
+import net.digitalid.utility.generator.annotations.Default;
 import net.digitalid.utility.generator.annotations.Logged;
 import net.digitalid.utility.generator.annotations.Recover;
 import net.digitalid.utility.logging.Level;
@@ -26,7 +26,7 @@ public abstract class AbstractClass extends RootClass {
     public abstract @Nonnull String[] getValue();
     
     @Pure
-    @DefaultValue("42")
+    @Default("42")
     public abstract @Positive int getNumber();
     
     public abstract void setNumber(@Positive int number);

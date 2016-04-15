@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.type.Functional;
 
 /**
@@ -22,6 +23,14 @@ public interface BigIntegerNumerical<T extends BigIntegerNumerical<T>> extends C
      */
     @Pure
     public @Nonnull BigInteger getValue();
+    
+    /**
+     * Returns the bit length of this numerical.
+     */
+    @Pure
+    public default @NonNegative int getBitLength() {
+        return getValue().bitLength();
+    }
     
     /* -------------------------------------------------- Comparison -------------------------------------------------- */
     

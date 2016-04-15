@@ -8,7 +8,9 @@ import java.lang.annotation.Target;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.validation.annotations.string.JavaExpression;
 
 /**
  * This annotation indicates the default value of a generated field or parameter.
@@ -19,8 +21,17 @@ import net.digitalid.utility.generator.information.field.FieldInformation;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.PARAMETER})
-public @interface DefaultValue {
+public @interface Default {
     
-    @Nonnull String value();
+    /**
+     * Returns the name that describes the default value.
+     * The name is used by the {@link BuilderGenerator}.
+     */
+    @Nonnull String name();
+    
+    /**
+     * Returns the default value as a Java expression.
+     */
+    @Nonnull @JavaExpression String value();
     
 }

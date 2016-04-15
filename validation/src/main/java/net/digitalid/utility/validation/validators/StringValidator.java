@@ -17,7 +17,7 @@ public abstract class StringValidator extends ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.<Class<?>>with(CharSequence.class);
+    private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.with(CharSequence.class);
     
     @Pure
     @Override

@@ -67,7 +67,7 @@ public class SubclassGenerator extends JavaFileGenerator {
             
             {
                 final @Nonnull MethodInformation getter = field.getGetter();
-                ProcessingLog.verbose("Implementing the getter " + Quotes.inSingle(getter.getName()));
+                ProcessingLog.verbose("Implementing the getter $.", getter.getName());
                 final @Nonnull String statement = "result = this." + field.getName();
                 generateMethodWithStatement(getter, statement, "result");
             }
@@ -129,8 +129,9 @@ public class SubclassGenerator extends JavaFileGenerator {
         // TODO: I had the problem that the generator also tried to override private methods.
         if (!typeInformation.getOverriddenMethods().isEmpty()) { addSection("Overridden Methods"); }
         for (final @Nonnull MethodInformation method : typeInformation.getOverriddenMethods()) {
-            ProcessingLog.verbose("Overriding the method " + Quotes.inSingle(method.getName()));
+            ProcessingLog.verbose("Overriding the method $.", method.getName());
             
+            // TODO: Please generate the pre- and post-conditions again.
             // TODO: Why is the result first declared and only then assigned (with the real value and not just null)?
             final @Nonnull String callToSuperMethod = MethodUtility.createSuperCall(method, "result");
             final @Nonnull String firstMethodCall = implementCallToMethodInterceptors(method, callToSuperMethod, "result"); 
@@ -191,6 +192,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
         beginMethod("public void validate()");
+        // TODO: The following cast does not work for interfaces!
         final @Nonnull ClassInformation classInformation = (ClassInformation) typeInformation; 
         for (@Nonnull DirectlyAccessibleFieldInformation field : classInformation.writableAccessibleFields) {
             for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : ValidatorProcessingUtility.getValueValidators(field.getElement()).entrySet()) {
@@ -286,7 +288,8 @@ public class SubclassGenerator extends JavaFileGenerator {
         generateEqualsMethod();
         generateHashCodeMethod();
         generateToStringMethod();
-        generateValidateMethod();
+        // TODO: There is a bug in the validate method (see above).
+        // generateValidateMethod();
         generateCompareToMethod();
     }
     

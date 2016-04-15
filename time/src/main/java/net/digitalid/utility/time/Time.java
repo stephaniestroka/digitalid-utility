@@ -6,7 +6,7 @@ import java.util.Date;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.generator.annotations.DefaultValue;
+import net.digitalid.utility.generator.annotations.Default;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.interfaces.LongNumerical;
@@ -104,7 +104,7 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
      */
     @Pure
     @Override
-    @DefaultValue("System.currentTimeMillis()")
+    @Default(name = "CurrentTime", value = "System.currentTimeMillis()")
     public abstract long getValue();
     
     /* -------------------------------------------------- Relative Time -------------------------------------------------- */
