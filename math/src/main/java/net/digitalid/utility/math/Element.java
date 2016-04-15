@@ -9,7 +9,7 @@ import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.math.Number;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.interfaces.Numerical;
+import net.digitalid.utility.validation.interfaces.BigIntegerNumerical;
 
 /**
  * An element is a number in a certain group.
@@ -17,7 +17,7 @@ import net.digitalid.utility.validation.interfaces.Numerical;
  * @invariant getValue().compareTo(BigInteger.ZERO) >= 0 && getValue().compareTo(getGroup().getModulus()) == -1 : "The value is non-negative and smaller than the group modulus.";
  */
 @Immutable
-public final class Element extends Number implements Numerical, Convertible {
+public final class Element extends Number implements BigIntegerNumerical, Convertible {
     
     /* -------------------------------------------------- Group -------------------------------------------------- */
     

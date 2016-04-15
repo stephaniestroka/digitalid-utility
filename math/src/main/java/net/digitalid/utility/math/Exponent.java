@@ -9,13 +9,13 @@ import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.math.Number;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.interfaces.Numerical;
+import net.digitalid.utility.validation.interfaces.BigIntegerNumerical;
 
 /**
  * An exponent is a number that raises elements of an arbitrary group.
  */
 @Immutable
-public final class Exponent extends Number implements Numerical, Convertible {
+public final class Exponent extends Number implements BigIntegerNumerical, Convertible {
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     

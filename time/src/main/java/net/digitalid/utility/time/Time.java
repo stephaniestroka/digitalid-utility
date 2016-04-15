@@ -9,13 +9,14 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.annotations.DefaultValue;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.interfaces.LongNumerical;
 
 /**
  * This class models time in milliseconds for both dates and intervals.
  * Dates are calculated as milliseconds since 1 January 1970, 00:00:00 GMT.
  */
 @Immutable
-public abstract class Time extends RootClass implements Comparable<Time> {
+public abstract class Time extends RootClass implements LongNumerical<Time> {
     
     /* -------------------------------------------------- Constants -------------------------------------------------- */
     
@@ -102,6 +103,7 @@ public abstract class Time extends RootClass implements Comparable<Time> {
      * Returns the value of this time in milliseconds.
      */
     @Pure
+    @Override
     @DefaultValue("System.currentTimeMillis()")
     public abstract long getValue();
     
@@ -179,84 +181,6 @@ public abstract class Time extends RootClass implements Comparable<Time> {
     @Pure
     public boolean isMultipleOf(@Nonnull Time interval) {
         return getValue() % interval.getValue() == 0;
-    }
-    
-    /* -------------------------------------------------- Sign Checks -------------------------------------------------- */
-    
-    /**
-     * Returns whether this time is negative.
-     */
-    @Pure
-    public boolean isNegative() {
-        return getValue() < 0;
-    }
-    
-    /**
-     * Returns whether this time is non-negative.
-     */
-    @Pure
-    public boolean isNonNegative() {
-        return getValue() >= 0;
-    }
-    
-    /**
-     * Returns whether this time is positive.
-     */
-    @Pure
-    public boolean isPositive() {
-        return getValue() > 0;
-    }
-    
-    /**
-     * Returns whether this time is non-positive.
-     */
-    @Pure
-    public boolean isNonPositive() {
-        return getValue() <= 0;
-    }
-    
-    /* -------------------------------------------------- Comparisons -------------------------------------------------- */
-    
-    // TODO: Make these methods default methods in a custom comparable interface!
-    
-    /**
-     * Returns whether this time is equal to the given time.
-     */
-    @Pure
-    public boolean isEqualTo(@Nonnull Time time) {
-        return getValue() == time.getValue();
-    }
-    
-    /**
-     * Returns whether this time is greater than the given time.
-     */
-    @Pure
-    public boolean isGreaterThan(@Nonnull Time time) {
-        return getValue() > time.getValue();
-    }
-    
-    /**
-     * Returns whether this time is greater than or equal to the given time.
-     */
-    @Pure
-    public boolean isGreaterThanOrEqualTo(@Nonnull Time time) {
-        return getValue() >= time.getValue();
-    }
-    
-    /**
-     * Returns whether this time is less than the given time.
-     */
-    @Pure
-    public boolean isLessThan(@Nonnull Time time) {
-        return getValue() < time.getValue();
-    }
-    
-    /**
-     * Returns whether this time is less than or equal to the given time.
-     */
-    @Pure
-    public boolean isLessThanOrEqualTo(@Nonnull Time time) {
-        return getValue() <= time.getValue();
     }
     
     /* -------------------------------------------------- Retrievals -------------------------------------------------- */

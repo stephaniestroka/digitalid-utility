@@ -11,7 +11,7 @@ import net.digitalid.utility.generator.BuilderGenerator;
 /**
  * This annotation indicates that the constructed instances of the annotated class should be cached.
  * 
- * TODO: Also allow this annotation on methods?
+ * TODO: Also allow this annotation on methods? Kaspar: Well, I would say only on methods!
  * 
  * @see BuilderGenerator
  */

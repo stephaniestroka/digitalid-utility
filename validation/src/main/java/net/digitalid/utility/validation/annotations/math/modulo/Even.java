@@ -19,7 +19,7 @@ import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.interfaces.Numerical;
+import net.digitalid.utility.validation.interfaces.BigIntegerNumerical;
 import net.digitalid.utility.validation.validators.ModuloValidator;
 
 /**
@@ -44,7 +44,7 @@ public @interface Even {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            if (ProcessingUtility.isAssignable(element, Numerical.class)) {
+            if (ProcessingUtility.isAssignable(element, BigIntegerNumerical.class)) {
                 return Contract.with("# == null || #.getValue().getLowestSetBit() != 0", "The # has to be null or even but was $.", element);
             } else if (ProcessingUtility.isAssignable(element, BigInteger.class)) {
                 return Contract.with("# == null || #.getLowestSetBit() != 0", "The # has to be null or even but was $.", element);
