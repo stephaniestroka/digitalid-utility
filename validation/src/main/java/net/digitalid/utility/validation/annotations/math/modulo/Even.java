@@ -20,6 +20,7 @@ import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.interfaces.BigIntegerNumerical;
+import net.digitalid.utility.validation.interfaces.LongNumerical;
 import net.digitalid.utility.validation.validators.ModuloValidator;
 
 /**
@@ -48,6 +49,8 @@ public @interface Even {
                 return Contract.with("# == null || #.getValue().getLowestSetBit() != 0", "The # has to be null or even but was $.", element);
             } else if (ProcessingUtility.isAssignable(element, BigInteger.class)) {
                 return Contract.with("# == null || #.getLowestSetBit() != 0", "The # has to be null or even but was $.", element);
+            } else if (ProcessingUtility.isAssignable(element, LongNumerical.class)) {
+                return Contract.with("# == null || #.getValue() % 2 == 0", "The # has to be null or even but was $.", element);
             } else {
                 return Contract.with("# % 2 == 0", "The # has to be even but was $.", element);
             }

@@ -20,6 +20,7 @@ import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.interfaces.BigIntegerNumerical;
+import net.digitalid.utility.validation.interfaces.LongNumerical;
 import net.digitalid.utility.validation.validators.ModuloValidator;
 
 /**
@@ -53,6 +54,8 @@ public @interface MultipleOf {
                 return Contract.with("# == null || #.getValue().mod(" + typeImporter.importIfPossible(BigInteger.class) + ".valueOf(@).equals(" + typeImporter.importIfPossible(BigInteger.class) + ".ZERO)) > 0", "The # has to be null or a multiple of @ but was $.", element, annotationMirror);
             } else if (ProcessingUtility.isAssignable(element, BigInteger.class)) {
                 return Contract.with("# == null || #.mod(" + typeImporter.importIfPossible(BigInteger.class) + ".valueOf(@).equals(" + typeImporter.importIfPossible(BigInteger.class) + ".ZERO)) > 0", "The # has to be null or a multiple of @ but was $.", element, annotationMirror);
+            } else if (ProcessingUtility.isAssignable(element, LongNumerical.class)) {
+                return Contract.with("# == null || #.getValue() % @ == 0", "The # has to be a multiple of @ but was $.", element, annotationMirror);
             } else {
                 return Contract.with("# % @ == 0", "The # has to be a multiple of @ but was $.", element, annotationMirror);
             }
