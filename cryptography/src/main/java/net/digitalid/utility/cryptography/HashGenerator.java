@@ -6,33 +6,35 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.exceptions.MissingSupportException;
 import net.digitalid.utility.math.Element;
-import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
  * Generates cryptographic hashes.
  */
+@Utility
 public class HashGenerator {
 
     /**
      * Generates and returns a cryptographic hash using the SHA-256 hash algorithm on the values of the given elements.
      */
     @Pure
-    public static @Nonnull BigInteger generateHash(@Nonnull Element... elements) {
+    public static @Nonnull BigInteger generateHash(@NonCaptured @Unmodified @Nonnull Element... elements) {
         try {
             final @Nonnull MessageDigest instance = MessageDigest.getInstance("SHA-256");
-            int offset = 0;
             for (@Nonnull Element element : elements) {
-                final @Nonnull BigInteger value = element.getValue();
-                final @Nonnull byte[] bytes = value.toByteArray();
+                final @Nonnull byte[] bytes = element.getValue().toByteArray();
                 instance.update(bytes); // TODO: Verify that this works!
-                offset += bytes.length;
+                instance.update((byte) 0);
             }
             return new BigInteger(1, instance.digest());
         } catch (@Nonnull NoSuchAlgorithmException exception) {
             throw MissingSupportException.with("The hashing algorithm 'SHA-256' is not supported on this platform.", exception);
         }
     }
-
+    
 }

@@ -1,4 +1,4 @@
 /**
- * Provides classes for performing advanced cryptography (also known as anonymous credential system).
+ * Provides classes for performing advanced cryptography.
  */
 package net.digitalid.utility.cryptography;

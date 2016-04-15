@@ -19,28 +19,42 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-import net.digitalid.utility.exceptions.MissingSupportException;
-import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.exceptions.UnexpectedFailureException;
-import net.digitalid.utility.generator.conversion.Convertible;
-import net.digitalid.utility.validation.annotations.math.NonNegative;
-import net.digitalid.utility.validation.annotations.math.Positive;
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.configuration.Configuration;
+import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.exceptions.MissingSupportException;
+import net.digitalid.utility.exceptions.UnexpectedFailureException;
+import net.digitalid.utility.generator.annotations.Default;
+import net.digitalid.utility.generator.annotations.Normalize;
+import net.digitalid.utility.initialization.Initialize;
+import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-
-import net.digitalid.utility.rootclass.RootClass;
 
 /**
  * Symmetric keys are used to encrypt and decrypt byte arrays with the Advanced Encryption Standard (AES).
  */
 @Immutable
-public final class SymmetricKey extends RootClass implements Convertible {
+public abstract class SymmetricKey extends RootClass {
+    
+    /* -------------------------------------------------- Configuration -------------------------------------------------- */
+    
+    /**
+     * Stores a dummy configuration in order to have an initialization target.
+     */
+    public static final @Nonnull Configuration<String> configuration = Configuration.with("");
     
     /* -------------------------------------------------- Circumvent Cryptographic Restrictions -------------------------------------------------- */
     
-    static {
+    @Impure
+    @Initialize(target = SymmetricKey.class)
+    public static void initialize() {
         try {
             final int length = Cipher.getMaxAllowedKeyLength("AES");
             if (length < Parameters.ENCRYPTION_KEY) {
@@ -89,97 +103,66 @@ public final class SymmetricKey extends RootClass implements Convertible {
     /**
      * Stores the length of symmetric keys in bytes.
      */
-    private static final int LENGTH = Parameters.ENCRYPTION_KEY / 8;
+    public static final int LENGTH = Parameters.ENCRYPTION_KEY / 8;
     
     /**
      * Stores the mode of the encryption cipher.
      */
-    private static final @Nonnull String mode = "AES/CBC/PKCS5Padding";
+    public static final @Nonnull String MODE = "AES/CBC/PKCS5Padding";
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
     /**
-     * Stores the value of this symmetric key.
+     * Returns a random value with the right length.
      */
-    private final @Nonnull BigInteger value;
+    @Pure
+    public static @Nonnull BigInteger getRandomValue() {
+        return new BigInteger(Parameters.ENCRYPTION_KEY, new SecureRandom());
+    }
     
     /**
      * Returns the value of this symmetric key.
-     * 
-     * @return the value of this symmetric key.
      */
     @Pure
-    public final @Nonnull BigInteger getValue() {
-        return value;
-    }
+    @Default(name = "RandomValue", value = "SymmetricKey.getRandomValue()")
+    public abstract @Nonnull BigInteger getValue();
     
     /* -------------------------------------------------- Key -------------------------------------------------- */
     
     /**
-     * Stores the key of this symmetric key.
+     * Derives the key from the given value.
      */
-    private final @Nonnull Key key;
-    
-    /* -------------------------------------------------- Constructor -------------------------------------------------- */
-    
-    /**
-     * Creates a new symmetric key with the given value.
-     * 
-     * @param value the value of the new symmetric key.
-     */
-    private SymmetricKey(@Nonnull BigInteger value) {
-        this.value = value;
+    @Pure
+    protected static @Nonnull Key deriveKey(@Nonnull BigInteger value) {
         final @Nonnull byte[] bytes = value.toByteArray();
         final @Nonnull byte[] key = new byte[LENGTH];
         System.arraycopy(bytes, Math.max(bytes.length - LENGTH, 0), key, Math.max(LENGTH - bytes.length, 0), Math.min(LENGTH, bytes.length));
-        this.key = new SecretKeySpec(key, "AES");
+        return new SecretKeySpec(key, "AES");
     }
     
     /**
-     * Creates a new symmetric key with the given value.
-     * 
-     * @param value the value of the new symmetric key.
-     * 
-     * @return a new symmetric key with the given value.
+     * Returns the key of this symmetric key.
      */
     @Pure
-    public static @Nonnull SymmetricKey get(@Nonnull BigInteger value) {
-        return new SymmetricKey(value);
-    }
-    
-    /**
-     * Creates a new symmetric key with a random value.
-     * 
-     * @return a new symmetric key with a random value.
-     */
-    @Pure
-    public static @Nonnull SymmetricKey getRandom() {
-        return new SymmetricKey(new BigInteger(Parameters.ENCRYPTION_KEY, new SecureRandom()));
-    }
+    // TODO: Introduce an annotation to simplify the declaration of derived values, which can then also no be specified in the builder.
+    @Default(name = "NoKey", value = "new javax.crypto.spec.SecretKeySpec(new byte[SymmetricKey.LENGTH], \"AES\")")
+    @Normalize("SymmetricKey.deriveKey(value)")
+    protected abstract @Nonnull Key getKey();
     
     /* -------------------------------------------------- Encryption and Decryption -------------------------------------------------- */
     
     /**
-     * Encrypts the indicated section in the given byte array with this symmetric key.
-     * 
-     * @param initializationVector the initialization vector for the encryption.
-     * @param bytes the byte array of which a section is to be encrypted.
-     * @param offset the offset of the section in the given byte array.
-     * @param length the length of the section in the given byte array.
-     * 
-     * @return the encryption of the indicated section in the given byte array.
+     * Encrypts the indicated section in the given byte array with this symmetric key and the given initialization vector.
      * 
      * @require offset + length <= bytes.length : "The indicated section may not exceed the given byte array.";
      */
     @Pure
-    public final @Capturable @Nonnull @NonEmpty byte[] encrypt(@Nonnull InitializationVector initializationVector, @Nonnull byte[] bytes, @NonNegative int offset, @Positive int length) {
-        Require.that(offset >= 0).orThrow("The offset is not negative.");
-        Require.that(length > 0).orThrow("The length is positive.");
+    public @Capturable @Nonnull @NonEmpty byte[] encrypt(@Nonnull InitializationVector initializationVector, @NonCaptured @Unmodified @Nonnull @NonEmpty byte[] bytes, @NonNegative int offset, @Positive int length) {
         Require.that(offset + length <= bytes.length).orThrow("The indicated section may not exceed the given byte array.");
         
         try {
-            final @Nonnull Cipher cipher = Cipher.getInstance(mode);
-            cipher.init(Cipher.ENCRYPT_MODE, key, initializationVector);
+            final @Nonnull Cipher cipher = Cipher.getInstance(MODE);
+            cipher.init(Cipher.ENCRYPT_MODE, getKey(), initializationVector);
             return cipher.doFinal(bytes, offset, length);
         } catch (@Nonnull NoSuchAlgorithmException | NoSuchPaddingException exception) {
             throw MissingSupportException.with("Could not encrypt the given bytes.", exception);
@@ -189,31 +172,22 @@ public final class SymmetricKey extends RootClass implements Convertible {
     }
     
     /**
-     * Decrypts the indicated section in the given byte array with this symmetric key.
-     * 
-     * @param initializationVector the initialization vector for the decryption.
-     * @param bytes the byte array of which a section is to be decrypted.
-     * @param offset the offset of the section in the given byte array.
-     * @param length the length of the section in the given byte array.
-     * 
-     * @return the decryption of the indicated section in the given byte array.
+     * Decrypts the indicated section in the given byte array with this symmetric key and the given initialization vector.
      * 
      * @require offset + length <= bytes.length : "The indicated section may not exceed the given byte array.";
      */
     @Pure
-    public final @Capturable @Nonnull @NonEmpty byte[] decrypt(@Nonnull InitializationVector initializationVector, @Nonnull byte[] bytes, @NonNegative int offset, @Positive int length) {
-        Require.that(offset >= 0).orThrow("The offset is not negative.");
-        Require.that(length > 0).orThrow("The length is positive.");
+    public @Capturable @Nonnull @NonEmpty byte[] decrypt(@Nonnull InitializationVector initializationVector, @NonCaptured @Unmodified @Nonnull @NonEmpty byte[] bytes, @NonNegative int offset, @Positive int length) {
         Require.that(offset + length <= bytes.length).orThrow("The indicated section may not exceed the given byte array.");
         
         try {
-            final @Nonnull Cipher cipher = Cipher.getInstance(mode);
-            cipher.init(Cipher.DECRYPT_MODE, key, initializationVector);
+            final @Nonnull Cipher cipher = Cipher.getInstance(MODE);
+            cipher.init(Cipher.DECRYPT_MODE, getKey(), initializationVector);
             return cipher.doFinal(bytes, offset, length);
         } catch (@Nonnull NoSuchAlgorithmException | NoSuchPaddingException exception) {
-            throw MissingSupportException.with(exception);
+            throw MissingSupportException.with("Could not decrypt the given bytes.", exception);
         } catch (@Nonnull InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException exception) {
-            throw UnexpectedFailureException.with(exception);
+            throw UnexpectedFailureException.with("Could not decrypt the given bytes.", exception);
         }
     }
     
