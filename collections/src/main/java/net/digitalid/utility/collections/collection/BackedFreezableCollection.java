@@ -44,7 +44,7 @@ public class BackedFreezableCollection<E> extends RootClass implements Freezable
     /**
      * Stores a reference to the underlying freezable.
      */
-    private final @Referenced @Nonnull FreezableInterface freezable;
+    protected final @Referenced @Nonnull FreezableInterface freezable;
     
     /**
      * Stores the underlying collection.

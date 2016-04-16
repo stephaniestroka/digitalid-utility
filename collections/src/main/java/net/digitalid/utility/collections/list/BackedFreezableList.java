@@ -28,6 +28,7 @@ import net.digitalid.utility.functional.iterators.ReadOnlyListIterator;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
 /**
  * This class implements a {@link Set set} that can be {@link FreezableInterface frozen}.
