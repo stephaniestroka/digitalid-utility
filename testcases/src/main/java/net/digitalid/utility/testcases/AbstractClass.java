@@ -26,7 +26,7 @@ public abstract class AbstractClass extends RootClass {
     public abstract @Nonnull String[] getValue();
     
     @Pure
-    @Default("42")
+    @Default(name="number", value="42")
     public abstract @Positive int getNumber();
     
     public abstract void setNumber(@Positive int number);
