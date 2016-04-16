@@ -5,11 +5,11 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
-import net.digitalid.utility.generator.information.method.MethodInformation;
-import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.validation.contract.Contract;
+import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.processing.utility.TypeImporter;
+import net.digitalid.utility.processor.generator.JavaFileGenerator;
+import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 
 public abstract class MethodInterceptor extends MethodAnnotationValidator {
@@ -25,7 +25,7 @@ public abstract class MethodInterceptor extends MethodAnnotationValidator {
     }
     
     @Pure
-    protected abstract  @Nonnull String getPrefix();
+    protected abstract @Nonnull String getPrefix();
     
     /**
      * Implements an interceptor method. The method is required to implement the call to the given statement. It can wrap its own functionality around the statement.

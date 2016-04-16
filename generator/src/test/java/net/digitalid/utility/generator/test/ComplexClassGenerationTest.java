@@ -26,7 +26,7 @@ public class ComplexClassGenerationTest {
         listOfIntegers.add(1);
         listOfIntegers.add(2);
         listOfIntegers.add(3);
-       return ComplexClassBuilder.withText("This is a test").withArrayOfStrings(arrayOfStrings).withSimpleClass(simpleClass).withListOfIntegers(listOfIntegers);
+       return ComplexClassBuilder.withText("This is a test").withSimpleClass(simpleClass).withListOfIntegers(listOfIntegers).withArrayOfStrings(arrayOfStrings);
     }
     
     @Test

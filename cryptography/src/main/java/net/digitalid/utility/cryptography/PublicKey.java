@@ -283,15 +283,15 @@ public final class PublicKey implements Convertible {
      * @require verifySubgroupProof() : "Assert that au, ai, av and ao are in the subgroup of ab.";
      */
     private PublicKey(@Nonnull GroupWithUnknownOrder compositeGroup, @Nonnull Exponent e, @Nonnull Element ab, @Nonnull Element au, @Nonnull Element ai, @Nonnull Element av, @Nonnull Element ao, @Nonnull Exponent t, @Nonnull Exponent su, @Nonnull Exponent si, @Nonnull Exponent sv, @Nonnull Exponent so, @Nonnull GroupWithUnknownOrder squareGroup, @Nonnull Element g, @Nonnull Element y, @Nonnull Element zPlus1) {
-        Require.that(ab.isElement(compositeGroup)).orThrow("ab is an element in the composite group.");
-        Require.that(au.isElement(compositeGroup)).orThrow("au is an element in the composite group.");
-        Require.that(ai.isElement(compositeGroup)).orThrow("ai is an element in the composite group.");
-        Require.that(av.isElement(compositeGroup)).orThrow("av is an element in the composite group.");
-        Require.that(ao.isElement(compositeGroup)).orThrow("ao is an element in the composite group.");
+        Require.that(ab.isIn(compositeGroup)).orThrow("ab is an element in the composite group.");
+        Require.that(au.isIn(compositeGroup)).orThrow("au is an element in the composite group.");
+        Require.that(ai.isIn(compositeGroup)).orThrow("ai is an element in the composite group.");
+        Require.that(av.isIn(compositeGroup)).orThrow("av is an element in the composite group.");
+        Require.that(ao.isIn(compositeGroup)).orThrow("ao is an element in the composite group.");
         
-        Require.that(g.isElement(squareGroup)).orThrow("g is an element in the square group.");
-        Require.that(y.isElement(squareGroup)).orThrow("y is an element in the square group.");
-        Require.that(zPlus1.isElement(squareGroup)).orThrow("zPlus1 is an element in the square group.");
+        Require.that(g.isIn(squareGroup)).orThrow("g is an element in the square group.");
+        Require.that(y.isIn(squareGroup)).orThrow("y is an element in the square group.");
+        Require.that(zPlus1.isIn(squareGroup)).orThrow("zPlus1 is an element in the square group.");
         
         this.compositeGroup = compositeGroup;
         this.e = e;

@@ -80,9 +80,11 @@ public class BuilderGenerator extends JavaFileGenerator {
     /**
      * Returns true if the field is required, false otherwise.
      */
+    // TODO: Why is this method not declared in the field information class?
     private boolean isFieldRequired(@Nonnull FieldInformation fieldInformation) {
         // TODO: nullable fields are not required. Non-final fields are also not required (and probably not representing).
         return !fieldInformation.hasDefaultValue();
+        // TODO: Please also use the default value as a default value for the builder! :-)
     }
     
     /**
@@ -154,8 +156,9 @@ public class BuilderGenerator extends JavaFileGenerator {
     
         final @Nonnull @NonNullableElements List<ExecutableElement> constructors = ElementFilter.constructorsIn(typeInformation.getElement().getEnclosedElements());
         if (constructors.size() != 1) {
-            ProcessingLog.error("Expected one constructor in generated type:");
-        }
+            // TODO: This causes an error for interfaces. That's why Kaspar commented out this line.
+            // ProcessingLog.error("Expected one constructor in generated type:"); // TODO: Is there an argument missing? Or what does the colon mean?
+        } else { // TODO: Kaspar introduced the else clause (but not the following lines) to prevent an IndexOutOfBoundsException on the following line.
         final @Nonnull ExecutableElement constructor = constructors.get(0);
         final @Nonnull List<? extends TypeMirror> throwTypes = constructor.getThrownTypes();
         beginMethod("public " + typeInformation.getName() + " build()" + (throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()));
@@ -164,6 +167,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         addStatement("return new " + typeInformation.getQualifiedNameOfGeneratedSubclass() + typeInformation.getRepresentingFieldInformation().map(element -> element.getName()).join(Brackets.ROUND));
         
         endMethod();
+        } // TODO: The end of the introduced else clause (see a few lines above). The processor may log errors but should not crash, so something like this is needed anyhow.
         
         endClass();
     }

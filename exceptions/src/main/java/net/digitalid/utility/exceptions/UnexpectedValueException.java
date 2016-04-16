@@ -13,10 +13,37 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 @Immutable
 public class UnexpectedValueException extends InternalException {
     
+    /* -------------------------------------------------- Variable -------------------------------------------------- */
+    
+    private final @Nonnull String variable;
+    
+    /**
+     * Returns the name of the variable with the unexpected value.
+     */
+    @Pure
+    public @Nonnull String getVariable() {
+        return variable;
+    }
+    
+    /* -------------------------------------------------- Value -------------------------------------------------- */
+    
+    private final @Nullable Object value;
+    
+    /**
+     * Returns the value of the given variable that was not expected.
+     */
+    @Pure
+    public @Nullable Object getValue() {
+        return value;
+    }
+    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     protected UnexpectedValueException(@Nonnull String variable, @Nullable Object value) {
         super("It was not expected that $ = $.", variable, value);
+        
+        this.variable = variable;
+        this.value = value;
     }
     
     /**

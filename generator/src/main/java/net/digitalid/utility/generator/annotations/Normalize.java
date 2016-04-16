@@ -8,18 +8,22 @@ import java.lang.annotation.Target;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.generator.BuilderGenerator;
+import net.digitalid.utility.validation.annotations.string.JavaExpression;
 
 /**
- * Description.
+ * This annotation indicates the expression with which a value is normalized.
  * 
- * @see FieldInformation
+ * @see BuilderGenerator
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.PARAMETER})
-public @interface DefaultValue {
+public @interface Normalize {
     
-    @Nonnull String value();
+    /**
+     * Returns the expression with which the value is normalized.
+     */
+    @Nonnull @JavaExpression String value();
     
 }

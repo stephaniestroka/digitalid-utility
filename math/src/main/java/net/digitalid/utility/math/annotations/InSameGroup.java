@@ -1,11 +1,10 @@
-package net.digitalid.utility.validation.annotations.math.modulo;
+package net.digitalid.utility.math.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
@@ -14,25 +13,22 @@ import javax.lang.model.element.Element;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.immutable.ImmutableSet;
+import net.digitalid.utility.math.GroupMember;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.interfaces.BigIntegerNumerical;
-import net.digitalid.utility.validation.interfaces.LongNumerical;
-import net.digitalid.utility.validation.validators.ModuloValidator;
+import net.digitalid.utility.validation.validators.StringValidator;
 
 /**
- * This annotation indicates that a numeric value is uneven.
  * 
- * @see Even
  */
 @Documented
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
-@ValueValidator(Uneven.Validator.class)
-public @interface Uneven {
+@ValueValidator(InSameGroup.Validator.class)
+public @interface InSameGroup {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
     
@@ -40,20 +36,20 @@ public @interface Uneven {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends ModuloValidator {
+    public static class Validator extends StringValidator {
+        
+        private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.with(GroupMember.class);
+        
+        @Pure
+        @Override
+        public @Nonnull ImmutableSet<@Nonnull Class<?>> getTargetTypes() {
+            return targetTypes;
+        }
         
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            if (ProcessingUtility.isAssignable(element, BigIntegerNumerical.class)) {
-                return Contract.with("# == null || #.getValue().getLowestSetBit() == 0", "The # has to be null or uneven but was $.", element);
-            } else if (ProcessingUtility.isAssignable(element, BigInteger.class)) {
-                return Contract.with("# == null || #.getLowestSetBit() == 0", "The # has to be null or uneven but was $.", element);
-            } else if (ProcessingUtility.isAssignable(element, LongNumerical.class)) {
-                return Contract.with("# == null || #.getValue() % 2 == 1", "The # has to be null or uneven but was $.", element);
-            } else {
-                return Contract.with("# % 2 == 1", "The # has to be uneven but was $.", element);
-            }
+            return Contract.with("# == null || #.getGroup().equals(getGroup())", "The # has to be in the same group.", element);
         }
         
     }

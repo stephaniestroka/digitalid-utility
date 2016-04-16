@@ -7,7 +7,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.generator.annotations.DefaultValue;
+import net.digitalid.utility.generator.annotations.Default;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.annotations.method.Pure;
@@ -44,7 +44,7 @@ public abstract class FieldInformationImplementation extends ElementInformationI
     protected FieldInformationImplementation(@Nonnull Element element, @Nonnull TypeMirror type, @Nonnull DeclaredType containingType) {
         super(element, type, containingType);
         
-        this.defaultValue = ProcessingUtility.getStringValue(element, DefaultValue.class);
+        this.defaultValue = ProcessingUtility.getStringValue(element, Default.class);
     }
     
 }

@@ -9,14 +9,14 @@ import java.lang.annotation.Target;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
-import net.digitalid.utility.annotations.method.Pure;
 
 /**
- * 
+ * This annotation indicates that every call to the annotated method is logged.
  */
 @Documented
 @Target(ElementType.METHOD)
@@ -32,6 +32,7 @@ public @interface Logged {
     public static class Interceptor extends MethodInterceptor {
         
         @Pure
+        @Override
         protected @Nonnull String getPrefix() {
             return "logged";
         }

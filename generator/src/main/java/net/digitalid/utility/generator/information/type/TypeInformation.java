@@ -1,7 +1,7 @@
 package net.digitalid.utility.generator.information.type;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -92,6 +92,8 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     
     @Pure
     public @Nonnull String getSimpleNameOfGeneratedSubclass() {
+        // TODO: Kaspar thinks that the following (commented) line would be a better naming convention because classes that belong together are then grouped together (if sorted alphabetically).
+//        return getName() + "Subclass";
         return "Generated" + getName();
     }
     
@@ -139,7 +141,8 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * The method indexes method information objects with the field name of the method.
      */
     protected @Nonnull @NonNullableElements Map<String, MethodInformation> indexMethodInformation(@Nonnull FiniteIterable<MethodInformation> iterable) {
-        final @Nonnull @NonNullableElements Map<String, MethodInformation> indexedMethods = new HashMap<>();
+        // TODO: The following statement can (and should) replace this whole method: iterable.toMap(method -> method.getFieldName());
+        final @Nonnull @NonNullableElements Map<String, MethodInformation> indexedMethods = new LinkedHashMap<>();
         for (@Nonnull MethodInformation method : iterable) {
             indexedMethods.put(method.getFieldName(), method);
         }
@@ -147,7 +150,8 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     }
     
     protected @Nonnull @NonNullableElements <F extends FieldInformation> Map<String, F> indexFieldInformation(@Nonnull FiniteIterable<F> iterable) {
-        final @Nonnull @NonNullableElements Map<String, F> indexedFields = new HashMap<>();
+        // TODO: This method as well (see above)!
+        final @Nonnull @NonNullableElements Map<String, F> indexedFields = new LinkedHashMap<>();
         for (@Nonnull F method : iterable) {
             indexedFields.put(method.getName(), method);
         }
