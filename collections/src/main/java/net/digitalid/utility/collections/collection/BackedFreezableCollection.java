@@ -25,6 +25,7 @@ import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -36,6 +37,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see BackedFreezableList
  * @see BackedFreezableSet
  */
+@GenerateNoBuilder
 @Freezable(ReadOnlyCollection.class)
 public class BackedFreezableCollection<E> extends RootClass implements FreezableCollection<E> {
     

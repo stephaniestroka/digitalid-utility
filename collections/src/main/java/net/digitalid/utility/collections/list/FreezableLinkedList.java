@@ -24,15 +24,18 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyListIterator;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
 /**
  * This class extends the {@link LinkedList} and makes it {@link FreezableInterface freezable}.
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
 @Freezable(ReadOnlyList.class)
+@GenerateNoBuilder
 public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableList<E> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
@@ -43,7 +46,7 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
      * Returns a new freezable linked list with no elements.
      */
     @Pure
-    public static <E> @Capturable @Nonnull @NonFrozen FreezableLinkedList<E> withNoElements() {
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedList<E> withNoElements() {
         return new FreezableLinkedList<>();
     }
     

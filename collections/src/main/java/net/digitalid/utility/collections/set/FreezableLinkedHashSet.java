@@ -23,6 +23,7 @@ import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -31,6 +32,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * This class extends the {@link LinkedHashSet} and makes it {@link FreezableInterface freezable}.
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
+@GenerateNoBuilder
 @Freezable(ReadOnlySet.class)
 public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements FreezableSet<E> {
     

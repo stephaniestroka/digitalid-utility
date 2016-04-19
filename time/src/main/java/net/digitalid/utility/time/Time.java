@@ -275,10 +275,6 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
     
     /**
      * Appends the given value with the given unit to the given string if the value is not zero.
-     * 
-     * @param string the string builder to be extended.
-     * @param value the value to be appended.
-     * @param unit the unit of the given value.
      */
     private void append(@Nonnull StringBuilder string, long value, @Nonnull String unit) {
         if (value != 0) {

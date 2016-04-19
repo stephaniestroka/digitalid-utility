@@ -1,11 +1,16 @@
 package net.digitalid.utility.generator.information.method;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
@@ -61,6 +66,18 @@ public abstract class ExecutableInformation extends ElementInformationImplementa
     @Pure
     public boolean hasSingleParameter(@Nonnull Class<?> type) {
         return hasSingleParameter(type.getCanonicalName());
+    }
+    
+    /**
+     * Returns a list of parameters.
+     */
+    @Pure
+    public @Nonnull FiniteIterable<MethodParameterInformation> getParameters() {
+        @Nonnull List<MethodParameterInformation> parameters = new ArrayList<>(getElement().getParameters().size());
+        for (@Nonnull VariableElement variableElement : getElement().getParameters()) {
+            parameters.add(new MethodParameterInformation(variableElement, getContainingType()));
+        }
+        return FiniteIterable.of(parameters);
     }
     
     /* -------------------------------------------------- Exceptions -------------------------------------------------- */

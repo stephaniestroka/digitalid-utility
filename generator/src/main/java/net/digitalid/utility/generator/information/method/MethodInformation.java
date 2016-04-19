@@ -171,6 +171,7 @@ public class MethodInformation extends ExecutableInformation {
             if (errorMessage != null) { ProcessingLog.error(errorMessage, SourcePosition.of(element)); }
             ProcessingLog.verbose("Found the recover method", SourcePosition.of(element));
         }
+        ProcessingLog.debugging("Requesting method validators for method $", this.getElement());
         this.methodValidators = ValidatorProcessingUtility.getMethodValidators(this.getElement());
     }
     

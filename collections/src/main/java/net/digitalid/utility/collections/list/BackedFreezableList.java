@@ -25,6 +25,7 @@ import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterators.ReadOnlyListIterator;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -35,6 +36,7 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  * The implementation is backed by an ordinary {@link List list}. 
  */
+@GenerateNoBuilder
 @Freezable(ReadOnlyList.class)
 public class BackedFreezableList<E> extends BackedFreezableCollection<E> implements FreezableList<E> {
     

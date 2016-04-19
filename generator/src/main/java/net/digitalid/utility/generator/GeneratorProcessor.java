@@ -14,6 +14,8 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.type.ClassInformation;
 import net.digitalid.utility.generator.information.type.InterfaceInformation;
@@ -22,7 +24,6 @@ import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
-import net.digitalid.utility.string.Strings;
 
 /**
  * This annotation processor generates a subclass for each non-final type to implement common methods and aspects.
@@ -75,8 +76,12 @@ public class GeneratorProcessor extends CustomProcessor {
         }
         try {
             ProcessingLog.debugging("Type $ is generatable", typeInformation);
-            SubclassGenerator.generateSubclassOf(typeInformation);
-            BuilderGenerator.generateBuilderFor(typeInformation);
+            if (!typeInformation.hasAnnotation(GenerateNoSubclass.class)) {
+                SubclassGenerator.generateSubclassOf(typeInformation);
+            }
+            if (!typeInformation.hasAnnotation(GenerateNoBuilder.class)) {
+                BuilderGenerator.generateBuilderFor(typeInformation);
+            }
             return true;
         } catch (FailedClassGenerationException e) {
             Log.information("The compilation failed due to the following problem:", e);
@@ -91,7 +96,7 @@ public class GeneratorProcessor extends CustomProcessor {
         for (@Nonnull Element rootElement : roundEnvironment.getRootElements()) {
             if (rootElement.getKind() == ElementKind.CLASS || rootElement.getKind() == ElementKind.INTERFACE) {
                 // TODO: In order to just generate a builder, the class can actually be final.
-                if (!rootElement.getModifiers().contains(Modifier.FINAL) && !Strings.startsWithAny(rootElement.getSimpleName().toString(), "ReadOnly", "Freezable") && !rootElement.getSimpleName().toString().endsWith("Test") && !rootElement.getSimpleName().toString().equals("ConverterAnnotations")) {
+                if (!rootElement.getModifiers().contains(Modifier.FINAL) && !rootElement.getSimpleName().toString().endsWith("Test") && !rootElement.getSimpleName().toString().equals("ConverterAnnotations")) {
                     ProcessingLog.debugging("Generate the classes for  " + Quotes.inSingle(rootElement.getSimpleName()));
                     final long start = System.currentTimeMillis();
                     final boolean generated = generateClasses((TypeElement) rootElement, (DeclaredType) rootElement.asType());

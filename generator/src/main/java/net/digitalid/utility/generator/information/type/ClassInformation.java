@@ -102,6 +102,7 @@ public class ClassInformation extends TypeInformation {
     /**
      * The method information of the recover method, or null if the class does not implement a recover method.
      */
+    // TODO (steffi, 18.04.2016): do we even need this?!
     public final @Nullable MethodInformation recoverMethod;
     
     /**
@@ -140,7 +141,7 @@ public class ClassInformation extends TypeInformation {
     
     @Override 
     public @Nonnull FiniteIterable<RepresentingFieldInformation> getRepresentingFieldInformation() {
-        return directlyAccessibleParameterBasedFieldInformation.map(field -> (RepresentingFieldInformation) field).combine(nonDirectlyAccessibleParameterBasedFieldInformation).combine(nonAccessibleDeclaredFields).combine(generatedFieldInformation);
+        return directlyAccessibleParameterBasedFieldInformation.map(field -> (RepresentingFieldInformation) field).combine(nonDirectlyAccessibleParameterBasedFieldInformation).combine(generatedFieldInformation);
     }
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
@@ -189,12 +190,13 @@ public class ClassInformation extends TypeInformation {
      * constructor. If no recover method and multiple constructors exist, a unsupported type exception is thrown, indicating that we cannot defer how to create an instance of this type.
      * An unexpected failure exception is thrown if no constructors could be found. This should never happen.
      */
-    public @Nonnull ExecutableElement getRecoverExecutable(@Nullable MethodInformation recoverMethod, @Nonnull FiniteIterable<@Nonnull ConstructorInformation> constructors) throws UnsupportedTypeException {
+    public @Nullable ExecutableElement getRecoverExecutable(@Nullable MethodInformation recoverMethod, @Nonnull FiniteIterable<@Nonnull ConstructorInformation> constructors) throws UnsupportedTypeException {
         if (recoverMethod != null) {
             return recoverMethod.getElement();
         } else {
             if (constructors.size() > 1) {
-                throw UnsupportedTypeException.get("More than one constructor, but no recover method found. We cannot decide which constructor to use for object construction.");
+                ProcessingLog.debugging("More than one constructor, but no recover method found. We cannot decide which constructor to use for object construction.");
+                return null;
             } else if (constructors.size() == 0) {
                 throw UnexpectedFailureException.with("No constructor found.");
             } else {
@@ -316,7 +318,7 @@ public class ClassInformation extends TypeInformation {
         
         this.implementedGetters = indexMethodInformation(methodInformationIterable.filter(method -> (!method.isAbstract() && method.isGetter())));
         
-        this.overriddenMethods = methodInformationIterable.filter(method -> !method.isDeclaredInRuntimeEnvironment()).filter(method -> !method.isFinal()).filter(method -> !method.isAbstract()).filter(method -> !method.isStatic()).filter(equalsPredicate.negate().and(hashCodePredicate.negate()).and(toStringPredicate.negate()).and(compareToPredicate.negate()).and(clonePredicate.negate()).and(validatePredicate.negate()));
+        this.overriddenMethods = methodInformationIterable.filter(method -> !method.isDeclaredInRuntimeEnvironment()).filter(method -> !method.isFinal()).filter(method -> !method.isAbstract()).filter(method -> !method.isStatic()).filter(method -> !method.isPrivate()).filter(equalsPredicate.negate().and(hashCodePredicate.negate()).and(toStringPredicate.negate()).and(compareToPredicate.negate()).and(clonePredicate.negate()).and(validatePredicate.negate()));
         
         FiniteIterable<MethodInformation> methodsMatchingTheRecoverMethodMatcher = methodInformationIterable.filter(recoverMethodMatcher);
         if (methodsMatchingTheRecoverMethodMatcher.size() > 1) {
@@ -330,6 +332,7 @@ public class ClassInformation extends TypeInformation {
         }
         
         this.constructors = FiniteIterable.of(javax.lang.model.util.ElementFilter.constructorsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))).map((element) -> (ConstructorInformation.of(element, containingType)));
+        ProcessingLog.debugging("Found constructors: $", constructors.join());
         
         final @Nonnull FiniteIterable<VariableElement> fields = FiniteIterable.of(ElementFilter.fieldsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement)));
         
@@ -341,9 +344,14 @@ public class ClassInformation extends TypeInformation {
         
         this.nonAccessibleDeclaredFields = getNonAccessibleFieldInformation(fields, methodInformationIterable, containingType);
         
-        final @Nonnull ExecutableElement recoverExecutable;
+        final @Nullable ExecutableElement recoverExecutable;
         recoverExecutable = getRecoverExecutable(recoverMethod, constructors);
-        final @Nonnull FiniteIterable<@Nonnull VariableElement> parameterVariables = FiniteIterable.of(recoverExecutable.getParameters());
+        final @Nonnull FiniteIterable<@Nonnull VariableElement> parameterVariables;
+        if (recoverExecutable != null) {
+            parameterVariables = FiniteIterable.of(recoverExecutable.getParameters());
+        } else {
+            parameterVariables = FiniteIterable.of();
+        }
         
         final @Nonnull Map<String, DirectlyAccessibleDeclaredFieldInformation> indexedDirectlyAccessibleDeclaredFields = indexFieldInformation(directlyAccessibleDeclaredFields);
         

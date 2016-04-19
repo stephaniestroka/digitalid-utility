@@ -1,7 +1,9 @@
 package net.digitalid.utility.generator;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,7 +16,9 @@ import javax.lang.model.util.ElementFilter;
 import net.digitalid.utility.exceptions.ConformityViolation;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.type.exceptions.UnsupportedTypeException;
 import net.digitalid.utility.processing.logging.ProcessingLog;
@@ -154,20 +158,18 @@ public class BuilderGenerator extends JavaFileGenerator {
         
         addSection("Build");
     
-        final @Nonnull @NonNullableElements List<ExecutableElement> constructors = ElementFilter.constructorsIn(typeInformation.getElement().getEnclosedElements());
-        if (constructors.size() != 1) {
-            // TODO: This causes an error for interfaces. That's why Kaspar commented out this line.
-            // ProcessingLog.error("Expected one constructor in generated type:"); // TODO: Is there an argument missing? Or what does the colon mean?
-        } else { // TODO: Kaspar introduced the else clause (but not the following lines) to prevent an IndexOutOfBoundsException on the following line.
-        final @Nonnull ExecutableElement constructor = constructors.get(0);
-        final @Nonnull List<? extends TypeMirror> throwTypes = constructor.getThrownTypes();
+        @Nonnull final FiniteIterable<ConstructorInformation> constructors = typeInformation.getConstructors();
+        @Nonnull Set<TypeMirror> throwTypes = new HashSet<>();
+        for (@Nonnull ConstructorInformation constructorInformation : constructors) {
+            if (constructorInformation.throwsExceptions()) {
+                throwTypes.addAll(constructorInformation.getElement().getThrownTypes());
+            }
+        }
         beginMethod("public " + typeInformation.getName() + " build()" + (throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()));
         
-        final @Nonnull ExecutableType type = (ExecutableType) StaticProcessingEnvironment.getTypeUtils().asMemberOf(typeInformation.getType(), constructor);
-        addStatement("return new " + typeInformation.getQualifiedNameOfGeneratedSubclass() + typeInformation.getRepresentingFieldInformation().map(element -> element.getName()).join(Brackets.ROUND));
+        addStatement("return new " + typeInformation.getQualifiedNameOfGeneratedSubclass() + typeInformation.getRepresentingFieldInformation().map(ElementInformation::getName).join(Brackets.ROUND));
         
         endMethod();
-        } // TODO: The end of the introduced else clause (see a few lines above). The processor may log errors but should not crash, so something like this is needed anyhow.
         
         endClass();
     }

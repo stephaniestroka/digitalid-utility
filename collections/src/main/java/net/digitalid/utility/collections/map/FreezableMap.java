@@ -14,6 +14,8 @@ import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.immutable.entry.ReadOnlyEntrySet;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -28,6 +30,8 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * @see FreezableHashMap
  * @see FreezableLinkedHashMap
  */
+@GenerateNoBuilder
+@GenerateNoSubclass
 @Freezable(ReadOnlyMap.class)
 public interface FreezableMap<K, V> extends ReadOnlyMap<K, V>, Map<K, V>, FreezableInterface {
     

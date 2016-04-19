@@ -16,6 +16,8 @@ import net.digitalid.utility.collections.collection.FreezableCollection;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -27,6 +29,8 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see FreezableHashSet
  * @see FreezableLinkedHashSet
  */
+@GenerateNoBuilder
+@GenerateNoSubclass
 @Freezable(ReadOnlySet.class)
 public interface FreezableSet<E> extends ReadOnlySet<E>, Set<E>, FreezableCollection<E> {
     

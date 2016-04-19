@@ -15,6 +15,8 @@ import net.digitalid.utility.freezable.ReadOnlyInterface;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterables.CollectionIterable;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
@@ -25,6 +27,8 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * @see ReadOnlyCollection
  * @see ReadOnlyArray
  */
+@GenerateNoBuilder
+@GenerateNoSubclass
 @ReadOnly(FreezableIterable.class)
 public interface ReadOnlyIterable<E> extends CollectionIterable<E>, ReadOnlyInterface {
     

@@ -32,4 +32,8 @@ public class ConstructorInformation extends ExecutableInformation {
         return new ConstructorInformation(element, containingType);
     }
     
+    public @Nonnull String toString() {
+        return getElement() + "(" + getElement().getParameters() + ")";
+    }
+    
 }

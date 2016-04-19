@@ -17,6 +17,8 @@ import net.digitalid.utility.collections.collection.FreezableCollection;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.validation.annotations.math.relative.GreaterThanOrEqualTo;
@@ -31,6 +33,8 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see FreezableArrayList
  * @see FreezableLinkedList
  */
+@GenerateNoBuilder
+@GenerateNoSubclass
 @Freezable(ReadOnlyList.class)
 public interface FreezableList<E> extends ReadOnlyList<E>, List<E>, FreezableCollection<E> {
     

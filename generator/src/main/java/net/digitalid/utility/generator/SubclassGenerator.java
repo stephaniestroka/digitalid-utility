@@ -19,6 +19,8 @@ import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.information.ElementInformation;
+import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedFieldInformation;
@@ -89,11 +91,8 @@ public class SubclassGenerator extends JavaFileGenerator {
     // TODO: This function is nowhere used!
     private static final UnaryFunction<@Nonnull Pair<@Nonnull RepresentingFieldInformation, @Nonnull SubclassGenerator>, @Nonnull String> elementInformationToDeclarationFunction = pair -> pair.get1().importIfPossible(pair.get0().getType()) + " " + pair.get0().getName();
     
-    private void generateConstructor(@Nullable List<? extends TypeMirror> throwTypes, @Nullable String superStatement) throws UnsupportedTypeException {
-         final @Nonnull FiniteIterable<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
-        
-        beginConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + representingFieldInformation.map(element -> this.importIfPossible(element.getType()) + " " + element.getName()).join(Brackets.ROUND) + (throwTypes == null || throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()));
-
+    private void generateConstructor(@Nonnull String constructorDeclaration, @Nullable String superStatement) {
+        beginConstructor(constructorDeclaration);
         if (superStatement != null) {
             addStatement(superStatement);
             addEmptyLine();
@@ -101,18 +100,28 @@ public class SubclassGenerator extends JavaFileGenerator {
         for (@Nonnull FieldInformation field : typeInformation.generatedFieldInformation) {
             addStatement("this." + field.getName() + " = " + field.getName());
         }
-        endConstructor();       
+        endConstructor();
+    }
+    
+    private void generateConstructor(@Nonnull ConstructorInformation constructorInformation) throws UnsupportedTypeException {
+        @Nullable List<? extends TypeMirror> throwTypes = constructorInformation.getElement().getThrownTypes();
+        final @Nonnull FiniteIterable<ElementInformation> constructorParameter = constructorInformation.getParameters().map(parameter -> (ElementInformation) parameter).combine(typeInformation.generatedFieldInformation);
+        ProcessingLog.debugging("Constructor parameter: $", constructorParameter.join());
+        ProcessingLog.debugging("Constructor throw types: $", throwTypes);
+        
+        final @Nonnull String superStatement = "super" + constructorInformation.getParameters().map(ElementInformationImplementation::getName).join(Brackets.ROUND);
+        
+        generateConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + constructorParameter.map(element -> this.importIfPossible(element.getType()) + " " + element.getName()).join(Brackets.ROUND) + (throwTypes == null || throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()), superStatement);
     }
     
     protected void generateConstructors() throws UnsupportedTypeException {
         addSection("Constructors");
         if (typeInformation instanceof ClassInformation) {
             for (@Nonnull ConstructorInformation constructor : typeInformation.getConstructors()) {
-                ClassInformation classInformation = (ClassInformation) typeInformation;
-                generateConstructor(constructor.getElement().getThrownTypes(), "super" + classInformation.parameterBasedFieldInformation.map(element -> element.getName()).join(Brackets.ROUND));
+                generateConstructor(constructor);
             }
         } else if (typeInformation instanceof InterfaceInformation) {
-            generateConstructor(null, null);
+            generateConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + typeInformation.getRepresentingFieldInformation().map(element -> this.importIfPossible(element.getType()) + " " + element.getName()).join(Brackets.ROUND), null);
         }
     }
     
@@ -159,7 +168,9 @@ public class SubclassGenerator extends JavaFileGenerator {
             }
         }
         addStatement(firstMethodCall);
+        ProcessingLog.debugging("generateMethodWithStatement - postcondition");
         for (Map.@Nonnull Entry<AnnotationMirror, MethodAnnotationValidator> entry : method.getMethodValidators().entrySet()) {
+            ProcessingLog.debugging("for annotation: " + entry.getKey());
             addPostcondition(entry.getValue().generateContract(method.getElement(), entry.getKey(), this));
         }
         if (returnedValue != null) {
@@ -171,6 +182,7 @@ public class SubclassGenerator extends JavaFileGenerator {
     private static @Nonnull GenerateComparisonTypeVisitor generateComparisonTypeVisitor = new GenerateComparisonTypeVisitor();
     
     private static @Nonnull GenerateToStringTypeVisitor generateToStringTypeVisitor = new GenerateToStringTypeVisitor();
+    
     /**
      * Generates a hashCode method that generate a hashCode from all representing fields.
      */
