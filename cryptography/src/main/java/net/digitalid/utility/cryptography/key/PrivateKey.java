@@ -11,7 +11,6 @@ import net.digitalid.utility.group.annotations.InGroup;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
 import net.digitalid.utility.math.GroupWithKnownOrder;
-import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -21,14 +20,12 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see KeyPair
  */
 @Immutable
-public abstract class PrivateKey extends RootClass {
+public abstract class PrivateKey extends AsymmetricKey {
     
     /* -------------------------------------------------- Composite Group -------------------------------------------------- */
     
-    /**
-     * Returns the composite group of this private key.
-     */
     @Pure
+    @Override
     public abstract @Nonnull GroupWithKnownOrder getCompositeGroup();
     
     /* -------------------------------------------------- Prime Factors -------------------------------------------------- */
@@ -103,10 +100,8 @@ public abstract class PrivateKey extends RootClass {
     
     /* -------------------------------------------------- Square Group -------------------------------------------------- */
     
-    /**
-     * Returns the square group of this private key.
-     */
     @Pure
+    @Override
     public abstract @Nonnull GroupWithKnownOrder getSquareGroup();
     
     /* -------------------------------------------------- Decryption Exponent -------------------------------------------------- */

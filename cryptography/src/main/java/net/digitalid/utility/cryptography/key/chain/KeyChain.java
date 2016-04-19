@@ -6,11 +6,13 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.collections.list.FreezableList;
 import net.digitalid.utility.collections.list.ReadOnlyList;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.cryptography.exceptions.InvalidParameterValueCombinationException;
+import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
+import net.digitalid.utility.cryptography.key.AsymmetricKey;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.time.Time;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.order.StrictlyDescending;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -21,28 +23,16 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see PrivateKeyChain
  */
 @Immutable
-public abstract class KeyChain<C extends KeyChain<C, K>, K> {
+public abstract class KeyChain<K extends AsymmetricKey> {
     
     /* -------------------------------------------------- Items -------------------------------------------------- */
     
     /**
-     * Stores the items of this key chain in chronological order with the newest one first.
-     * 
-     * @invariant items.isStrictlyDescending() : "The list is strictly descending.";
-     */
-    private final @NonNullableElements @NonEmpty @Frozen @Nonnull ReadOnlyList<Pair<Time, K>> items;
-    
-    /**
      * Returns the items of this key chain in chronological order with the newest one first.
-     * 
-     * @return the items of this key chain in chronological order with the newest one first.
-     * 
-     * @ensure items.isStrictlyDescending() : "The list is strictly descending.";
      */
     @Pure
-    public final @Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<Pair<Time, K>> getItems() {
-        return items;
-    }
+    // TODO: Make the tuples comparable!
+    public abstract @Nonnull @Frozen @NonEmpty @StrictlyDescending ReadOnlyList<@Nonnull Pair<@Nonnull Time, @Nonnull K>> getItems();
     
     /**
      * Returns the key in use at the given time.
@@ -51,24 +41,23 @@ public abstract class KeyChain<C extends KeyChain<C, K>, K> {
      * 
      * @return the key in use at the given time.
      * 
-     * @throws InvalidParameterValueCombinationException if there is no key for the given time.
+     * @throws PreconditionViolationException if there is no key for the given time.
      */
     @Pure
-    public final @Nonnull K getKey(@Nonnull Time time) throws InvalidParameterValueCombinationException {
-        for (final @Nonnull Pair<Time, K> item : items) {
-            if (time.isGreaterThanOrEqualTo(item.getNonNullableElement0())) { return item.getNonNullableElement1(); }
+    public final @Nonnull K getKey(@Nonnull Time time) {
+        for (final @Nonnull Pair<Time, K> item : getItems()) {
+            if (time.isGreaterThanOrEqualTo(item.get0())) { return item.get1(); }
         }
-        throw InvalidParameterValueCombinationException.get("There is no key for the given time (" + time + ") in this key chain " + this + ".");
+        // TODO:
+        throw PreconditionViolationException.with("There is no key for the given time (" + time + ") in this key chain " + this + ".");
     }
     
     /**
      * Returns the newest time of this key chain.
-     * 
-     * @return the newest time of this key chain.
      */
     @Pure
     public final @Nonnull Time getNewestTime() {
-        return items.getNonNullable(0).getNonNullableElement0();
+        return getItems().get(0).get0();
     }
     
     /**
@@ -80,7 +69,7 @@ public abstract class KeyChain<C extends KeyChain<C, K>, K> {
      * @return a new key chain with the given key added and expired ones removed.
      */
     @Pure
-    public final @Nonnull KeyChain<C, K> add(@Nonnull Time time, @Nonnull K key) {
+    public final @Nonnull KeyChain<K> add(@Nonnull Time time, @Nonnull K key) {
         Require.that(time.isGreaterThan(getNewestTime())).orThrow("The time is greater than the newest time of this key chain.");
         Require.that(time.isGreaterThan(Time.getCurrent().add(Time.TROPICAL_YEAR))).orThrow("The time lies at least one year in the future.");
         
@@ -110,26 +99,5 @@ public abstract class KeyChain<C extends KeyChain<C, K>, K> {
     
     @Pure
     protected abstract KeyChainCreator<C, K> getKeyChainCreator();
-    
-    /* -------------------------------------------------- Constructor -------------------------------------------------- */
-    
-    /**
-     * Creates a new key chain with the given items.
-     * 
-     * @param items the items of the new key chain.
-     * 
-     * @require items.isStrictlyDescending() : "The list is strictly descending.";
-     */
-    protected KeyChain(@Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<Pair<Time, K>> items) {
-        this.items = items;
-    }
-    
-    /* -------------------------------------------------- Object -------------------------------------------------- */
-    
-    @Pure
-    @Override
-    public final @Nonnull String toString() {
-        return items.toString();
-    }
     
 }

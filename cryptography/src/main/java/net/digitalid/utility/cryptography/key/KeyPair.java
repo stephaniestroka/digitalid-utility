@@ -14,7 +14,6 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.cryptography.HashGenerator;
 import net.digitalid.utility.cryptography.Parameters;
-import net.digitalid.utility.cryptography.PublicKeyBuilder;
 import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
 import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.math.Element;
@@ -150,7 +149,7 @@ public class KeyPair extends RootClass {
         final @Nonnull Element zPlus1 = squareGroup.getElement(z.add(BigInteger.ONE));
         
         // Create and store the private and the public key.
-        this.privateKey = PrivateKey.get(compositeGroup, p, q, d, squareGroup, x);
+        this.privateKey = PrivateKeyBuilder.withCompositeGroup(compositeGroup).withP(p).withQ(q).withD(d).withDModPMinus1(null).withDModQMinus1(null).withPIdentityCRT(null).withQIdentityCRT(null).withSquareGroup(squareGroup).withX(x).build(); // TODO: Ignore derived values!
         this.publicKey = PublicKeyBuilder.withCompositeGroup(compositeGroup.dropOrder()).withE(e).withAb(ab).withAu(au).withAi(ai).withAv(av).withAo(ao).withT(t).withSu(su).withSi(si).withSv(sv).withSo(so).withSquareGroup(squareGroup.dropOrder()).withG(g).withY(y).withZPlus1(zPlus1).build();
     }
     
