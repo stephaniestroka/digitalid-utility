@@ -2,6 +2,7 @@ package net.digitalid.utility.generator;
 
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.element.Element;
@@ -66,15 +67,15 @@ public class GeneratorProcessor extends CustomProcessor {
      * @return whether these classes can be generated for the given type.
      */
     protected boolean generateClasses(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
-        final @Nonnull TypeInformation typeInformation;
-        if (typeElement.getKind() == ElementKind.CLASS) {
-            typeInformation = ClassInformation.of(typeElement, containingType);
-        } else {
-            assert typeElement.getKind() == ElementKind.INTERFACE;
-            
-            typeInformation = InterfaceInformation.of(typeElement, containingType);
-        }
+        @Nullable TypeInformation typeInformation = null;
         try {
+            if (typeElement.getKind() == ElementKind.CLASS) {
+                typeInformation = ClassInformation.of(typeElement, containingType);
+            } else {
+                assert typeElement.getKind() == ElementKind.INTERFACE;
+                
+                typeInformation = InterfaceInformation.of(typeElement, containingType);
+            }
             ProcessingLog.debugging("Type $ is generatable", typeInformation);
             if (!typeInformation.hasAnnotation(GenerateNoSubclass.class)) {
                 SubclassGenerator.generateSubclassOf(typeInformation);
@@ -85,8 +86,8 @@ public class GeneratorProcessor extends CustomProcessor {
             return true;
         } catch (FailedClassGenerationException e) {
             Log.information("The compilation failed due to the following problem:", e);
-            ProcessingLog.information("Type $ is NOT generatable: ", e.getSourcePosition(), typeInformation, e.getMessage());
-        } 
+            ProcessingLog.information("Type $ is NOT generatable: ", e.getSourcePosition(), typeInformation == null ? typeElement : typeInformation, e.getMessage());
+        }
         return false;
     }
     

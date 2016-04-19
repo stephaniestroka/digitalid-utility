@@ -36,7 +36,6 @@ import net.digitalid.utility.generator.information.field.ParameterBasedFieldInfo
 import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
-import net.digitalid.utility.generator.information.type.exceptions.UnsupportedTypeException;
 import net.digitalid.utility.generator.query.MethodSignatureMatcher;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
@@ -190,7 +189,7 @@ public class ClassInformation extends TypeInformation {
      * constructor. If no recover method and multiple constructors exist, a unsupported type exception is thrown, indicating that we cannot defer how to create an instance of this type.
      * An unexpected failure exception is thrown if no constructors could be found. This should never happen.
      */
-    public @Nullable ExecutableElement getRecoverExecutable(@Nullable MethodInformation recoverMethod, @Nonnull FiniteIterable<@Nonnull ConstructorInformation> constructors) throws UnsupportedTypeException {
+    public @Nullable ExecutableElement getRecoverExecutable(@Nullable MethodInformation recoverMethod, @Nonnull FiniteIterable<@Nonnull ConstructorInformation> constructors) {
         if (recoverMethod != null) {
             return recoverMethod.getElement();
         } else {
@@ -395,11 +394,7 @@ public class ClassInformation extends TypeInformation {
      * Returns a class information object of the given type typeElement and containing type.
      */
     public static @Nonnull ClassInformation of(@Nonnull TypeElement element, @Nonnull DeclaredType containingType) {
-        try {
-            return new ClassInformation(element, containingType);
-        } catch (Exception e) {
-            throw UnexpectedFailureException.with("Failed to collect class information on type $", e, element);
-        }
+        return new ClassInformation(element, containingType);
     }
     
 }

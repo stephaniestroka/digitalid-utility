@@ -30,7 +30,6 @@ import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.type.ClassInformation;
 import net.digitalid.utility.generator.information.type.InterfaceInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
-import net.digitalid.utility.generator.information.type.exceptions.UnsupportedTypeException;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.generator.interceptor.MethodUtility;
 import net.digitalid.utility.generator.typevisitors.GenerateComparisonTypeVisitor;
@@ -103,7 +102,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         endConstructor();
     }
     
-    private void generateConstructor(@Nonnull ConstructorInformation constructorInformation) throws UnsupportedTypeException {
+    private void generateConstructor(@Nonnull ConstructorInformation constructorInformation) {
         @Nullable List<? extends TypeMirror> throwTypes = constructorInformation.getElement().getThrownTypes();
         final @Nonnull FiniteIterable<ElementInformation> constructorParameter = constructorInformation.getParameters().map(parameter -> (ElementInformation) parameter).combine(typeInformation.generatedFieldInformation);
         ProcessingLog.debugging("Constructor parameter: $", constructorParameter.join());
@@ -114,7 +113,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         generateConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + constructorParameter.map(element -> this.importIfPossible(element.getType()) + " " + element.getName()).join(Brackets.ROUND) + (throwTypes == null || throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()), superStatement);
     }
     
-    protected void generateConstructors() throws UnsupportedTypeException {
+    protected void generateConstructors() {
         addSection("Constructors");
         if (typeInformation instanceof ClassInformation) {
             for (@Nonnull ConstructorInformation constructor : typeInformation.getConstructors()) {

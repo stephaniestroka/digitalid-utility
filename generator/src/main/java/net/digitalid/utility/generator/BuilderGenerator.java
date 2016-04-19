@@ -7,22 +7,18 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
-import javax.lang.model.util.ElementFilter;
 
-import net.digitalid.utility.exceptions.ConformityViolation;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
-import net.digitalid.utility.generator.information.type.exceptions.UnsupportedTypeException;
 import net.digitalid.utility.processing.logging.ProcessingLog;
-import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
+import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -95,7 +91,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      * Returns a list of field information objects for fields that are required.
      */
     // TODO: improve exception handling
-    private @Nonnull @NonNullableElements List<FieldInformation> getRequiredFields() throws UnsupportedTypeException {
+    private @Nonnull @NonNullableElements List<FieldInformation> getRequiredFields() {
         final @Nonnull @NonNullableElements List<FieldInformation> requiredFields = new ArrayList<>();
         for (@Nonnull FieldInformation fieldInformation : typeInformation.getRepresentingFieldInformation()) {
             if (isFieldRequired(fieldInformation)) {
@@ -134,7 +130,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      * Creates a builder that collects all fields and provides a build() method, which returns an instance of the type that the builder builds.
      */
     // TODO: improve exception handling
-    protected void createInnerClassForFields(@Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) throws UnsupportedTypeException {
+    protected void createInnerClassForFields(@Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) throws FailedClassGenerationException {
         ProcessingLog.debugging("createInnerClassForFields()");
         
         final @Nonnull FiniteIterable<@Nonnull TypeVariable> typeArguments = typeInformation.getTypeArguments();
@@ -159,6 +155,9 @@ public class BuilderGenerator extends JavaFileGenerator {
         addSection("Build");
     
         @Nonnull final FiniteIterable<ConstructorInformation> constructors = typeInformation.getConstructors();
+        if (constructors.size() > 1) {
+            throw FailedClassGenerationException.with("Cannot handle multiple constructors in builder.", SourcePosition.of(typeInformation.getElement()));
+        }
         @Nonnull Set<TypeMirror> throwTypes = new HashSet<>();
         for (@Nonnull ConstructorInformation constructorInformation : constructors) {
             if (constructorInformation.throwsExceptions()) {
@@ -183,7 +182,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      * a static "get()" method is created, which returns the new builder instance without calling any additional builder setters.
      */
     // TODO: improve exception handling
-    protected void createStaticEntryMethod(@Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<FieldInformation> requiredFields, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) throws UnsupportedTypeException {
+    protected void createStaticEntryMethod(@Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<FieldInformation> requiredFields, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) {
         if (requiredFields.size() > 0) {
             final @Nonnull FieldInformation entryField = requiredFields.get(0);
             final @Nonnull String secondInterface;
@@ -218,16 +217,12 @@ public class BuilderGenerator extends JavaFileGenerator {
         
         beginClass("public class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importWithBounds(typeInformation.getTypeArguments()));
         
-        try {
-            final @Nonnull @NonNullableElements List<FieldInformation> requiredFields = getRequiredFields();
-            final @Nonnull String nameOfBuilder = "Inner" + typeInformation.getSimpleNameOfGeneratedBuilder();
-    
-            final @Nonnull @NonNullableElements List<String> interfacesForRequiredFields = createInterfacesForRequiredFields(requiredFields, nameOfBuilder);
-            createInnerClassForFields(nameOfBuilder, interfacesForRequiredFields);
-            createStaticEntryMethod(nameOfBuilder, requiredFields, interfacesForRequiredFields);
-        } catch (UnsupportedTypeException e) {
-            throw ConformityViolation.with(e.getMessage(), e);
-        }
+        final @Nonnull @NonNullableElements List<FieldInformation> requiredFields = getRequiredFields();
+        final @Nonnull String nameOfBuilder = "Inner" + typeInformation.getSimpleNameOfGeneratedBuilder();
+
+        final @Nonnull @NonNullableElements List<String> interfacesForRequiredFields = createInterfacesForRequiredFields(requiredFields, nameOfBuilder);
+        createInnerClassForFields(nameOfBuilder, interfacesForRequiredFields);
+        createStaticEntryMethod(nameOfBuilder, requiredFields, interfacesForRequiredFields);
         
         endClass();
         ProcessingLog.debugging("endClass()");
