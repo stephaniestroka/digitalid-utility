@@ -15,6 +15,9 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.immutable.ImmutableSet;
 import net.digitalid.utility.math.GroupMember;
+import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.logging.SourcePosition;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -22,12 +25,14 @@ import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.validators.StringValidator;
 
 /**
+ * This annotation indicates that the annotated group member is in the same group as the surrounding group member.
  * 
+ * @see GroupMember
  */
 @Documented
-@Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(InSameGroup.Validator.class)
+@Target({ElementType.PARAMETER, ElementType.METHOD})
 public @interface InSameGroup {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
@@ -44,6 +49,16 @@ public @interface InSameGroup {
         @Override
         public @Nonnull ImmutableSet<@Nonnull Class<?>> getTargetTypes() {
             return targetTypes;
+        }
+        
+        @Pure
+        @Override
+        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
+            super.checkUsage(element, annotationMirror);
+            
+            if (!ProcessingUtility.isAssignable(ProcessingUtility.getSurroundingType(element), GroupMember.class)) {
+                ProcessingLog.error("The annotation $ may only be used in group members:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
+            }
         }
         
         @Pure
