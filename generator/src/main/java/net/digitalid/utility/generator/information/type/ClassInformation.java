@@ -169,12 +169,12 @@ public class ClassInformation extends TypeInformation {
     /**
      * Stores the non-directly accessible fields.
      */
-    public final @Nonnull FiniteIterable< @Nonnull NonDirectlyAccessibleDeclaredFieldInformation> nonDirectlyAccessibleDeclaredFields;
+    public final @Nonnull FiniteIterable<@Nonnull NonDirectlyAccessibleDeclaredFieldInformation> nonDirectlyAccessibleDeclaredFields;
     
     /**
      * Stores the non-accessible fields.
      */
-    public final @Nonnull FiniteIterable< @Nonnull NonAccessibleDeclaredFieldInformation> nonAccessibleDeclaredFields;
+    public final @Nonnull FiniteIterable<@Nonnull NonAccessibleDeclaredFieldInformation> nonAccessibleDeclaredFields;
     
     /**
      * Stores the implemented getters for the fields in the type.
