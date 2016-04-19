@@ -6,31 +6,29 @@ import java.util.Random;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.generator.conversion.Convertible;
+import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
+import net.digitalid.utility.math.ExponentBuilder;
 import net.digitalid.utility.math.GroupWithKnownOrder;
-import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.math.GroupWithKnownOrderBuilder;
+import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class generates new key pairs.
  */
 @Immutable
-public final class KeyPair implements Convertible {
+public class KeyPair {
     
     /* -------------------------------------------------- Private Key -------------------------------------------------- */
     
-    /**
-     * Stores the private key of this key pair.
-     */
     private final @Nonnull PrivateKey privateKey;
     
     /**
      * Returns the private key of this key pair.
-     * 
-     * @return the private key of this key pair.
      */
     @Pure
     public @Nonnull PrivateKey getPrivateKey() {
@@ -39,41 +37,52 @@ public final class KeyPair implements Convertible {
     
     /* -------------------------------------------------- Public Key -------------------------------------------------- */
     
-    /**
-     * Stores the public key of this key pair.
-     */
     private final @Nonnull PublicKey publicKey;
     
     /**
      * Returns the public key of this key pair.
-     * 
-     * @return the public key of this key pair.
      */
     @Pure
     public @Nonnull PublicKey getPublicKey() {
         return publicKey;
     }
     
-    /* -------------------------------------------------- Constructor -------------------------------------------------- */
+    /* -------------------------------------------------- Utility -------------------------------------------------- */
+    
+    /**
+     * Returns a safe prime with the given bit-length.
+     */
+    @Pure
+    private static @Nonnull BigInteger getSafePrime(@Positive int length, @Nonnull Random random) {
+        Require.that(length > 0).orThrow("The length has to be positive.");
+        
+        while (true) {
+            final @Nonnull BigInteger prime = BigInteger.probablePrime(length - 1, random);
+            final @Nonnull BigInteger value = prime.shiftLeft(1).add(BigInteger.ONE);
+            if (value.isProbablePrime(64)) { return value; }
+        }
+    }
+    
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
 
     /**
      * Creates a new key pair with random values.
      */
-    private KeyPair() {
+    protected KeyPair() {
         final @Nonnull Random random = new SecureRandom();
         
         // Determine a new RSA group with two inverse exponents and a random generator.
-        final @Nonnull BigInteger p = getSafePrime(Parameters.FACTOR, random);
-        final @Nonnull BigInteger q = getSafePrime(Parameters.FACTOR, random);
+        final @Nonnull BigInteger p = getSafePrime(Parameters.FACTOR.get(), random);
+        final @Nonnull BigInteger q = getSafePrime(Parameters.FACTOR.get(), random);
         
         final @Nonnull BigInteger pMinus1 = p.subtract(BigInteger.ONE);
         final @Nonnull BigInteger qMinus1 = q.subtract(BigInteger.ONE);
         
         final @Nonnull BigInteger modulus = p.multiply(q);
         final @Nonnull BigInteger order = pMinus1.multiply(qMinus1);
-        final @Nonnull GroupWithKnownOrder compositeGroup = GroupWithKnownOrder.get(modulus, order);
+        final @Nonnull GroupWithKnownOrder compositeGroup = GroupWithKnownOrderBuilder.withModulus(modulus).withOrder(order).build();
         
-        final @Nonnull Exponent e = Exponent.get(BigInteger.valueOf(65537)).getNextRelativePrime(compositeGroup);
+        final @Nonnull Exponent e = ExponentBuilder.withValue(BigInteger.valueOf(65_537)).build().getNextRelativePrime(compositeGroup);
         final @Nonnull Exponent d = e.inverse(compositeGroup);
         
         @Nonnull Element ab = compositeGroup.getRandomElement();
@@ -105,20 +114,20 @@ public final class KeyPair implements Convertible {
         final @Nonnull Exponent ro = compositeGroup.getRandomExponent();
         final @Nonnull Element to = ab.pow(ro);
         
-        final @Nonnull Exponent t = Exponent.get(HashGenerator.generateHash(tu, ti, tv, to));
+        final @Nonnull Exponent t = ExponentBuilder.withValue(HashGenerator.generateHash(tu, ti, tv, to)).build();
         
         final @Nonnull Exponent su = ru.subtract(t.multiply(eu));
         final @Nonnull Exponent si = ri.subtract(t.multiply(ei));
         final @Nonnull Exponent sv = rv.subtract(t.multiply(ev));
         final @Nonnull Exponent so = ro.subtract(t.multiply(eo));
         
-        Require.that(tu.equals(ab.pow(su).multiply(au.pow(t))) && ti.equals(ab.pow(si).multiply(ai.pow(t))) && tv.equals(ab.pow(sv).multiply(av.pow(t))) && to.equals(ab.pow(so).multiply(ao.pow(t)))).orThrow("The non-interactive proof of the bases' correctness is valid.");
+        Validate.that(tu.equals(ab.pow(su).multiply(au.pow(t))) && ti.equals(ab.pow(si).multiply(ai.pow(t))) && tv.equals(ab.pow(sv).multiply(av.pow(t))) && to.equals(ab.pow(so).multiply(ao.pow(t)))).orThrow("The non-interactive proof of the bases' correctness has to be valid.");
         
         // Determine the values for the verifiable encryption.
-        final @Nonnull BigInteger z = BigInteger.probablePrime(Parameters.VERIFIABLE_ENCRYPTION, random);
+        final @Nonnull BigInteger z = BigInteger.probablePrime(Parameters.VERIFIABLE_ENCRYPTION.get(), random);
         final @Nonnull BigInteger zMinus1 = z.subtract(BigInteger.ONE);
         
-        final @Nonnull GroupWithKnownOrder squareGroup = GroupWithKnownOrder.get(z.pow(2), z.multiply(zMinus1));
+        final @Nonnull GroupWithKnownOrder squareGroup = GroupWithKnownOrderBuilder.withModulus(z.pow(2)).withOrder(z.multiply(zMinus1)).build();
         @Nonnull Element g = squareGroup.getRandomElement();
         while (g.pow(z).isOne() || g.pow(zMinus1).isOne()) { g = squareGroup.getRandomElement(); }
         
@@ -132,36 +141,11 @@ public final class KeyPair implements Convertible {
     }
     
     /**
-     * Creates a new key pair with random values.
-     * 
-     * @return a new key pair with random values.
+     * Returns a new key pair with random values.
      */
     @Pure
-    public static @Nonnull KeyPair getRandom() {
+    public static @Nonnull KeyPair withRandomValues() {
         return new KeyPair();
-    }
-    
-    /* -------------------------------------------------- Utility -------------------------------------------------- */
-    
-    /**
-     * Returns a safe prime with the given bit-length.
-     * 
-     * @param length the bit-length of the safe prime.
-     * @param random the random number generator used.
-     * 
-     * @return a safe prime with the given bit-length.
-     * 
-     * @require length > 1 : "The length is positive.";
-     */
-    @Pure
-    private static @Nonnull BigInteger getSafePrime(int length, @Nonnull Random random) {
-        Require.that(length > 1).orThrow("The length is positive.");
-        
-        while (true) {
-            final @Nonnull BigInteger prime = BigInteger.probablePrime(length - 1, random);
-            final @Nonnull BigInteger value = prime.shiftLeft(1).add(BigInteger.ONE);
-            if (value.isProbablePrime(64)) { return value; }
-        }
     }
     
 }

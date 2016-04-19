@@ -18,7 +18,7 @@ public class KeyPairTest extends CustomTest {
     @Test
     public void testKeyPair() {
         @Nonnull Time time = Time.getCurrent();
-        final @Nonnull KeyPair keyPair = KeyPair.getRandom();
+        final @Nonnull KeyPair keyPair = KeyPair.withRandomValues();
         final @Nonnull PrivateKey privateKey = keyPair.getPrivateKey();
         final @Nonnull PublicKey publicKey = keyPair.getPublicKey();
         Log.information("Key Pair Generation: " + time.ago().getValue() + " ms");

@@ -23,6 +23,9 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
+import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.MissingSupportException;
@@ -51,12 +54,16 @@ public abstract class SymmetricKey extends RootClass {
     
     /* -------------------------------------------------- Circumvent Cryptographic Restrictions -------------------------------------------------- */
     
+    /**
+     * Initializes the maximum allowed key length of AES by circumventing the Java Runtime Environment restrictions.
+     */
     @Pure
     @Initialize(target = SymmetricKey.class)
+    @TODO(task = "Consider using Bouncy Castle as a JRE-independent solution to the following hack.", date = "2016-04-19", author = Author.KASPAR_ETTER, priority = Priority.LOW)
     public static void initialize() {
         try {
             final int length = Cipher.getMaxAllowedKeyLength("AES");
-            if (length < Parameters.ENCRYPTION_KEY) {
+            if (length < Parameters.ENCRYPTION_KEY.get()) {
                 if (System.getProperty("java.runtime.name").equals("Java(TM) SE Runtime Environment")) {
                     /*
                      * Do the following, but with reflection to bypass access checks (taken from http://stackoverflow.com/a/22492582):
@@ -104,7 +111,7 @@ public abstract class SymmetricKey extends RootClass {
      */
     @Pure
     public static @Nonnull BigInteger getRandomValue() {
-        return new BigInteger(Parameters.ENCRYPTION_KEY, new SecureRandom());
+        return new BigInteger(Parameters.ENCRYPTION_KEY.get(), new SecureRandom());
     }
     
     /**
@@ -119,7 +126,7 @@ public abstract class SymmetricKey extends RootClass {
     /**
      * Stores the length of symmetric keys in bytes.
      */
-    public static final int LENGTH = Parameters.ENCRYPTION_KEY / 8;
+    public static final int LENGTH = Parameters.ENCRYPTION_KEY.get() / 8;
     
     /**
      * Derives the key from the given value.
