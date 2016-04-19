@@ -172,6 +172,10 @@ public class SubclassGenerator extends JavaFileGenerator {
             ProcessingLog.debugging("for annotation: " + entry.getKey());
             addPostcondition(entry.getValue().generateContract(method.getElement(), entry.getKey(), this));
         }
+        for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : method.getReturnValueValidators().entrySet()) {
+            ProcessingLog.debugging("for annotation: " + entry.getKey());
+            addPostcondition(entry.getValue().generateContract(method.getElement(), entry.getKey(), this));
+        }
         if (returnedValue != null) {
             addStatement("return " + returnedValue);
         }

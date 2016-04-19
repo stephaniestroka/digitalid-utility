@@ -19,6 +19,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
@@ -31,6 +32,8 @@ import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.annotations.type.Utility;
+
+import com.sun.tools.javac.code.Type;
 
 /**
  * This class provides useful methods for annotation processing.
@@ -206,7 +209,17 @@ public class ProcessingUtility {
     public static boolean isAssignable(@Nonnull TypeMirror declaredType, @Nonnull Class<?> desiredType) {
         ProcessingLog.debugging("Checking whether $ is assignable from $", declaredType.toString(), desiredType.getCanonicalName());
         if (desiredType.isPrimitive()) {
-            return declaredType.toString().equals(desiredType.toString());
+            if (!declaredType.getKind().isPrimitive()) {
+                return false;
+            }
+            final @Nonnull String declaredPrimitiveType;
+            if (declaredType instanceof Type.AnnotatedType) {
+                Type.AnnotatedType annotatedType = (Type.AnnotatedType) declaredType;
+                declaredPrimitiveType = annotatedType.unannotatedType().toString();
+            } else {
+                declaredPrimitiveType = declaredType.toString();
+            }
+            return declaredPrimitiveType.equals(desiredType.toString());
         }
         // TODO: arrays cannot be fetched like this!
         if (desiredType.isArray()) {
@@ -226,7 +239,11 @@ public class ProcessingUtility {
      */
     @Pure
     public static boolean isAssignable(@Nonnull Element element, @Nonnull Class<?> type) {
-        return isAssignable(element.asType(), type);
+        if (element instanceof ExecutableElement) {
+            return isAssignable(((ExecutableElement) element).getReturnType(), type);
+        } else {
+            return isAssignable(element.asType(), type);
+        }
     }
     
     /* -------------------------------------------------- Type Visitor -------------------------------------------------- */

@@ -3,6 +3,8 @@ package net.digitalid.utility.validation.processing;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -10,17 +12,18 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.state.Modifiable;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
-import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.meta.MethodValidator;
 import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
@@ -29,6 +32,11 @@ import net.digitalid.utility.validation.validator.AnnotationHandler;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
+
+import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.code.Type;
+
+import static net.digitalid.utility.processing.utility.StaticProcessingEnvironment.*;
 
 /**
  * This class provides useful methods to retrieve the annotation handlers from an element.
@@ -54,8 +62,12 @@ public class ValidatorProcessingUtility {
     @Pure
     private static @Nullable <H extends AnnotationHandler> AnnotationHandler getCachedAnnotationHandler(@Nonnull AnnotationMirror annotationMirror, @Nonnull Class<? extends Annotation> metaAnnotationType, @Nonnull Class<H> annotationHandlerType) {
         final @Nonnull String cacheKey = getAnnotationHandlerCacheKey(annotationMirror, metaAnnotationType);
-        final @Nullable AnnotationHandler cachedAnnotationHandler = cachedAnnotationHandlers.get(cacheKey);
-        return cachedAnnotationHandler != null && annotationHandlerType.isInstance(cachedAnnotationHandler) ? cachedAnnotationHandler : null;
+        if (cachedAnnotationHandlers.containsKey(cacheKey)) {
+            final @Nullable AnnotationHandler cachedAnnotationHandler = cachedAnnotationHandlers.get(cacheKey);
+            return annotationHandlerType.isInstance(cachedAnnotationHandler) ? cachedAnnotationHandler : null;
+        } else {
+            return null;
+        }
     }
     
     /**
@@ -69,7 +81,7 @@ public class ValidatorProcessingUtility {
             final @Nonnull DeclaredType annotationHandlerImplementationType = (DeclaredType) metaAnnotationValue.getValue();
             ProcessingLog.verbose("The declared annotation handler type is $ for", SourcePosition.of(annotationElement), annotationHandlerImplementationType);
             final @Nonnull TypeElement annotationHandlerImplementationElement = (TypeElement) annotationHandlerImplementationType.asElement();
-            return StaticProcessingEnvironment.getElementUtils().getBinaryName(annotationHandlerImplementationElement).toString();
+            return getElementUtils().getBinaryName(annotationHandlerImplementationElement).toString();
         } else {
             ProcessingLog.debugging("No value declared for meta-annotation $ on", SourcePosition.of(annotationElement), "@" + metaAnnotationType.getSimpleName());
             return null;
@@ -97,13 +109,30 @@ public class ValidatorProcessingUtility {
     }
     
     /**
+     * Return all annotation mirrors for a given element.
+     */
+    private static @Nonnull FiniteIterable<AnnotationMirror> getAnnotationMirrors(@Nonnull Element element) {
+        @Nonnull List<AnnotationMirror> typeUseAnnotations = new LinkedList<>();
+        if (element instanceof ExecutableElement) {
+            if (((ExecutableElement) element).getReturnType() instanceof Type.AnnotatedType) {
+                Type.AnnotatedType annotatedType = (Type.AnnotatedType) ((ExecutableElement) element).getReturnType();
+                typeUseAnnotations.addAll(annotatedType.getAnnotationMirrors());
+            }
+        } else {
+            typeUseAnnotations.addAll(element.asType().getAnnotationMirrors());
+            ProcessingLog.debugging("type of element is: $", element.getClass());
+        }
+        return FiniteIterable.of(typeUseAnnotations).combine(FiniteIterable.of(getElementUtils().getAllAnnotationMirrors(element)));
+    }
+    
+    /**
      * Returns the annotation handlers of the given type which are found with the given meta-annotation type on the annotations of the given element.
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public static <H extends AnnotationHandler> @Capturable @Modifiable @Nonnull Map<@Nonnull AnnotationMirror, @Nonnull H> getAnnotationHandlers(@Nonnull Element element, @Nonnull Class<? extends Annotation> metaAnnotationType, @Nonnull Class<H> annotationHandlerType) {
+    public static @Capturable <H extends AnnotationHandler> @Modifiable @Nonnull Map<@Nonnull AnnotationMirror, @Nonnull H> getAnnotationHandlers(@Nonnull Element element, @Nonnull Class<? extends Annotation> metaAnnotationType, @Nonnull Class<H> annotationHandlerType) {
         final @Nonnull Map<@Nonnull AnnotationMirror, @Nonnull H> result = new LinkedHashMap<>();
-        for (@Nonnull AnnotationMirror annotationMirror : StaticProcessingEnvironment.getElementUtils().getAllAnnotationMirrors(element)) {
+        for (@Nonnull AnnotationMirror annotationMirror : getAnnotationMirrors(element)) {
             final @Nullable AnnotationHandler cachedAnnotationHandler = getCachedAnnotationHandler(annotationMirror, metaAnnotationType, annotationHandlerType);
             if (cachedAnnotationHandler != null) {
                 cachedAnnotationHandler.checkUsage(element, annotationMirror);

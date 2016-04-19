@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.meta.MethodValidator;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.validators.NumericalValueValidator;
@@ -21,7 +22,7 @@ import net.digitalid.utility.validation.validators.NumericalValueValidator;
 @Documented
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
-@ValueValidator(Positive.Validator.class)
+@ValueValidator(Positive.ValueValidator.class)
 public @interface Positive {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
@@ -30,7 +31,7 @@ public @interface Positive {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends NumericalValueValidator {
+    public static class ValueValidator extends NumericalValueValidator {
         
         @Pure
         @Override

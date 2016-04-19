@@ -43,7 +43,7 @@ public abstract class Student extends RootClass /* implements Convertible */ {
     public abstract @Positive int getID();
     
     @Pure
-    public abstract @Nonnull @NonNullableElements @NonFrozen List<Student> getBuddies();
+    public abstract @Nonnull @NonNullableElements List<Student> getBuddies();
     
     @Pure
     // @Ignore

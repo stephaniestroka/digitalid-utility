@@ -68,7 +68,7 @@ public @interface NonNullableElements {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with(typeImporter.importIfPossible(NonNullableElements.class) + ".Generator.validate(#)", "The # may not contain null.", element);
+            return Contract.with(typeImporter.importIfPossible(NonNullableElements.class) + ".Validator.validate(#)", "The # may not contain null.", element);
         }
         
     }

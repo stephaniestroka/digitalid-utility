@@ -23,11 +23,22 @@ import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
+import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
  * This type collects the relevant information about a method for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.
  */
 public class MethodInformation extends ExecutableInformation {
+    
+    /* -------------------------------------------------- Value Validators -------------------------------------------------- */
+    
+    private final @Nonnull Map<AnnotationMirror, ValueAnnotationValidator> returnValueValidators;
+    
+    public @Nonnull Map<AnnotationMirror, ValueAnnotationValidator> getReturnValueValidators() {
+        return returnValueValidators;
+    }
+    
+    /* -------------------------------------------------- Method Validators -------------------------------------------------- */
     
     private final @Nonnull Map<AnnotationMirror, MethodAnnotationValidator> methodValidators;
     
@@ -171,8 +182,10 @@ public class MethodInformation extends ExecutableInformation {
             if (errorMessage != null) { ProcessingLog.error(errorMessage, SourcePosition.of(element)); }
             ProcessingLog.verbose("Found the recover method", SourcePosition.of(element));
         }
-        ProcessingLog.debugging("Requesting method validators for method $", this.getElement());
         this.methodValidators = ValidatorProcessingUtility.getMethodValidators(this.getElement());
+        this.returnValueValidators = ValidatorProcessingUtility.getValueValidators(this.getElement());
+        ProcessingLog.debugging("Method validators for method $: $", this.getElement(), methodValidators);
+        ProcessingLog.debugging("Returned value validators for method $: $", this.getElement(), returnValueValidators);
     }
     
     /**
