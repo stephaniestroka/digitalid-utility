@@ -145,8 +145,7 @@ public class KeyPair extends RootClass {
         
         // Create and store the private and the public key.
         this.privateKey = PrivateKey.get(compositeGroup, p, q, d, squareGroup, x);
-        this.publicKey = PublicKeyBuilder.withCompositeGroup(compositeGroup.dropOrder()).withE(e).withAb(ab).withAu(au).withAi(ai).withAv(av).withAo(ao).withSquareGroup(squareGroup.dropOrder()).withG(g).withY(y).withZPlus1(zPlus1).build();
-//        this.publicKey = PublicKey.get(compositeGroup.dropOrder(), e, ab, au, ai, av, ao, t, su, si, sv, so, squareGroup.dropOrder(), g, y, zPlus1);
+        this.publicKey = PublicKeyBuilder.withT(t).withSu(su).withSi(si).withSv(sv).withSo(so).withCompositeGroup(compositeGroup.dropOrder()).withE(e).withAb(ab).withAu(au).withAi(ai).withAv(av).withAo(ao).withSquareGroup(squareGroup.dropOrder()).withG(g).withY(y).withZPlus1(zPlus1).build();
     }
     
     /**

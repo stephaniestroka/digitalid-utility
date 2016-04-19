@@ -68,27 +68,27 @@ public abstract class PublicKey extends RootClass {
     /**
      * Stores the hash of the temporary commitments in the subgroup proof.
      */
-    private final @Nonnull Exponent t;
+    public final @Nonnull Exponent t;
     
     /**
      * Stores the solution for the proof that au is in the subgroup of ab.
      */
-    private final @Nonnull Exponent su;
+    public final @Nonnull Exponent su;
     
     /**
      * Stores the solution for the proof that ai is in the subgroup of ab.
      */
-    private final @Nonnull Exponent si;
+    public final @Nonnull Exponent si;
     
     /**
      * Stores the solution for the proof that av is in the subgroup of ab.
      */
-    private final @Nonnull Exponent sv;
+    public final @Nonnull Exponent sv;
     
     /**
      * Stores the solution for the proof that ao is in the subgroup of ab.
      */
-    private final @Nonnull Exponent so;
+    public final @Nonnull Exponent so;
     
     /**
      * Returns whether the proof that au, ai, av and ao are in the subgroup of ab is correct.
