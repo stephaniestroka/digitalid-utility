@@ -1,5 +1,9 @@
 package net.digitalid.utility.cryptography;
 
+import net.digitalid.utility.cryptography.key.PublicKey;
+import net.digitalid.utility.cryptography.key.PrivateKey;
+import net.digitalid.utility.cryptography.key.KeyPair;
+
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.logging.Log;

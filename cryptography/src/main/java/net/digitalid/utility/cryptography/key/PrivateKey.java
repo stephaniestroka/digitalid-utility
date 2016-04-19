@@ -1,4 +1,4 @@
-package net.digitalid.utility.cryptography;
+package net.digitalid.utility.cryptography.key;
 
 import java.math.BigInteger;
 

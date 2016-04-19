@@ -1,4 +1,4 @@
-package net.digitalid.utility.cryptography;
+package net.digitalid.utility.cryptography.key;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -12,6 +12,9 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.Validate;
+import net.digitalid.utility.cryptography.HashGenerator;
+import net.digitalid.utility.cryptography.Parameters;
+import net.digitalid.utility.cryptography.PublicKeyBuilder;
 import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
 import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.math.Element;

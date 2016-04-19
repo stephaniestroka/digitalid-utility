@@ -1,4 +1,4 @@
-package net.digitalid.utility.cryptography;
+package net.digitalid.utility.cryptography.key.chain;
 
 import javax.annotation.Nonnull;
 
