@@ -13,7 +13,6 @@ import javax.lang.model.element.Element;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.contracts.exceptions.ContractViolationException;
-import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
@@ -113,7 +112,7 @@ public class Contract {
     public static @Nonnull Contract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull String suffix) {
         final @Nonnull String name = ValueAnnotationValidator.getName(element);
         final @Nullable AnnotationValue annotationValue = ProcessingUtility.getAnnotationValue(annotationMirror);
-        final @Nonnull String value = Quotes.inCode(annotationValue != null ? annotationValue.getValue() : null);
+        final @Nonnull String value = String.valueOf(annotationValue != null ? annotationValue.getValue() : null);
         return new Contract(condition.replace("#", name).replace("@", value), message.replace("#", Strings.decamelize(name)).replace("@", value), name + (suffix.isEmpty() ? "" : " == null ? null : " + name + suffix));
     }
     

@@ -25,6 +25,9 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class generates new key pairs.
+ * 
+ * @see PrivateKey
+ * @see PublicKey
  */
 @Immutable
 @GenerateNoBuilder
@@ -145,7 +148,7 @@ public class KeyPair extends RootClass {
         
         // Create and store the private and the public key.
         this.privateKey = PrivateKey.get(compositeGroup, p, q, d, squareGroup, x);
-        this.publicKey = PublicKeyBuilder.withT(t).withSu(su).withSi(si).withSv(sv).withSo(so).withCompositeGroup(compositeGroup.dropOrder()).withE(e).withAb(ab).withAu(au).withAi(ai).withAv(av).withAo(ao).withSquareGroup(squareGroup.dropOrder()).withG(g).withY(y).withZPlus1(zPlus1).build();
+        this.publicKey = PublicKeyBuilder.withCompositeGroup(compositeGroup.dropOrder()).withE(e).withAb(ab).withAu(au).withAi(ai).withAv(av).withAo(ao).withT(t).withSu(su).withSi(si).withSv(sv).withSo(so).withSquareGroup(squareGroup.dropOrder()).withG(g).withY(y).withZPlus1(zPlus1).build();
     }
     
     /**

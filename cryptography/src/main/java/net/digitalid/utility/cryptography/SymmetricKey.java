@@ -31,7 +31,7 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.MissingSupportException;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.generator.annotations.Default;
-import net.digitalid.utility.generator.annotations.Normalize;
+import net.digitalid.utility.generator.annotations.Derive;
 import net.digitalid.utility.initialization.Initialize;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
@@ -143,9 +143,7 @@ public abstract class SymmetricKey extends RootClass {
      * Returns the key of this symmetric key.
      */
     @Pure
-    // TODO: Introduce an annotation to simplify the declaration of derived values, which can then also no be specified in the builder.
-    @Default(name = "NoKey", value = "new javax.crypto.spec.SecretKeySpec(new byte[SymmetricKey.LENGTH], \"AES\")")
-    @Normalize("SymmetricKey.deriveKey(value)")
+    @Derive("SymmetricKey.deriveKey(value)")
     protected abstract @Nonnull Key getKey();
     
     /* -------------------------------------------------- Encryption and Decryption -------------------------------------------------- */

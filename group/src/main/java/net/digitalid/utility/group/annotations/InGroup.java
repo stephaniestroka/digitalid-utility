@@ -60,7 +60,7 @@ public @interface InGroup {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == null || #.isIn(@)", "# has to be in the group @.", element, annotationMirror);
+            return Contract.with("# == null || #.isIn(@)", "# has to be in the group '@'.", element, annotationMirror);
         }
         
     }

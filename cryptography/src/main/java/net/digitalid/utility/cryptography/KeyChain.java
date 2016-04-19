@@ -8,7 +8,6 @@ import net.digitalid.utility.collections.readonly.ReadOnlyList;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.cryptography.exceptions.InvalidParameterValueCombinationException;
 import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.time.Time;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.annotations.method.Pure;
@@ -22,7 +21,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see PrivateKeyChain
  */
 @Immutable
-public abstract class KeyChain<C extends KeyChain<C, K>, K extends Convertible> implements Convertible {
+public abstract class KeyChain<C extends KeyChain<C, K>, K> {
     
     /* -------------------------------------------------- Items -------------------------------------------------- */
     
