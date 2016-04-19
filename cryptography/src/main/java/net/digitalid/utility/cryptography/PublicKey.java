@@ -2,12 +2,13 @@ package net.digitalid.utility.cryptography;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
 import net.digitalid.utility.math.GroupWithUnknownOrder;
-import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.math.annotations.InGroup;
+import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -16,124 +17,51 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @invariant verifySubgroupProof() : "The elements au, ai, av and ao are in the subgroup of ab.";
  */
 @Immutable
-public final class PublicKey implements Convertible {
+public abstract class PublicKey extends RootClass {
     
-    /**
-     * Stores the composite group for encryption and signing.
-     */
-    private final @Nonnull GroupWithUnknownOrder compositeGroup;
+    /* -------------------------------------------------- Composite Group -------------------------------------------------- */
     
     /**
      * Returns the composite group for encryption and signing.
-     * 
-     * @return the composite group for encryption and signing.
      */
     @Pure
-    public @Nonnull GroupWithUnknownOrder getCompositeGroup() {
-        return compositeGroup;
-    }
-    
-    /* -------------------------------------------------- Encryption Exponent -------------------------------------------------- */
-    
-    /**
-     * Stores the encryption and verification exponent.
-     */
-    private final @Nonnull Exponent e;
+    public abstract @Nonnull GroupWithUnknownOrder getCompositeGroup();
     
     /**
      * Returns the encryption and verification exponent.
-     * 
-     * @return the encryption and verification exponent.
      */
     @Pure
-    public @Nonnull Exponent getE() {
-        return e;
-    }
-    
-    /* -------------------------------------------------- Base for Blinding -------------------------------------------------- */
-    
-    /**
-     * Stores the base for blinding.
-     */
-    private final @Nonnull Element ab;
+    public abstract @Nonnull Exponent getE();
     
     /**
      * Returns the base for blinding.
-     * 
-     * @return the base for blinding.
      */
     @Pure
-    public @Nonnull Element getAb() {
-        return ab;
-    }
-    
-    /* -------------------------------------------------- Base for Secret -------------------------------------------------- */
-    
-    /**
-     * Stores the base of the client's secret.
-     */
-    private final @Nonnull Element au;
+    public abstract @Nonnull @InGroup("compositeGroup") Element getAb();
     
     /**
      * Returns the base of the client's secret.
-     * 
-     * @return the base of the client's secret.
      */
     @Pure
-    public @Nonnull Element getAu() {
-        return au;
-    }
-    
-    /* -------------------------------------------------- Base for Serial -------------------------------------------------- */
-    
-    /**
-     * Stores the base of the serial number.
-     */
-    private final @Nonnull Element ai;
+    public abstract @Nonnull @InGroup("compositeGroup") Element getAu();
     
     /**
      * Returns the base of the serial number.
-     * 
-     * @return the base of the serial number.
      */
     @Pure
-    public @Nonnull Element getAi() {
-        return ai;
-    }
-    
-    /* -------------------------------------------------- Base for Identifier -------------------------------------------------- */
-    
-    /**
-     * Stores the base of the hashed identifier.
-     */
-    private final @Nonnull Element av;
+    public abstract @Nonnull @InGroup("compositeGroup") Element getAi();
     
     /**
      * Returns the base of the hashed identifier.
-     * 
-     * @return the base of the hashed identifier.
      */
     @Pure
-    public @Nonnull Element getAv() {
-        return av;
-    }
-    
-    /* -------------------------------------------------- Base for Arguments -------------------------------------------------- */
-    
-    /**
-     * Stores the base of the exposed arguments.
-     */
-    private final @Nonnull Element ao;
+    public abstract @Nonnull @InGroup("compositeGroup") Element getAv();
     
     /**
      * Returns the base of the exposed arguments.
-     * 
-     * @return the base of the exposed arguments.
      */
     @Pure
-    public @Nonnull Element getAo() {
-        return ao;
-    }
+    public abstract @Nonnull @InGroup("compositeGroup") Element getAo();
     
     /* -------------------------------------------------- Subgroup Proof -------------------------------------------------- */
     
@@ -169,10 +97,10 @@ public final class PublicKey implements Convertible {
      */
     @Pure
     public boolean verifySubgroupProof() {
-        final @Nonnull Element tu = ab.pow(su).multiply(au.pow(t));
-        final @Nonnull Element ti = ab.pow(si).multiply(ai.pow(t));
-        final @Nonnull Element tv = ab.pow(sv).multiply(av.pow(t));
-        final @Nonnull Element to = ab.pow(so).multiply(ao.pow(t));
+        final @Nonnull Element tu = getAb().pow(su).multiply(getAu().pow(t));
+        final @Nonnull Element ti = getAb().pow(si).multiply(getAi().pow(t));
+        final @Nonnull Element tv = getAb().pow(sv).multiply(getAv().pow(t));
+        final @Nonnull Element to = getAb().pow(so).multiply(getAo().pow(t));
         
         return t.getValue().equals(HashGenerator.generateHash(tu, ti, tv, to));
     }
@@ -180,177 +108,39 @@ public final class PublicKey implements Convertible {
     /* -------------------------------------------------- Square Group -------------------------------------------------- */
     
     /**
-     * Stores the square group for verifiable encryption.
-     */
-    private final @Nonnull GroupWithUnknownOrder squareGroup;
-    
-    /**
      * Returns the square group for verifiable encryption.
-     * 
-     * @return the square group for verifiable encryption.
      */
     @Pure
-    public @Nonnull GroupWithUnknownOrder getSquareGroup() {
-        return squareGroup;
-    }
-    
-    /* -------------------------------------------------- Group Generator -------------------------------------------------- */
-    
-    /**
-     * Stores the generator of the square group.
-     */
-    private final @Nonnull Element g;
+    public abstract @Nonnull GroupWithUnknownOrder getSquareGroup();
     
     /**
      * Returns the generator of the square group.
-     * 
-     * @return the generator of the square group.
      */
     @Pure
-    public @Nonnull Element getG() {
-        return g;
-    }
+    public abstract @Nonnull @InGroup("squareGroup") Element getG();
     
-    /* -------------------------------------------------- Encryption Element -------------------------------------------------- */
-    
-    /**
-     * Stores the encryption element of the square group.
-     */
-    private final @Nonnull Element y;
-
     /**
      * Returns the encryption element of the square group.
-     * 
-     * @return the encryption element of the square group.
      */
     @Pure
-    public @Nonnull Element getY() {
-        return y;
-    }
-    
-    /* -------------------------------------------------- Encryption Base -------------------------------------------------- */
-    
-    /**
-     * Stores the encryption base of the square group.
-     */
-    private final @Nonnull Element zPlus1;
+    public abstract @Nonnull @InGroup("squareGroup") Element getY();
     
     /**
      * Returns the encryption base of the square group.
-     * 
-     * @return the encryption base of the square group.
      */
     @Pure
-    public @Nonnull Element getZPlus1() {
-        return zPlus1;
-    }
+    public abstract @Nonnull @InGroup("squareGroup") Element getZPlus1();
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
 
-    /**
-     * Creates a new public key with the given groups, bases and exponents.
-     * 
-     * @param compositeGroup the composite group for encryption and signing.
-     * @param e the encryption and verification exponent.
-     * 
-     * @param ab the base for blinding.
-     * @param au the base of the client's secret.
-     * @param ai the base of the serial number.
-     * @param av the base of the hashed identifier.
-     * @param ao the base of the exposed arguments.
-     * 
-     * @param t the hash of the temporary commitments in the subgroup proof.
-     * @param su the solution for the proof that au is in the subgroup of ab.
-     * @param si the solution for the proof that ai is in the subgroup of ab.
-     * @param sv the solution for the proof that av is in the subgroup of ab.
-     * @param so the solution for the proof that ao is in the subgroup of ab.
-     * 
-     * @param squareGroup the square group for verifiable encryption.
-     * @param g the generator of the square group.
-     * @param y the encryption element of the square group.
-     * @param zPlus1 the encryption base of the square group.
-     * 
-     * @require ab.isElement(compositeGroup) : "ab is an element in the composite group.";
-     * @require au.isElement(compositeGroup) : "au is an element in the composite group.";
-     * @require ai.isElement(compositeGroup) : "ai is an element in the composite group.";
-     * @require av.isElement(compositeGroup) : "av is an element in the composite group.";
-     * @require ao.isElement(compositeGroup) : "ao is an element in the composite group.";
-     *          
-     * @require g.isElement(squareGroup) : "g is an element in the square group.";
-     * @require y.isElement(squareGroup) : "y is an element in the square group.";
-     * @require zPlus1.isElement(squareGroup) : "zPlus1 is an element in the square group.";
-     *          
-     * @require verifySubgroupProof() : "Assert that au, ai, av and ao are in the subgroup of ab.";
-     */
-    private PublicKey(@Nonnull GroupWithUnknownOrder compositeGroup, @Nonnull Exponent e, @Nonnull Element ab, @Nonnull Element au, @Nonnull Element ai, @Nonnull Element av, @Nonnull Element ao, @Nonnull Exponent t, @Nonnull Exponent su, @Nonnull Exponent si, @Nonnull Exponent sv, @Nonnull Exponent so, @Nonnull GroupWithUnknownOrder squareGroup, @Nonnull Element g, @Nonnull Element y, @Nonnull Element zPlus1) {
-        Require.that(ab.isIn(compositeGroup)).orThrow("ab is an element in the composite group.");
-        Require.that(au.isIn(compositeGroup)).orThrow("au is an element in the composite group.");
-        Require.that(ai.isIn(compositeGroup)).orThrow("ai is an element in the composite group.");
-        Require.that(av.isIn(compositeGroup)).orThrow("av is an element in the composite group.");
-        Require.that(ao.isIn(compositeGroup)).orThrow("ao is an element in the composite group.");
-        
-        Require.that(g.isIn(squareGroup)).orThrow("g is an element in the square group.");
-        Require.that(y.isIn(squareGroup)).orThrow("y is an element in the square group.");
-        Require.that(zPlus1.isIn(squareGroup)).orThrow("zPlus1 is an element in the square group.");
-        
-        this.compositeGroup = compositeGroup;
-        this.e = e;
-        this.ab = ab;
-        this.au = au;
-        this.ai = ai;
-        this.av = av;
-        this.ao = ao;
+    protected PublicKey(@Nonnull Exponent t, @Nonnull Exponent su, @Nonnull Exponent si, @Nonnull Exponent sv, @Nonnull Exponent so) {
         this.t = t;
         this.su = su;
         this.si = si;
         this.sv = sv;
         this.so = so;
-        this.squareGroup = squareGroup;
-        this.g = g;
-        this.y = y;
-        this.zPlus1 = zPlus1;
         
         Require.that(verifySubgroupProof()).orThrow("The elements au, ai, av and ao are in the subgroup of ab.");
-    }
-    
-    /**
-     * Creates a new public key with the given groups, bases and exponents.
-     * 
-     * @param compositeGroup the composite group for encryption and signing.
-     * @param e the encryption and verification exponent.
-     * 
-     * @param ab the base for blinding.
-     * @param au the base of the client's secret.
-     * @param ai the base of the serial number.
-     * @param av the base of the hashed identifier.
-     * @param ao the base of the exposed arguments.
-     * 
-     * @param t the hash of the temporary commitments in the subgroup proof.
-     * @param su the solution for the proof that au is in the subgroup of ab.
-     * @param si the solution for the proof that ai is in the subgroup of ab.
-     * @param sv the solution for the proof that av is in the subgroup of ab.
-     * @param so the solution for the proof that ao is in the subgroup of ab.
-     * 
-     * @param squareGroup the square group for verifiable encryption.
-     * @param g the generator of the square group.
-     * @param y the encryption element of the square group.
-     * @param zPlus1 the encryption base of the square group.
-     * 
-     * @require ab.isElement(compositeGroup) : "ab is an element in the composite group.";
-     * @require au.isElement(compositeGroup) : "au is an element in the composite group.";
-     * @require ai.isElement(compositeGroup) : "ai is an element in the composite group.";
-     * @require av.isElement(compositeGroup) : "av is an element in the composite group.";
-     * @require ao.isElement(compositeGroup) : "ao is an element in the composite group.";
-     *          
-     * @require g.isElement(squareGroup) : "g is an element in the square group.";
-     * @require y.isElement(squareGroup) : "y is an element in the square group.";
-     * @require zPlus1.isElement(squareGroup) : "zPlus1 is an element in the square group.";
-     *          
-     * @require verifySubgroupProof() : "Assert that au, ai, av and ao are in the subgroup of ab.";
-     */
-    @Pure
-    public static @Nonnull PublicKey get(@Nonnull GroupWithUnknownOrder compositeGroup, @Nonnull Exponent e, @Nonnull Element ab, @Nonnull Element au, @Nonnull Element ai, @Nonnull Element av, @Nonnull Element ao, @Nonnull Exponent t, @Nonnull Exponent su, @Nonnull Exponent si, @Nonnull Exponent sv, @Nonnull Exponent so, @Nonnull GroupWithUnknownOrder squareGroup, @Nonnull Element g, @Nonnull Element y, @Nonnull Element zPlus1) {
-        return new PublicKey(compositeGroup, e, ab, au, ai, av, ao, t, su, si, sv, so, squareGroup, g, y, zPlus1);
     }
     
     /* -------------------------------------------------- Verifiable Encryption -------------------------------------------------- */
@@ -371,13 +161,5 @@ public final class PublicKey implements Convertible {
         elements.set(1, Encode.nonNullable(W2, g.pow(r)));
         return TupleWrapper.encode(VERIFIABLE_ENCRYPTION, elements.freeze());
     }*/
-
-    /* -------------------------------------------------- Object -------------------------------------------------- */
-
-    @Pure
-    @Override
-    public @Nonnull String toString() {
-        return "Public Key [n = " + compositeGroup.getModulus() + ", e = " + e + ", z^2 = " + squareGroup.getModulus() + ", g = " + g + ", y = " + y + "]";
-    }
-
+    
 }

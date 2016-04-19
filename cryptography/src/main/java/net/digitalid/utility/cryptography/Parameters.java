@@ -3,12 +3,12 @@ package net.digitalid.utility.cryptography;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.configuration.Configuration;
-import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
  * This class specifies the cryptographic parameters.
  */
-@Stateless
+@Utility
 public final class Parameters {
     
     /**

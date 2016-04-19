@@ -5,15 +5,21 @@ import java.security.SecureRandom;
 import java.util.Random;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.Validate;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
 import net.digitalid.utility.math.ExponentBuilder;
 import net.digitalid.utility.math.GroupWithKnownOrder;
 import net.digitalid.utility.math.GroupWithKnownOrderBuilder;
+import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -21,7 +27,9 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * This class generates new key pairs.
  */
 @Immutable
-public class KeyPair {
+@GenerateNoBuilder
+@GenerateNoSubclass
+public class KeyPair extends RootClass {
     
     /* -------------------------------------------------- Private Key -------------------------------------------------- */
     
@@ -137,7 +145,8 @@ public class KeyPair {
         
         // Create and store the private and the public key.
         this.privateKey = PrivateKey.get(compositeGroup, p, q, d, squareGroup, x);
-        this.publicKey = PublicKey.get(compositeGroup.dropOrder(), e, ab, au, ai, av, ao, t, su, si, sv, so, squareGroup.dropOrder(), g, y, zPlus1);
+        this.publicKey = PublicKeyBuilder.withCompositeGroup(compositeGroup.dropOrder()).withE(e).withAb(ab).withAu(au).withAi(ai).withAv(av).withAo(ao).withSquareGroup(squareGroup.dropOrder()).withG(g).withY(y).withZPlus1(zPlus1).build();
+//        this.publicKey = PublicKey.get(compositeGroup.dropOrder(), e, ab, au, ai, av, ao, t, su, si, sv, so, squareGroup.dropOrder(), g, y, zPlus1);
     }
     
     /**
@@ -146,6 +155,32 @@ public class KeyPair {
     @Pure
     public static @Nonnull KeyPair withRandomValues() {
         return new KeyPair();
+    }
+    
+    /* -------------------------------------------------- Object -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public boolean equals(@NonCaptured @Unmodified @Nullable Object object) {
+        if (object == this) { return true; }
+        if (object == null || !(object instanceof KeyPair)) { return false; }
+        final @Nonnull KeyPair that = (KeyPair) object;
+        return this.privateKey.equals(that.privateKey) && this.publicKey.equals(that.publicKey);
+    }
+    
+    @Pure
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 53 * hash + privateKey.hashCode();
+        hash = 53 * hash + publicKey.hashCode();
+        return hash;
+    }
+    
+    @Pure
+    @Override
+    public @Nonnull String toString() {
+        return "KeyPair(privateKey: " + privateKey + ", publicKey: " + publicKey + ")";
     }
     
 }
