@@ -4,7 +4,7 @@
                              http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <artifactId>utility-math</artifactId>
+    <artifactId>utility-group</artifactId>
     <packaging>jar</packaging>
     
     <parent>
@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-group</artifactId>
+            <artifactId>utility-generator</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

@@ -62,6 +62,7 @@
         <module>generator</module>
         <module>testcases</module>
         <module>collections</module>
+        <module>group</module>
         <module>math</module>
         <module>time</module>
         <module>cryptography</module>
