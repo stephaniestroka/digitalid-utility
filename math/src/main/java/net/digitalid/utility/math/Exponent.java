@@ -23,7 +23,7 @@ public abstract class Exponent extends RootClass implements BigIntegerNumerical<
      */
     @Pure
     public @Nonnull Exponent add(@Nonnull Exponent exponent) {
-        return new GeneratedExponent(getValue().add(exponent.getValue()));
+        return new ExponentSubclass(getValue().add(exponent.getValue()));
     }
     
     /**
@@ -31,7 +31,7 @@ public abstract class Exponent extends RootClass implements BigIntegerNumerical<
      */
     @Pure
     public @Nonnull Exponent subtract(@Nonnull Exponent exponent) {
-        return new GeneratedExponent(getValue().subtract(exponent.getValue()));
+        return new ExponentSubclass(getValue().subtract(exponent.getValue()));
     }
     
     /**
@@ -39,7 +39,7 @@ public abstract class Exponent extends RootClass implements BigIntegerNumerical<
      */
     @Pure
     public @Nonnull Exponent multiply(@Nonnull Exponent exponent) {
-        return new GeneratedExponent(getValue().multiply(exponent.getValue()));
+        return new ExponentSubclass(getValue().multiply(exponent.getValue()));
     }
     
     /**
@@ -55,7 +55,7 @@ public abstract class Exponent extends RootClass implements BigIntegerNumerical<
     public @Nonnull Exponent inverse(@Nonnull GroupWithKnownOrder group) {
         Require.that(group.getOrder().gcd(getValue()).equals(BigInteger.ONE)).orThrow("The exponent has to be relatively prime to the group order.");
         
-        return new GeneratedExponent(getValue().modInverse(group.getOrder()));
+        return new ExponentSubclass(getValue().modInverse(group.getOrder()));
     }
     
     /**
@@ -65,7 +65,7 @@ public abstract class Exponent extends RootClass implements BigIntegerNumerical<
     public @Nonnull Exponent getNextRelativePrime(@Nonnull GroupWithKnownOrder group) {
         @Nonnull BigInteger next = getValue();
         while (next.gcd(group.getOrder()).compareTo(BigInteger.ONE) == 1) { next = next.add(BigInteger.ONE); }
-        return new GeneratedExponent(next);
+        return new ExponentSubclass(next);
     }
     
 }

@@ -92,9 +92,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     
     @Pure
     public @Nonnull String getSimpleNameOfGeneratedSubclass() {
-        // TODO: Kaspar thinks that the following (commented) line would be a better naming convention because classes that belong together are then grouped together (if sorted alphabetically).
-//        return getName() + "Subclass";
-        return "Generated" + getName();
+        return getName() + "Subclass";
     }
     
     @Pure

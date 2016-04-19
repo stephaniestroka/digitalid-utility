@@ -37,7 +37,7 @@ public abstract class Group extends RootClass {
      */
     @Pure
     public @Nonnull Element getElement(@Nonnull BigInteger value) {
-        return new GeneratedElement(this, value);
+        return new ElementSubclass(this, value);
     }
     
     /**
@@ -54,7 +54,7 @@ public abstract class Group extends RootClass {
         }
         
         assert value != null;
-        return new GeneratedElement(this, value);
+        return new ElementSubclass(this, value);
     }
     
     /* -------------------------------------------------- Exponent -------------------------------------------------- */
@@ -64,7 +64,7 @@ public abstract class Group extends RootClass {
      */
     @Pure
     public final @Nonnull Exponent getRandomExponent(@NonNegative int bitLength) {
-        return new GeneratedExponent(new BigInteger(bitLength, new SecureRandom()));
+        return new ExponentSubclass(new BigInteger(bitLength, new SecureRandom()));
     }
     
     /**

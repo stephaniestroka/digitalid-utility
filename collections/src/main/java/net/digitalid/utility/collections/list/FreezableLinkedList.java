@@ -34,8 +34,8 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * This class extends the {@link LinkedList} and makes it {@link FreezableInterface freezable}.
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
-@Freezable(ReadOnlyList.class)
 @GenerateNoBuilder
+@Freezable(ReadOnlyList.class)
 public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableList<E> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */

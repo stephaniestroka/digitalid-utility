@@ -3,6 +3,7 @@ package net.digitalid.utility.generator;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -10,8 +11,10 @@ import javax.annotation.Nullable;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 
+import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.annotations.Recover;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
@@ -51,14 +54,24 @@ public class BuilderGenerator extends JavaFileGenerator {
     /**
      * Return parameters required for the construction of the class.
      */
-    public @Nonnull FiniteIterable<FieldInformation> getConstructorParameters() {
-        final @Nonnull FiniteIterable<FieldInformation> constructorParameters;
-        final @Nonnull FiniteIterable<FieldInformation> representingFields = typeInformation.getRepresentingFieldInformation().map(field -> field);
+    public @Nonnull FiniteIterable<ElementInformation> getConstructorParameters() {
+        final @Nonnull FiniteIterable<ElementInformation> constructorParameters;
         if (typeInformation instanceof ClassInformation) {
             final ClassInformation classInformation = (ClassInformation) typeInformation;
-            constructorParameters = classInformation.nonAccessibleDeclaredFields.map(field -> (FieldInformation) field).combine(representingFields);
+            @Unmodifiable @Nonnull final FiniteIterable<@Nonnull ConstructorInformation> constructors = classInformation.getConstructors();
+            @Nonnull ConstructorInformation constructorInformation;
+            if (constructors.size() > 1) {
+                try {
+                    constructorInformation = constructors.findUnique(constructor -> constructor.hasAnnotation(Recover.class));
+                } catch (NoSuchElementException e) {
+                    throw FailedClassGenerationException.with("Multiple constructors found, but non is marked with @Recover.", SourcePosition.of(typeInformation.getElement()));
+                }
+            } else {
+                constructorInformation = constructors.getFirst();
+            }
+            constructorParameters = constructorInformation.getParameters().map(field -> (ElementInformation) field).combine(typeInformation.generatedFieldInformation);
         } else {
-            constructorParameters = representingFields;
+            constructorParameters = typeInformation.generatedFieldInformation.map(field -> field);
         }
         return constructorParameters;
     }
@@ -68,7 +81,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     /**
      * Returns the name of the field builder interface for a given field.
      */
-    private @Nonnull String getNameOfFieldBuilder(@Nonnull FieldInformation field) {
+    private @Nonnull String getNameOfFieldBuilder(@Nonnull ElementInformation field) {
         return Strings.capitalizeFirstLetters(field.getName()) + typeInformation.getSimpleNameOfGeneratedBuilder();
     }
     
@@ -82,7 +95,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      *                      away, this method allows to traverse through all required fields before being
      *                      able to call "build()" on the builder.
      */
-    private @Nonnull String createInterfaceForField(@Nonnull FieldInformation field, @Nullable String nextInterface) {
+    private @Nonnull String createInterfaceForField(@Nonnull ElementInformation field, @Nullable String nextInterface) {
         final @Nonnull String interfaceName = getNameOfFieldBuilder(field);
         final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
         beginInterface("public interface " + interfaceName + importWithBounds(typeInformation.getTypeArguments()));
@@ -99,9 +112,13 @@ public class BuilderGenerator extends JavaFileGenerator {
      * Returns true if the field is required, false otherwise.
      */
     // TODO: Why is this method not declared in the field information class?
-    private boolean isFieldRequired(@Nonnull FieldInformation fieldInformation) {
+    private boolean isFieldRequired(@Nonnull ElementInformation fieldInformation) {
         // TODO: nullable fields are not required. Non-final fields are also not required (and probably not representing).
-        return !fieldInformation.hasDefaultValue();
+        if (fieldInformation instanceof FieldInformation) {
+            return !((FieldInformation) fieldInformation).hasDefaultValue();
+        } else {
+            return true;
+        }
         // TODO: Please also use the default value as a default value for the builder! :-)
     }
     
@@ -109,28 +126,28 @@ public class BuilderGenerator extends JavaFileGenerator {
      * Returns a list of field information objects for fields that are required.
      */
     // TODO: improve exception handling
-    private @Nonnull @NonNullableElements FiniteIterable<FieldInformation> getRequiredFields() {
+    private @Nonnull @NonNullableElements FiniteIterable<ElementInformation> getRequiredFields() {
         return getConstructorParameters().filter(this::isFieldRequired);
     }
     
     /**
      * Declares and implements the setter for the given field with the given return type and the given returned instance.
      */
-    private void addSetterForField(@Nonnull FieldInformation field, @Nonnull String returnType, @Nonnull String returnedInstance) {
+    private void addSetterForField(@Nonnull ElementInformation field, @Nonnull String returnType, @Nonnull String returnedInstance) {
         final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
         beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + returnType + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")");
         addStatement("return new " + returnedInstance + "()." + methodName + "(" + field.getName() + ")");
         endMethod();
     }
     
-    protected final @Nonnull @NonNullableElements List<String> createInterfacesForRequiredFields(@Nonnull @NonNullableElements FiniteIterable<FieldInformation> requiredFields, @Nonnull String nameOfInnerClass) {
+    protected final @Nonnull @NonNullableElements List<String> createInterfacesForRequiredFields(@Nonnull @NonNullableElements FiniteIterable<ElementInformation> requiredFields, @Nonnull String nameOfInnerClass) {
         final @Nonnull List<String> listOfInterfaces = new ArrayList<>();
         
         for (int i = 0; i < requiredFields.size(); i++) {
-            final @Nonnull FieldInformation requiredField = requiredFields.get(i);
+            final @Nonnull ElementInformation requiredField = requiredFields.get(i);
             @Nonnull String nextInterface = nameOfInnerClass;
             if ((i + 1) < requiredFields.size()) {
-                final @Nonnull FieldInformation nextField = requiredFields.get(i + 1);
+                final @Nonnull ElementInformation nextField = requiredFields.get(i + 1);
                 nextInterface = getNameOfFieldBuilder(nextField);
             }
             listOfInterfaces.add(createInterfaceForField(requiredField, nextInterface));
@@ -148,7 +165,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         final @Nonnull FiniteIterable<@Nonnull TypeVariable> typeArguments = typeInformation.getTypeArguments();
         beginClass("public static class " + nameOfBuilder + importWithBounds(typeArguments) + (interfacesForRequiredFields.isEmpty() ? "" : " implements " + FiniteIterable.of(interfacesForRequiredFields).join() + typeArguments.join(Brackets.POINTY, "")));
         
-        for (@Nonnull FieldInformation field : getConstructorParameters()) {
+        for (@Nonnull ElementInformation field : getConstructorParameters()) {
             field.getAnnotations();
             addSection(Strings.capitalizeFirstLetters(Strings.decamelize(field.getName())));
             // TODO: Add annotations.
@@ -178,7 +195,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         }
         beginMethod("public " + typeInformation.getName() + " build()" + (throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()));
         
-        final @Nonnull FiniteIterable<FieldInformation> constructorParameters = getConstructorParameters();
+        final @Nonnull FiniteIterable<ElementInformation> constructorParameters = getConstructorParameters();
         
         addStatement("return new " + typeInformation.getSimpleNameOfGeneratedSubclass() + constructorParameters.map(ElementInformation::getName).join(Brackets.ROUND));
         
@@ -196,9 +213,9 @@ public class BuilderGenerator extends JavaFileGenerator {
      * a static "get()" method is created, which returns the new builder instance without calling any additional builder setters.
      */
     // TODO: improve exception handling
-    protected void createStaticEntryMethod(@Nonnull String nameOfBuilder, @Nonnull @NonNullableElements FiniteIterable<FieldInformation> requiredFields, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) {
+    protected void createStaticEntryMethod(@Nonnull String nameOfBuilder, @Nonnull @NonNullableElements FiniteIterable<ElementInformation> requiredFields, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) {
         if (requiredFields.size() > 0) {
-            final @Nonnull FieldInformation entryField = requiredFields.get(0);
+            final @Nonnull ElementInformation entryField = requiredFields.get(0);
             final @Nonnull String secondInterface;
             if (interfacesForRequiredFields.size() > 1) {
                 secondInterface = interfacesForRequiredFields.get(1);
@@ -231,7 +248,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         
         beginClass("public class " + typeInformation.getSimpleNameOfGeneratedBuilder() + importWithBounds(typeInformation.getTypeArguments()));
         
-        final @Nonnull @NonNullableElements FiniteIterable<FieldInformation> requiredFields = getRequiredFields();
+        final @Nonnull @NonNullableElements FiniteIterable<ElementInformation> requiredFields = getRequiredFields();
         final @Nonnull String nameOfBuilder = "Inner" + typeInformation.getSimpleNameOfGeneratedBuilder();
 
         final @Nonnull @NonNullableElements List<String> interfacesForRequiredFields = createInterfacesForRequiredFields(requiredFields, nameOfBuilder);

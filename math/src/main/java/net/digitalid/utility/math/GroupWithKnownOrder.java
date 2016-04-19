@@ -27,7 +27,7 @@ public abstract class GroupWithKnownOrder extends Group {
      */
     @Pure
     public @Nonnull GroupWithUnknownOrder dropOrder() {
-        return new GeneratedGroupWithUnknownOrder(getModulus());
+        return new GroupWithUnknownOrderSubclass(getModulus());
     }
     
 }
