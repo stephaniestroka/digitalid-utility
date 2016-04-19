@@ -69,7 +69,7 @@ public abstract class Element extends RootClass implements BigIntegerNumerical<E
      */
     @Pure
     public @Nonnull @InSameGroup Element add(@Nonnull @InSameGroup Element element) {
-        return new GeneratedElement(getGroup(), getValue().add(element.getValue()));
+        return new ElementSubclass(getGroup(), getValue().add(element.getValue()));
     }
     
     /**
@@ -77,7 +77,7 @@ public abstract class Element extends RootClass implements BigIntegerNumerical<E
      */
     @Pure
     public @Nonnull @InSameGroup Element subtract(@Nonnull @InSameGroup Element element) {
-        return new GeneratedElement(getGroup(), getValue().subtract(element.getValue()));
+        return new ElementSubclass(getGroup(), getValue().subtract(element.getValue()));
     }
     
     /**
@@ -85,7 +85,7 @@ public abstract class Element extends RootClass implements BigIntegerNumerical<E
      */
     @Pure
     public @Nonnull @InSameGroup Element multiply(@Nonnull @InSameGroup Element element) {
-        return new GeneratedElement(getGroup(), getValue().multiply(element.getValue()));
+        return new ElementSubclass(getGroup(), getValue().multiply(element.getValue()));
     }
     
     /**
@@ -99,7 +99,7 @@ public abstract class Element extends RootClass implements BigIntegerNumerical<E
     public @Nonnull @InSameGroup Element inverse() {
         Require.that(isRelativelyPrime()).orThrow("The element has to be relatively prime to the group modulus.");
         
-        return new GeneratedElement(getGroup(), getValue().modInverse(getGroup().getModulus()));
+        return new ElementSubclass(getGroup(), getValue().modInverse(getGroup().getModulus()));
     }
     
     /**
@@ -107,7 +107,7 @@ public abstract class Element extends RootClass implements BigIntegerNumerical<E
      */
     @Pure
     public @Nonnull @InSameGroup Element pow(@Nonnull BigInteger exponent) {
-        return new GeneratedElement(getGroup(), getValue().modPow(exponent, getGroup().getModulus()));
+        return new ElementSubclass(getGroup(), getValue().modPow(exponent, getGroup().getModulus()));
     }
     
     /**

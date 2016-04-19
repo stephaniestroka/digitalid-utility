@@ -2,15 +2,15 @@ package net.digitalid.utility.cryptography;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.collections.freezable.FreezableIterator;
-import net.digitalid.utility.collections.freezable.FreezableList;
-import net.digitalid.utility.collections.readonly.ReadOnlyList;
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.collections.list.FreezableList;
+import net.digitalid.utility.collections.list.ReadOnlyList;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.cryptography.exceptions.InvalidParameterValueCombinationException;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.time.Time;
+import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -30,7 +30,7 @@ public abstract class KeyChain<C extends KeyChain<C, K>, K> {
      * 
      * @invariant items.isStrictlyDescending() : "The list is strictly descending.";
      */
-    private final @Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<Pair<Time, K>> items;
+    private final @NonNullableElements @NonEmpty @Frozen @Nonnull ReadOnlyList<Pair<Time, K>> items;
     
     /**
      * Returns the items of this key chain in chronological order with the newest one first.

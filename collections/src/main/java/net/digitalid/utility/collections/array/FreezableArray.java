@@ -32,6 +32,7 @@ import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
 /**
  * This class models {@link FreezableInterface freezable} arrays.

@@ -28,7 +28,7 @@ public abstract class Group implements GroupInterface {
      */
     @Pure
     public @Nonnull Element getElement(@Nonnull BigInteger value) {
-        return new GeneratedElement(this, value);
+        return new ElementSubclass(this, value);
     }
     
     /**
@@ -45,7 +45,7 @@ public abstract class Group implements GroupInterface {
         }
         
         assert value != null;
-        return new GeneratedElement(this, value);
+        return new ElementSubclass(this, value);
     }
     
     /* -------------------------------------------------- Exponent -------------------------------------------------- */
@@ -54,8 +54,8 @@ public abstract class Group implements GroupInterface {
      * Returns a random exponent in this group of the given bit length.
      */
     @Pure
-    public @Nonnull Exponent getRandomExponent(@NonNegative int bitLength) {
-        return new GeneratedExponent(new BigInteger(bitLength, new SecureRandom()));
+    public final @Nonnull Exponent getRandomExponent(@NonNegative int bitLength) {
+        return new ExponentSubclass(new BigInteger(bitLength, new SecureRandom()));
     }
     
     /**

@@ -23,79 +23,79 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
     /**
      * Stores the time of a decade (10 tropical years).
      */
-    public static final @Nonnull Time DECADE = new GeneratedTime(315_569_251_900l);
+    public static final @Nonnull Time DECADE = new TimeSubclass(315_569_251_900l);
     
     /**
      * Stores the time of two years (2 tropical years).
      */
-    public static final @Nonnull Time TWO_YEARS = new GeneratedTime(63_113_850_380l);
+    public static final @Nonnull Time TWO_YEARS = new TimeSubclass(63_113_850_380l);
     
     /**
      * Stores the time of a tropical year (default).
      */
-    public static final @Nonnull Time TROPICAL_YEAR = new GeneratedTime(31_556_925_190l);
+    public static final @Nonnull Time TROPICAL_YEAR = new TimeSubclass(31_556_925_190l);
     
     /**
      * Stores the time of a calendar year (365 days).
      */
-    public static final @Nonnull Time CALENDAR_YEAR = new GeneratedTime(31_536_000_000l);
+    public static final @Nonnull Time CALENDAR_YEAR = new TimeSubclass(31_536_000_000l);
     
     /**
      * Stores the time of a month (30 days).
      */
-    public static final @Nonnull Time MONTH = new GeneratedTime(2_592_000_000l);
+    public static final @Nonnull Time MONTH = new TimeSubclass(2_592_000_000l);
     
     /**
      * Stores the time of a week (7 days).
      */
-    public static final @Nonnull Time WEEK = new GeneratedTime(604_800_000l);
+    public static final @Nonnull Time WEEK = new TimeSubclass(604_800_000l);
     
     /**
      * Stores the time of a day (24 hours).
      */
-    public static final @Nonnull Time DAY = new GeneratedTime(86_400_000l);
+    public static final @Nonnull Time DAY = new TimeSubclass(86_400_000l);
     
     /**
      * Stores the time of a half-day (12 hours).
      */
-    public static final @Nonnull Time HALF_DAY = new GeneratedTime(43_200_000l);
+    public static final @Nonnull Time HALF_DAY = new TimeSubclass(43_200_000l);
     
     /**
      * Stores the time of an hour (60 minutes).
      */
-    public static final @Nonnull Time HOUR = new GeneratedTime(3_600_000l);
+    public static final @Nonnull Time HOUR = new TimeSubclass(3_600_000l);
     
     /**
      * Stores the time of a half-hour (30 minutes).
      */
-    public static final @Nonnull Time HALF_HOUR = new GeneratedTime(1_800_000l);
+    public static final @Nonnull Time HALF_HOUR = new TimeSubclass(1_800_000l);
     
     /**
      * Stores the time of a quarter-hour (15 minutes).
      */
-    public static final @Nonnull Time QUARTER_HOUR = new GeneratedTime(900_000l);
+    public static final @Nonnull Time QUARTER_HOUR = new TimeSubclass(900_000l);
     
     /**
      * Stores the time of a minute (60 seconds).
      */
-    public static final @Nonnull Time MINUTE = new GeneratedTime(60_000l);
+    public static final @Nonnull Time MINUTE = new TimeSubclass(60_000l);
     
     /**
      * Stores the time of a second (1000 milliseconds).
      */
-    public static final @Nonnull Time SECOND = new GeneratedTime(1_000l);
+    public static final @Nonnull Time SECOND = new TimeSubclass(1_000l);
     
     /* -------------------------------------------------- Boundaries -------------------------------------------------- */
     
     /**
      * Stores the earliest possible time.
      */
-    public static final @Nonnull Time MIN = new GeneratedTime(0l);
+    public static final @Nonnull Time MIN = new TimeSubclass(0l);
     
     /**
      * Stores the latest possible time.
      */
-    public static final @Nonnull Time MAX = new GeneratedTime(Long.MAX_VALUE);
+    public static final @Nonnull Time MAX = new TimeSubclass(Long.MAX_VALUE);
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
@@ -114,7 +114,7 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
      */
     @Pure
     public @Nonnull Time ago() {
-        return new GeneratedTime(System.currentTimeMillis() - getValue());
+        return new TimeSubclass(System.currentTimeMillis() - getValue());
     }
     
     /**
@@ -122,7 +122,7 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
      */
     @Pure
     public @Nonnull Time ahead() {
-        return new GeneratedTime(System.currentTimeMillis() + getValue());
+        return new TimeSubclass(System.currentTimeMillis() + getValue());
     }
     
     /* -------------------------------------------------- Arithmetic Operations -------------------------------------------------- */
@@ -132,7 +132,7 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
      */
     @Pure
     public @Nonnull Time add(@Nonnull Time time) {
-        return new GeneratedTime(getValue() + time.getValue());
+        return new TimeSubclass(getValue() + time.getValue());
     }
     
     /**
@@ -140,7 +140,7 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
      */
     @Pure
     public @Nonnull Time subtract(@Nonnull Time time) {
-        return new GeneratedTime(getValue() - time.getValue());
+        return new TimeSubclass(getValue() - time.getValue());
     }
     
     /**
@@ -148,7 +148,7 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
      */
     @Pure
     public @Nonnull Time multiply(int factor) {
-        return new GeneratedTime(getValue() * factor);
+        return new TimeSubclass(getValue() * factor);
     }
     
     /**
@@ -156,7 +156,7 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
      */
     @Pure
     public @Nonnull Time divide(int divisor) {
-        return new GeneratedTime(getValue() / divisor);
+        return new TimeSubclass(getValue() / divisor);
     }
     
     /**
@@ -164,7 +164,7 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
      */
     @Pure
     public @Nonnull Time round(@Nonnull Time interval) {
-        return new GeneratedTime((getValue() + (getValue() > 0 ? 1 : -1) * interval.getValue() / 2) / interval.getValue() * interval.getValue());
+        return new TimeSubclass((getValue() + (getValue() > 0 ? 1 : -1) * interval.getValue() / 2) / interval.getValue() * interval.getValue());
     }
     
     /**
@@ -172,7 +172,7 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
      */
     @Pure
     public @Nonnull Time roundDown(@Nonnull Time interval) {
-        return new GeneratedTime(getValue() / interval.getValue() * interval.getValue());
+        return new TimeSubclass(getValue() / interval.getValue() * interval.getValue());
     }
     
     /**

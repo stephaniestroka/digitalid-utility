@@ -131,6 +131,7 @@ public abstract class Converter {
      *
      * @throws StructureException if a type parameter of a recovery method cannot be identified as a field.
      */
+   // TODO (steffi, 19.04.2016): We have the convertible/representing fields in the class information during compile time. 
     protected static @Nonnull Field getConvertibleField(@Nonnull Class<?> type) throws StructureException {
         final @Nonnull @NonNullableElements @Frozen ReadOnlyList<Field> fields = ReflectionUtility.getReconstructionFields(type);
         Require.that(fields.size() == 1).orThrow("There is only one field in type '" + type + "'");
