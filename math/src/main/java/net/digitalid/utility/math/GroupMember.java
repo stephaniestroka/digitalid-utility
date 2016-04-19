@@ -7,6 +7,8 @@ import net.digitalid.utility.rootclass.RootInterface;
 
 /**
  * A group member belongs to a mathematical group.
+ * 
+ * @see Element
  */
 public interface GroupMember extends RootInterface {
     

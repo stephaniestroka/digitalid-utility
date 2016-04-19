@@ -19,7 +19,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
@@ -52,7 +51,7 @@ public abstract class SymmetricKey extends RootClass {
     
     /* -------------------------------------------------- Circumvent Cryptographic Restrictions -------------------------------------------------- */
     
-    @Impure
+    @Pure
     @Initialize(target = SymmetricKey.class)
     public static void initialize() {
         try {
@@ -98,18 +97,6 @@ public abstract class SymmetricKey extends RootClass {
         }
     }
     
-    /* -------------------------------------------------- Parameters -------------------------------------------------- */
-    
-    /**
-     * Stores the length of symmetric keys in bytes.
-     */
-    public static final int LENGTH = Parameters.ENCRYPTION_KEY / 8;
-    
-    /**
-     * Stores the mode of the encryption cipher.
-     */
-    public static final @Nonnull String MODE = "AES/CBC/PKCS5Padding";
-    
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
     /**
@@ -128,6 +115,11 @@ public abstract class SymmetricKey extends RootClass {
     public abstract @Nonnull BigInteger getValue();
     
     /* -------------------------------------------------- Key -------------------------------------------------- */
+    
+    /**
+     * Stores the length of symmetric keys in bytes.
+     */
+    public static final int LENGTH = Parameters.ENCRYPTION_KEY / 8;
     
     /**
      * Derives the key from the given value.
@@ -150,6 +142,11 @@ public abstract class SymmetricKey extends RootClass {
     protected abstract @Nonnull Key getKey();
     
     /* -------------------------------------------------- Encryption and Decryption -------------------------------------------------- */
+    
+    /**
+     * Stores the mode of the encryption cipher.
+     */
+    public static final @Nonnull String MODE = "AES/CBC/PKCS5Padding";
     
     /**
      * Encrypts the indicated section in the given byte array with this symmetric key and the given initialization vector.
