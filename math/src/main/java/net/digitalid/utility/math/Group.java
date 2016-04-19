@@ -8,9 +8,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.group.GroupInterface;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
-import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -20,15 +19,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see GroupWithUnknownOrder
  */
 @Immutable
-public abstract class Group extends RootClass {
-    
-    /* -------------------------------------------------- Modulus -------------------------------------------------- */
-    
-    /**
-     * Returns the modulus of this group.
-     */
-    @Pure
-    public abstract @Nonnull @Positive BigInteger getModulus();
+public abstract class Group implements GroupInterface {
     
     /* -------------------------------------------------- Element -------------------------------------------------- */
     
@@ -71,7 +62,7 @@ public abstract class Group extends RootClass {
      * Returns a random exponent in this group.
      */
     @Pure
-    public final @Nonnull Exponent getRandomExponent() {
+    public @Nonnull Exponent getRandomExponent() {
         return getRandomExponent(getModulus().bitLength() + 4);
     }
     
@@ -83,8 +74,8 @@ public abstract class Group extends RootClass {
     @Override
     public boolean equals(@Nullable Object object) {
         if (object == this) { return true; }
-        if (object == null || !(object instanceof Group)) { return false; }
-        final @Nonnull Group that = (Group) object;
+        if (object == null || !(object instanceof GroupInterface)) { return false; }
+        final @Nonnull GroupInterface that = (GroupInterface) object;
         return this.getModulus().equals(that.getModulus());
     }
     

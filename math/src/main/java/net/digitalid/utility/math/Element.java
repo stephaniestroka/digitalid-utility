@@ -9,7 +9,8 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.generator.annotations.Normalize;
-import net.digitalid.utility.math.annotations.InSameGroup;
+import net.digitalid.utility.group.GroupMember;
+import net.digitalid.utility.group.annotations.InSameGroup;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.interfaces.BigIntegerNumerical;
@@ -32,7 +33,11 @@ public abstract class Element extends RootClass implements BigIntegerNumerical<E
         Validate.that(getValue().compareTo(BigInteger.ZERO) >= 0 && getValue().compareTo(getGroup().getModulus()) == -1).orThrow("The value has to be non-negative and smaller than the group modulus.");
     }
     
-    /* -------------------------------------------------- Value -------------------------------------------------- */
+    /* -------------------------------------------------- Interfaces -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public abstract @Nonnull Group getGroup();
     
     @Pure
     @Override
