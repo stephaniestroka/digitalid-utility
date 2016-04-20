@@ -6,7 +6,7 @@ import net.digitalid.utility.generator.annotations.Derive;
 /**
  *
  */
-public abstract class ClassWithDerivedFields {
+public abstract class ClassWithDerivedField {
     
     @Pure
     public abstract int getValue();

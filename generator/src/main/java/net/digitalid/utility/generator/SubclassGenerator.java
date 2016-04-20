@@ -19,6 +19,7 @@ import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.annotations.Derive;
+import net.digitalid.utility.generator.annotations.Normalize;
 import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleFieldInformation;
@@ -66,20 +67,37 @@ public class SubclassGenerator extends JavaFileGenerator {
             addSection(Strings.capitalizeFirstLetters(Strings.decamelize(field.getName())));
             addField("private " + (field.isMutable() ? "" : "final ") + importIfPossible(field.getType()) + " " + field.getName());
             
+            @Nullable Normalize normalize = null;
             {
                 final @Nonnull MethodInformation getter = field.getGetter();
                 ProcessingLog.verbose("Implementing the getter $.", getter.getName());
                 final @Nonnull String statement = "result = this." + field.getName();
                 generateMethodWithStatement(getter, statement, "result");
+                if (getter.hasAnnotation(Normalize.class)) {
+                    normalize = getter.getAnnotation(Normalize.class);
+                }
             }
             
             if (field.hasSetter()) {
                 final @Nonnull MethodInformation setter = field.getNonNullSetter();
                 ProcessingLog.verbose("Implementing the setter " + Quotes.inSingle(setter.getName()));
+                if (normalize != null && setter.hasAnnotation(Normalize.class)) {
+                    ProcessingLog.warning("Found @Normalize annotation on getter and on setter. To avoid inconsistencies we are using the getter annotation. Please remove @Normalize from the setter.");
+                } else if (normalize == null) {
+                    if (setter.hasAnnotation(Normalize.class)) {
+                        normalize = setter.getAnnotation(Normalize.class);
+                        ProcessingLog.warning("Found @Normalize annotation on setter. To avoid inconsistencies, please move it from the setter to the getter.");
+                    }
+                }
                 final @Nonnull List<? extends VariableElement> parameters = setter.getElement().getParameters();
                 Require.that(parameters.size() == 1).orThrow("Found a setter with " + (parameters.size() == 0 ? "zero " : "more than one ") + "parameters.");
                 final @Nonnull VariableElement parameter = parameters.get(0);
-                final @Nonnull String statement = ("this." + field.getName() + " = " + parameter.getSimpleName());
+                final @Nonnull String statement;
+                if (normalize != null) {
+                    statement = ("this." + field.getName() + " = " + normalize.value());
+                } else {
+                    statement = ("this." + field.getName() + " = " + parameter.getSimpleName());
+                }
                 generateMethodWithStatement(setter, statement);
             }
         }
@@ -97,7 +115,11 @@ public class SubclassGenerator extends JavaFileGenerator {
             addEmptyLine();
         }
         for (@Nonnull FieldInformation field : typeInformation.generatedRepresentingFieldInformation) {
-            addStatement("this." + field.getName() + " = " + field.getName());
+            if (field.hasAnnotation(Normalize.class)) {
+                addStatement("this." + field.getName() + " = " + field.getAnnotation(Normalize.class).value());
+            } else {
+                addStatement("this." + field.getName() + " = " + field.getName());
+            }
         }
         for (@Nonnull FieldInformation field : typeInformation.derivedFieldInformation) {
             addStatement("this." + field.getName() + " = " + field.getAnnotation(Derive.class).value());

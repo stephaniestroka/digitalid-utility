@@ -26,6 +26,7 @@ public abstract class AbstractClass extends RootClass {
     public abstract @Nonnull String[] getValue();
     
     @Pure
+    @Logged
     @Default(name="number", value="42")
     public abstract @Positive int getNumber();
     
