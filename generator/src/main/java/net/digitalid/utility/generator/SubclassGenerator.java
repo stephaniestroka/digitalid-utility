@@ -17,8 +17,8 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.fixes.Quotes;
-import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.annotations.Derive;
 import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleFieldInformation;
@@ -38,7 +38,6 @@ import net.digitalid.utility.generator.typevisitors.GenerateToStringTypeVisitor;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
-import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.tuples.Quartet;
 import net.digitalid.utility.tuples.Triplet;
 import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
@@ -61,7 +60,8 @@ public class SubclassGenerator extends JavaFileGenerator {
     /* -------------------------------------------------- Generating Methods -------------------------------------------------- */
     
     protected void generateFields() {
-        for (@Nonnull GeneratedFieldInformation field : typeInformation.generatedFieldInformation) {
+        @Nonnull FiniteIterable<GeneratedFieldInformation> generatedFieldInformation = typeInformation.generatedRepresentingFieldInformation.map(f -> (GeneratedFieldInformation) f).combine(typeInformation.derivedFieldInformation);
+        for (@Nonnull GeneratedFieldInformation field : generatedFieldInformation) {
             ProcessingLog.verbose("Generating the field $.", field.getName());
             addSection(Strings.capitalizeFirstLetters(Strings.decamelize(field.getName())));
             addField("private " + (field.isMutable() ? "" : "final ") + importIfPossible(field.getType()) + " " + field.getName());
@@ -87,26 +87,27 @@ public class SubclassGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    // TODO: This function is nowhere used!
-    private static final UnaryFunction<@Nonnull Pair<@Nonnull RepresentingFieldInformation, @Nonnull SubclassGenerator>, @Nonnull String> elementInformationToDeclarationFunction = pair -> pair.get1().importIfPossible(pair.get0().getType()) + " " + pair.get0().getName();
-    
+    /**
+     * Generates a constructor, calls the super constructor if available and initializes generated fields.
+     */
     private void generateConstructor(@Nonnull String constructorDeclaration, @Nullable String superStatement) {
         beginConstructor(constructorDeclaration);
         if (superStatement != null) {
             addStatement(superStatement);
             addEmptyLine();
         }
-        for (@Nonnull FieldInformation field : typeInformation.generatedFieldInformation) {
+        for (@Nonnull FieldInformation field : typeInformation.generatedRepresentingFieldInformation) {
             addStatement("this." + field.getName() + " = " + field.getName());
+        }
+        for (@Nonnull FieldInformation field : typeInformation.derivedFieldInformation) {
+            addStatement("this." + field.getName() + " = " + field.getAnnotation(Derive.class).value());
         }
         endConstructor();
     }
     
     private void generateConstructor(@Nonnull ConstructorInformation constructorInformation) {
         @Nullable List<? extends TypeMirror> throwTypes = constructorInformation.getElement().getThrownTypes();
-        final @Nonnull FiniteIterable<ElementInformation> constructorParameter = constructorInformation.getParameters().map(parameter -> (ElementInformation) parameter).combine(typeInformation.generatedFieldInformation);
-        ProcessingLog.debugging("Constructor parameter: $", constructorParameter.join());
-        ProcessingLog.debugging("Constructor throw types: $", throwTypes);
+        final @Nonnull FiniteIterable<ElementInformation> constructorParameter = constructorInformation.getParameters().map(parameter -> (ElementInformation) parameter).combine(typeInformation.generatedRepresentingFieldInformation);
         
         final @Nonnull String superStatement = "super" + constructorInformation.getParameters().map(ElementInformationImplementation::getName).join(Brackets.ROUND);
         

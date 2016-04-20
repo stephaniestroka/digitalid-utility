@@ -27,7 +27,7 @@ import net.digitalid.utility.generator.exceptions.FailedClassGenerationException
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleParameterBasedFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
-import net.digitalid.utility.generator.information.field.GeneratedFieldInformation;
+import net.digitalid.utility.generator.information.field.GeneratedRepresentingFieldInformation;
 import net.digitalid.utility.generator.information.field.NonAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.NonAccessibleParameterBasedFieldInformation;
 import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleDeclaredFieldInformation;
@@ -140,7 +140,7 @@ public class ClassInformation extends TypeInformation {
     
     @Override 
     public @Nonnull FiniteIterable<RepresentingFieldInformation> getRepresentingFieldInformation() {
-        return directlyAccessibleParameterBasedFieldInformation.map(field -> (RepresentingFieldInformation) field).combine(nonDirectlyAccessibleParameterBasedFieldInformation).combine(generatedFieldInformation);
+        return directlyAccessibleParameterBasedFieldInformation.map(field -> (RepresentingFieldInformation) field).combine(nonDirectlyAccessibleParameterBasedFieldInformation).combine(generatedRepresentingFieldInformation);
     }
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
@@ -358,7 +358,7 @@ public class ClassInformation extends TypeInformation {
         
         final @Nonnull Map<String, NonAccessibleDeclaredFieldInformation> indexedNonAccessibleDeclaredFields = indexFieldInformation(nonAccessibleDeclaredFields);
         
-        final @Nonnull Map<String, GeneratedFieldInformation> indexedGeneratedFields = indexFieldInformation(generatedFieldInformation);
+        final @Nonnull Map<String, GeneratedRepresentingFieldInformation> indexedGeneratedFields = indexFieldInformation(generatedRepresentingFieldInformation);
         
         checkRepresentingFields(typeElement, parameterVariables, indexedDirectlyAccessibleDeclaredFields, indexedNonDirectlyAccessibleDeclaredFields, indexedNonAccessibleDeclaredFields, indexedGeneratedFields);
         

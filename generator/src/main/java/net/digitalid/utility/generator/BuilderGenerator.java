@@ -69,9 +69,9 @@ public class BuilderGenerator extends JavaFileGenerator {
             } else {
                 constructorInformation = constructors.getFirst();
             }
-            constructorParameters = constructorInformation.getParameters().map(field -> (ElementInformation) field).combine(typeInformation.generatedFieldInformation);
+            constructorParameters = constructorInformation.getParameters().map(field -> (ElementInformation) field).combine(typeInformation.generatedRepresentingFieldInformation);
         } else {
-            constructorParameters = typeInformation.generatedFieldInformation.map(field -> field);
+            constructorParameters = typeInformation.generatedRepresentingFieldInformation.map(field -> field);
         }
         return constructorParameters;
     }

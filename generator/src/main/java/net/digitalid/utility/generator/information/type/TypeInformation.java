@@ -18,10 +18,12 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterables.InfiniteIterable;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
+import net.digitalid.utility.generator.annotations.Derive;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
-import net.digitalid.utility.generator.information.field.GeneratedFieldInformation;
+import net.digitalid.utility.generator.information.field.GeneratedDerivedFieldInformation;
+import net.digitalid.utility.generator.information.field.GeneratedRepresentingFieldInformation;
 import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
@@ -117,7 +119,14 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     /**
      * An iterable of all generated field information objects.
      */
-    public final @Nonnull FiniteIterable<GeneratedFieldInformation> generatedFieldInformation;
+    public final @Nonnull FiniteIterable<GeneratedRepresentingFieldInformation> generatedRepresentingFieldInformation;
+    
+    /* -------------------------------------------------- Derived Field Information -------------------------------------------------- */
+    
+    /**
+     * An iterable of all derived field information objects.
+     */
+    public final @Nonnull FiniteIterable<GeneratedDerivedFieldInformation> derivedFieldInformation;
     
     /* -------------------------------------------------- Abstract Getter -------------------------------------------------- */
     
@@ -187,8 +196,10 @@ public abstract class TypeInformation extends ElementInformationImplementation {
             gettersAndSetters.add(Pair.of(getter, setter));
         }
         
-        this.generatedFieldInformation = FiniteIterable.of(gettersAndSetters).map((pair) -> (GeneratedFieldInformation.of(pair.get0().getContainingType(), pair.get0(), pair.get1())));
-        
+        this.generatedRepresentingFieldInformation = FiniteIterable.of(gettersAndSetters).filter(pair -> !pair.get0().hasAnnotation(Derive.class)).map((pair) -> (GeneratedRepresentingFieldInformation.of(pair.get0().getContainingType(), pair.get0(), pair.get1())));
+    
+        this.derivedFieldInformation = FiniteIterable.of(abstractGetters.entrySet()).filter(entry -> entry.getValue().hasAnnotation(Derive.class)).map(entry -> GeneratedDerivedFieldInformation.of(entry.getValue().getContainingType(), entry.getValue()));
+    
         final @Nonnull FiniteIterable<MethodInformation> allRemainingAbstractMethods = methodInformation.filter((method) -> (method.isAbstract() && !method.isSetter() && !method.isGetter())).filter(MethodSignatureMatcher.of("equals", Object.class).and(MethodSignatureMatcher.of("toString")).and(MethodSignatureMatcher.of("hashCode")));
         
         if (allRemainingAbstractMethods.size() != 0) {

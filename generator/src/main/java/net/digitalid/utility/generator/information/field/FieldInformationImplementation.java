@@ -1,5 +1,7 @@
 package net.digitalid.utility.generator.information.field;
 
+import java.lang.annotation.Annotation;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Element;

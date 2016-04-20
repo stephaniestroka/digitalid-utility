@@ -32,7 +32,7 @@ public class InterfaceInformation extends TypeInformation {
     @Pure
     @Override
     public @Nonnull FiniteIterable<@Nonnull RepresentingFieldInformation> getRepresentingFieldInformation() {
-        return generatedFieldInformation.map(field -> (RepresentingFieldInformation) field);
+        return generatedRepresentingFieldInformation.map(field -> (RepresentingFieldInformation) field);
     }
     
     /* -------------------------------------------------- Overriden Methods -------------------------------------------------- */

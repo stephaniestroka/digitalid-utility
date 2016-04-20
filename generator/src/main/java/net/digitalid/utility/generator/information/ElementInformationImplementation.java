@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
@@ -172,6 +173,15 @@ public abstract class ElementInformationImplementation implements ElementInforma
     @Override
     public boolean hasAnnotation(@Nonnull Class<? extends Annotation> annotationType) {
         return annotations.containsKey(annotationType.getCanonicalName());
+    }
+    
+    /**
+     * Returns an annotation of a given type of the field, or null, if no such annotation was found.
+     */
+    @Pure
+    @Override
+    public @Nullable <A extends Annotation> A getAnnotation(@Nonnull Class<A> annotationType) {
+        return element.getAnnotation(annotationType);
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */

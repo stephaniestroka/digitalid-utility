@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
@@ -154,4 +155,6 @@ public interface ElementInformation {
     
     // TODO: Implement method to retrieve all annotations including their values as a string. (Determine if there is already somewhere a utility method for that or implement one in ProcessingUtility otherwise.)
     
+    @Pure
+    public @Nullable <A extends Annotation> A getAnnotation(@Nonnull Class<A> annotationType);
 }

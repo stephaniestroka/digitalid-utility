@@ -15,7 +15,7 @@ import net.digitalid.utility.annotations.method.Pure;
  * This type collects the relevant information about a non-directly accessible field for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.
  * 
  * @see NonDirectlyAccessibleParameterBasedFieldInformation
- * @see GeneratedFieldInformation
+ * @see GeneratedRepresentingFieldInformation
  */
 public abstract class NonDirectlyAccessibleFieldInformation extends FieldInformationImplementation {
     
