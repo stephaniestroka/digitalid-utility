@@ -399,7 +399,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the first element of this iterable that fulfills the given predicate or the given default element if no such element is found.
      */
     @Pure
-    public default @NonCapturable E findFirst(@Nonnull Predicate<? super E> predicate, @NonCaptured @Unmodified E defaultElement) {
+    public default @NonCapturable @Nullable E findFirst(@Nonnull Predicate<? super E> predicate, @NonCaptured @Unmodified E defaultElement) {
         for (E element : this) {
             if (predicate.evaluate(element)) { return element; }
         }

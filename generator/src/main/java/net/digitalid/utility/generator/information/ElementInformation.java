@@ -156,5 +156,5 @@ public interface ElementInformation {
     // TODO: Implement method to retrieve all annotations including their values as a string. (Determine if there is already somewhere a utility method for that or implement one in ProcessingUtility otherwise.)
     
     @Pure
-    public @Nullable <A extends Annotation> A getAnnotation(@Nonnull Class<A> annotationType);
+    public @Nonnull <A extends Annotation> A getAnnotation(@Nonnull Class<A> annotationType);
 }

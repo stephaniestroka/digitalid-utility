@@ -24,7 +24,6 @@ import net.digitalid.utility.generator.information.ElementInformationImplementat
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedDerivedFieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedRepresentingFieldInformation;
-import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.query.MethodSignatureMatcher;
@@ -56,7 +55,23 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns an iterable of the representing field information objects.
      */
     @Pure
-    public abstract @Nonnull FiniteIterable<RepresentingFieldInformation> getRepresentingFieldInformation();
+    public abstract @Nonnull FiniteIterable<FieldInformation> getRepresentingFieldInformation();
+    
+    /* -------------------------------------------------- Accessible Field Information -------------------------------------------------- */
+    
+    /**
+     * Returns an iterable of the accessible field information objects.
+     */
+    @Pure
+    public abstract @Nonnull FiniteIterable<FieldInformation> getAccessibleFieldInformation();
+    
+    /* -------------------------------------------------- Field Information -------------------------------------------------- */
+    
+    /**
+     * Returns an iterable of the field information objects.
+     */
+    @Pure
+    public abstract @Nonnull FiniteIterable<FieldInformation> getFieldInformation();
     
     /* -------------------------------------------------- Overridden Methods -------------------------------------------------- */
     

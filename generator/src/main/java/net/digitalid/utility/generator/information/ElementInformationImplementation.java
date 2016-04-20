@@ -17,6 +17,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.state.Unmodifiable;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.information.field.FieldInformationImplementation;
 import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
@@ -180,7 +181,8 @@ public abstract class ElementInformationImplementation implements ElementInforma
      */
     @Pure
     @Override
-    public @Nullable <A extends Annotation> A getAnnotation(@Nonnull Class<A> annotationType) {
+    public @Nonnull <A extends Annotation> A getAnnotation(@Nonnull Class<A> annotationType) {
+        Require.that(hasAnnotation(annotationType)).orThrow("$ does not have an annotation named $", element, annotationType);
         return element.getAnnotation(annotationType);
     }
     

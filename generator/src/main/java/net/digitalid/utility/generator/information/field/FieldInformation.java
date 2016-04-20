@@ -1,14 +1,12 @@
 package net.digitalid.utility.generator.information.field;
 
-import java.lang.annotation.Annotation;
-
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.information.ElementInformation;
-import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 
 /**
  * This type collects the relevant information about a field for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
@@ -16,7 +14,7 @@ import net.digitalid.utility.annotations.method.Pure;
  * @see PotentiallyInheritedFieldInformation
  * @see RepresentingFieldInformation
  */
-public interface FieldInformation extends ElementInformation {
+public interface FieldInformation extends ElementInformation, VariableElementInformation {
     
     /* -------------------------------------------------- Default Value -------------------------------------------------- */
     
@@ -25,14 +23,6 @@ public interface FieldInformation extends ElementInformation {
      */
     @Pure
     public boolean hasDefaultValue();
-    
-    /**
-     * Returns the default value of this field.
-     * 
-     * @require hasDefaultValue() : "This field has to have a default value.";
-     */
-    @Pure
-    public @Nonnull String getDefaultValue();
     
     /* -------------------------------------------------- Access -------------------------------------------------- */
     

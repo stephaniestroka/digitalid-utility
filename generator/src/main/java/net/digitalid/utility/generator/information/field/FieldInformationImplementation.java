@@ -1,18 +1,18 @@
 package net.digitalid.utility.generator.information.field;
 
-import java.lang.annotation.Annotation;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
-import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.annotations.Default;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
+import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
-import net.digitalid.utility.annotations.method.Pure;
+
+import com.sun.tools.javac.code.Type;
 
 /**
  * This class implements the {@link FieldInformation} interface.
@@ -34,11 +34,29 @@ public abstract class FieldInformationImplementation extends ElementInformationI
     
     @Pure
     @Override
-    @SuppressWarnings("null")
     public @Nonnull String getDefaultValue() {
-        Require.that(hasDefaultValue()).orThrow("This field has to have a default value.");
-        
-        return defaultValue;
+        if (defaultValue == null) {
+            final String typeName;
+            if (getType().getKind().isPrimitive()) {
+                if (getType() instanceof Type.AnnotatedType) {
+                    Type.AnnotatedType annotatedType = (Type.AnnotatedType) getType();
+                    final Type type = annotatedType.unannotatedType();
+                    typeName = type.toString();
+                } else {
+                    typeName = getType().toString();
+                }
+                if (typeName.equals("boolean")) {
+                    return "false";
+                } else {
+                    return "0";
+                }
+            } else {
+                ProcessingLog.debugging("element: $, type kind: $", getElement(), getType().getKind());
+                return "null";
+            }
+        } else {
+            return defaultValue;
+        }
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */

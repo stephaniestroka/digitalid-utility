@@ -1,6 +1,8 @@
 package net.digitalid.utility.generator.information.type;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,17 +27,12 @@ import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.annotations.Recover;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
-import net.digitalid.utility.generator.information.field.DirectlyAccessibleParameterBasedFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
-import net.digitalid.utility.generator.information.field.GeneratedRepresentingFieldInformation;
 import net.digitalid.utility.generator.information.field.NonAccessibleDeclaredFieldInformation;
-import net.digitalid.utility.generator.information.field.NonAccessibleParameterBasedFieldInformation;
 import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleDeclaredFieldInformation;
-import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleParameterBasedFieldInformation;
-import net.digitalid.utility.generator.information.field.ParameterBasedFieldInformation;
-import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
+import net.digitalid.utility.generator.information.method.MethodParameterInformation;
 import net.digitalid.utility.generator.query.MethodSignatureMatcher;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
@@ -138,24 +135,66 @@ public class ClassInformation extends TypeInformation {
         return constructors;
     }
     
-    @Override 
+    /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
+    
+    /**
+     * Finds and returns a subset of the accessible field information that maps to the parameters of the constructors.
+     */
+    private @Nonnull FiniteIterable<@Nonnull FieldInformation> extractRepresentingFieldInformation() {
+        final @Nonnull Set<FieldInformation> representingFieldInformation = new HashSet<>();
+        for (@Nonnull ConstructorInformation constructor : constructors) {
+            @Nonnull final FiniteIterable<MethodParameterInformation> parameters = constructor.getParameters();
+            for (@Nonnull MethodParameterInformation parameter : parameters) {
+                if (parameter.getMatchingField() != null) {
+                    representingFieldInformation.add(parameter.getMatchingField());
+                }
+            }
+        }
+        return FiniteIterable.of(representingFieldInformation).combine(generatedRepresentingFieldInformation);
+    }
+    
+    private final @Nonnull FiniteIterable<@Nonnull FieldInformation> representingFieldInformation;
+    
+    /**
+     * Returns a subset of the accessible field information that maps to the parameters of the constructors.
+     */
+    @Override
+    public @Nonnull FiniteIterable<FieldInformation> getRepresentingFieldInformation() {
+        return representingFieldInformation;
+    }
+    
+    /* -------------------------------------------------- Accessible Field Information -------------------------------------------------- */
+    
+    @Override
+    public @Nonnull FiniteIterable<FieldInformation> getAccessibleFieldInformation() {
+        return directlyAccessibleDeclaredFields.map(field -> (FieldInformation) field).combine(nonDirectlyAccessibleDeclaredFields).combine(generatedRepresentingFieldInformation);
+    }
+    
+    /* -------------------------------------------------- Field Information -------------------------------------------------- */
+    
+    @Override
+    public @Nonnull FiniteIterable<FieldInformation> getFieldInformation() {
+        return getAccessibleFieldInformation().combine(nonAccessibleDeclaredFields);
+    }
+    
+    /*@Override 
     public @Nonnull FiniteIterable<RepresentingFieldInformation> getRepresentingFieldInformation() {
         return directlyAccessibleParameterBasedFieldInformation.map(field -> (RepresentingFieldInformation) field).combine(nonDirectlyAccessibleParameterBasedFieldInformation).combine(generatedRepresentingFieldInformation);
-    }
+    }*/
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
-    public final @Nonnull FiniteIterable<@Nonnull ParameterBasedFieldInformation> parameterBasedFieldInformation;
-    
-    /**
-     * Stores the fields associated with the parameters of the constructor, which also represent the object.
-     */
-    final @Nonnull FiniteIterable<@Nonnull DirectlyAccessibleParameterBasedFieldInformation> directlyAccessibleParameterBasedFieldInformation;
-    
-    final @Nonnull FiniteIterable<@Nonnull NonDirectlyAccessibleParameterBasedFieldInformation> nonDirectlyAccessibleParameterBasedFieldInformation;
-    
-    final @Nonnull FiniteIterable<@Nonnull NonAccessibleParameterBasedFieldInformation> nonAccessibleParameterBasedFieldInformation;
-    
+//    public final @Nonnull FiniteIterable<@Nonnull ParameterBasedFieldInformation> parameterBasedFieldInformation;
+//    
+//    /**
+//     * Stores the fields associated with the parameters of the constructor, which also represent the object.
+//     */
+//    private final @Nonnull FiniteIterable<@Nonnull DirectlyAccessibleParameterBasedFieldInformation> directlyAccessibleParameterBasedFieldInformation;
+//    
+//    final @Nonnull FiniteIterable<@Nonnull NonDirectlyAccessibleParameterBasedFieldInformation> nonDirectlyAccessibleParameterBasedFieldInformation;
+//    
+//    final @Nonnull FiniteIterable<@Nonnull NonAccessibleParameterBasedFieldInformation> nonAccessibleParameterBasedFieldInformation;
+//    
     /**
      * Stores the accessible fields that are mutable and must be validated by the generated subclass.
      */
@@ -330,9 +369,6 @@ public class ClassInformation extends TypeInformation {
             this.recoverMethod = null;
         }
         
-        this.constructors = FiniteIterable.of(javax.lang.model.util.ElementFilter.constructorsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))).map((element) -> (ConstructorInformation.of(element, containingType)));
-        ProcessingLog.debugging("Found constructors: $", constructors.join());
-        
         final @Nonnull FiniteIterable<VariableElement> fields = FiniteIterable.of(ElementFilter.fieldsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement)));
         
         this.directlyAccessibleDeclaredFields = getDirectlyAccessibleFieldInformation(fields, containingType);
@@ -343,6 +379,12 @@ public class ClassInformation extends TypeInformation {
         
         this.nonAccessibleDeclaredFields = getNonAccessibleFieldInformation(fields, methodInformationIterable, containingType);
         
+        this.constructors = FiniteIterable.of(javax.lang.model.util.ElementFilter.constructorsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))).map((element) -> (ConstructorInformation.of(element, containingType, directlyAccessibleDeclaredFields, nonDirectlyAccessibleDeclaredFields)));
+        ProcessingLog.debugging("Found constructors: $", constructors.join());
+        
+        this.representingFieldInformation = extractRepresentingFieldInformation();
+        
+        /*
         final @Nullable ExecutableElement recoverExecutable;
         recoverExecutable = getRecoverExecutable(recoverMethod, constructors);
         final @Nonnull FiniteIterable<@Nonnull VariableElement> parameterVariables;
@@ -388,6 +430,7 @@ public class ClassInformation extends TypeInformation {
                 )
         );
         this.parameterBasedFieldInformation = directlyAccessibleParameterBasedFieldInformation.map(field -> (ParameterBasedFieldInformation) field).combine(nonDirectlyAccessibleParameterBasedFieldInformation).combine(nonAccessibleParameterBasedFieldInformation);
+        */
     }
     
     /**

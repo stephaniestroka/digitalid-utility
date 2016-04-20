@@ -10,11 +10,13 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
+import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
+import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
-import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This type collects the relevant information about an executable for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.
@@ -68,16 +70,20 @@ public abstract class ExecutableInformation extends ElementInformationImplementa
         return hasSingleParameter(type.getCanonicalName());
     }
     
+    /* -------------------------------------------------- Method Parameters -------------------------------------------------- */
+    
+    /**
+     * An iterable of parameters.
+     */
+    private final @Nonnull FiniteIterable<@Nonnull MethodParameterInformation> parameters;
+    
     /**
      * Returns a list of parameters.
      */
     @Pure
     public @Nonnull FiniteIterable<MethodParameterInformation> getParameters() {
-        @Nonnull List<MethodParameterInformation> parameters = new ArrayList<>(getElement().getParameters().size());
-        for (@Nonnull VariableElement variableElement : getElement().getParameters()) {
-            parameters.add(new MethodParameterInformation(variableElement, getContainingType()));
-        }
-        return FiniteIterable.of(parameters);
+        return parameters;
+        
     }
     
     /* -------------------------------------------------- Exceptions -------------------------------------------------- */
@@ -91,6 +97,22 @@ public abstract class ExecutableInformation extends ElementInformationImplementa
     
     protected ExecutableInformation(@Nonnull Element element, @Nonnull DeclaredType containingType) {
         super(element, StaticProcessingEnvironment.getTypeUtils().asMemberOf(containingType, element), containingType);
+        
+        final @Nonnull List<MethodParameterInformation> parameterList = new ArrayList<>(getElement().getParameters().size());
+        for (@Nonnull VariableElement variableElement : getElement().getParameters()) {
+            parameterList.add(new MethodParameterInformation(variableElement, getContainingType()));
+        }
+        this.parameters = FiniteIterable.of(parameterList);
+    }
+    
+    protected ExecutableInformation(@Nonnull Element element, @Nonnull DeclaredType containingType, @Nonnull FiniteIterable<@Nonnull DirectlyAccessibleDeclaredFieldInformation> directlyAccessibleDeclaredFieldInformation, @Nonnull FiniteIterable<@Nonnull NonDirectlyAccessibleDeclaredFieldInformation> nonDirectlyAccessibleDeclaredFieldInformation) {
+        super(element, StaticProcessingEnvironment.getTypeUtils().asMemberOf(containingType, element), containingType);
+        
+        final @Nonnull List<MethodParameterInformation> parameterList = new ArrayList<>(getElement().getParameters().size());
+        for (@Nonnull VariableElement variableElement : getElement().getParameters()) {
+            parameterList.add(new MethodParameterInformation(variableElement, getContainingType(), directlyAccessibleDeclaredFieldInformation, nonDirectlyAccessibleDeclaredFieldInformation));
+        }
+        this.parameters = FiniteIterable.of(parameterList);
     }
     
 }

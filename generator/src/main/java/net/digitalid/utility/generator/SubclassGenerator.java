@@ -25,7 +25,6 @@ import net.digitalid.utility.generator.information.ElementInformationImplementat
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedFieldInformation;
-import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.type.ClassInformation;
@@ -251,8 +250,8 @@ public class SubclassGenerator extends JavaFileGenerator {
         addStatement("int prime = 92821");
         addStatement("int result = 46411");
         // TODO: Primitive types are auto-boxed right now. Is the hash of an auto-boxed value always the same?
-        final @Nonnull FiniteIterable<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
-        for (@Nonnull RepresentingFieldInformation field : representingFieldInformation) {
+        final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
+        for (@Nonnull FieldInformation field : representingFieldInformation) {
             generateHashCodeTypeVisitor.visit(field.getType(), Triplet.of(field.getAccessCode(), this, "result"));
         }
         addStatement("return result");
@@ -279,9 +278,9 @@ public class SubclassGenerator extends JavaFileGenerator {
         endIf();
         addStatement("final @" + importIfPossible(Nonnull.class)+ " " + typeInformation.getName() + " that = (" + typeInformation.getName() + ") object");
         addStatement("boolean result = true");
-        final @Nonnull FiniteIterable<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
+        final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
         ProcessingLog.debugging("generating equals method...");
-        for (@Nonnull RepresentingFieldInformation field : representingFieldInformation) {
+        for (@Nonnull FieldInformation field : representingFieldInformation) {
             ProcessingLog.debugging("...with representing field/method $", field.getAccessCode());
             final @Nonnull String accessCode = field.getAccessCode();
             // TODO: Maybe we should compare primitive values directly instead of boxing them.
@@ -301,9 +300,9 @@ public class SubclassGenerator extends JavaFileGenerator {
             addAnnotation(Pure.class);
             addAnnotation(Override.class);
             beginMethod("public int compareTo(@" + importIfPossible(Nonnull.class) + " " + typeInformation.getName() + " other)");
-            final @Nonnull FiniteIterable<RepresentingFieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
+            final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
             addStatement("int result = 0");
-            for (@Nonnull RepresentingFieldInformation field : representingFieldInformation) {
+            for (@Nonnull FieldInformation field : representingFieldInformation) {
                 // TODO: Doesn't work for primitive values! And shouldn't the next field only be used if the comparison of the previous field was 0?
                 addStatement("result += " + field.getAccessCode() + ".compareTo(other." + field.getAccessCode() + ")");
             }

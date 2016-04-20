@@ -10,7 +10,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
-import net.digitalid.utility.generator.information.field.RepresentingFieldInformation;
+import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 
@@ -27,12 +27,28 @@ public class InterfaceInformation extends TypeInformation {
         return FiniteIterable.of(Collections.<ConstructorInformation>emptyList());
     }
     
+    /* -------------------------------------------------- Field Information -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public @Nonnull FiniteIterable<@Nonnull FieldInformation> getFieldInformation() {
+        return generatedRepresentingFieldInformation.map(field -> field);
+    }
+    
+    /* -------------------------------------------------- Accessible Field Information -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public @Nonnull FiniteIterable<@Nonnull FieldInformation> getAccessibleFieldInformation() {
+        return getFieldInformation();
+    }
+    
     /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Nonnull FiniteIterable<@Nonnull RepresentingFieldInformation> getRepresentingFieldInformation() {
-        return generatedRepresentingFieldInformation.map(field -> (RepresentingFieldInformation) field);
+    public @Nonnull FiniteIterable<@Nonnull FieldInformation> getRepresentingFieldInformation() {
+        return getFieldInformation();
     }
     
     /* -------------------------------------------------- Overriden Methods -------------------------------------------------- */
