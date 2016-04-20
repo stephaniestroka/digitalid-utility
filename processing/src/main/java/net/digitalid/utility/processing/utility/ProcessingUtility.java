@@ -333,17 +333,16 @@ public class ProcessingUtility {
     public static @Nullable ExecutableElement getMethod(@Nonnull TypeElement typeElement, @Nonnull String methodName, @Nonnull Class<?> returnType, @Nonnull Class<?>... parameterTypes) {
         final @Nonnull DeclaredType surroundingType = (DeclaredType) typeElement.asType();
         for (@Nonnull ExecutableElement inheritedMethod : ElementFilter.methodsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))) {
-            final @Nonnull ExecutableElement method = (ExecutableElement) StaticProcessingEnvironment.getTypeUtils().asMemberOf(surroundingType, inheritedMethod);
-            if (method.getSimpleName().contentEquals(methodName) && method.getThrownTypes().isEmpty()) {
-                final @Nonnull ExecutableType methodType = (ExecutableType) method.asType();
-                if (isAssignable(method.getReturnType(), returnType)) {
+            final @Nonnull ExecutableType methodType = (ExecutableType) StaticProcessingEnvironment.getTypeUtils().asMemberOf(surroundingType, inheritedMethod);
+            if (inheritedMethod.getSimpleName().contentEquals(methodName) && inheritedMethod.getThrownTypes().isEmpty()) {
+                if (isAssignable(inheritedMethod.getReturnType(), returnType)) {
                     if (methodType.getParameterTypes().size() == parameterTypes.length) {
                         boolean isAssignable = true;
                         for (int i = 0; i < parameterTypes.length; i++) {
                             final @Nonnull TypeMirror parameterType = methodType.getParameterTypes().get(i);
                             if (parameterType.getKind() == TypeKind.TYPEVAR || !parameterType.toString().equals(parameterTypes[i].getCanonicalName())) { isAssignable = false; }
                         }
-                        if (isAssignable) { return method; }
+                        if (isAssignable) { return inheritedMethod; }
                     }
                 }
             }

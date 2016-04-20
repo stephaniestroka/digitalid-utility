@@ -14,6 +14,8 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.freezable.FreezableInterface;
+import net.digitalid.utility.functional.fixes.Quotes;
+import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.MethodValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -48,7 +50,7 @@ public @interface NonFrozenRecipient {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("!isFrozen()", "The method # may only be called on non-frozen objects.", element);
+            return Contract.with("!isFrozen()", "The method " + Quotes.inSingle(element.getSimpleName().toString()) + " may only be called on non-frozen objects.");
         }
         
     }

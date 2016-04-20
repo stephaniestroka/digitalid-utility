@@ -133,23 +133,15 @@ public class SubclassGenerator extends JavaFileGenerator {
     }
     /* -------------------------------------------------- Overridden Methods -------------------------------------------------- */
     
+    /**
+     * Overrides the methods of the superclass and generates contracts and/or method interceptors according to the method annotations.
+     */
     protected void overrideMethods() {
-        // TODO: I had the problem that the generator also tried to override private methods.
         if (!typeInformation.getOverriddenMethods().isEmpty()) { addSection("Overridden Methods"); }
         for (final @Nonnull MethodInformation method : typeInformation.getOverriddenMethods()) {
             ProcessingLog.verbose("Overriding the method $.", method.getName());
-            
-            // TODO: Please generate the pre- and post-conditions again.
-            // TODO: Why is the result first declared and only then assigned (with the real value and not just null)?
             final @Nonnull String callToSuperMethod = MethodUtility.createSuperCall(method, "result");
-            final @Nonnull String firstMethodCall = implementCallToMethodInterceptors(method, callToSuperMethod, "result"); 
-            addAnnotation(Override.class);
-            MethodUtility.generateBeginMethod(this, method, null, "result");
-            addStatement(firstMethodCall);
-            if (method.hasReturnType()) {
-                addStatement("return result");
-            }
-            endMethod();
+            generateMethodWithStatement(method, callToSuperMethod, "result");
         }
     }
     
@@ -158,6 +150,7 @@ public class SubclassGenerator extends JavaFileGenerator {
     }
     
     private void generateMethodWithStatement(@Nonnull MethodInformation method, @Nonnull String statement, @Nullable String returnedValue) {
+        Require.that(!method.hasReturnType() || returnedValue != null).orThrow("Trying to generate the method $ with return type, but a return variable was not given");
         final @Nonnull String firstMethodCall = implementCallToMethodInterceptors(method, statement, returnedValue);
         addAnnotation(Override.class);
         MethodUtility.generateBeginMethod(this, method, null, returnedValue);
@@ -176,7 +169,7 @@ public class SubclassGenerator extends JavaFileGenerator {
             ProcessingLog.debugging("for annotation: " + entry.getKey());
             addPostcondition(entry.getValue().generateContract(method.getElement(), entry.getKey(), this));
         }
-        if (returnedValue != null) {
+        if (method.hasReturnType()) {
             addStatement("return " + returnedValue);
         }
         endMethod();

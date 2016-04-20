@@ -31,6 +31,7 @@ public final class MethodUtility {
             methodName = method.getName();
         }
         javaFileGenerator.beginMethod(method.getModifiersForOverridingMethod() + javaFileGenerator.importIfPossible(method.getType()) + " " + methodName + javaFileGenerator.declareParameters(method.getType(), method.getElement()) + (method.getElement().getThrownTypes().isEmpty() ? "" : " throws " + FiniteIterable.of(method.getElement().getThrownTypes()).map(javaFileGenerator::importIfPossible).join()));
+        // TODO (steffi, 20.04.2016): Split the following from the method. Allow handing of initial method call. Instead of assigning an initial value, we could just assign the result from the initial method call.
         if (resultVariable != null && method.hasReturnType()) {
             final @Nonnull String initialValue;
             if (method.getType().getReturnType().getKind().isPrimitive()) {

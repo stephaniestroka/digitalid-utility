@@ -48,7 +48,7 @@ public @interface Chainable {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == this", "The # has to be this but was $.", element);
+            return Contract.with("# == this", "The # has to be <this> but was $.", element);
         }
         
     }
