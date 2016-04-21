@@ -64,14 +64,13 @@ public class SubclassGenerator extends JavaFileGenerator {
         for (@Nonnull GeneratedFieldInformation field : generatedFieldInformation) {
             ProcessingLog.verbose("Generating the field $.", field.getName());
             addSection(Strings.capitalizeFirstLetters(Strings.decamelize(field.getName())));
-            addField("private " + (field.isMutable() ? "" : "final ") + importIfPossible(field.getType()) + " " + field.getName());
+            addField("private " + (field.isMutable() ? "" : "final ") + field.getFieldType(this) + " " + field.getName());
             
             @Nullable Normalize normalize = null;
             {
                 final @Nonnull MethodInformation getter = field.getGetter();
                 ProcessingLog.verbose("Implementing the getter $.", getter.getName());
-                final @Nonnull String statement = "result = this." + field.getName();
-                generateMethodWithStatement(getter, statement, "result");
+                generateMethodWithStatement(getter, "this." + field.getName(), "result", field.getDefaultValue());
                 if (getter.hasAnnotation(Normalize.class)) {
                     normalize = getter.getAnnotation(Normalize.class);
                 }
@@ -146,10 +145,13 @@ public class SubclassGenerator extends JavaFileGenerator {
         }
     }
     
-    protected @Nonnull String implementCallToMethodInterceptors(@Nonnull MethodInformation method, @Nonnull String lastStatement, @Nullable String returnedValue) {
+    protected @Nonnull String implementCallToMethodInterceptors(@Nonnull MethodInformation method, @Nonnull String lastStatement, @Nullable String returnedValue, @Nullable String defaultValue) {
         for (Map.@Nonnull Entry<AnnotationMirror, MethodInterceptor> annotationMirrorMethodInterceptorEntry : method.getInterceptors().entrySet()) {
             final @Nonnull MethodInterceptor methodInterceptor = annotationMirrorMethodInterceptorEntry.getValue();
-            lastStatement = methodInterceptor.generateInterceptorMethod(this, method, lastStatement, returnedValue);
+            lastStatement = methodInterceptor.generateInterceptorMethod(this, method, lastStatement, returnedValue, defaultValue);
+        }
+        if (method.hasReturnType()) {
+            lastStatement = method.getReturnType(this) + " " + returnedValue + " = " + lastStatement;
         }
         return lastStatement;
     }
@@ -162,20 +164,20 @@ public class SubclassGenerator extends JavaFileGenerator {
         if (!typeInformation.getOverriddenMethods().isEmpty()) { addSection("Overridden Methods"); }
         for (final @Nonnull MethodInformation method : typeInformation.getOverriddenMethods()) {
             ProcessingLog.verbose("Overriding the method $.", method.getName());
-            final @Nonnull String callToSuperMethod = MethodUtility.createSuperCall(method, "result");
-            generateMethodWithStatement(method, callToSuperMethod, "result");
+            final @Nonnull String callToSuperMethod = MethodUtility.createSuperCall(method, "result", this);
+            generateMethodWithStatement(method, callToSuperMethod, "result", method.getDefaultValue());
         }
     }
     
     private void generateMethodWithStatement(@Nonnull MethodInformation method, @Nonnull String statement) {
-        generateMethodWithStatement(method, statement, null);
+        generateMethodWithStatement(method, statement, null, null);
     }
     
-    private void generateMethodWithStatement(@Nonnull MethodInformation method, @Nonnull String statement, @Nullable String returnedValue) {
+    private void generateMethodWithStatement(@Nonnull MethodInformation method, @Nonnull String statement, @Nullable String returnedValue, @Nullable String defaultValue) {
         Require.that(!method.hasReturnType() || returnedValue != null).orThrow("Trying to generate the method $ with return type, but a return variable was not given");
-        final @Nonnull String firstMethodCall = implementCallToMethodInterceptors(method, statement, returnedValue);
+        final @Nonnull String firstMethodCall = implementCallToMethodInterceptors(method, statement, returnedValue, defaultValue);
         addAnnotation(Override.class);
-        MethodUtility.generateBeginMethod(this, method, null, returnedValue);
+        MethodUtility.generateBeginMethod(this, method, null);
         for (@Nonnull VariableElement parameter : method.getElement().getParameters()) {
             for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : ValidatorProcessingUtility.getValueValidators(parameter).entrySet()) {
                 addPrecondition(entry.getValue().generateContract(parameter, entry.getKey(), this));

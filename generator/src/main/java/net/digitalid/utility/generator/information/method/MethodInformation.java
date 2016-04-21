@@ -5,25 +5,37 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.QualifiedNameable;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.annotations.Default;
 import net.digitalid.utility.generator.annotations.Interceptor;
 import net.digitalid.utility.generator.annotations.Recover;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
+import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
+import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
+
+import com.sun.tools.javac.code.Type;
 
 /**
  * This type collects the relevant information about a method for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.
@@ -158,6 +170,44 @@ public class MethodInformation extends ExecutableInformation {
         return interceptors;
     }
     
+    /* -------------------------------------------------- Default Values -------------------------------------------------- */
+    
+    @Pure
+    public @Nullable String getDefaultValue() {
+        if (isGetter()) {
+            final @Nonnull FiniteIterable<VariableElement> fields = FiniteIterable.of(ElementFilter.fieldsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers((TypeElement) getContainingType().asElement())));
+            final @Nullable VariableElement fieldElement = fields.findFirst(field -> field.getSimpleName().contentEquals(getFieldName()));
+            if (fieldElement == null) {
+                ProcessingLog.information("Found the method $, which looks like a getter, but does not have a corresponding field.", getName());
+                return null;
+            }
+            final @Nullable Default defaultAnnotation = fieldElement.getAnnotation(Default.class);
+            if (defaultAnnotation != null) {
+                return defaultAnnotation.value();
+            } else {
+                if (getType().getKind().isPrimitive()) {
+                    final @Nonnull String typeName;
+                    if (getType() instanceof Type.AnnotatedType) {
+                        Type.AnnotatedType annotatedType = (Type.AnnotatedType) getType();
+                        final Type type = annotatedType.unannotatedType();
+                        typeName = type.toString();
+                    } else {
+                        typeName = getType().toString();
+                    }
+                    if (typeName.equals("boolean")) {
+                        return "false";
+                    } else {
+                        return "0";
+                    }
+                } else {
+                    return "null";
+                }
+            }
+        } else {
+            return null;
+        }
+    }
+    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     protected MethodInformation(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType) {
@@ -198,4 +248,54 @@ public class MethodInformation extends ExecutableInformation {
         return new MethodInformation(element, containingType);
     }
     
+    public @Nonnull String getReturnTypeAnnotations(@Nonnull JavaFileGenerator javaFileGenerator) {
+        final @Nonnull TypeMirror typeMirror = StaticProcessingEnvironment.getTypeUtils().asMemberOf(getContainingType(), getElement());
+        final @Nonnull ExecutableType executableType = (ExecutableType) typeMirror;
+        final @Nonnull TypeMirror returnType = executableType.getReturnType();
+        final @Nonnull StringBuilder returnTypeAsString = new StringBuilder();
+        
+        if (returnType instanceof Type.AnnotatedType) {
+            final Type.AnnotatedType annotatedType = (Type.AnnotatedType) returnType;
+            
+            for (AnnotationMirror annotationMirror : annotatedType.getAnnotationMirrors()) {
+                returnTypeAsString.append("@").append(javaFileGenerator.importIfPossible(annotationMirror.getAnnotationType()));
+                if (annotationMirror.getElementValues().size() > 0) {
+                    returnTypeAsString.append("(");
+                    for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> elementValue : annotationMirror.getElementValues().entrySet()) {
+                        final @Nonnull String nameOfKey = elementValue.getKey().getSimpleName().toString();
+                        if (!nameOfKey.equals("value")) {
+                            returnTypeAsString.append(nameOfKey).append("=").append(elementValue.getValue());
+                        } else {
+                            returnTypeAsString.append(elementValue.getValue());
+                        }
+                    }
+                    returnTypeAsString.append(")");
+                }
+                returnTypeAsString.append(" ");
+            }
+        }
+        return returnTypeAsString.toString();
+    }
+    
+    public @Nullable String getReturnType(@Nonnull JavaFileGenerator javaFileGenerator) {
+        if (!hasReturnType()) {
+            return null;
+        }
+        final @Nonnull TypeMirror typeMirror = StaticProcessingEnvironment.getTypeUtils().asMemberOf(getContainingType(), getElement());
+        Require.that(typeMirror instanceof ExecutableType).orThrow("Expected ExecutableType, but got $", getContainingType());
+        
+        final @Nonnull ExecutableType executableType = (ExecutableType) typeMirror;
+        final @Nonnull TypeMirror returnType = executableType.getReturnType();
+    
+        final @Nonnull StringBuilder returnTypeAsString = new StringBuilder();
+        if (returnType instanceof Type.AnnotatedType) {
+            final Type.AnnotatedType annotatedType = (Type.AnnotatedType) returnType;
+            returnTypeAsString.append(getReturnTypeAnnotations(javaFileGenerator));
+            returnTypeAsString.append(javaFileGenerator.importIfPossible(annotatedType.unannotatedType()));
+        } else {
+            returnTypeAsString.append(javaFileGenerator.importIfPossible(returnType));
+        }
+        ProcessingLog.debugging("Stringifying return type: $ = $", returnType.getClass(), returnTypeAsString);
+        return returnTypeAsString.toString();
+    }
 }

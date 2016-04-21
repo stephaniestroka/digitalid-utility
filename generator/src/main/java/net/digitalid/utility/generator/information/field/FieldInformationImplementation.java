@@ -1,8 +1,13 @@
 package net.digitalid.utility.generator.information.field;
 
+import java.util.Map;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
@@ -11,6 +16,7 @@ import net.digitalid.utility.generator.annotations.Default;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.processor.generator.JavaFileGenerator;
 
 import com.sun.tools.javac.code.Type;
 
@@ -57,6 +63,35 @@ public abstract class FieldInformationImplementation extends ElementInformationI
         } else {
             return defaultValue;
         }
+    }
+    
+    /* -------------------------------------------------- Type -------------------------------------------------- */
+    
+    public @Nonnull String getFieldType(@Nonnull JavaFileGenerator javaFileGenerator) {
+        final @Nonnull StringBuilder returnTypeAsString = new StringBuilder();
+        if (getType() instanceof Type.AnnotatedType) {
+            final Type.AnnotatedType annotatedType = (Type.AnnotatedType) getType();
+            for (AnnotationMirror annotationMirror : annotatedType.getAnnotationMirrors()) {
+                returnTypeAsString.append("@").append(javaFileGenerator.importIfPossible(annotationMirror.getAnnotationType()));
+                if (annotationMirror.getElementValues().size() > 0) {
+                    returnTypeAsString.append("(");
+                    for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> elementValue : annotationMirror.getElementValues().entrySet()) {
+                        final @Nonnull String nameOfKey = elementValue.getKey().getSimpleName().toString();
+                        if (!nameOfKey.equals("value")) {
+                            returnTypeAsString.append(nameOfKey).append("=").append(elementValue.getValue());
+                        } else {
+                            returnTypeAsString.append(elementValue.getValue());
+                        }
+                    }
+                    returnTypeAsString.append(")");
+                }
+                returnTypeAsString.append(" ");
+            }
+            returnTypeAsString.append(javaFileGenerator.importIfPossible(annotatedType.unannotatedType()));
+        } else {
+            returnTypeAsString.append(javaFileGenerator.importIfPossible(getType()));
+        }
+        return returnTypeAsString.toString();
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */

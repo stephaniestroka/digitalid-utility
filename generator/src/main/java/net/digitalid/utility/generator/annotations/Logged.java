@@ -38,11 +38,12 @@ public @interface Logged {
         }
         
         @Override
-        protected void implementInterceptorMethod(@Nonnull JavaFileGenerator javaFileGenerator, @Nonnull MethodInformation method, @Nonnull String statement, @Nullable String resultVariable) {
+        protected void implementInterceptorMethod(@Nonnull JavaFileGenerator javaFileGenerator, @Nonnull MethodInformation method, @Nonnull String statement, @Nullable String resultVariable, @Nullable String defaultValue) {
+            javaFileGenerator.addStatement(method.getReturnType(javaFileGenerator) + " " + resultVariable + " = " + defaultValue);
             javaFileGenerator.beginTry();
             javaFileGenerator.importIfPossible(Log.class);
             javaFileGenerator.addStatement("Log.verbose(\"" + method.getName() + "() {'\")");
-            javaFileGenerator.addStatement(statement);
+            javaFileGenerator.addStatement(resultVariable + " = " + statement);
             javaFileGenerator.endTryOrTryCatchBeginFinally();
             if (resultVariable != null) {
                 javaFileGenerator.addStatement("Log.verbose(\"} = (\" + " + resultVariable + " + \")\")");
@@ -50,6 +51,9 @@ public @interface Logged {
                 javaFileGenerator.addStatement("Log.verbose(\"}\")");
             }
             javaFileGenerator.endTryFinally();
+            if (resultVariable != null && method.hasReturnType()) {
+                javaFileGenerator.addStatement("return " + resultVariable);
+            }
         }
     
     }
