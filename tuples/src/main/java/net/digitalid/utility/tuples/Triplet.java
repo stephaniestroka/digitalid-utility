@@ -107,4 +107,20 @@ public class Triplet<E0, E1, E2> extends Pair<E0, E1> {
         return super.toStringWithoutParentheses() + ", " + element2;
     }
     
+    /* -------------------------------------------------- Comparable -------------------------------------------------- */
+    
+    @Override 
+    public int compareTo(@Nonnull Pair<E0, E1> otherPair) {
+        int result = super.compareTo(otherPair);
+        if (result == 0 && otherPair instanceof Triplet && element2 instanceof Comparable) {
+            final @Nonnull Triplet<E0, E1, E2> otherTriplet = (Triplet<E0, E1, E2>) otherPair;
+            
+            @SuppressWarnings("unchecked")
+            final @Nonnull Comparable<E2> thisE2 = (Comparable<E2>) element2;
+            
+            return thisE2.compareTo(otherTriplet.get2());
+        }
+        return result;
+    }
+    
 }

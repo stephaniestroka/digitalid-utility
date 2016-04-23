@@ -8,12 +8,11 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.collections.freezable.FreezableHashMap;
-import net.digitalid.utility.collections.freezable.FreezableMap;
+import net.digitalid.utility.collections.map.FreezableHashMap;
+import net.digitalid.utility.collections.map.FreezableMap;
 import net.digitalid.utility.conversion.annotations.ConvertToConvertibleType;
 import net.digitalid.utility.conversion.exceptions.ConverterNotFoundException;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.generator.conversion.Convertible;
 import net.digitalid.utility.property.ReadOnlyProperty;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -154,7 +153,7 @@ public abstract class Format<C extends Converter> {
     /**
      * Maps each types to its converter. 
      */
-    private final @Nonnull @NonFrozen FreezableMap<Class<?>, C> converters = FreezableHashMap.get();
+    private final @NonFrozen @Nonnull FreezableMap<Class<?>, C> converters = FreezableHashMap.withDefaultCapacity();
     
     /**
      * Registers a converter for a specific type.

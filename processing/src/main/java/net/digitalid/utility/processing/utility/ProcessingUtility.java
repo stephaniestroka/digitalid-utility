@@ -19,7 +19,6 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
@@ -228,8 +227,7 @@ public class ProcessingUtility {
         }
         final @Nullable TypeElement desiredTypeElement = StaticProcessingEnvironment.getElementUtils().getTypeElement(desiredType.getCanonicalName());
         if (desiredTypeElement == null) { ProcessingLog.error("Could not retrieve the element for the type $.", desiredType); return false; }
-        // TODO: Check whether this works with upper bounds of generic parameters and raw types.
-        boolean result = StaticProcessingEnvironment.getTypeUtils().isAssignable(getType(declaredType), desiredTypeElement.asType());
+        boolean result = StaticProcessingEnvironment.getTypeUtils().isAssignable(getType(StaticProcessingEnvironment.getTypeUtils().erasure(declaredType)), desiredTypeElement.asType());
         ProcessingLog.debugging("= $", result);
         return result;
     }

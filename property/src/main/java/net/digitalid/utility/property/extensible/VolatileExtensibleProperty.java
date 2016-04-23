@@ -3,10 +3,12 @@ package net.digitalid.utility.property.extensible;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.collections.freezable.FreezableSet;
-import net.digitalid.utility.collections.readonly.ReadOnlySet;
+import net.digitalid.utility.collections.set.FreezableSet;
+import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
 import net.digitalid.utility.annotations.method.Pure;
@@ -23,6 +25,8 @@ import net.digitalid.utility.annotations.method.Pure;
  * @param <R> the type of the read-only set to which the set is casted to when retrieved with get().
  * @param <F> the type of the set that is used to store the values.
  */
+@GenerateNoBuilder
+@GenerateNoSubclass
 public class VolatileExtensibleProperty<V, R extends ReadOnlySet<V>, F extends FreezableSet<V>> extends WritableExtensibleProperty<V, R, F> {
     
     /* -------------------------------------------------- Map -------------------------------------------------- */
@@ -101,12 +105,11 @@ public class VolatileExtensibleProperty<V, R extends ReadOnlySet<V>, F extends F
     /* -------------------------------------------------- Validator Checks -------------------------------------------------- */
 
     /**
-     * Validates that the contents of the map are valid by checking whether the keys and values can be validated with the given
-     * key- and value validators.
+     * Validates that the contents of the set are valid by checking whether the values can be validated with the given
+     * value validator.
      *
-     * @param keyValidator the validator used to validate the key of this property.
      * @param valueValidator the validator used to validate the value of this property
-     * @param map the map that stores the indexed value of the property.
+     * @param set the set that stores the values of the property.
      *
      * @return true if the keys and values are valid; false otherwise.
      */

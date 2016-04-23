@@ -18,4 +18,14 @@ public class StringsTest {
         Assert.assertEquals("net.digitalid.", Strings.longestCommonPrefix("net.digitalid.utility", "net.digitalid.database", "net.digitalid.core"));
     }
     
+    @Test
+    public void testCapitalizeFirstLetters() {
+        Assert.assertEquals("Hello World", Strings.capitalizeFirstLetters("hello world"));
+    }
+    
+    @Test
+    public void testCapitalizeFirstLettersOnEmptyString() {
+        Assert.assertEquals("", Strings.capitalizeFirstLetters(""));
+    }
+    
 }

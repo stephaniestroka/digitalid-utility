@@ -2,8 +2,10 @@ package net.digitalid.utility.property.indexed;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
-import net.digitalid.utility.collections.readonly.ReadOnlyMap;
+import net.digitalid.utility.collections.collection.ReadOnlyCollection;
+import net.digitalid.utility.collections.map.ReadOnlyMap;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.ReadOnlyProperty;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
@@ -14,6 +16,8 @@ import net.digitalid.utility.annotations.method.Pure;
  * 
  * @see WritableIndexedProperty
  */
+@GenerateNoBuilder
+@GenerateNoSubclass
 public abstract class ReadOnlyIndexedProperty<K, V, R extends ReadOnlyMap<K, V>> extends ReadOnlyProperty<V, IndexedPropertyObserver<K, V, R>> {
 
     /**
@@ -53,7 +57,7 @@ public abstract class ReadOnlyIndexedProperty<K, V, R extends ReadOnlyMap<K, V>>
      * @return all indexed values.
      */
     @Pure
-    public abstract @Nonnull @Validated ReadOnlyCollection<V> getAll();
+    public abstract @Validated @Nonnull ReadOnlyCollection<V> getAll();
     
     /**
      * Returns a read-only representation of the map.

@@ -2,8 +2,10 @@ package net.digitalid.utility.property.indexed;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.collections.freezable.FreezableMap;
-import net.digitalid.utility.collections.readonly.ReadOnlyMap;
+import net.digitalid.utility.collections.map.FreezableMap;
+import net.digitalid.utility.collections.map.ReadOnlyMap;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
 
@@ -17,6 +19,8 @@ import net.digitalid.utility.property.ValueValidator;
  * 
  * @see VolatileIndexedProperty
  */
+@GenerateNoBuilder
+@GenerateNoSubclass
 public abstract class WritableIndexedProperty<K, V, R extends ReadOnlyMap<K, V>, F extends FreezableMap<K, V>> extends ReadOnlyIndexedProperty<K, V, R> {
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */

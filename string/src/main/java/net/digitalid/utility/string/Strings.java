@@ -82,10 +82,12 @@ public class Strings {
     public static @Nonnull String capitalizeFirstLetters(@Nonnull String phrase) {
         final @Nonnull StringBuilder string = new StringBuilder(phrase);
         int index = 0;
-        do {
-            string.replace(index, index + 1, string.substring(index, index + 1).toUpperCase());
-            index =  string.indexOf(" ", index) + 1;
-        } while (index > 0 && index < string.length());
+        if (index < string.length()) {
+            do {
+                string.replace(index, index + 1, string.substring(index, index + 1).toUpperCase());
+                index = string.indexOf(" ", index) + 1;
+            } while (index > 0 && index < string.length()) ;
+        }
         return string.toString();
     }
     

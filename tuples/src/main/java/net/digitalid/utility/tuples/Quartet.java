@@ -114,5 +114,21 @@ public class Quartet<E0, E1, E2, E3> extends Triplet<E0, E1, E2> {
     public @Nonnull String toStringWithoutParentheses() {
         return super.toStringWithoutParentheses() + ", " + element3;
     }
+     
+    /* -------------------------------------------------- Comparable -------------------------------------------------- */
+    
+    @Override 
+    public int compareTo(@Nonnull Pair<E0, E1> otherPair) {
+        int result = super.compareTo(otherPair);
+        if (result == 0 && otherPair instanceof Quartet && element3 instanceof Comparable) {
+            final @Nonnull Quartet<E0, E1, E2, E3> otherQuartet = (Quartet<E0, E1, E2, E3>) otherPair;
+            
+            @SuppressWarnings("unchecked")
+            final @Nonnull Comparable<E3> thisE3 = (Comparable<E3>) element3;
+            
+            return thisE3.compareTo(otherQuartet.get3());
+        }
+        return result;
+    }
     
 }

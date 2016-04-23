@@ -5,11 +5,13 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.collections.freezable.FreezableMap;
-import net.digitalid.utility.collections.readonly.ReadOnlyCollection;
-import net.digitalid.utility.collections.readonly.ReadOnlyMap;
+import net.digitalid.utility.collections.collection.ReadOnlyCollection;
+import net.digitalid.utility.collections.map.FreezableMap;
+import net.digitalid.utility.collections.map.ReadOnlyMap;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
 import net.digitalid.utility.annotations.method.Pure;
@@ -27,6 +29,8 @@ import net.digitalid.utility.annotations.method.Pure;
  * @param <R> the type of the read-only map to which the map is casted to when retrieved with getMap().
  * @param <F> the type of the map that is used to store the key-value pairs.
  */
+@GenerateNoBuilder
+@GenerateNoSubclass
 public class VolatileIndexedProperty<K, V, R extends ReadOnlyMap<K, V>, F extends FreezableMap<K, V>> extends WritableIndexedProperty<K, V, R, F> {
     
     /* -------------------------------------------------- Map -------------------------------------------------- */
@@ -53,7 +57,7 @@ public class VolatileIndexedProperty<K, V, R extends ReadOnlyMap<K, V>, F extend
     
     @Pure
     @Override
-    public @Nonnull @Validated ReadOnlyCollection<V> getAll() {
+    public @Validated @Nonnull ReadOnlyCollection<V> getAll() {
         return map.values();
     }
     
@@ -135,7 +139,7 @@ public class VolatileIndexedProperty<K, V, R extends ReadOnlyMap<K, V>, F extend
      * @return true if the keys and values are valid; false otherwise.
      */
     private boolean keysAndValuesValid(@Nonnull ValueValidator<? super K> keyValidator, @Nonnull ValueValidator<? super V> valueValidator, @Nonnull @Validated F map) { // TODO: Make it static? @NonNullableElements?
-        for (final @Nonnull Map.Entry<K, V> entry : map.entrySet()) {
+        for (final Map.@Nonnull Entry<K, V> entry : map.entrySet()) {
             if (!keyValidator.isValid(entry.getKey())) { return false; }
             if (!valueValidator.isValid(entry.getValue())) { return false; }
         }

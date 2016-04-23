@@ -122,6 +122,9 @@ public class SubclassGenerator extends JavaFileGenerator {
         for (@Nonnull FieldInformation field : typeInformation.derivedFieldInformation) {
             addStatement("this." + field.getName() + " = " + field.getAnnotation(Derive.class).value());
         }
+        if (typeInformation instanceof ClassInformation && ((ClassInformation) typeInformation).validateMethod != null) {
+            addStatement("validate()");
+        }
         endConstructor();
     }
     
@@ -221,17 +224,19 @@ public class SubclassGenerator extends JavaFileGenerator {
     
     private void generateValidateMethod() {
         ProcessingLog.debugging("generateValidateMethod()");
-        addAnnotation(Pure.class);
-        addAnnotation(Override.class);
-        beginMethod("public void validate()");
-        // TODO: The following cast does not work for interfaces!
-        final @Nonnull ClassInformation classInformation = (ClassInformation) typeInformation; 
-        for (@Nonnull DirectlyAccessibleFieldInformation field : classInformation.writableAccessibleFields) {
-            for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : ValidatorProcessingUtility.getValueValidators(field.getElement()).entrySet()) {
-                addInvariant(entry.getValue().generateContract(field.getElement(), entry.getKey(), this));
+        if (typeInformation instanceof ClassInformation && ((ClassInformation) typeInformation).validateMethod != null) {
+            addAnnotation(Pure.class);
+            addAnnotation(Override.class);
+            beginMethod("public void validate()");
+            final @Nonnull ClassInformation classInformation = (ClassInformation) typeInformation;
+            addStatement(MethodUtility.createSuperCall(classInformation.validateMethod, null, this));
+            for (@Nonnull DirectlyAccessibleFieldInformation field : classInformation.writableAccessibleFields) {
+                for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : ValidatorProcessingUtility.getValueValidators(field.getElement()).entrySet()) {
+                    addInvariant(entry.getValue().generateContract(field.getElement(), entry.getKey(), this));
+                }
             }
+            endMethod();
         }
-        endMethod();
     }
     
     private final @Nonnull GenerateHashCodeTypeVisitor generateHashCodeTypeVisitor = new GenerateHashCodeTypeVisitor();
@@ -320,8 +325,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         generateEqualsMethod();
         generateHashCodeMethod();
         generateToStringMethod();
-        // TODO: There is a bug in the validate method (see above).
-        // generateValidateMethod();
+        generateValidateMethod();
         generateCompareToMethod();
     }
     

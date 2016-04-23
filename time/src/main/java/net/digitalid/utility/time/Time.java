@@ -309,4 +309,8 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
         return isGreaterThan(DECADE) ? asDate() : asInterval();
     }
     
+    /* -------------------------------------------------- Current Time -------------------------------------------------- */
+    
+    public static @Nonnull Time CURRENT_TIME = TimeBuilder.get().build();
+    
 }

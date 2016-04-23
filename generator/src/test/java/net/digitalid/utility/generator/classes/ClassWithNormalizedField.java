@@ -4,11 +4,12 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.annotations.Normalize;
+import net.digitalid.utility.rootclass.RootInterface;
 
 /**
  *
  */
-public abstract class ClassWithNormalizedField {
+public abstract class ClassWithNormalizedField implements RootInterface {
     
     @Pure
     @Normalize("value.substring(0, 20)")

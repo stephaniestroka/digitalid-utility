@@ -1,5 +1,7 @@
 package net.digitalid.utility.cryptography.key.chain;
 
+import java.util.Iterator;
+
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
@@ -9,9 +11,10 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
 import net.digitalid.utility.cryptography.key.AsymmetricKey;
 import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.time.Time;
 import net.digitalid.utility.tuples.Pair;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.order.StrictlyDescending;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -23,6 +26,8 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see PrivateKeyChain
  */
 @Immutable
+@GenerateNoBuilder
+@GenerateNoSubclass
 public abstract class KeyChain<K extends AsymmetricKey> {
     
     /* -------------------------------------------------- Items -------------------------------------------------- */
@@ -31,7 +36,6 @@ public abstract class KeyChain<K extends AsymmetricKey> {
      * Returns the items of this key chain in chronological order with the newest one first.
      */
     @Pure
-    // TODO: Make the tuples comparable!
     public abstract @Nonnull @Frozen @NonEmpty @StrictlyDescending ReadOnlyList<@Nonnull Pair<@Nonnull Time, @Nonnull K>> getItems();
     
     /**
@@ -71,16 +75,16 @@ public abstract class KeyChain<K extends AsymmetricKey> {
     @Pure
     public final @Nonnull KeyChain<K> add(@Nonnull Time time, @Nonnull K key) {
         Require.that(time.isGreaterThan(getNewestTime())).orThrow("The time is greater than the newest time of this key chain.");
-        Require.that(time.isGreaterThan(Time.getCurrent().add(Time.TROPICAL_YEAR))).orThrow("The time lies at least one year in the future.");
+        Require.that(time.isGreaterThan(Time.CURRENT_TIME.add(Time.TROPICAL_YEAR))).orThrow("The time lies at least one year in the future.");
         
-        final @Nonnull FreezableList<Pair<Time, K>> copy = items.clone();
-        final @Nonnull Pair<Time, K> pair = Pair.get(time, key);
+        final @Nonnull FreezableList<Pair<Time, K>> copy = getItems().clone();
+        final @Nonnull Pair<Time, K> pair = Pair.of(time, key);
         copy.add(0, pair);
         
         final @Nonnull Time cutoff = Time.TWO_YEARS.ago();
-        final @Nonnull FreezableIterator<Pair<Time, K>> iterator = copy.iterator();
+        final @Nonnull Iterator<Pair<Time, K>> iterator = copy.iterator();
         while (iterator.hasNext()) {
-            if (iterator.next().getNonNullableElement0().isLessThan(cutoff)) {
+            if (iterator.next().get0().isLessThan(cutoff)) {
                 while (iterator.hasNext()) {
                     iterator.next();
                     iterator.remove();
@@ -88,16 +92,10 @@ public abstract class KeyChain<K extends AsymmetricKey> {
                 break;
             }
         }
-        return getKeyChainCreator().createKeyChain(copy.freeze());
-    }
-    
-    protected abstract class KeyChainCreator<C, K> {
-        
-        protected abstract @Nonnull C createKeyChain(@Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<Pair<Time, K>> items);
-        
+        return createKeyChain(copy.freeze());
     }
     
     @Pure
-    protected abstract KeyChainCreator<C, K> getKeyChainCreator();
+    protected abstract KeyChain<K> createKeyChain(@Nonnull ReadOnlyList<Pair<Time, K>> list);
     
 }

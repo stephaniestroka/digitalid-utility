@@ -2,10 +2,12 @@ package net.digitalid.utility.property.extensible;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.collections.freezable.FreezableSet;
-import net.digitalid.utility.collections.readonly.ReadOnlySet;
+import net.digitalid.utility.collections.set.FreezableSet;
+import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
 
@@ -19,6 +21,8 @@ import net.digitalid.utility.property.ValueValidator;
  * 
  * @see VolatileExtensibleProperty
  */
+@GenerateNoBuilder
+@GenerateNoSubclass
 public abstract class WritableExtensibleProperty<V, R extends ReadOnlySet<V>, F extends FreezableSet<V>> extends ReadOnlyExtensibleProperty<V, R> {
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
@@ -37,14 +41,14 @@ public abstract class WritableExtensibleProperty<V, R extends ReadOnlySet<V>, F 
     /**
      * Adds a new value to the set.
      *
-     * @param element the value of this property that got added.
+     * @param value the value of this property that got added.
      */
     public abstract void add(@Nonnull @Frozen V value);
     
     /**
      * Removes a value from the set.
      *
-     * @param element the value of this property that got removed.
+     * @param value the value of this property that got removed.
      */
     public abstract void remove(@Nonnull @Frozen V value);
     

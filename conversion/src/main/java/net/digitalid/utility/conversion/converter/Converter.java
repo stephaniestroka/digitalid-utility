@@ -1,7 +1,5 @@
 package net.digitalid.utility.conversion.converter;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -10,7 +8,7 @@ import java.lang.reflect.Method;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.collections.readonly.ReadOnlyList;
+import net.digitalid.utility.collections.list.ReadOnlyList;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.conversion.exceptions.RecoveryException;
 import net.digitalid.utility.freezable.annotations.Frozen;
@@ -133,7 +131,7 @@ public abstract class Converter {
      */
    // TODO (steffi, 19.04.2016): We have the convertible/representing fields in the class information during compile time. 
     protected static @Nonnull Field getConvertibleField(@Nonnull Class<?> type) throws StructureException {
-        final @Nonnull @NonNullableElements @Frozen ReadOnlyList<Field> fields = ReflectionUtility.getReconstructionFields(type);
+        final @Frozen @NonNullableElements @Nonnull ReadOnlyList<Field> fields = ReflectionUtility.getReconstructionFields(type);
         Require.that(fields.size() == 1).orThrow("There is only one field in type '" + type + "'");
         return fields.getNonNullable(0);
     }

@@ -3,10 +3,12 @@ package net.digitalid.utility.property;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.collections.freezable.FreezableLinkedList;
-import net.digitalid.utility.collections.freezable.FreezableList;
-import net.digitalid.utility.collections.readonly.ReadOnlyList;
+import net.digitalid.utility.collections.list.FreezableLinkedList;
+import net.digitalid.utility.collections.list.FreezableList;
+import net.digitalid.utility.collections.list.ReadOnlyList;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.extensible.ReadOnlyExtensibleProperty;
 import net.digitalid.utility.property.indexed.ReadOnlyIndexedProperty;
 import net.digitalid.utility.property.nonnullable.ReadOnlyNonNullableProperty;
@@ -21,6 +23,8 @@ import net.digitalid.utility.annotations.method.Pure;
  * @see ReadOnlyExtensibleProperty
  * @see ReadOnlyIndexedProperty
  */
+@GenerateNoBuilder
+@GenerateNoSubclass
 public abstract class ReadOnlyProperty<V, O extends PropertyObserver> {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
@@ -56,7 +60,7 @@ public abstract class ReadOnlyProperty<V, O extends PropertyObserver> {
     /**
      * Stores null until the first observer registers and then the list of observers.
      */
-    private @Nullable @NonFrozen FreezableList<O> observers;
+    private @NonFrozen @Nullable FreezableList<O> observers;
     
     /**
      * Registers the given observer for this property.
@@ -64,7 +68,7 @@ public abstract class ReadOnlyProperty<V, O extends PropertyObserver> {
      * @param observer the observer to be registered.
      */
     public final void register(@Nonnull O observer) {
-        if (observers == null) { observers = FreezableLinkedList.get(); }
+        if (observers == null) { observers = FreezableLinkedList.with(); }
         observers.add(observer);
     }
     
@@ -105,8 +109,8 @@ public abstract class ReadOnlyProperty<V, O extends PropertyObserver> {
      * @return the observers of this property.
      */
     @Pure
-    protected final @Nonnull @NonFrozen ReadOnlyList<O> getObservers() {
-        if (observers == null) { observers = FreezableLinkedList.get(); }
+    protected final @NonFrozen @Nonnull ReadOnlyList<O> getObservers() {
+        if (observers == null) { observers = FreezableLinkedList.with(); }
         return observers;
     }
     

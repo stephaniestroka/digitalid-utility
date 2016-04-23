@@ -27,7 +27,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see Pair
  */
 @Immutable
-public abstract class Tuple implements Collection<Object> {
+public abstract class Tuple<T extends Tuple> implements Collection<Object>, Comparable<T> {
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
     
@@ -122,7 +122,7 @@ public abstract class Tuple implements Collection<Object> {
     @Pure
     @Override
     @SuppressWarnings("unchecked")
-    public <T> @Capturable @Nonnull T[] toArray(@NonCaptured @Modified T[] array) {
+    public @Capturable <T> @Nonnull T[] toArray(@NonCaptured @Modified T[] array) {
         final int size = size();
         final @Nonnull T[] result = array.length >= size ? array : (T[]) Array.newInstance(array.getClass().getComponentType(), size);
         for (int i = 0; i < size(); i++) {

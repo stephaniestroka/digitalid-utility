@@ -43,7 +43,7 @@ public abstract class OrderingValidator extends IterableValidator {
             }
         } else if (type.getKind() == TypeKind.DECLARED) {
             final @Nonnull DeclaredType declaredType = (DeclaredType) type;
-            if (declaredType.getTypeArguments().size() != 1 || !ProcessingUtility.isAssignable(declaredType.getTypeArguments().get(0), Comparable.class)) {
+            if (declaredType.getTypeArguments().size() == 0 || !ProcessingUtility.isAssignable(declaredType.getTypeArguments().get(0), Comparable.class)) {
                 ProcessingLog.error("The annotation $ may only be used on iterables whose component type is comparable:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
             }
         } else {

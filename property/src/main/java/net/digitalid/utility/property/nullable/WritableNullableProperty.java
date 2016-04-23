@@ -4,6 +4,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
 
@@ -12,6 +14,8 @@ import net.digitalid.utility.property.ValueValidator;
  * 
  * @see VolatileNullableProperty
  */
+@GenerateNoBuilder
+@GenerateNoSubclass
 public abstract class WritableNullableProperty<V> extends ReadOnlyNullableProperty<V> {
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */

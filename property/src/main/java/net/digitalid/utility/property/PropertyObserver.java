@@ -1,5 +1,7 @@
 package net.digitalid.utility.property;
 
+import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.extensible.ExtensiblePropertyObserver;
 import net.digitalid.utility.property.indexed.IndexedPropertyObserver;
 import net.digitalid.utility.property.nonnullable.NonNullablePropertyObserver;
@@ -13,4 +15,6 @@ import net.digitalid.utility.property.nullable.NullablePropertyObserver;
  * @see NullablePropertyObserver
  * @see NonNullablePropertyObserver
  */
+@GenerateNoBuilder
+@GenerateNoSubclass
 public interface PropertyObserver {}
