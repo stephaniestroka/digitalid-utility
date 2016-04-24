@@ -16,10 +16,9 @@ import net.digitalid.utility.collections.collection.FreezableCollection;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
 /**
  * This interface models a {@link Set set} that can be {@link FreezableInterface frozen}.
@@ -29,8 +28,6 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see FreezableHashSet
  * @see FreezableLinkedHashSet
  */
-@GenerateNoBuilder
-@GenerateNoSubclass
 @Freezable(ReadOnlySet.class)
 public interface FreezableSet<E> extends ReadOnlySet<E>, Set<E>, FreezableCollection<E> {
     
@@ -69,7 +66,7 @@ public interface FreezableSet<E> extends ReadOnlySet<E>, Set<E>, FreezableCollec
     @Pure
     @Override
     @SuppressWarnings("SuspiciousToArrayCall")
-    public default <T> @Capturable @Nonnull T[] toArray(@NonCaptured @Modified @Nonnull T[] array) {
+    public default @Capturable <T> @Nonnull T[] toArray(@NonCaptured @Modified @Nonnull T[] array) {
         return FreezableCollection.super.toArray(array);
     }
     

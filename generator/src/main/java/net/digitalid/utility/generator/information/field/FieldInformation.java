@@ -1,12 +1,14 @@
 package net.digitalid.utility.generator.information.field;
 
 import javax.annotation.Nonnull;
+import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
+import net.digitalid.utility.processor.generator.JavaFileGenerator;
 
 /**
  * This type collects the relevant information about a field for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
@@ -39,5 +41,15 @@ public interface FieldInformation extends ElementInformation, VariableElementInf
      */
     @Pure
     public boolean isMutable();
+    
+    /* -------------------------------------------------- Field Type -------------------------------------------------- */
+    
+    public @Nonnull String getFieldType(@Nonnull JavaFileGenerator javaFileGenerator);
+    
+    /* -------------------------------------------------- Is Array -------------------------------------------------- */
+    
+    public boolean isArray();
+    
+    public @Nonnull TypeMirror getComponentType();
     
 }

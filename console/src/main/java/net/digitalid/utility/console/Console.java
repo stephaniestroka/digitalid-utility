@@ -11,8 +11,6 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.console.exceptions.EscapeOptionException;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
@@ -21,8 +19,6 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  * @see Option
  */
 @Stateless
-@GenerateNoBuilder
-@GenerateNoSubclass
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public final class Console {
     

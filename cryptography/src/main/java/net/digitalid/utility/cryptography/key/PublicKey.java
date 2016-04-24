@@ -8,6 +8,8 @@ import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.cryptography.HashGenerator;
+import net.digitalid.utility.generator.annotations.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.group.annotations.InGroup;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
@@ -22,6 +24,8 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see KeyPair
  */
 @Immutable
+@GenerateBuilder
+@GenerateSubclass
 public abstract class PublicKey extends AsymmetricKey {
     
     /* -------------------------------------------------- Composite Group -------------------------------------------------- */

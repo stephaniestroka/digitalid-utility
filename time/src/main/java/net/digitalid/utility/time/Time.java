@@ -7,6 +7,8 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.annotations.Default;
+import net.digitalid.utility.generator.annotations.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.interfaces.LongNumerical;
@@ -16,6 +18,8 @@ import net.digitalid.utility.validation.interfaces.LongNumerical;
  * Dates are calculated as milliseconds since 1 January 1970, 00:00:00 GMT.
  */
 @Immutable
+@GenerateBuilder
+@GenerateSubclass
 public abstract class Time extends RootClass implements LongNumerical<Time> {
     
     /* -------------------------------------------------- Constants -------------------------------------------------- */

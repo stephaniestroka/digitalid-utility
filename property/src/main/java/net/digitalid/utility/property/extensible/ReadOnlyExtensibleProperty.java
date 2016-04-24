@@ -2,21 +2,17 @@ package net.digitalid.utility.property.extensible;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.ReadOnlyProperty;
 import net.digitalid.utility.property.ValueValidator;
-import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This is the read-only abstract class for extensible properties.
  * 
  * @see WritableExtensibleProperty
  */
-@GenerateNoBuilder
-@GenerateNoSubclass
 public abstract class ReadOnlyExtensibleProperty<V, R extends ReadOnlySet<V>> extends ReadOnlyProperty<V, ExtensiblePropertyObserver<V, R>> {
 
     /* -------------------------------------------------- Constructor -------------------------------------------------- */

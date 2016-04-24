@@ -15,8 +15,8 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
+import net.digitalid.utility.generator.annotations.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.type.ClassInformation;
 import net.digitalid.utility.generator.information.type.InterfaceInformation;
@@ -77,10 +77,10 @@ public class GeneratorProcessor extends CustomProcessor {
                 typeInformation = InterfaceInformation.of(typeElement, containingType);
             }
             ProcessingLog.debugging("Type $ is generatable", typeInformation);
-            if (!typeInformation.hasAnnotation(GenerateNoSubclass.class)) {
+            if (typeInformation.hasAnnotation(GenerateSubclass.class)) {
                 SubclassGenerator.generateSubclassOf(typeInformation);
             }
-            if (!typeInformation.hasAnnotation(GenerateNoBuilder.class)) {
+            if (typeInformation.hasAnnotation(GenerateBuilder.class)) {
                 BuilderGenerator.generateBuilderFor(typeInformation);
             }
             return true;

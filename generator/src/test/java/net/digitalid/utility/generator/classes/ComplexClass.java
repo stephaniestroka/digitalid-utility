@@ -5,11 +5,15 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.generator.annotations.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.rootclass.RootClass;
 
 /**
  *
  */
+@GenerateBuilder
+@GenerateSubclass
 public abstract class ComplexClass extends RootClass {
     
     public @Nonnull String text;

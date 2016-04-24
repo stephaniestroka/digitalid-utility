@@ -25,7 +25,7 @@ import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterators.ReadOnlyListIterator;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.rootclass.ValueCollector;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -36,7 +36,6 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  * The implementation is backed by an ordinary {@link List list}. 
  */
-@GenerateNoBuilder
 @Freezable(ReadOnlyList.class)
 public class BackedFreezableList<E> extends BackedFreezableCollection<E> implements FreezableList<E> {
     
@@ -59,7 +58,7 @@ public class BackedFreezableList<E> extends BackedFreezableCollection<E> impleme
      * Returns a new freezable list backed by the given freezable and list.
      */
     @Pure
-    public static <E> @Capturable @Nonnull BackedFreezableList<E> with(@Referenced @Modified @Nonnull FreezableInterface freezable, @Captured @Nonnull List<E> list) {
+    public static @Capturable <E> @Nonnull BackedFreezableList<E> with(@Referenced @Modified @Nonnull FreezableInterface freezable, @Captured @Nonnull List<E> list) {
         return new BackedFreezableList<>(freezable, list);
     }
     
@@ -150,6 +149,19 @@ public class BackedFreezableList<E> extends BackedFreezableCollection<E> impleme
     @Override
     public @Nonnull String toString() {
         return join(Brackets.SQUARE);
+    }
+    
+    /* -------------------------------------------------- Collect Values -------------------------------------------------- */
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public void collectValues(@Nonnull ValueCollector valueCollector) {
+        final E firstElement = getFirst();
+        if (firstElement == null) {
+            valueCollector.setNull();
+        } else {
+            valueCollector.setList(this, (Class<E>) firstElement.getClass());
+        }
     }
     
 }

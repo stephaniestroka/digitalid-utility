@@ -4,16 +4,12 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.PropertyObserver;
 import net.digitalid.utility.property.ReadOnlyProperty;
 
 /**
  * Objects that implement this interface can be used to observe {@link ReadOnlyExtensibleProperty extensible properties}.
  */
-@GenerateNoBuilder
-@GenerateNoSubclass
 public interface ExtensiblePropertyObserver<E, R extends ReadOnlySet<E>> extends PropertyObserver {
     
     /**

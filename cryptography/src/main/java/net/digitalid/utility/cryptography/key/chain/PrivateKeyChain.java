@@ -8,6 +8,8 @@ import net.digitalid.utility.collections.list.ReadOnlyList;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.cryptography.key.PrivateKey;
 import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.generator.annotations.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.time.Time;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -18,6 +20,8 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * This class models a {@link KeyChain key chain} of {@link PrivateKey private keys}.
  */
 @Immutable
+@GenerateBuilder
+@GenerateSubclass
 public abstract class PrivateKeyChain extends KeyChain<PrivateKey> {
     
     /**

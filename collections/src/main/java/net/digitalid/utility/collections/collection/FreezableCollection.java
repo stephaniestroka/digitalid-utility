@@ -16,8 +16,6 @@ import net.digitalid.utility.collections.list.FreezableList;
 import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
@@ -29,8 +27,6 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * @see FreezableList
  * @see FreezableSet
  */
-@GenerateNoBuilder
-@GenerateNoSubclass
 @ReadOnly(ReadOnlyCollection.class)
 public interface FreezableCollection<E> extends ReadOnlyCollection<E>, Collection<E>, FreezableIterable<E> {
     
@@ -68,7 +64,7 @@ public interface FreezableCollection<E> extends ReadOnlyCollection<E>, Collectio
     
     @Pure
     @Override
-    public default <T> @Capturable @Nonnull T[] toArray(@NonCaptured @Modified @Nonnull T[] array) {
+    public default @Capturable <T> @Nonnull T[] toArray(@NonCaptured @Modified @Nonnull T[] array) {
         return ReadOnlyCollection.super.toArray(array);
     }
     

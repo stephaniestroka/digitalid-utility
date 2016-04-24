@@ -12,6 +12,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.annotations.Default;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
@@ -92,6 +93,25 @@ public abstract class FieldInformationImplementation extends ElementInformationI
             returnTypeAsString.append(javaFileGenerator.importIfPossible(getType()));
         }
         return returnTypeAsString.toString();
+    }
+    
+    /* -------------------------------------------------- Is Array -------------------------------------------------- */
+    
+    @Pure
+    public boolean isArray() {
+        return (getType() instanceof Type.ArrayType);
+    }
+    
+    @Pure
+    public @Nonnull TypeMirror getComponentType() {
+        Require.that(isArray()).orThrow("Expected array type");
+    
+        final Type.@Nonnull ArrayType type = (Type.ArrayType) getType();
+        @Nonnull TypeMirror componentType = type.getComponentType();
+        if (componentType instanceof Type.AnnotatedType) {
+            componentType = ((Type.AnnotatedType) componentType).unannotatedType();
+        }
+        return componentType;
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */

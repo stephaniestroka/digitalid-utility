@@ -6,6 +6,8 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.annotations.Derive;
+import net.digitalid.utility.generator.annotations.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.generator.annotations.Invariant;
 import net.digitalid.utility.group.annotations.InGroup;
 import net.digitalid.utility.math.Element;
@@ -20,6 +22,8 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see KeyPair
  */
 @Immutable
+@GenerateBuilder
+@GenerateSubclass
 public abstract class PrivateKey extends AsymmetricKey {
     
     /* -------------------------------------------------- Composite Group -------------------------------------------------- */

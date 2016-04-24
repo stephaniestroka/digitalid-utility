@@ -5,6 +5,8 @@ import java.math.BigInteger;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.generator.annotations.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -12,6 +14,8 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * This class models a multiplicative group with known order.
  */
 @Immutable
+@GenerateBuilder
+@GenerateSubclass
 public abstract class GroupWithKnownOrder extends Group {
     
     /* -------------------------------------------------- Order -------------------------------------------------- */

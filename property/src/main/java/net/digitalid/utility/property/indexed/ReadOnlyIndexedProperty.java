@@ -2,22 +2,18 @@ package net.digitalid.utility.property.indexed;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.collections.collection.ReadOnlyCollection;
 import net.digitalid.utility.collections.map.ReadOnlyMap;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.ReadOnlyProperty;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
-import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This is the read-only abstract class for properties that stores an indexed value.
  * 
  * @see WritableIndexedProperty
  */
-@GenerateNoBuilder
-@GenerateNoSubclass
 public abstract class ReadOnlyIndexedProperty<K, V, R extends ReadOnlyMap<K, V>> extends ReadOnlyProperty<V, IndexedPropertyObserver<K, V, R>> {
 
     /**

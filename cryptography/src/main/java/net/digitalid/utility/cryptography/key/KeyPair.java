@@ -14,14 +14,15 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.cryptography.HashGenerator;
 import net.digitalid.utility.cryptography.Parameters;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
+import net.digitalid.utility.generator.annotations.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
 import net.digitalid.utility.math.ExponentBuilder;
 import net.digitalid.utility.math.GroupWithKnownOrder;
 import net.digitalid.utility.math.GroupWithKnownOrderBuilder;
 import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.rootclass.ValueCollector;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -32,8 +33,6 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see PublicKey
  */
 @Immutable
-@GenerateNoBuilder
-@GenerateNoSubclass
 public class KeyPair extends RootClass {
     
     /* -------------------------------------------------- Private Key -------------------------------------------------- */
@@ -155,6 +154,7 @@ public class KeyPair extends RootClass {
     
     /**
      * Returns a new key pair with random values.
+     * TODO: remove and use builder instead.
      */
     @Pure
     public static @Nonnull KeyPair withRandomValues() {
@@ -185,6 +185,13 @@ public class KeyPair extends RootClass {
     @Override
     public @Nonnull String toString() {
         return "KeyPair(privateKey: " + privateKey + ", publicKey: " + publicKey + ")";
+    }
+    
+    @Pure
+    @Override
+    public void collectValues(@Nonnull ValueCollector valueCollector) {
+        privateKey.collectValues(valueCollector);
+        publicKey.collectValues(valueCollector);
     }
     
 }

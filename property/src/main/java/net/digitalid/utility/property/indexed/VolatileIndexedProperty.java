@@ -5,16 +5,14 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.collections.collection.ReadOnlyCollection;
 import net.digitalid.utility.collections.map.FreezableMap;
 import net.digitalid.utility.collections.map.ReadOnlyMap;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
-import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * The property stores indexed values in volatile memory.
@@ -29,8 +27,6 @@ import net.digitalid.utility.annotations.method.Pure;
  * @param <R> the type of the read-only map to which the map is casted to when retrieved with getMap().
  * @param <F> the type of the map that is used to store the key-value pairs.
  */
-@GenerateNoBuilder
-@GenerateNoSubclass
 public class VolatileIndexedProperty<K, V, R extends ReadOnlyMap<K, V>, F extends FreezableMap<K, V>> extends WritableIndexedProperty<K, V, R, F> {
     
     /* -------------------------------------------------- Map -------------------------------------------------- */

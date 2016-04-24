@@ -32,6 +32,8 @@ import net.digitalid.utility.exceptions.MissingSupportException;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.generator.annotations.Default;
 import net.digitalid.utility.generator.annotations.Derive;
+import net.digitalid.utility.generator.annotations.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.initialization.Initialize;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
@@ -43,6 +45,8 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * Symmetric keys are used to encrypt and decrypt byte arrays with the Advanced Encryption Standard (AES).
  */
 @Immutable
+@GenerateBuilder
+@GenerateSubclass
 public abstract class SymmetricKey extends RootClass {
     
     /* -------------------------------------------------- Configuration -------------------------------------------------- */

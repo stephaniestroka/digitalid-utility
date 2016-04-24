@@ -32,4 +32,7 @@ public interface RootInterface extends Castable, Validatable {
     @Override
     public @Nonnull String toString();
     
+    @Pure
+    public void collectValues(@Nonnull ValueCollector valueCollector);
+    
 }

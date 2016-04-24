@@ -2,18 +2,14 @@ package net.digitalid.utility.console;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.console.exceptions.EscapeOptionException;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
-import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.console.exceptions.EscapeOptionException;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * Every option in the {@link Console console} has to extend this class.
  */
 @Immutable
-@GenerateNoBuilder
-@GenerateNoSubclass
 public abstract class Option {
     
     /* -------------------------------------------------- Description -------------------------------------------------- */

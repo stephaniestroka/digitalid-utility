@@ -13,10 +13,7 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.collections.collection.ReadOnlyCollection;
 import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.freezable.ReadOnlyInterface;
-import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.immutable.entry.ReadOnlyEntrySet;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
@@ -25,8 +22,6 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * This interface provides read-only access to {@link Map maps} and should <em>never</em> be cast away (unless external code requires it).
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
-@GenerateNoBuilder
-@GenerateNoSubclass
 @ReadOnly(FreezableMap.class)
 public interface ReadOnlyMap<K,V> extends ReadOnlyInterface {
     

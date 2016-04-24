@@ -8,6 +8,8 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.generator.annotations.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.time.Time;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -19,6 +21,8 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * This class models a {@link KeyChain key chain} of {@link PublicKey public keys}.
  */
 @Immutable
+@GenerateBuilder
+@GenerateSubclass
 public abstract class PublicKeyChain extends KeyChain<PublicKey> {
     
     /**

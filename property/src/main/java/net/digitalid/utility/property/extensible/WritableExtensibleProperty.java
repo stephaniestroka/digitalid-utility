@@ -6,8 +6,6 @@ import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
 
@@ -21,8 +19,6 @@ import net.digitalid.utility.property.ValueValidator;
  * 
  * @see VolatileExtensibleProperty
  */
-@GenerateNoBuilder
-@GenerateNoSubclass
 public abstract class WritableExtensibleProperty<V, R extends ReadOnlySet<V>, F extends FreezableSet<V>> extends ReadOnlyExtensibleProperty<V, R> {
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */

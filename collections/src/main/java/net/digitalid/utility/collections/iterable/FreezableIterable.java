@@ -3,12 +3,11 @@ package net.digitalid.utility.collections.iterable;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.collections.collection.FreezableCollection;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -20,8 +19,6 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see FreezableCollection
  * @see FreezableArray
  */
-@GenerateNoBuilder
-@GenerateNoSubclass
 @Freezable(ReadOnlyIterable.class)
 public interface FreezableIterable<E> extends ReadOnlyIterable<E>, FreezableInterface {
     

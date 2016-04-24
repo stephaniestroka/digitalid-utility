@@ -2,18 +2,14 @@ package net.digitalid.utility.property.nonnullable;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.property.ReadOnlyProperty;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
-import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * This is the read-only abstract class for properties that stores a non-nullable replaceable value.
  */
-@GenerateNoBuilder
-@GenerateNoSubclass
 public abstract class ReadOnlyNonNullableProperty<V> extends ReadOnlyProperty<V, NonNullablePropertyObserver<V>> {
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */

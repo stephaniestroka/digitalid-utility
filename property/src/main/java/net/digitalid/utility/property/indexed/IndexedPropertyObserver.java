@@ -3,16 +3,12 @@ package net.digitalid.utility.property.indexed;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.collections.map.ReadOnlyMap;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.PropertyObserver;
 import net.digitalid.utility.property.ReadOnlyProperty;
 
 /**
  * Objects that implement this interface can be used to observe {@link ReadOnlyIndexedProperty indexed properties}.
  */
-@GenerateNoBuilder
-@GenerateNoSubclass
 public interface IndexedPropertyObserver<K, V, R extends ReadOnlyMap<K, V>> extends PropertyObserver {
     
     /**

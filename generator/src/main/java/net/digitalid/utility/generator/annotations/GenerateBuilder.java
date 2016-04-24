@@ -7,10 +7,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a class such that the {@link net.digitalid.utility.generator.SubclassGenerator subclass generator} ignores this class.
+ * Marks a class such that the {@link net.digitalid.utility.generator.BuilderGenerator builder generator} generates a builder for this class.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface GenerateNoSubclass {
+public @interface GenerateBuilder {
 }

@@ -26,8 +26,8 @@ import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterators.ReadOnlyArrayIterator;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
 import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.rootclass.ValueCollector;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.method.Chainable;
@@ -38,7 +38,6 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * This class models {@link FreezableInterface freezable} arrays.
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
-@GenerateNoBuilder
 @Freezable(ReadOnlyArray.class)
 public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, FreezableIterable<E> {
     
@@ -60,7 +59,7 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
      * Returns a new freezable array with the given size.
      */
     @Pure
-    public static <E> @Capturable @Nonnull @NonFrozen FreezableArray<E> withSize(@NonNegative int size) {
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableArray<E> withSize(@NonNegative int size) {
         return new FreezableArray<>(size);
     }
     
@@ -74,7 +73,7 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
      */
     @Pure
     @SafeVarargs
-    public static <E> @Capturable @NonFrozen FreezableArray<E> with(@Captured E... elements) {
+    public static @Capturable <E> @NonFrozen FreezableArray<E> with(@Captured E... elements) {
         return elements == null ? null : new FreezableArray<>(elements);
     }
     
@@ -91,7 +90,7 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
      * Returns a new freezable array with the elements of the given iterable or null if the given iterable is null.
      */
     @Pure
-    public static <E> @Capturable @NonFrozen FreezableArray<E> with(@NonCaptured @Unmodified FiniteIterable<? extends E> iterable) {
+    public static @Capturable <E> @NonFrozen FreezableArray<E> with(@NonCaptured @Unmodified FiniteIterable<? extends E> iterable) {
         return iterable == null ? null : new FreezableArray<>(iterable);
     }
     
@@ -108,7 +107,7 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
      * Returns a new freezable array with the elements of the given collection or null if the given collection is null.
      */
     @Pure
-    public static <E> @Capturable @NonFrozen FreezableArray<E> with(@NonCaptured @Unmodified Collection<? extends E> collection) {
+    public static @Capturable <E> @NonFrozen FreezableArray<E> with(@NonCaptured @Unmodified Collection<? extends E> collection) {
         return collection == null ? null : new FreezableArray<>(collection);
     }
     
@@ -233,6 +232,13 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
     @Override
     public @Nonnull String toString() {
         return join(Brackets.SQUARE);
+    }
+    
+    /* -------------------------------------------------- Collect Values -------------------------------------------------- */
+    @Override
+    @SuppressWarnings("unchecked")
+    public void collectValues(@Nonnull ValueCollector valueCollector) {
+        valueCollector.setArray(elements, (Class<E>) Object.class);
     }
     
 }

@@ -3,15 +3,13 @@ package net.digitalid.utility.property.extensible;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
-import net.digitalid.utility.annotations.method.Pure;
 
 /**
  * The property stores values in volatile memory.
@@ -25,8 +23,6 @@ import net.digitalid.utility.annotations.method.Pure;
  * @param <R> the type of the read-only set to which the set is casted to when retrieved with get().
  * @param <F> the type of the set that is used to store the values.
  */
-@GenerateNoBuilder
-@GenerateNoSubclass
 public class VolatileExtensibleProperty<V, R extends ReadOnlySet<V>, F extends FreezableSet<V>> extends WritableExtensibleProperty<V, R, F> {
     
     /* -------------------------------------------------- Map -------------------------------------------------- */

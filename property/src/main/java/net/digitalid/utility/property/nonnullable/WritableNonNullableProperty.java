@@ -3,8 +3,6 @@ package net.digitalid.utility.property.nonnullable;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.Validated;
 import net.digitalid.utility.property.ValueValidator;
 
@@ -13,8 +11,6 @@ import net.digitalid.utility.property.ValueValidator;
  * 
  * @see VolatileNonNullableProperty
  */
-@GenerateNoBuilder
-@GenerateNoSubclass
 public abstract class WritableNonNullableProperty<V> extends ReadOnlyNonNullableProperty<V> {
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */

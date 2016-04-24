@@ -11,6 +11,7 @@ import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.logging.Log;
+import net.digitalid.utility.rootclass.ValueCollector;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.annotations.method.Pure;
@@ -106,6 +107,12 @@ class ManuallyGeneratedStudent extends Student {
     @Override
     public @Nonnull String toString() {
         return "Student(name: " + getName() + ", ID: " + getID() + ")";
+    }
+    
+    @Override
+    public void collectValues(@Nonnull ValueCollector valueCollector) {
+        valueCollector.setString(name);
+        valueCollector.setInteger32(ID);
     }
     
 }

@@ -11,8 +11,6 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
 import net.digitalid.utility.cryptography.key.AsymmetricKey;
 import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.time.Time;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.order.StrictlyDescending;
@@ -26,8 +24,6 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see PrivateKeyChain
  */
 @Immutable
-@GenerateNoBuilder
-@GenerateNoSubclass
 public abstract class KeyChain<K extends AsymmetricKey> {
     
     /* -------------------------------------------------- Items -------------------------------------------------- */

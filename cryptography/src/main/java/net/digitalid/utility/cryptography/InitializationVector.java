@@ -8,6 +8,8 @@ import javax.crypto.spec.IvParameterSpec;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.generator.annotations.Default;
+import net.digitalid.utility.generator.annotations.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.rootclass.RootInterface;
 import net.digitalid.utility.validation.annotations.size.Size;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -16,6 +18,8 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * The random initialization vector ensures that the cipher-texts of the same content are different.
  */
 @Immutable
+@GenerateBuilder
+@GenerateSubclass
 public abstract class InitializationVector extends IvParameterSpec implements RootInterface {
     
     /* -------------------------------------------------- Generator -------------------------------------------------- */

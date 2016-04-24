@@ -3,16 +3,12 @@ package net.digitalid.utility.property.nullable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.property.PropertyObserver;
 import net.digitalid.utility.property.ReadOnlyProperty;
 
 /**
  * Objects that implement this interface can be used to observe {@link ReadOnlyNullableProperty nullable properties}.
  */
-@GenerateNoBuilder
-@GenerateNoSubclass
 public interface NullablePropertyObserver<V> extends PropertyObserver {
     
     /**

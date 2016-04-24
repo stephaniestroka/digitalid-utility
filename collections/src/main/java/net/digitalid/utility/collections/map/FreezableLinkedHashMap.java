@@ -22,9 +22,8 @@ import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
-import net.digitalid.utility.generator.annotations.GenerateNoSubclass;
 import net.digitalid.utility.immutable.entry.ReadOnlyEntrySet;
+import net.digitalid.utility.rootclass.ValueCollector;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
@@ -37,7 +36,6 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * It is recommended to use only {@link Immutable} types for the keys
  * and {@link ReadOnly} or {@link Immutable} types for the values.
  */
-@GenerateNoBuilder
 @Freezable(ReadOnlyMap.class)
 public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements FreezableMap<K, V> {
     
@@ -51,7 +49,7 @@ public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements
      * Returns a new freezable linked hash map with the given initial capacity, load factor and access order.
      */
     @Pure
-    public static <K, V> @Capturable @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> with(@NonNegative int initialCapacity, @Positive float loadFactor, boolean accessOrder) {
+    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> with(@NonNegative int initialCapacity, @Positive float loadFactor, boolean accessOrder) {
         return new FreezableLinkedHashMap<>(initialCapacity, loadFactor, accessOrder);
     }
 
@@ -59,7 +57,7 @@ public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements
      * Returns a new freezable linked hash map with the given initial capacity and load factor.
      */
     @Pure
-    public static <K, V> @Capturable @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> with(@NonNegative int initialCapacity, @Positive float loadFactor) {
+    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> with(@NonNegative int initialCapacity, @Positive float loadFactor) {
         return FreezableLinkedHashMap.with(initialCapacity, loadFactor, false);
     }
     
@@ -67,7 +65,7 @@ public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements
      * Returns a new freezable linked hash map with the given initial capacity.
      */
     @Pure
-    public static <K, V> @Capturable @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> with(@NonNegative int initialCapacity) {
+    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> with(@NonNegative int initialCapacity) {
         return FreezableLinkedHashMap.with(initialCapacity, 0.75f);
     }
     
@@ -75,7 +73,7 @@ public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements
      * Returns a new freezable linked hash map with the default capacity.
      */
     @Pure
-    public static <K, V> @Capturable @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> withDefaultCapacity() {
+    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> withDefaultCapacity() {
         return with(16);
     }
     
@@ -87,7 +85,7 @@ public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements
      * Returns a new freezable linked hash map with the mappings of the given map or null if the given map is null.
      */
     @Pure
-    public static <K, V> @Capturable @NonFrozen FreezableLinkedHashMap<K, V> with(@NonCaptured @Unmodified Map<? extends K, ? extends V> map) {
+    public static @Capturable <K, V> @NonFrozen FreezableLinkedHashMap<K, V> with(@NonCaptured @Unmodified Map<? extends K, ? extends V> map) {
         return map == null ? null : new FreezableLinkedHashMap<>(map);
     }
     
@@ -192,6 +190,19 @@ public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements
     @Override
     public @Nonnull String toString() {
         return entrySet().map(entry -> entry == null ? "null" : entry.getKey() + ": " + entry.getValue()).join(Brackets.CURLY);
+    }
+    
+    /* -------------------------------------------------- Collect Values -------------------------------------------------- */
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public void collectValues(@Nonnull ValueCollector valueCollector) {
+        final Map.Entry<K, V> firstElement = entrySet().getFirst();
+        if (firstElement == null) {
+            valueCollector.setNull();
+        } else {
+            valueCollector.setMap(this, (Class<K>) firstElement.getKey().getClass(), (Class<V>) firstElement.getKey().getClass());
+        }
     }
     
 }

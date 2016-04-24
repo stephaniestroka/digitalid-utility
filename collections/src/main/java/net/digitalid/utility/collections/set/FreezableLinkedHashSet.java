@@ -23,16 +23,16 @@ import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
-import net.digitalid.utility.generator.annotations.GenerateNoBuilder;
+import net.digitalid.utility.rootclass.ValueCollector;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
 /**
  * This class extends the {@link LinkedHashSet} and makes it {@link FreezableInterface freezable}.
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
-@GenerateNoBuilder
 @Freezable(ReadOnlySet.class)
 public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements FreezableSet<E> {
     
@@ -46,7 +46,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
      * Returns a new freezable linked hash set with the given initial capacity and the given load factor.
      */
     @Pure
-    public static <E> @Capturable @Nonnull @NonFrozen FreezableLinkedHashSet<E> with(@NonNegative int initialCapacity, @Positive float loadFactor) {
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedHashSet<E> with(@NonNegative int initialCapacity, @Positive float loadFactor) {
         return new FreezableLinkedHashSet<>(initialCapacity, loadFactor);
     }
     
@@ -54,7 +54,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
      * Returns a new freezable linked hash set with the given initial capacity.
      */
     @Pure
-    public static <E> @Capturable @Nonnull @NonFrozen FreezableLinkedHashSet<E> with(@NonNegative int initialCapacity) {
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedHashSet<E> with(@NonNegative int initialCapacity) {
         return with(initialCapacity, 0.75f);
     }
     
@@ -62,7 +62,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
      * Returns a new freezable linked hash set.
      */
     @Pure
-    public static <E> @Capturable @Nonnull @NonFrozen FreezableLinkedHashSet<E> with() {
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedHashSet<E> with() {
         return with(16);
     }
     
@@ -70,7 +70,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
      * Returns a new freezable linked hash set with the given element.
      */
     @Pure
-    public static <E> @Capturable @Nonnull @NonFrozen FreezableLinkedHashSet<E> with(@Captured E element) {
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedHashSet<E> with(@Captured E element) {
         final @Nonnull FreezableLinkedHashSet<E> set = with();
         set.add(element);
         return set;
@@ -81,7 +81,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
      */
     @Pure
     @SafeVarargs
-    public static <E> @Capturable @Nonnull @NonFrozen FreezableLinkedHashSet<E> with(@Captured E... elements) {
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedHashSet<E> with(@Captured E... elements) {
         if (elements == null) { return null; }
         final @Nonnull FreezableLinkedHashSet<E> set = with(elements.length);
         set.addAll(Arrays.asList(elements));
@@ -100,7 +100,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
      * Returns a new freezable linked hash set with the elements of the given collection or null if the given collection is null.
      */
     @Pure
-    public static <E> @Capturable @NonFrozen FreezableLinkedHashSet<E> with(@NonCaptured @Unmodified Collection<? extends E> collection) {
+    public static @Capturable <E> @NonFrozen FreezableLinkedHashSet<E> with(@NonCaptured @Unmodified Collection<? extends E> collection) {
         return collection == null ? null : new FreezableLinkedHashSet<>(collection.size(), collection);
     }
     
@@ -108,7 +108,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
      * Returns a new freezable linked hash set with the elements of the given iterable or null if the given iterable is null.
      */
     @Pure
-    public static <E> @Capturable @NonFrozen FreezableLinkedHashSet<E> with(FiniteIterable<? extends E> iterable) {
+    public static @Capturable <E> @NonFrozen FreezableLinkedHashSet<E> with(FiniteIterable<? extends E> iterable) {
         return iterable == null ? null : new FreezableLinkedHashSet<>(iterable.size(), iterable);
     }
     
@@ -207,6 +207,19 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
     @Override
     public @Nonnull String toString() {
         return join(Brackets.CURLY);
+    }
+    
+    /* -------------------------------------------------- Collect Values -------------------------------------------------- */
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public void collectValues(@Nonnull ValueCollector valueCollector) {
+        final E firstElement = getFirst();
+        if (firstElement == null) {
+            valueCollector.setNull();
+        } else {
+            valueCollector.setSet(this, (Class<E>) firstElement.getClass());
+        }
     }
     
 }
