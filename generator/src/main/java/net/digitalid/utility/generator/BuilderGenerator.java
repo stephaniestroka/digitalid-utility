@@ -311,7 +311,8 @@ public class BuilderGenerator extends JavaFileGenerator {
         createInnerClassForFields(nameOfBuilder, interfacesForRequiredFields);
         createStaticEntryMethod(nameOfBuilder, requiredFields, interfacesForRequiredFields);
         
-        generateRestoreMethod(nameOfBuilder);
+        // TODO: Uncomment the following line:
+//        generateRestoreMethod(nameOfBuilder);
         
         endClass();
         ProcessingLog.debugging("endClass()");

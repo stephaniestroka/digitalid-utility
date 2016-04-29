@@ -42,6 +42,7 @@ import net.digitalid.utility.functional.iterators.MappingIterator;
 import net.digitalid.utility.functional.iterators.PruningIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyArrayIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
+import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
 import net.digitalid.utility.functional.iterators.ReversingIterator;
 import net.digitalid.utility.functional.iterators.ZippingIterator;
 import net.digitalid.utility.tuples.Pair;
@@ -150,6 +151,23 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
     @Override
     public default <F> @Nonnull FiniteIterable<F> flattenAll() {
         return flatten(Integer.MAX_VALUE);
+    }
+    
+    /* -------------------------------------------------- Equality -------------------------------------------------- */
+    
+    /**
+     * Returns whether this iterable equals the given iterable.
+     */
+    @Pure
+    public default boolean equals(@Nullable FiniteIterable<?> iterable) {
+        if (iterable == null) { return false; }
+        if (iterable == this) { return true; }
+        final @Nonnull ReadOnlyIterator<E> thisIterator = iterator();
+        final @Nonnull ReadOnlyIterator<?> thatIterator = iterable.iterator();
+        while (thisIterator.hasNext() && thatIterator.hasNext()) {
+            if (!Objects.equals(thisIterator.next(), thatIterator.next())) { return false; }
+        }
+        return !thisIterator.hasNext() && !thatIterator.hasNext();
     }
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
