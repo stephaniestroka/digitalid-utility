@@ -23,7 +23,6 @@ import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
-import net.digitalid.utility.rootclass.ValueCollector;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -207,19 +206,6 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     @Override
     public @Nonnull String toString() {
         return join(Brackets.CURLY);
-    }
-    
-    /* -------------------------------------------------- Collect Values -------------------------------------------------- */
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public void collectValues(@Nonnull ValueCollector valueCollector) {
-        final E firstElement = getFirst();
-        if (firstElement == null) {
-            valueCollector.setNull();
-        } else {
-            valueCollector.setSet(this, (Class<E>) firstElement.getClass());
-        }
     }
     
 }

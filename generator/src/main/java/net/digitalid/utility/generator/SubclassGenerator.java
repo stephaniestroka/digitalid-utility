@@ -1,17 +1,14 @@
 package net.digitalid.utility.generator;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
@@ -39,17 +36,13 @@ import net.digitalid.utility.generator.typevisitors.GenerateComparisonTypeVisito
 import net.digitalid.utility.generator.typevisitors.GenerateHashCodeTypeVisitor;
 import net.digitalid.utility.generator.typevisitors.GenerateToStringTypeVisitor;
 import net.digitalid.utility.processing.logging.ProcessingLog;
-import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
-import net.digitalid.utility.rootclass.ValueCollector;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Quartet;
 import net.digitalid.utility.tuples.Triplet;
 import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
-
-import com.sun.tools.javac.code.Type;
 
 /**
  * This class generates a subclass with the provided type information.
@@ -336,58 +329,6 @@ public class SubclassGenerator extends JavaFileGenerator {
         generateCompareToMethod();
     }
     
-    /* -------------------------------------------------- Value Collector -------------------------------------------------- */
-    
-    private void generateCollectValues() {
-        addAnnotation(Pure.class);
-        beginMethod("public void collectValues(@" + importIfPossible(Nonnull.class) + " " + importIfPossible(ValueCollector.class) + " valueCollector)");
-        final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
-        for (@Nonnull FieldInformation field : representingFieldInformation) {
-            final @Nonnull TypeMirror fieldType;
-            if (field.getType() instanceof Type.AnnotatedType) {
-                fieldType = ((Type.AnnotatedType) field.getType()).unannotatedType();
-            } else {
-                fieldType = field.getType();
-            }
-            // TODO: handle annotated fields that have a type-to-type converter.
-            if (field.isArray()) {
-                TypeMirror componentType = ((Type.ArrayType) fieldType).getComponentType();
-                if (componentType instanceof Type.AnnotatedType) {
-                    componentType = ((Type.AnnotatedType) componentType).unannotatedType();
-                }
-                addStatement("valueCollector.setArray(" + field.getName() + ", " + importIfPossible(componentType.toString()) + ".class)");
-            } else if (ProcessingUtility.isAssignable(fieldType, List.class)) {
-                DeclaredType declaredType = (DeclaredType) fieldType;
-                final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
-                addStatement("valueCollector.setList(" + field.getName() + ", " + typeArgumentsAsClasses + ")");
-            } else if (ProcessingUtility.isAssignable(fieldType, Set.class)) {
-                DeclaredType declaredType = (DeclaredType) fieldType;
-                final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
-                addStatement("valueCollector.setSet(" + field.getName() + ", " + typeArgumentsAsClasses + ")");
-            } else if (ProcessingUtility.isAssignable(fieldType, Map.class)) {
-                DeclaredType declaredType = (DeclaredType) fieldType;
-                final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
-                addStatement("valueCollector.setMap(" + field.getName() + ", " + typeArgumentsAsClasses + ")");
-            } else if (fieldType.toString().equals(byte.class.getCanonicalName()) || fieldType.toString().equals(Byte.class.getCanonicalName())) {
-                addStatement("valueCollector.setInteger08(" + field.getName() + ")");
-            } else if (fieldType.toString().equals(short.class.getCanonicalName()) || fieldType.toString().equals(Short.class.getCanonicalName())) {
-                addStatement("valueCollector.setInteger16(" + field.getName() + ")");
-            } else if (fieldType.toString().equals(int.class.getCanonicalName()) || fieldType.toString().equals(Integer.class.getCanonicalName())) {
-                addStatement("valueCollector.setInteger32(" + field.getName() + ")");
-            } else if (fieldType.toString().equals(long.class.getCanonicalName()) || fieldType.toString().equals(Long.class.getCanonicalName())) {
-                addStatement("valueCollector.setInteger64(" + field.getName() + ")");
-            } else if (fieldType.toString().equals(BigInteger.class.getCanonicalName())) {
-                addStatement("valueCollector.setInteger(" + field.getName() + ")");
-            } else if (fieldType.toString().equals(char.class.getCanonicalName()) || fieldType.toString().equals(Character.class.getCanonicalName())) {
-                addStatement("valueCollector.setString01(" + field.getName() + ")");
-            } else if (fieldType.toString().equals(String.class.getCanonicalName())) {
-                addStatement("valueCollector.setString(" + field.getName() + ")");
-            } else {
-                addStatement(field.getName() + ".collectValues(valueCollector)");
-            }
-        }
-        endMethod();
-    }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
@@ -403,7 +344,6 @@ public class SubclassGenerator extends JavaFileGenerator {
             generateConstructors();
             overrideMethods();
             generateMethods();
-            generateCollectValues();
             
             endClass();
         } catch (Exception e) {

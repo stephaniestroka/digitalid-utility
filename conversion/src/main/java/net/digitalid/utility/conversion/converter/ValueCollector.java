@@ -1,4 +1,4 @@
-package net.digitalid.utility.rootclass;
+package net.digitalid.utility.conversion.converter;
 
 import java.io.InputStream;
 import java.math.BigInteger;

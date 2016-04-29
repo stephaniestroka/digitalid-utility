@@ -13,6 +13,8 @@ import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.conversion.converter.Converter;
+import net.digitalid.utility.conversion.converter.CustomType;
 import net.digitalid.utility.generator.annotations.Default;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.processing.logging.ProcessingLog;

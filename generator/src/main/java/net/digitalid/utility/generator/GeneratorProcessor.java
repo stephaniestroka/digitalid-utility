@@ -16,6 +16,7 @@ import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.annotations.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.GenerateConverter;
 import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.type.ClassInformation;
@@ -82,6 +83,9 @@ public class GeneratorProcessor extends CustomProcessor {
             }
             if (typeInformation.hasAnnotation(GenerateBuilder.class)) {
                 BuilderGenerator.generateBuilderFor(typeInformation);
+            }
+            if (typeInformation.hasAnnotation(GenerateConverter.class)) {
+                ConverterGenerator.generateConverterFor(typeInformation);
             }
             return true;
         } catch (FailedClassGenerationException e) {

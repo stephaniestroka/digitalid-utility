@@ -25,7 +25,6 @@ import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterators.ReadOnlyListIterator;
-import net.digitalid.utility.rootclass.ValueCollector;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -149,19 +148,6 @@ public class BackedFreezableList<E> extends BackedFreezableCollection<E> impleme
     @Override
     public @Nonnull String toString() {
         return join(Brackets.SQUARE);
-    }
-    
-    /* -------------------------------------------------- Collect Values -------------------------------------------------- */
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public void collectValues(@Nonnull ValueCollector valueCollector) {
-        final E firstElement = getFirst();
-        if (firstElement == null) {
-            valueCollector.setNull();
-        } else {
-            valueCollector.setList(this, (Class<E>) firstElement.getClass());
-        }
     }
     
 }

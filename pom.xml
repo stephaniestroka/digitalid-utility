@@ -59,6 +59,7 @@
         <module>processor</module>
         <module>initialization</module>
         <module>directory</module>
+        <module>conversion</module>
         <module>generator</module>
         <module>testcases</module>
         <module>collections</module>
@@ -68,7 +69,6 @@
         <module>cryptography</module>
         <module>property</module>
         <module>console</module>
-        <module>conversion</module>
         <module>examples</module>
         <!-- TODO: conversion and examples should be reversed. -->
     </modules>

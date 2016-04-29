@@ -129,6 +129,18 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         return getPackageName() + "." + getSimpleNameOfGeneratedBuilder();
     }
     
+    /* -------------------------------------------------- Converter -------------------------------------------------- */
+    
+    @Pure
+    public @Nonnull String getSimpleNameOfGeneratedConverter() {
+        return getName() + "Converter";
+    }
+    
+    @Pure
+    public @Nonnull String getQualifiedNameOfGeneratedConverter() {
+        return getPackageName() + "." + getSimpleNameOfGeneratedConverter();
+    }
+    
     /* -------------------------------------------------- Generated Field Information -------------------------------------------------- */
     
     /**

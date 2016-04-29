@@ -24,7 +24,6 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyListIterator;
-import net.digitalid.utility.rootclass.ValueCollector;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -400,19 +399,6 @@ public class FreezableLinkedList<E> extends LinkedList<E> implements FreezableLi
         Require.that(!isFrozen()).orThrow("This object is not frozen.");
         
         return super.retainAll(collection);
-    }
-    
-    /* -------------------------------------------------- Collect Values -------------------------------------------------- */
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public void collectValues(@Nonnull ValueCollector valueCollector) {
-        final E firstElement = getFirst();
-        if (firstElement == null) {
-            valueCollector.setNull();
-        } else {
-            valueCollector.setList(this, (Class<E>) firstElement.getClass());
-        }
     }
     
 }

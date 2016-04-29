@@ -1,9 +1,7 @@
 package net.digitalid.utility.collections.collection;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,17 +18,14 @@ import net.digitalid.utility.collections.list.BackedFreezableList;
 import net.digitalid.utility.collections.list.FreezableArrayList;
 import net.digitalid.utility.collections.set.BackedFreezableSet;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.exceptions.MissingSupportException;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
-import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
 import net.digitalid.utility.rootclass.RootClass;
-import net.digitalid.utility.rootclass.ValueCollector;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
@@ -183,26 +178,6 @@ public class BackedFreezableCollection<E> extends RootClass implements Freezable
     @Override
     public @Nonnull String toString() {
         return collection.toString();
-    }
-    
-    /* -------------------------------------------------- Collect Values -------------------------------------------------- */
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public void collectValues(@Nonnull ValueCollector valueCollector) {
-        if (collection.size() == 0) {
-            valueCollector.setNull();
-        } else if (collection.getClass().isAssignableFrom(List.class)) {
-            final @Nonnull List<E> list = (List<E>) collection;
-            final @Nonnull E firstElement = list.get(0);
-            valueCollector.setList(list, (Class<E>) firstElement.getClass());
-        } else if (collection.getClass().isAssignableFrom(Set.class)) {
-            final @Nonnull Set<E> set = (Set<E>) collection;
-            final @Nonnull E firstElement = set.iterator().next();
-            valueCollector.setSet(set, (Class<E>) firstElement.getClass());
-        } else {
-            throw MissingSupportException.with("Collection " + Quotes.inSingle(collection) + " can neither be casted to Set nor to List. Unable to collect values.");
-        }
     }
     
 }

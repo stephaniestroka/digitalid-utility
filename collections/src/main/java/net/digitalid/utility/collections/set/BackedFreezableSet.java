@@ -17,7 +17,6 @@ import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.functional.fixes.Brackets;
-import net.digitalid.utility.rootclass.ValueCollector;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
@@ -75,19 +74,6 @@ public class BackedFreezableSet<E> extends BackedFreezableCollection<E> implemen
     @Override
     public @Nonnull String toString() {
         return join(Brackets.CURLY);
-    }
-    
-    /* -------------------------------------------------- Collect Values -------------------------------------------------- */
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public void collectValues(@Nonnull ValueCollector valueCollector) {
-        final E firstElement = getFirst();
-        if (firstElement == null) {
-            valueCollector.setNull();
-        } else {
-            valueCollector.setSet(this, (Class<E>) firstElement.getClass());
-        }
     }
     
 }

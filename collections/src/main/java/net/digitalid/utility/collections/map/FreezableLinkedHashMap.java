@@ -23,7 +23,6 @@ import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.immutable.entry.ReadOnlyEntrySet;
-import net.digitalid.utility.rootclass.ValueCollector;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
@@ -190,19 +189,6 @@ public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements
     @Override
     public @Nonnull String toString() {
         return entrySet().map(entry -> entry == null ? "null" : entry.getKey() + ": " + entry.getValue()).join(Brackets.CURLY);
-    }
-    
-    /* -------------------------------------------------- Collect Values -------------------------------------------------- */
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public void collectValues(@Nonnull ValueCollector valueCollector) {
-        final Map.Entry<K, V> firstElement = entrySet().getFirst();
-        if (firstElement == null) {
-            valueCollector.setNull();
-        } else {
-            valueCollector.setMap(this, (Class<K>) firstElement.getKey().getClass(), (Class<V>) firstElement.getKey().getClass());
-        }
     }
     
 }

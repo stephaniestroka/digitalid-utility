@@ -27,7 +27,6 @@ import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterators.ReadOnlyArrayIterator;
 import net.digitalid.utility.rootclass.RootClass;
-import net.digitalid.utility.rootclass.ValueCollector;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.method.Chainable;
@@ -232,13 +231,6 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
     @Override
     public @Nonnull String toString() {
         return join(Brackets.SQUARE);
-    }
-    
-    /* -------------------------------------------------- Collect Values -------------------------------------------------- */
-    @Override
-    @SuppressWarnings("unchecked")
-    public void collectValues(@Nonnull ValueCollector valueCollector) {
-        valueCollector.setArray(elements, (Class<E>) Object.class);
     }
     
 }

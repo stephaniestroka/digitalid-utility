@@ -17,7 +17,7 @@
         <!--TODO: The examples should depend on utility-property and not utility-converison.-->
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-conversion</artifactId>
+            <artifactId>utility-generator</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

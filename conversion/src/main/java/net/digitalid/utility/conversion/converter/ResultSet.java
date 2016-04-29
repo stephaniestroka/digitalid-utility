@@ -1,4 +1,4 @@
-package net.digitalid.utility.rootclass;
+package net.digitalid.utility.conversion.converter;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.size.Size;
 
@@ -93,12 +94,12 @@ public interface ResultSet {
      */
     public @Nullable byte[] getBinary();
     
-    public <T> @Nonnull List<T> getList(@Nonnull Class<T> type);
+    public <T> @Nonnull List<T> getList(@Nonnull UnaryFunction<?, T> function);
     
-    public <T> @Nonnull T[] getArray(@Nonnull Class<T> type);
+    public <T> @Nonnull T[] getArray(@Nonnull UnaryFunction<?, T> function);
     
-    public <T> @Nonnull Set<T> getSet(@Nonnull Class<T> type);
+    public <T> @Nonnull Set<T> getSet(@Nonnull UnaryFunction<?, T> function);
     
-    public <K, V> @Nonnull Map<K, V> getMap(@Nonnull Class<K> keyType, @Nonnull Class<V> valueType);
+    public <K, V> @Nonnull Map<K, V> getMap(@Nonnull UnaryFunction<?, K> keyFunction, @Nonnull UnaryFunction<?, V> valueFunction);
     
 }

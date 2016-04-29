@@ -284,6 +284,20 @@ public class ProcessingUtility {
     private static final @Nonnull TypeVisitor TYPE_VISITOR = new TypeVisitor();
     
     /**
+     * Returns the simple name of the given type mirror.
+     */
+    @Pure
+    public static @Nonnull String getSimpleName(@Nonnull TypeMirror typeMirror) {
+        final @Nonnull String qualifiedName = getQualifiedName(typeMirror);
+        int indexOfPoint = qualifiedName.lastIndexOf(".");
+        if (indexOfPoint >= 0) {
+            return qualifiedName.substring(indexOfPoint + 1);
+        } else {
+            return qualifiedName;
+        }
+    }
+    
+    /**
      * Returns the qualified name of the given type mirror.
      */
     @Pure

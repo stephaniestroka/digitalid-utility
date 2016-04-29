@@ -1,41 +1,34 @@
 package net.digitalid.utility.generator;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 
 import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.generator.annotations.Recover;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.ElementInformation;
-import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.type.ClassInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
-import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
-import net.digitalid.utility.rootclass.ResultSet;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Utility;
-
-import com.sun.tools.javac.code.Type;
 
 /**
  * The Builder Generator generates a builder class for a given type (through the type information). 
@@ -200,7 +193,13 @@ public class BuilderGenerator extends JavaFileGenerator {
         
         final @Nonnull FiniteIterable<VariableElementInformation> constructorParameters = getConstructorParameters();
         
-        addStatement("return new " + typeInformation.getSimpleNameOfGeneratedSubclass() + constructorParameters.map(ElementInformation::getName).join(Brackets.ROUND));
+        final @Nonnull String nameOfConstructor;
+        if (typeInformation.hasAnnotation(GenerateSubclass.class)) {
+            nameOfConstructor = typeInformation.getSimpleNameOfGeneratedSubclass();
+        } else {
+            nameOfConstructor = typeInformation.getName();
+        }
+        addStatement("return new " + nameOfConstructor + constructorParameters.map(ElementInformation::getName).join(Brackets.ROUND));
         
         endMethod();
         
@@ -236,60 +235,6 @@ public class BuilderGenerator extends JavaFileGenerator {
         }
     }
     
-    /* -------------------------------------------------- Recovery -------------------------------------------------- */
-    
-    protected void generateRestoreMethod(@Nonnull String nameOfBuilder) {
-        beginMethod("public static " + nameOfBuilder + " restore(@" + importIfPossible(Nonnull.class) + " " + importIfPossible(ResultSet.class) + " resultSet)");
-        final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
-        final @Nonnull StringBuilder assignedParameters = new StringBuilder();
-        for (@Nonnull FieldInformation field : representingFieldInformation) {
-            final @Nonnull TypeMirror fieldType;
-            if (field.getType() instanceof Type.AnnotatedType) {
-                fieldType = ((Type.AnnotatedType) field.getType()).unannotatedType();
-            } else {
-                fieldType = field.getType();
-            }
-            // TODO: handle annotated fields that have a type-to-type converter.
-            if (field.isArray()) {
-                Type.ArrayType arrayType = (Type.ArrayType) fieldType;
-                final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(arrayType.getComponentType()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getArray(" + typeArgumentsAsClasses + ")");
-            } else if (ProcessingUtility.isAssignable(fieldType, List.class)) {
-                DeclaredType declaredType = (DeclaredType) fieldType;
-                final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getList(" + typeArgumentsAsClasses + ")");
-            } else if (ProcessingUtility.isAssignable(fieldType, Set.class)) {
-                DeclaredType declaredType = (DeclaredType) fieldType;
-                final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getSet(" + typeArgumentsAsClasses + ")");
-            } else if (ProcessingUtility.isAssignable(fieldType, Map.class)) {
-                DeclaredType declaredType = (DeclaredType) fieldType;
-                final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getMap(" + typeArgumentsAsClasses + ")");
-            } else if (fieldType.toString().equals(byte.class.getCanonicalName()) || fieldType.toString().equals(Byte.class.getCanonicalName())) {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getInteger08()");
-            } else if (fieldType.toString().equals(short.class.getCanonicalName()) || fieldType.toString().equals(Short.class.getCanonicalName())) {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getInteger16()");
-            } else if (fieldType.toString().equals(int.class.getCanonicalName()) || fieldType.toString().equals(Integer.class.getCanonicalName())) {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getInteger32()");
-            } else if (fieldType.toString().equals(long.class.getCanonicalName()) || fieldType.toString().equals(Long.class.getCanonicalName())) {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getInteger64()");
-            } else if (fieldType.toString().equals(BigInteger.class.getCanonicalName())) {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getInteger()");
-            } else if (fieldType.toString().equals(char.class.getCanonicalName()) || fieldType.toString().equals(Character.class.getCanonicalName())) {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getString01()");
-            } else if (fieldType.toString().equals(String.class.getCanonicalName())) {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getString()");
-            } else {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = " + importIfPossible(fieldType.toString()) + "Builder.restore(resultSet).build()");
-            }
-            assignedParameters.append(".with").append(Strings.capitalizeFirstLetters(field.getName())).append("(").append(field.getName()).append(")");
-        }
-    
-        addStatement("return new " + nameOfBuilder + "()" + assignedParameters);
-        endMethod();
-    }
-    
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
@@ -310,8 +255,6 @@ public class BuilderGenerator extends JavaFileGenerator {
         final @Nonnull @NonNullableElements List<String> interfacesForRequiredFields = createInterfacesForRequiredFields(requiredFields, nameOfBuilder);
         createInnerClassForFields(nameOfBuilder, interfacesForRequiredFields);
         createStaticEntryMethod(nameOfBuilder, requiredFields, interfacesForRequiredFields);
-        
-        generateRestoreMethod(nameOfBuilder);
         
         endClass();
         ProcessingLog.debugging("endClass()");
