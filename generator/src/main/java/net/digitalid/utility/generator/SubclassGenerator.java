@@ -166,7 +166,6 @@ public class SubclassGenerator extends JavaFileGenerator {
     protected void overrideMethods() {
         if (!typeInformation.getOverriddenMethods().isEmpty()) { addSection("Overridden Methods"); }
         for (final @Nonnull MethodInformation method : typeInformation.getOverriddenMethods()) {
-            ProcessingLog.verbose("Overriding the method $.", method.getName());
             final @Nonnull String callToSuperMethod = MethodUtility.createSuperCall(method, "result", this);
             generateMethodWithStatement(method, callToSuperMethod, "result", method.getDefaultValue());
         }
@@ -186,14 +185,11 @@ public class SubclassGenerator extends JavaFileGenerator {
                 addPrecondition(entry.getValue().generateContract(parameter, entry.getKey(), this));
             }
         }
-        addStatement(firstMethodCall);
-        ProcessingLog.debugging("generateMethodWithStatement - postcondition");
         for (Map.@Nonnull Entry<AnnotationMirror, MethodAnnotationValidator> entry : method.getMethodValidators().entrySet()) {
-            ProcessingLog.debugging("for annotation: " + entry.getKey());
-            addPostcondition(entry.getValue().generateContract(method.getElement(), entry.getKey(), this));
+            addPrecondition(entry.getValue().generateContract(method.getElement(), entry.getKey(), this));
         }
+        addStatement(firstMethodCall);
         for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : method.getReturnValueValidators().entrySet()) {
-            ProcessingLog.debugging("for annotation: " + entry.getKey());
             addPostcondition(entry.getValue().generateContract(method.getElement(), entry.getKey(), this));
         }
         if (method.hasReturnType()) {
@@ -286,9 +282,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         addStatement("final @" + importIfPossible(Nonnull.class)+ " " + typeInformation.getName() + " that = (" + typeInformation.getName() + ") object");
         addStatement("boolean result = true");
         final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
-        ProcessingLog.debugging("generating equals method...");
         for (@Nonnull FieldInformation field : representingFieldInformation) {
-            ProcessingLog.debugging("...with representing field/method $", field.getAccessCode());
             final @Nonnull String accessCode = field.getAccessCode();
             // TODO: Maybe we should compare primitive values directly instead of boxing them.
             generateComparisonTypeVisitor.visit(field.getType(), Quartet.of("this." + accessCode, "that." + accessCode, this, "result"));

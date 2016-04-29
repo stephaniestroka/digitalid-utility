@@ -100,11 +100,8 @@ public class BuilderGenerator extends JavaFileGenerator {
         final @Nonnull String interfaceName = getNameOfFieldBuilder(field);
         final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
         beginInterface("public interface " + interfaceName + importWithBounds(typeInformation.getTypeArguments()));
-        ProcessingLog.debugging("addAnnotation");
         addAnnotation(Chainable.class);
-        ProcessingLog.debugging("addMethodDeclaration");
         addMethodDeclaration("public @" + importIfPossible(Nonnull.class) + " " + nextInterface + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")");
-        ProcessingLog.debugging("endInterface");
         endInterface();
         return interfaceName;
     }
@@ -257,7 +254,6 @@ public class BuilderGenerator extends JavaFileGenerator {
         createStaticEntryMethod(nameOfBuilder, requiredFields, interfacesForRequiredFields);
         
         endClass();
-        ProcessingLog.debugging("endClass()");
     }
     
     /**
