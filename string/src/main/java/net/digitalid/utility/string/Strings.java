@@ -80,13 +80,17 @@ public class Strings {
      */
     @Pure
     public static @Nonnull String capitalizeFirstLetters(@Nonnull String string) {
-        final @Nonnull StringBuilder result = new StringBuilder(string);
-        int index = 0;
-        while (index >= 0 && index < result.length()) {
-            result.replace(index, index + 1, result.substring(index, index + 1).toUpperCase());
-            index = result.indexOf(" ", index) + 1;
+        if (string.isEmpty()) {
+            return string;
+        } else {
+            final @Nonnull StringBuilder result = new StringBuilder(string);
+            int index = 0;
+            do {
+                result.replace(index, index + 1, result.substring(index, index + 1).toUpperCase());
+                index = result.indexOf(" ", index) + 1;
+            } while (index > 0 && index < result.length());
+            return result.toString();
         }
-        return result.toString();
     }
     
     /**

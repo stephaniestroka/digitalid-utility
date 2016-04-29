@@ -175,7 +175,7 @@ public abstract class Tuple implements Collection<Object>, Comparable<Tuple> {
     @Override
     @SuppressWarnings("unchecked")
     public int compareTo(@Nonnull Tuple tuple) {
-        final int size = Integer.min(size(), tuple.size());
+        final int size = Math.min(size(), tuple.size());
         for (int i = 0; i < size; i++) {
             // According to the Javadoc, we're allowed to throw a ClassCastException.
             final int comparison = ((Comparable<Object>) get(i)).compareTo(tuple.get(i));

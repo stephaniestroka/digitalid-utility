@@ -88,7 +88,7 @@ public class SubclassGenerator extends JavaFileGenerator {
                     }
                 }
                 final @Nonnull List<? extends VariableElement> parameters = setter.getElement().getParameters();
-                Require.that(parameters.size() == 1).orThrow("Found a setter with " + (parameters.size() == 0 ? "zero " : "more than one ") + "parameters.");
+                Require.that(parameters.size() == 1).orThrow("Found a setter with " + (parameters.isEmpty() ? "zero " : "more than one ") + "parameters.");
                 final @Nonnull VariableElement parameter = parameters.get(0);
                 final @Nonnull String statement;
                 if (normalize != null) {
