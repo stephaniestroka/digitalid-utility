@@ -13,7 +13,6 @@ import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
-import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
@@ -23,7 +22,7 @@ import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
-import net.digitalid.utility.rootclass.ValueCollector;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -33,8 +32,9 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * This class extends the {@link HashSet} and makes it {@link FreezableInterface freezable}.
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
+@GenerateSubclass
 @Freezable(ReadOnlySet.class)
-public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
+public abstract class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
@@ -47,7 +47,7 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
      */
     @Pure
     public static @Capturable <E> @Nonnull @NonFrozen FreezableHashSet<E> with(@NonNegative int initialCapacity, @Positive float loadFactor) {
-        return new FreezableHashSet<>(initialCapacity, loadFactor);
+        return new FreezableHashSetSubclass<>(initialCapacity, loadFactor);
     }
     
     /**
@@ -101,7 +101,7 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
      */
     @Pure
     public static @Capturable <E> @NonFrozen FreezableHashSet<E> with(@NonCaptured @Unmodified Collection<? extends E> collection) {
-        return collection == null ? null : new FreezableHashSet<>(collection.size(), collection);
+        return collection == null ? null : new FreezableHashSetSubclass<>(collection.size(), collection);
     }
     
     /**
@@ -109,7 +109,7 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
      */
     @Pure
     public static @Capturable <E> @NonFrozen FreezableHashSet<E> with(FiniteIterable<? extends E> iterable) {
-        return iterable == null ? null : new FreezableHashSet<>(iterable.size(), iterable);
+        return iterable == null ? null : new FreezableHashSetSubclass<>(iterable.size(), iterable);
     }
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */
@@ -134,7 +134,7 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     @Pure
     @Override
     public @Capturable @Nonnull @NonFrozen FreezableHashSet<E> clone() {
-        return new FreezableHashSet<>(size(), this);
+        return new FreezableHashSetSubclass<>(size(), this);
     }
     
     /* -------------------------------------------------- Iterable -------------------------------------------------- */
@@ -151,8 +151,6 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     @Override
     @NonFrozenRecipient
     public boolean add(@Captured E element) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return super.add(element);
     }
     
@@ -160,8 +158,6 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     @Override
     @NonFrozenRecipient
     public boolean addAll(@NonCaptured @Unmodified @Nonnull Collection<? extends E> collection) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return super.addAll(collection);
     }
     
@@ -169,8 +165,6 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     @Override
     @NonFrozenRecipient
     public boolean remove(@NonCaptured @Unmodified @Nullable Object object) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return super.remove(object);
     }
     
@@ -178,8 +172,6 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     @Override
     @NonFrozenRecipient
     public boolean removeAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return super.removeAll(collection);
     }
     
@@ -187,8 +179,6 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     @Override
     @NonFrozenRecipient
     public boolean retainAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return super.retainAll(collection);
     }
     
@@ -196,8 +186,6 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     @Override
     @NonFrozenRecipient
     public void clear() {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         super.clear();
     }
     
@@ -207,19 +195,6 @@ public class FreezableHashSet<E> extends HashSet<E> implements FreezableSet<E> {
     @Override
     public @Nonnull String toString() {
         return join(Brackets.CURLY);
-    }
-    
-    /* -------------------------------------------------- Collect Values -------------------------------------------------- */
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public void collectValues(@Nonnull ValueCollector valueCollector) {
-        final E firstElement = getFirst();
-        if (firstElement == null) {
-            valueCollector.setNull();
-        } else {
-            valueCollector.setSet(this, (Class<E>) firstElement.getClass());
-        }
     }
     
 }

@@ -1,9 +1,6 @@
 package net.digitalid.utility.collections.collection;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,18 +16,15 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.collections.list.BackedFreezableList;
 import net.digitalid.utility.collections.list.FreezableArrayList;
 import net.digitalid.utility.collections.set.BackedFreezableSet;
-import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.exceptions.MissingSupportException;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
-import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.rootclass.RootClass;
-import net.digitalid.utility.rootclass.ValueCollector;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
@@ -42,8 +36,9 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * @see BackedFreezableList
  * @see BackedFreezableSet
  */
+@GenerateSubclass
 @Freezable(ReadOnlyCollection.class)
-public class BackedFreezableCollection<E> extends RootClass implements FreezableCollection<E> {
+public abstract class BackedFreezableCollection<E> extends RootClass implements FreezableCollection<E> {
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
@@ -60,8 +55,8 @@ public class BackedFreezableCollection<E> extends RootClass implements Freezable
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     protected BackedFreezableCollection(@Nonnull FreezableInterface freezable, @Nonnull Collection<E> collection) {
-        this.freezable = Objects.requireNonNull(freezable);
-        this.collection = Objects.requireNonNull(collection);
+        this.freezable = freezable;
+        this.collection = collection;
     }
     
     /**
@@ -69,7 +64,7 @@ public class BackedFreezableCollection<E> extends RootClass implements Freezable
      */
     @Pure
     public static @Capturable <E> @Nonnull BackedFreezableCollection<E> with(@Referenced @Modified @Nonnull FreezableInterface freezable, @Captured @Nonnull Collection<E> collection) {
-        return new BackedFreezableCollection<>(freezable, collection);
+        return new BackedFreezableCollectionSubclass<>(freezable, collection);
     }
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */
@@ -115,8 +110,6 @@ public class BackedFreezableCollection<E> extends RootClass implements Freezable
     @Override
     @NonFrozenRecipient
     public boolean add(@Captured E element) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return collection.add(element);
     }
     
@@ -124,8 +117,6 @@ public class BackedFreezableCollection<E> extends RootClass implements Freezable
     @Override
     @NonFrozenRecipient
     public boolean addAll(@NonCaptured @Unmodified @Nonnull Collection<? extends E> c) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return collection.addAll(c);
     }
     
@@ -133,8 +124,6 @@ public class BackedFreezableCollection<E> extends RootClass implements Freezable
     @Override
     @NonFrozenRecipient
     public boolean remove(@NonCaptured @Unmodified @Nullable Object object) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return collection.remove(object);
     }
     
@@ -142,8 +131,6 @@ public class BackedFreezableCollection<E> extends RootClass implements Freezable
     @Override
     @NonFrozenRecipient
     public boolean removeAll(@NonCaptured @Unmodified @Nonnull Collection<?> c) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return collection.removeAll(c);
     }
     
@@ -151,8 +138,6 @@ public class BackedFreezableCollection<E> extends RootClass implements Freezable
     @Override
     @NonFrozenRecipient
     public boolean retainAll(@NonCaptured @Unmodified @Nonnull Collection<?> c) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return collection.retainAll(c);
     }
     
@@ -160,8 +145,6 @@ public class BackedFreezableCollection<E> extends RootClass implements Freezable
     @Override
     @NonFrozenRecipient
     public void clear() {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         collection.clear();
     }
     
@@ -183,26 +166,6 @@ public class BackedFreezableCollection<E> extends RootClass implements Freezable
     @Override
     public @Nonnull String toString() {
         return collection.toString();
-    }
-    
-    /* -------------------------------------------------- Collect Values -------------------------------------------------- */
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public void collectValues(@Nonnull ValueCollector valueCollector) {
-        if (collection.size() == 0) {
-            valueCollector.setNull();
-        } else if (collection.getClass().isAssignableFrom(List.class)) {
-            final @Nonnull List<E> list = (List<E>) collection;
-            final @Nonnull E firstElement = list.get(0);
-            valueCollector.setList(list, (Class<E>) firstElement.getClass());
-        } else if (collection.getClass().isAssignableFrom(Set.class)) {
-            final @Nonnull Set<E> set = (Set<E>) collection;
-            final @Nonnull E firstElement = set.iterator().next();
-            valueCollector.setSet(set, (Class<E>) firstElement.getClass());
-        } else {
-            throw MissingSupportException.with("Collection " + Quotes.inSingle(collection) + " can neither be casted to Set nor to List. Unable to collect values.");
-        }
     }
     
 }
