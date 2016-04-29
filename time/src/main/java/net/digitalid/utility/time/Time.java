@@ -111,24 +111,6 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
     @Default(name = "CurrentTime", value = "System.currentTimeMillis()")
     public abstract long getValue();
     
-    /* -------------------------------------------------- Relative Time -------------------------------------------------- */
-    
-    /**
-     * Returns this interval ago now.
-     */
-    @Pure
-    public @Nonnull Time ago() {
-        return new TimeSubclass(System.currentTimeMillis() - getValue());
-    }
-    
-    /**
-     * Returns this interval ahead of now.
-     */
-    @Pure
-    public @Nonnull Time ahead() {
-        return new TimeSubclass(System.currentTimeMillis() + getValue());
-    }
-    
     /* -------------------------------------------------- Arithmetic Operations -------------------------------------------------- */
     
     /**
@@ -185,6 +167,42 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
     @Pure
     public boolean isMultipleOf(@Nonnull Time interval) {
         return getValue() % interval.getValue() == 0;
+    }
+    
+    /* -------------------------------------------------- Relative Time -------------------------------------------------- */
+    
+    /**
+     * Returns this interval ago now.
+     */
+    @Pure
+    public @Nonnull Time ago() {
+        return new TimeSubclass(System.currentTimeMillis() - getValue());
+    }
+    
+    /**
+     * Returns this interval ahead of now.
+     */
+    @Pure
+    public @Nonnull Time ahead() {
+        return new TimeSubclass(System.currentTimeMillis() + getValue());
+    }
+    
+    /* -------------------------------------------------- Conditions -------------------------------------------------- */
+    
+    /**
+     * Returns whether this time lies in the future.
+     */
+    @Pure
+    public boolean isInFuture() {
+        return getValue() > System.currentTimeMillis();
+    }
+    
+    /**
+     * Returns whether this time lies in the past.
+     */
+    @Pure
+    public boolean isInPast() {
+        return getValue() < System.currentTimeMillis();
     }
     
     /* -------------------------------------------------- Retrievals -------------------------------------------------- */
@@ -312,9 +330,5 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
     public @Nonnull String asString() {
         return isGreaterThan(DECADE) ? asDate() : asInterval();
     }
-    
-    /* -------------------------------------------------- Current Time -------------------------------------------------- */
-    
-    public static @Nonnull Time CURRENT_TIME = TimeBuilder.get().build();
     
 }

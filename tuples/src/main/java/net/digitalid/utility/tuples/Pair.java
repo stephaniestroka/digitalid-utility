@@ -1,6 +1,5 @@
 package net.digitalid.utility.tuples;
 
-import java.util.Comparator;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
@@ -21,7 +20,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see Triplet
  */
 @Immutable
-public class Pair<E0, E1> extends Tuple<Pair<E0, E1>> {
+public class Pair<E0, E1> extends Tuple {
     
     /* -------------------------------------------------- Element 0 -------------------------------------------------- */
     
@@ -140,29 +139,6 @@ public class Pair<E0, E1> extends Tuple<Pair<E0, E1>> {
     @Override
     public @Nonnull String toString() {
         return "(" + toStringWithoutParentheses() + ")";
-    }
-    
-    /* -------------------------------------------------- Comparable -------------------------------------------------- */
-    
-    @Override 
-    public int compareTo(Pair<E0, E1> otherPair) {
-        if (!(element0 instanceof Comparable)) {
-            return 0;
-        } else {
-            final @Nonnull E0 otherE0 = otherPair.get0();
-            @SuppressWarnings("unchecked")
-            final @Nonnull Comparable<E0> thisE0 = (Comparable<E0>) element0;
-            
-            int result = thisE0.compareTo(otherE0);
-            if (result == 0 && element1 instanceof Comparable) {
-                final @Nonnull E1 otherE1 = otherPair.get1();
-                @SuppressWarnings("unchecked")
-                final @Nonnull Comparable<E1> thisE1 = (Comparable<E1>) element1;
-                
-                return thisE1.compareTo(otherE1);
-            }
-            return result;
-        }
     }
     
 }

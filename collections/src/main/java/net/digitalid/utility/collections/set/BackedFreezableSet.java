@@ -1,6 +1,5 @@
 package net.digitalid.utility.collections.set;
 
-import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -17,6 +16,7 @@ import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.functional.fixes.Brackets;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
@@ -25,8 +25,9 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  * The implementation is backed by an ordinary {@link Set set}. 
  */
+@GenerateSubclass
 @Freezable(ReadOnlySet.class)
-public class BackedFreezableSet<E> extends BackedFreezableCollection<E> implements FreezableSet<E> {
+public abstract class BackedFreezableSet<E> extends BackedFreezableCollection<E> implements FreezableSet<E> {
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
@@ -40,7 +41,7 @@ public class BackedFreezableSet<E> extends BackedFreezableCollection<E> implemen
     protected BackedFreezableSet(@Nonnull FreezableInterface freezable, @Nonnull Set<E> set) {
         super(freezable, set);
         
-        this.set = Objects.requireNonNull(set);
+        this.set = set;
     }
     
     /**
@@ -48,7 +49,7 @@ public class BackedFreezableSet<E> extends BackedFreezableCollection<E> implemen
      */
     @Pure
     public static @Capturable <E> @Nonnull BackedFreezableSet<E> with(@Referenced @Modified @Nonnull FreezableInterface freezable, @Captured @Nonnull Set<E> set) {
-        return new BackedFreezableSet<>(freezable, set);
+        return new BackedFreezableSetSubclass<>(freezable, set);
     }
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */

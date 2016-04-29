@@ -15,13 +15,13 @@ import net.digitalid.utility.collections.collection.BackedFreezableCollection;
 import net.digitalid.utility.collections.collection.FreezableCollection;
 import net.digitalid.utility.collections.set.BackedFreezableSet;
 import net.digitalid.utility.collections.set.FreezableSet;
-import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.immutable.entry.ReadOnlyEntrySet;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
@@ -35,8 +35,9 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * It is recommended to use only {@link Immutable} types for the keys
  * and {@link ReadOnly} or {@link Immutable} types for the values.
  */
+@GenerateSubclass
 @Freezable(ReadOnlyMap.class)
-public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements FreezableMap<K, V> {
+public abstract class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements FreezableMap<K, V> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
@@ -49,7 +50,7 @@ public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements
      */
     @Pure
     public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> with(@NonNegative int initialCapacity, @Positive float loadFactor, boolean accessOrder) {
-        return new FreezableLinkedHashMap<>(initialCapacity, loadFactor, accessOrder);
+        return new FreezableLinkedHashMapSubclass<>(initialCapacity, loadFactor, accessOrder);
     }
 
     /**
@@ -85,7 +86,7 @@ public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements
      */
     @Pure
     public static @Capturable <K, V> @NonFrozen FreezableLinkedHashMap<K, V> with(@NonCaptured @Unmodified Map<? extends K, ? extends V> map) {
-        return map == null ? null : new FreezableLinkedHashMap<>(map);
+        return map == null ? null : new FreezableLinkedHashMapSubclass<>(map);
     }
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */
@@ -110,7 +111,7 @@ public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements
     @Pure
     @Override
     public @Capturable @Nonnull @NonFrozen FreezableLinkedHashMap<K,V> clone() {
-        return new FreezableLinkedHashMap<>(this);
+        return new FreezableLinkedHashMapSubclass<>(this);
     }
     
     /* -------------------------------------------------- Entries -------------------------------------------------- */
@@ -139,8 +140,6 @@ public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements
     @Override
     @NonFrozenRecipient
     public @Nullable V put(@Nullable K key, @Nullable V value) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return super.put(key, value);
     }
     
@@ -148,8 +147,6 @@ public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements
     @Override
     @NonFrozenRecipient
     public void putAll(@Nonnull Map<? extends K,? extends V> map) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         super.putAll(map);
     }
     
@@ -157,8 +154,6 @@ public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements
     @Override
     @NonFrozenRecipient
     public @Nonnull V putIfAbsentOrNullElseReturnPresent(@Nonnull K key, @Nonnull V value) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         final @Nullable V oldValue = get(key);
         if (oldValue != null) { return oldValue; }
         put(key, value);
@@ -169,8 +164,6 @@ public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements
     @Override
     @NonFrozenRecipient
     public @Nullable V remove(@Nullable Object object) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return super.remove(object);
     }
     
@@ -178,8 +171,6 @@ public class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements
     @Override
     @NonFrozenRecipient
     public void clear() {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         super.clear();
     }
     

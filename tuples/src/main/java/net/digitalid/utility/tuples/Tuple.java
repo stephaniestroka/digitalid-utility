@@ -27,7 +27,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see Pair
  */
 @Immutable
-public abstract class Tuple<T extends Tuple> implements Collection<Object>, Comparable<T> {
+public abstract class Tuple implements Collection<Object>, Comparable<Tuple> {
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
     
@@ -51,7 +51,7 @@ public abstract class Tuple<T extends Tuple> implements Collection<Object>, Comp
     /* -------------------------------------------------- Iterator -------------------------------------------------- */
     
     @Mutable
-    private class TupleIterator implements Iterator<Object> {
+    public class TupleIterator implements Iterator<Object> {
         
         private int cursor = 0;
         
@@ -78,7 +78,7 @@ public abstract class Tuple<T extends Tuple> implements Collection<Object>, Comp
     
     @Pure
     @Override
-    public @Capturable @Nonnull Iterator<Object> iterator() {
+    public @Capturable @Nonnull TupleIterator iterator() {
         return new TupleIterator();
     }
     
@@ -167,6 +167,21 @@ public abstract class Tuple<T extends Tuple> implements Collection<Object>, Comp
     @Override
     public void clear() {
         throw new UnsupportedOperationException();
+    }
+    
+    /* -------------------------------------------------- Comparable -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    @SuppressWarnings("unchecked")
+    public int compareTo(@Nonnull Tuple tuple) {
+        final int size = Integer.min(size(), tuple.size());
+        for (int i = 0; i < size; i++) {
+            // According to the Javadoc, we're allowed to throw a ClassCastException.
+            final int comparison = ((Comparable<Object>) get(i)).compareTo(tuple.get(i));
+            if (comparison != 0) { return comparison; }
+        }
+        return size() - tuple.size();
     }
     
 }

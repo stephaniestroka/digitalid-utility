@@ -16,6 +16,8 @@ import javax.lang.model.element.Element;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -62,6 +64,7 @@ public @interface Regex {
         
         @Pure
         @Override
+        @TODO(task = "The following implementation is wrong: It checks whether the annotated variable is a valid regular expression instead of whether the annotated variable matches the regex of the annotation value.", date = "2016-04-26", author = Author.KASPAR_ETTER)
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
             return Contract.with(typeImporter.importIfPossible(Regex.class) + ".Validator.validate(#)", "The # has to be a valid regular expression but was $.", element);
         }

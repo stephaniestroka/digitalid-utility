@@ -13,7 +13,6 @@ import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
-import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
@@ -23,6 +22,7 @@ import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -32,8 +32,9 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * This class extends the {@link LinkedHashSet} and makes it {@link FreezableInterface freezable}.
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
+@GenerateSubclass
 @Freezable(ReadOnlySet.class)
-public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements FreezableSet<E> {
+public abstract class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements FreezableSet<E> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
@@ -46,7 +47,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
      */
     @Pure
     public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedHashSet<E> with(@NonNegative int initialCapacity, @Positive float loadFactor) {
-        return new FreezableLinkedHashSet<>(initialCapacity, loadFactor);
+        return new FreezableLinkedHashSetSubclass<>(initialCapacity, loadFactor);
     }
     
     /**
@@ -100,7 +101,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
      */
     @Pure
     public static @Capturable <E> @NonFrozen FreezableLinkedHashSet<E> with(@NonCaptured @Unmodified Collection<? extends E> collection) {
-        return collection == null ? null : new FreezableLinkedHashSet<>(collection.size(), collection);
+        return collection == null ? null : new FreezableLinkedHashSetSubclass<>(collection.size(), collection);
     }
     
     /**
@@ -108,7 +109,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
      */
     @Pure
     public static @Capturable <E> @NonFrozen FreezableLinkedHashSet<E> with(FiniteIterable<? extends E> iterable) {
-        return iterable == null ? null : new FreezableLinkedHashSet<>(iterable.size(), iterable);
+        return iterable == null ? null : new FreezableLinkedHashSetSubclass<>(iterable.size(), iterable);
     }
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */
@@ -133,7 +134,7 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
     @Pure
     @Override
     public @Capturable @Nonnull @NonFrozen FreezableLinkedHashSet<E> clone() {
-        return new FreezableLinkedHashSet<>(size(), this);
+        return new FreezableLinkedHashSetSubclass<>(size(), this);
     }
     
     /* -------------------------------------------------- Iterable -------------------------------------------------- */
@@ -150,8 +151,6 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
     @Override
     @NonFrozenRecipient
     public boolean add(@Captured E element) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return super.add(element);
     }
     
@@ -159,8 +158,6 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
     @Override
     @NonFrozenRecipient
     public boolean addAll(@NonCaptured @Unmodified @Nonnull Collection<? extends E> collection) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return super.addAll(collection);
     }
     
@@ -168,8 +165,6 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
     @Override
     @NonFrozenRecipient
     public boolean remove(@NonCaptured @Unmodified @Nullable Object object) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return super.remove(object);
     }
     
@@ -177,8 +172,6 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
     @Override
     @NonFrozenRecipient
     public boolean removeAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return super.removeAll(collection);
     }
     
@@ -186,8 +179,6 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
     @Override
     @NonFrozenRecipient
     public boolean retainAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return super.retainAll(collection);
     }
     
@@ -195,8 +186,6 @@ public class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements Freez
     @Override
     @NonFrozenRecipient
     public void clear() {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         super.clear();
     }
     

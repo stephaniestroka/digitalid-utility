@@ -17,7 +17,6 @@ import net.digitalid.utility.collaboration.annotations.TODO;
 import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.collections.iterable.FreezableIterable;
-import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
@@ -26,6 +25,7 @@ import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterators.ReadOnlyArrayIterator;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
@@ -37,8 +37,9 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * This class models {@link FreezableInterface freezable} arrays.
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
+@GenerateSubclass
 @Freezable(ReadOnlyArray.class)
-public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, FreezableIterable<E> {
+public abstract class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, FreezableIterable<E> {
     
     /* -------------------------------------------------- Elements -------------------------------------------------- */
     
@@ -59,7 +60,7 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
      */
     @Pure
     public static @Capturable <E> @Nonnull @NonFrozen FreezableArray<E> withSize(@NonNegative int size) {
-        return new FreezableArray<>(size);
+        return new FreezableArraySubclass<>(size);
     }
     
     @SafeVarargs
@@ -73,10 +74,10 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
     @Pure
     @SafeVarargs
     public static @Capturable <E> @NonFrozen FreezableArray<E> with(@Captured E... elements) {
-        return elements == null ? null : new FreezableArray<>(elements);
+        return elements == null ? null : new FreezableArraySubclass<>(elements);
     }
     
-    protected FreezableArray(@NonCaptured @Unmodified @Nonnull FiniteIterable<? extends E> iterable) {
+    protected FreezableArray(@Nonnull FiniteIterable<? extends E> iterable) {
         this(iterable.size());
         
         int index = 0;
@@ -89,8 +90,8 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
      * Returns a new freezable array with the elements of the given iterable or null if the given iterable is null.
      */
     @Pure
-    public static @Capturable <E> @NonFrozen FreezableArray<E> with(@NonCaptured @Unmodified FiniteIterable<? extends E> iterable) {
-        return iterable == null ? null : new FreezableArray<>(iterable);
+    public static @Capturable <E> @NonFrozen FreezableArray<E> with(FiniteIterable<? extends E> iterable) {
+        return iterable == null ? null : new FreezableArraySubclass<>(iterable);
     }
     
     protected FreezableArray(@NonCaptured @Unmodified @Nonnull Collection<? extends E> collection) {
@@ -107,7 +108,7 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
      */
     @Pure
     public static @Capturable <E> @NonFrozen FreezableArray<E> with(@NonCaptured @Unmodified Collection<? extends E> collection) {
-        return collection == null ? null : new FreezableArray<>(collection);
+        return collection == null ? null : new FreezableArraySubclass<>(collection);
     }
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */
@@ -116,14 +117,14 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
     
     @Pure
     @Override
-    @TODO(task = "Generate this implementation.", date = "2016-04-06", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.HIGH)
+    @TODO(task = "Generate this implementation.", date = "2016-04-06", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.MIDDLE)
     public boolean isFrozen() {
         return frozen;
     }
     
     @Impure
     @Override
-    @TODO(task = "Generate this implementation.", date = "2016-04-06", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.HIGH)
+    @TODO(task = "Generate this implementation.", date = "2016-04-06", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.MIDDLE)
     public @Chainable @Nonnull @Frozen ReadOnlyArray<E> freeze() {
         this.frozen = true;
         return this;
@@ -133,7 +134,7 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
     
     @Pure
     @Override
-    public int size() {
+    public @NonNegative int size() {
         return elements.length;
     }
     
@@ -142,8 +143,6 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
     @Pure
     @Override
     public @Nullable E get(@Index int index) {
-        Require.that(index >= 0 && index < size()).orThrow("The index is valid.");
-        
         return elements[index];
     }
     
@@ -177,9 +176,6 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
     @Impure
     @NonFrozenRecipient
     public void set(@Index int index, E element) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        Require.that(index >= 0 && index < size()).orThrow("The index is valid.");
-        
         elements[index] = element;
     }
     
@@ -189,8 +185,6 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
     @Impure
     @NonFrozenRecipient
     public @Chainable @Nonnull @NonFrozen FreezableArray<E> setAll(E element) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         for (int i = 0; i < elements.length; i++) { elements[i] = element; }
         return this;
     }
@@ -206,7 +200,7 @@ public class FreezableArray<E> extends RootClass implements ReadOnlyArray<E>, Fr
     @Pure
     @Override
     public @Capturable @Nonnull @NonFrozen FreezableArray<E> clone() {
-        return new FreezableArray<>(elements.clone());
+        return new FreezableArraySubclass<>(elements.clone());
     }
     
     /* -------------------------------------------------- Object -------------------------------------------------- */

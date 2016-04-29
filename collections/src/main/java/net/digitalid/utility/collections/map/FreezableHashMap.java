@@ -16,13 +16,13 @@ import net.digitalid.utility.collections.collection.BackedFreezableCollection;
 import net.digitalid.utility.collections.collection.FreezableCollection;
 import net.digitalid.utility.collections.set.BackedFreezableSet;
 import net.digitalid.utility.collections.set.FreezableSet;
-import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.immutable.entry.ReadOnlyEntrySet;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
@@ -35,8 +35,9 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * It is recommended to use only {@link Immutable} types for the keys
  * and {@link ReadOnly} or {@link Immutable} types for the values.
  */
+@GenerateSubclass
 @Freezable(ReadOnlyMap.class)
-public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMap<K, V> {
+public abstract class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMap<K, V> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
@@ -49,7 +50,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
      */
     @Pure
     public static @Capturable <K, V> @Nonnull @NonFrozen FreezableHashMap<K, V> with(@NonNegative int initialCapacity, @Positive float loadFactor) {
-        return new FreezableHashMap<>(initialCapacity, loadFactor);
+        return new FreezableHashMapSubclass<>(initialCapacity, loadFactor);
     }
     
     /**
@@ -77,7 +78,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
      */
     @Pure
     public static @Capturable <K, V> @NonFrozen FreezableHashMap<K, V> with(@NonCaptured @Unmodified Map<? extends K, ? extends V> map) {
-        return map == null ? null : new FreezableHashMap<>(map);
+        return map == null ? null : new FreezableHashMapSubclass<>(map);
     }
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */
@@ -102,7 +103,7 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
     @Pure
     @Override
     public @Capturable @Nonnull @NonFrozen FreezableHashMap<K,V> clone() {
-        return new FreezableHashMap<>(this);
+        return new FreezableHashMapSubclass<>(this);
     }
     
     /* -------------------------------------------------- Entries -------------------------------------------------- */
@@ -131,8 +132,6 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
     @Override
     @NonFrozenRecipient
     public @Nullable V put(@Nullable K key, @Nullable V value) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return super.put(key, value);
     }
     
@@ -140,8 +139,6 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
     @Override
     @NonFrozenRecipient
     public void putAll(@Nonnull Map<? extends K,? extends V> map) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         super.putAll(map);
     }
     
@@ -149,8 +146,6 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
     @Override
     @NonFrozenRecipient
     public @Nonnull V putIfAbsentOrNullElseReturnPresent(@Nonnull K key, @Nonnull V value) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         final @Nullable V oldValue = get(key);
         if (oldValue != null) { return oldValue; }
         put(key, value);
@@ -161,8 +156,6 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
     @Override
     @NonFrozenRecipient
     public @Nullable V remove(@Nullable Object object) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return super.remove(object);
     }
     
@@ -170,8 +163,6 @@ public class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMa
     @Override
     @NonFrozenRecipient
     public void clear() {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         super.clear();
     }
     

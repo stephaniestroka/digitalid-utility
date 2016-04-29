@@ -2,6 +2,7 @@ package net.digitalid.utility.cryptography.key;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.CallSuper;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.collaboration.annotations.TODO;
 import net.digitalid.utility.collaboration.enumerations.Author;
@@ -104,8 +105,6 @@ public abstract class PublicKey extends AsymmetricKey {
     
     /**
      * Returns whether the proof that au, ai, av and ao are in the subgroup of ab is correct.
-     * 
-     * @return {@code true} if the proof that au, ai, av and ao are in the subgroup of ab is correct, {@code false} otherwise.
      */
     @Pure
     public boolean verifySubgroupProof() {
@@ -154,8 +153,11 @@ public abstract class PublicKey extends AsymmetricKey {
     
     /* -------------------------------------------------- Validate -------------------------------------------------- */
     
+    @Pure
     @Override
+    @CallSuper
     public void validate() {
+        super.validate();
         Require.that(verifySubgroupProof()).orThrow("The elements au, ai, av and ao have to be in the subgroup of ab.");
     }
 }

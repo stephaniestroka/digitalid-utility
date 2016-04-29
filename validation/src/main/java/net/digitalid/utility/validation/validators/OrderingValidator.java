@@ -12,6 +12,8 @@ import javax.lang.model.type.TypeMirror;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
@@ -32,6 +34,7 @@ public abstract class OrderingValidator extends IterableValidator {
     
     @Pure
     @Override
+    @TODO(task = "Whether the type argument is comparable should be determined on the iterable type and not the declared type.", date = "2016-04-29", author = Author.KASPAR_ETTER)
     public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
         super.checkUsage(element, annotationMirror);
         
@@ -43,7 +46,7 @@ public abstract class OrderingValidator extends IterableValidator {
             }
         } else if (type.getKind() == TypeKind.DECLARED) {
             final @Nonnull DeclaredType declaredType = (DeclaredType) type;
-            if (declaredType.getTypeArguments().size() == 0 || !ProcessingUtility.isAssignable(declaredType.getTypeArguments().get(0), Comparable.class)) {
+            if (declaredType.getTypeArguments().isEmpty() || !ProcessingUtility.isAssignable(declaredType.getTypeArguments().get(0), Comparable.class)) {
                 ProcessingLog.error("The annotation $ may only be used on iterables whose component type is comparable:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
             }
         } else {

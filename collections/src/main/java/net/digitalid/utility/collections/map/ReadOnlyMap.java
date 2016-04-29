@@ -15,6 +15,7 @@ import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.freezable.ReadOnlyInterface;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.immutable.entry.ReadOnlyEntrySet;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
@@ -31,7 +32,7 @@ public interface ReadOnlyMap<K,V> extends ReadOnlyInterface {
      * @see Map#size()
      */
     @Pure
-    public int size();
+    public @NonNegative int size();
     
     /**
      * @see Map#isEmpty()

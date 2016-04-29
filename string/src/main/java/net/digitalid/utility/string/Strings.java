@@ -76,34 +76,32 @@ public class Strings {
     /* -------------------------------------------------- String Case -------------------------------------------------- */
     
     /**
-     * Returns the given phrase with the first letter of each word in uppercase.
+     * Returns the given string with the first letter of each word in uppercase.
      */
     @Pure
-    public static @Nonnull String capitalizeFirstLetters(@Nonnull String phrase) {
-        final @Nonnull StringBuilder string = new StringBuilder(phrase);
+    public static @Nonnull String capitalizeFirstLetters(@Nonnull String string) {
+        final @Nonnull StringBuilder result = new StringBuilder(string);
         int index = 0;
-        if (index < string.length()) {
-            do {
-                string.replace(index, index + 1, string.substring(index, index + 1).toUpperCase());
-                index = string.indexOf(" ", index) + 1;
-            } while (index > 0 && index < string.length()) ;
+        while (index >= 0 && index < result.length()) {
+            result.replace(index, index + 1, result.substring(index, index + 1).toUpperCase());
+            index = result.indexOf(" ", index) + 1;
         }
-        return string.toString();
+        return result.toString();
     }
     
     /**
-     * Returns the given word in camel case in lower case with spaces.
+     * Returns the given string in camel case in lower case with spaces.
      */
     @Pure
-    public static @Nonnull String decamelize(@Nonnull String word) {
-        final @Nonnull StringBuilder string = new StringBuilder(word);
-        for (int index = 0; index < string.length(); index++) {
-            if (Character.isUpperCase(string.charAt(index))) {
-                string.replace(index, index + 1, string.substring(index, index + 1).toLowerCase());
-                if (index > 0) { string.insert(index, ' '); }
+    public static @Nonnull String decamelize(@Nonnull String string) {
+        final @Nonnull StringBuilder result = new StringBuilder(string);
+        for (int index = 0; index < result.length(); index++) {
+            if (Character.isUpperCase(result.charAt(index))) {
+                result.replace(index, index + 1, result.substring(index, index + 1).toLowerCase());
+                if (index > 0) { result.insert(index, ' '); }
             }
         }
-        return string.toString();
+        return result.toString();
     }
     
     /**

@@ -28,11 +28,12 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * @see ReadOnlyArray
  */
 @ReadOnly(FreezableIterable.class)
-public interface ReadOnlyIterable<E> extends CollectionIterable<E>, ReadOnlyInterface, Cloneable {
+public interface ReadOnlyIterable<E> extends CollectionIterable<E>, ReadOnlyInterface {
     
     /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
+    @Override
     public @Capturable @Nonnull @NonFrozen FreezableIterable<E> clone();
     
     /* -------------------------------------------------- Exports -------------------------------------------------- */

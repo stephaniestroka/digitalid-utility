@@ -8,11 +8,10 @@ import net.digitalid.utility.collections.list.ReadOnlyList;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.cryptography.key.PrivateKey;
 import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.generator.annotations.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.time.Time;
 import net.digitalid.utility.tuples.Pair;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.order.StrictlyDescending;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -20,31 +19,27 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * This class models a {@link KeyChain key chain} of {@link PrivateKey private keys}.
  */
 @Immutable
-@GenerateBuilder
 @GenerateSubclass
 public abstract class PrivateKeyChain extends KeyChain<PrivateKey> {
     
     /**
-     * Creates a new key chain with the given time and key.
+     * Returns a new key chain with the given time and key.
      * 
      * @param time the time from when on the given key is valid.
      * @param key the key that is valid from the given time on.
      * 
-     * @return a new key chain with the given time and key.
-     * 
-     * @require time.isLessThanOrEqualTo(Time.getCurrent()) : "The time lies in the past.";
+     * @require time.isInPast() : "The time lies in the past.";
      */
     @Pure
-    public static @Nonnull PrivateKeyChain get(@Nonnull Time time, @Nonnull PrivateKey key) {
-        Require.that(time.isLessThanOrEqualTo(Time.CURRENT_TIME)).orThrow("The time lies in the past.");
-
-        final @Nonnull FreezableLinkedList<Pair<Time, PrivateKey>> items = FreezableLinkedList.with();
-        items.add(Pair.of(time, key));
-        return new PrivateKeyChainSubclass(items.freeze());
+    public static @Nonnull PrivateKeyChain with(@Nonnull Time time, @Nonnull PrivateKey key) {
+        Require.that(time.isInPast()).orThrow("The time lies in the past.");
+        
+        return new PrivateKeyChainSubclass(FreezableLinkedList.<Pair<Time, PrivateKey>>with(Pair.of(time, key)).freeze());
     }
     
+    @Pure
     @Override
-    protected @Nonnull PrivateKeyChain createKeyChain(@Nonnull @Frozen @NonEmpty @NonNullableElements ReadOnlyList<Pair<Time, PrivateKey>> items) {
+    protected @Nonnull PrivateKeyChain createKeyChain(@Nonnull @Frozen @NonEmpty @StrictlyDescending ReadOnlyList<@Nonnull Pair<@Nonnull Time, @Nonnull PrivateKey>> items) {
         return new PrivateKeyChainSubclass(items);
     }
     

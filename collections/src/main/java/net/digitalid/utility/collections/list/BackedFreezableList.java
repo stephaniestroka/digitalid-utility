@@ -2,7 +2,6 @@ package net.digitalid.utility.collections.list;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -17,7 +16,6 @@ import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.collections.collection.BackedFreezableCollection;
-import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
@@ -25,6 +23,7 @@ import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterators.ReadOnlyListIterator;
+import net.digitalid.utility.generator.annotations.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -35,8 +34,9 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  * The implementation is backed by an ordinary {@link List list}. 
  */
+@GenerateSubclass
 @Freezable(ReadOnlyList.class)
-public class BackedFreezableList<E> extends BackedFreezableCollection<E> implements FreezableList<E> {
+public abstract class BackedFreezableList<E> extends BackedFreezableCollection<E> implements FreezableList<E> {
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
@@ -50,7 +50,7 @@ public class BackedFreezableList<E> extends BackedFreezableCollection<E> impleme
     protected BackedFreezableList(@Nonnull FreezableInterface freezable, @Nonnull List<E> list) {
         super(freezable, list);
         
-        this.list = Objects.requireNonNull(list);
+        this.list = list;
     }
     
     /**
@@ -58,7 +58,7 @@ public class BackedFreezableList<E> extends BackedFreezableCollection<E> impleme
      */
     @Pure
     public static @Capturable <E> @Nonnull BackedFreezableList<E> with(@Referenced @Modified @Nonnull FreezableInterface freezable, @Captured @Nonnull List<E> list) {
-        return new BackedFreezableList<>(freezable, list);
+        return new BackedFreezableListSubclass<>(freezable, list);
     }
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */
@@ -110,8 +110,6 @@ public class BackedFreezableList<E> extends BackedFreezableCollection<E> impleme
     @Override
     @NonFrozenRecipient
     public @Capturable E set(@Index int index, @Captured E element) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return list.set(index, element);
     }
     
@@ -119,8 +117,6 @@ public class BackedFreezableList<E> extends BackedFreezableCollection<E> impleme
     @Override
     @NonFrozenRecipient
     public void add(@IndexForInsertion int index, @Captured E element) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         list.add(index, element);
     }
     
@@ -128,8 +124,6 @@ public class BackedFreezableList<E> extends BackedFreezableCollection<E> impleme
     @Override
     @NonFrozenRecipient
     public @Capturable E remove(@Index int index) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return list.remove(index);
     }
     
@@ -137,8 +131,6 @@ public class BackedFreezableList<E> extends BackedFreezableCollection<E> impleme
     @Override
     @NonFrozenRecipient
     public boolean addAll(@IndexForInsertion int index, @NonCaptured @Unmodified @Nonnull Collection<? extends E> collection) {
-        Require.that(!isFrozen()).orThrow("This object is not frozen.");
-        
         return list.addAll(index, collection);
     }
     
