@@ -12,6 +12,9 @@ import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
+import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.collections.collection.BackedFreezableCollection;
 import net.digitalid.utility.collections.collection.FreezableCollection;
 import net.digitalid.utility.collections.set.BackedFreezableSet;
@@ -38,6 +41,15 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
 @GenerateSubclass
 @Freezable(ReadOnlyMap.class)
 public abstract class FreezableHashMap<K, V> extends HashMap<K, V> implements FreezableMap<K, V> {
+    
+    /* -------------------------------------------------- Fix this issue! -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    @TODO(task = "For some reasons, the SubclassGenerator treats this method as abstract and generates a required field for it if this method is removed.", date = "2016-04-29", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.HIGH)
+    public boolean isEmpty() {
+        return super.isEmpty();
+    }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     

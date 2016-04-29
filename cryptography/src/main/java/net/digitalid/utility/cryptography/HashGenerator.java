@@ -17,7 +17,7 @@ import net.digitalid.utility.validation.annotations.type.Utility;
  * Generates cryptographic hashes.
  */
 @Utility
-public class HashGenerator {
+public final class HashGenerator {
 
     /**
      * Generates and returns a cryptographic hash using the SHA-256 hash algorithm on the values of the given elements.

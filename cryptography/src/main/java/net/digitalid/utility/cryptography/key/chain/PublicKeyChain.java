@@ -31,7 +31,7 @@ public abstract class PublicKeyChain extends KeyChain<PublicKey> {
      * @require time.isInPast() : "The time lies in the past.";
      */
     @Pure
-    public static @Nonnull PublicKeyChain get(@Nonnull Time time, @Nonnull PublicKey key) {
+    public static @Nonnull PublicKeyChain with(@Nonnull Time time, @Nonnull PublicKey key) {
         Require.that(time.isInPast()).orThrow("The time lies in the past.");
         
         return new PublicKeyChainSubclass(FreezableLinkedList.<Pair<Time, PublicKey>>with(Pair.of(time, key)).freeze());

@@ -151,7 +151,6 @@ public class KeyPair extends RootClass {
     
     /**
      * Returns a new key pair with random values.
-     * TODO: remove and use builder instead.
      */
     @Pure
     public static @Nonnull KeyPair withRandomValues() {
