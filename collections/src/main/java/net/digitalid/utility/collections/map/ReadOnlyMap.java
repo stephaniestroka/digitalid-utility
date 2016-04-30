@@ -24,7 +24,7 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
 @ReadOnly(FreezableMap.class)
-public interface ReadOnlyMap<K,V> extends ReadOnlyInterface {
+public interface ReadOnlyMap<K, V> extends ReadOnlyInterface {
     
     /* -------------------------------------------------- Map -------------------------------------------------- */
     

@@ -43,7 +43,7 @@ public interface ReadOnlyIterable<E> extends CollectionIterable<E>, ReadOnlyInte
      */
     @Pure
     public default @Capturable @Nonnull @NonFrozen FreezableArray<E> toFreezableArray() {
-        return FreezableArray.with(this);
+        return FreezableArray.withElementsOf(this);
     }
     
     /**
@@ -51,7 +51,7 @@ public interface ReadOnlyIterable<E> extends CollectionIterable<E>, ReadOnlyInte
      */
     @Pure
     public default @Capturable @Nonnull @NonFrozen FreezableList<E> toFreezableList() {
-        return FreezableLinkedList.with(this);
+        return FreezableLinkedList.withElementsOf(this);
     }
     
     /**
@@ -59,7 +59,7 @@ public interface ReadOnlyIterable<E> extends CollectionIterable<E>, ReadOnlyInte
      */
     @Pure
     public default @Capturable @Nonnull @NonFrozen FreezableSet<E> toFreezableSet() {
-        return FreezableLinkedHashSet.with(this);
+        return FreezableLinkedHashSet.withElementsOf(this);
     }
     
     /**

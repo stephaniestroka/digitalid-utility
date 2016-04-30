@@ -23,7 +23,7 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyListIterator;
-import net.digitalid.utility.generator.annotations.GenerateSubclass;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -53,7 +53,7 @@ public abstract class FreezableLinkedList<E> extends LinkedList<E> implements Fr
      * Returns a new freezable linked list with the given element.
      */
     @Pure
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedList<E> with(@Captured E element) {
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedList<E> withElement(@Captured E element) {
         final @Nonnull FreezableLinkedList<E> list = new FreezableLinkedListSubclass<>();
         list.add(element);
         return list;
@@ -64,7 +64,7 @@ public abstract class FreezableLinkedList<E> extends LinkedList<E> implements Fr
      */
     @Pure
     @SafeVarargs
-    public static @Capturable <E> @NonFrozen FreezableLinkedList<E> with(@Captured E... elements) {
+    public static @Capturable <E> @NonFrozen FreezableLinkedList<E> withElements(@Captured E... elements) {
         if (elements == null) { return null; }
         final @Nonnull FreezableLinkedList<E> list = new FreezableLinkedListSubclass<>();
         list.addAll(Arrays.asList(elements));
@@ -81,7 +81,7 @@ public abstract class FreezableLinkedList<E> extends LinkedList<E> implements Fr
      * Returns a new freezable linked list with the elements of the given collection or null if the given collection is null.
      */
     @Pure
-    public static @Capturable <E> @NonFrozen FreezableLinkedList<E> with(@NonCaptured @Unmodified Collection<? extends E> collection) {
+    public static @Capturable <E> @NonFrozen FreezableLinkedList<E> withElementsOf(@NonCaptured @Unmodified Collection<? extends E> collection) {
         return collection == null ? null : new FreezableLinkedListSubclass<>(collection);
     }
     
@@ -89,7 +89,7 @@ public abstract class FreezableLinkedList<E> extends LinkedList<E> implements Fr
      * Returns a new freezable linked list with the elements of the given iterable or null if the given iterable is null.
      */
     @Pure
-    public static @Capturable <E> @NonFrozen FreezableLinkedList<E> with(FiniteIterable<? extends E> iterable) {
+    public static @Capturable <E> @NonFrozen FreezableLinkedList<E> withElementsOf(FiniteIterable<? extends E> iterable) {
         return iterable == null ? null : new FreezableLinkedListSubclass<>(iterable);
     }
     

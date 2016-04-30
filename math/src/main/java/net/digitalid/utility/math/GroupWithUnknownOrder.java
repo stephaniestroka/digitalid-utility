@@ -1,7 +1,7 @@
 package net.digitalid.utility.math;
 
-import net.digitalid.utility.generator.annotations.GenerateBuilder;
-import net.digitalid.utility.generator.annotations.GenerateSubclass;
+import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**

@@ -6,10 +6,10 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.configuration.Configuration;
-import net.digitalid.utility.generator.annotations.Default;
-import net.digitalid.utility.generator.annotations.GenerateBuilder;
-import net.digitalid.utility.generator.annotations.GenerateSubclass;
-import net.digitalid.utility.generator.annotations.Logged;
+import net.digitalid.utility.validation.annotations.getter.Default;
+import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
+import net.digitalid.utility.generator.annotations.interceptors.Logged;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.rootclass.RootClass;

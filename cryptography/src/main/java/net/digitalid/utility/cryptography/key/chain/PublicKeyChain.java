@@ -8,7 +8,7 @@ import net.digitalid.utility.collections.list.ReadOnlyList;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.cryptography.key.PublicKey;
 import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.generator.annotations.GenerateSubclass;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.time.Time;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.order.StrictlyDescending;
@@ -34,7 +34,7 @@ public abstract class PublicKeyChain extends KeyChain<PublicKey> {
     public static @Nonnull PublicKeyChain with(@Nonnull Time time, @Nonnull PublicKey key) {
         Require.that(time.isInPast()).orThrow("The time lies in the past.");
         
-        return new PublicKeyChainSubclass(FreezableLinkedList.<Pair<Time, PublicKey>>with(Pair.of(time, key)).freeze());
+        return new PublicKeyChainSubclass(FreezableLinkedList.<Pair<Time, PublicKey>>withElement(Pair.of(time, key)).freeze());
     }
     
     @Pure

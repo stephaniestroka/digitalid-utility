@@ -2,83 +2,71 @@ package net.digitalid.utility.property.extensible;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.collections.set.FreezableSet;
+import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.freezable.annotations.Frozen;
-import net.digitalid.utility.property.Validated;
-import net.digitalid.utility.property.ValueValidator;
+import net.digitalid.utility.validation.annotations.value.Validated;
 
 /**
- * This is the writable abstract class for properties that stores a set of values.
+ * This writable property stores an extensible set of values.
  * 
- * <em>Important:</em> Make sure that {@code F} is a subtype of {@code R}!
- * Unfortunately, this cannot be enforced with the limited Java generics.
- * 
- * [used for the hosts in the Server class and modules in the Service class]
- * 
- * @see VolatileExtensibleProperty
+ * @see VolatileWritableExtensibleProperty
  */
-public abstract class WritableExtensibleProperty<V, R extends ReadOnlySet<V>, F extends FreezableSet<V>> extends ReadOnlyExtensibleProperty<V, R> {
+@Mutable
+public abstract class WritableExtensibleProperty<V, R extends ReadOnlySet<@Nonnull V>> extends ExtensibleProperty<V, R> {
     
-    /* -------------------------------------------------- Constructor -------------------------------------------------- */
-
-    /**
-     * Creates a new writable extensible property with the given validators.
-     *
-     * @param valueValidator the validator used to validate the value of this property.
-     */
-    protected WritableExtensibleProperty(@Nonnull ValueValidator<? super V> valueValidator) {
-        super(valueValidator);
-    }
-
-    /* -------------------------------------------------- Modifiers -------------------------------------------------- */
+    /* -------------------------------------------------- Operations -------------------------------------------------- */
     
     /**
-     * Adds a new value to the set.
-     *
-     * @param value the value of this property that got added.
-     */
-    public abstract void add(@Nonnull @Frozen V value);
-    
-    /**
-     * Removes a value from the set.
-     *
-     * @param value the value of this property that got removed.
-     */
-    public abstract void remove(@Nonnull @Frozen V value);
-    
-    /* -------------------------------------------------- Notification -------------------------------------------------- */
-    
-    /**
-     * Notifies the observers that a value was added.
+     * Adds the given value to the values of this property.
      * 
-     * @param value the value of this property that got added.
-     * 
-     * @require set.contains(value) : "The value does not exist in the set.";
+     * @return whether the given value was not already stored.
      */
-    protected final void notifyAdded(@Nonnull F set, @Nonnull @Validated V value) {
-        Require.that(set.contains(value)).orThrow("The value does not exist in the set.");
+    @Impure
+    public abstract boolean add(@Captured @Nonnull @Validated V value);
+    
+    /**
+     * Removes the given value from the values of this property.
+     * 
+     * @return whether the given value was actually stored.
+     */
+    @Impure
+    public abstract boolean remove(@Captured @Nonnull @Validated V value);
+    
+    /* -------------------------------------------------- Notifications -------------------------------------------------- */
+    
+    /**
+     * Notifies the observers that the given value has been added.
+     * 
+     * @require get().contains(value) : "This property has to contain the value.";
+     */
+    @Impure
+    protected void notifyAdded(@NonCaptured @Unmodified @Nonnull @Validated V value) {
+        Require.that(get().contains(value)).orThrow("This property has to contain the value $ now.", value);
         
         if (hasObservers()) {
-            for (final @Nonnull ExtensiblePropertyObserver<V, R> observer : getObservers()) {
+            for (ExtensibleProperty.@Nonnull Observer<V, R> observer : getObservers()) {
                 observer.added(this, value);
             }
         }
     }
     
     /**
-     * Notifies the observers that value was removed.
+     * Notifies the observers that the given value has been removed.
      * 
-     * @param value the value of this property that got removed.
-     * 
-     * @require set.contains(value) : "The value exists in the set.";
+     * @require !get().contains(value) : "This property may no longer contain the value.";
      */
-    protected final void notifyRemoved(@Nonnull F set, @Nonnull @Validated V value) {
-        Require.that(set.contains(value)).orThrow("The value exists in the set.");
+    @Pure
+    protected void notifyRemoved(@NonCaptured @Unmodified @Nonnull @Validated V value) {
+        Require.that(!get().contains(value)).orThrow("This property may no longer contain the value $.", value);
         
         if (hasObservers()) {
-            for (final @Nonnull ExtensiblePropertyObserver<V, R> observer : getObservers()) {
+            for (ExtensibleProperty.@Nonnull Observer<V, R> observer : getObservers()) {
                 observer.removed(this, value);
             }
         }

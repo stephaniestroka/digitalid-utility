@@ -35,7 +35,7 @@ public interface FreezableMap<K, V> extends ReadOnlyMap<K, V>, Map<K, V>, Freeza
     
     @Impure
     @Override
-    public @Chainable @Nonnull @Frozen ReadOnlyMap<K,V> freeze();
+    public @Chainable @Nonnull @Frozen ReadOnlyMap<K, V> freeze();
     
     /* -------------------------------------------------- Map -------------------------------------------------- */
     
@@ -59,6 +59,6 @@ public interface FreezableMap<K, V> extends ReadOnlyMap<K, V>, Map<K, V>, Freeza
      */
     @Impure
     @NonFrozenRecipient
-    public @NonCapturable @Nonnull V putIfAbsentOrNullElseReturnPresent(@Captured @Nonnull K key, @Captured @Nonnull V value);
+    public @NonCapturable @Nonnull V putIfAbsentOrNullElseReturnPresent(@Captured K key, @Captured @Nonnull V value);
     
 }

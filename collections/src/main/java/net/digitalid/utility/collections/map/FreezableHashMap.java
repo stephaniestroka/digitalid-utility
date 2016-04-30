@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
@@ -25,7 +26,7 @@ import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
-import net.digitalid.utility.generator.annotations.GenerateSubclass;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.immutable.entry.ReadOnlyEntrySet;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
@@ -61,7 +62,7 @@ public abstract class FreezableHashMap<K, V> extends HashMap<K, V> implements Fr
      * Returns a new freezable hash map with the given initial capacity and load factor.
      */
     @Pure
-    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableHashMap<K, V> with(@NonNegative int initialCapacity, @Positive float loadFactor) {
+    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableHashMap<K, V> withCapacityAndFactor(@NonNegative int initialCapacity, @Positive float loadFactor) {
         return new FreezableHashMapSubclass<>(initialCapacity, loadFactor);
     }
     
@@ -69,8 +70,8 @@ public abstract class FreezableHashMap<K, V> extends HashMap<K, V> implements Fr
      * Returns a new freezable hash map with the given initial capacity.
      */
     @Pure
-    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableHashMap<K, V> with(@NonNegative int initialCapacity) {
-        return FreezableHashMap.with(initialCapacity, 0.75f);
+    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableHashMap<K, V> withCapacity(@NonNegative int initialCapacity) {
+        return FreezableHashMap.withCapacityAndFactor(initialCapacity, 0.75f);
     }
     
     /**
@@ -78,7 +79,7 @@ public abstract class FreezableHashMap<K, V> extends HashMap<K, V> implements Fr
      */
     @Pure
     public static @Capturable <K, V> @Nonnull @NonFrozen FreezableHashMap<K, V> withDefaultCapacity() {
-        return with(16);
+        return withCapacity(16);
     }
     
     protected FreezableHashMap(@NonCaptured @Unmodified @Nonnull Map<? extends K, ? extends V> map) {
@@ -89,7 +90,7 @@ public abstract class FreezableHashMap<K, V> extends HashMap<K, V> implements Fr
      * Returns a new freezable hash map with the mappings of the given map or null if the given map is null.
      */
     @Pure
-    public static @Capturable <K, V> @NonFrozen FreezableHashMap<K, V> with(@NonCaptured @Unmodified Map<? extends K, ? extends V> map) {
+    public static @Capturable <K, V> @NonFrozen FreezableHashMap<K, V> withMappingsOf(@NonCaptured @Unmodified Map<? extends K, ? extends V> map) {
         return map == null ? null : new FreezableHashMapSubclass<>(map);
     }
     
@@ -143,21 +144,21 @@ public abstract class FreezableHashMap<K, V> extends HashMap<K, V> implements Fr
     @Impure
     @Override
     @NonFrozenRecipient
-    public @Nullable V put(@Nullable K key, @Nullable V value) {
+    public @Capturable @Nullable V put(@Captured K key, @Captured V value) {
         return super.put(key, value);
     }
     
     @Impure
     @Override
     @NonFrozenRecipient
-    public void putAll(@Nonnull Map<? extends K,? extends V> map) {
+    public void putAll(@NonCaptured @Unmodified @Nonnull Map<? extends K, ? extends V> map) {
         super.putAll(map);
     }
     
     @Impure
     @Override
     @NonFrozenRecipient
-    public @Nonnull V putIfAbsentOrNullElseReturnPresent(@Nonnull K key, @Nonnull V value) {
+    public @NonCapturable @Nonnull V putIfAbsentOrNullElseReturnPresent(@Captured K key, @Captured @Nonnull V value) {
         final @Nullable V oldValue = get(key);
         if (oldValue != null) { return oldValue; }
         put(key, value);
@@ -167,7 +168,7 @@ public abstract class FreezableHashMap<K, V> extends HashMap<K, V> implements Fr
     @Impure
     @Override
     @NonFrozenRecipient
-    public @Nullable V remove(@Nullable Object object) {
+    public @Capturable @Nullable V remove(@NonCaptured @Unmodified @Nullable Object object) {
         return super.remove(object);
     }
     

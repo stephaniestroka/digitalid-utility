@@ -2,79 +2,78 @@ package net.digitalid.utility.property.indexed;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.collections.map.FreezableMap;
+import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.collections.map.ReadOnlyMap;
-import net.digitalid.utility.property.Validated;
-import net.digitalid.utility.property.ValueValidator;
+import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.validation.annotations.value.Validated;
 
 /**
- * This is the writable abstract class for properties that stores an indexed value.
+ * This writable property stores indexed values.
  * 
- * <em>Important:</em> Make sure that {@code F} is a subtype of {@code R}!
- * Unfortunately, this cannot be enforced with the limited Java generics.
- * 
- * [used for the hosts in the Server class and modules in the Service class]
- * 
- * @see VolatileIndexedProperty
+ * @see VolatileWritableIndexedProperty
  */
-public abstract class WritableIndexedProperty<K, V, R extends ReadOnlyMap<K, V>, F extends FreezableMap<K, V>> extends ReadOnlyIndexedProperty<K, V, R> {
+@Mutable
+public abstract class WritableIndexedProperty<K, V, R extends ReadOnlyMap<@Nonnull K, @Nonnull V>> extends IndexedProperty<K, V, R> {
     
-    /* -------------------------------------------------- Constructor -------------------------------------------------- */
-    
-    /**
-     * Creates a new writable indexed property with the given validators.
-     * 
-     * @param keyValidator the validator used to validate the key of this property.
-     * @param valueValidator the validator used to validate the value of this property.
-     */
-    protected WritableIndexedProperty(@Nonnull ValueValidator<? super K> keyValidator, @Nonnull ValueValidator<? super V> valueValidator) {
-        super(keyValidator, valueValidator);
-    }
-    
-    /* -------------------------------------------------- Modifiers -------------------------------------------------- */
+    /* -------------------------------------------------- Operations -------------------------------------------------- */
     
     /**
-     * Adds a new indexed value to the map.
+     * Adds the given value indexed by the given key to this property.
      * 
-     * @param key the key of this property that got added.
-     * @param value the value of this property that got added.
-     * 
-     * @require !map.containsKey(key) : "The key may not already be indexed.";
+     * @require getKeyValidator().evaluate(key) : "The key has to be valid.";
+     * @require !getMap().containsKey(key) : "The key may not already be used.";
      */
-    public abstract void add(@Nonnull K key, @Nonnull V value);
+    @Impure
+    public abstract void add(@Captured @Nonnull K key, @Captured @Nonnull @Validated V value);
     
     /**
-     * Removes an indexed value from the map.
+     * Removes the value indexed by the given key from this property.
      * 
-     * @param key the key of this property that got removed.
+     * @return the value that was previously associated with the given key.
+     * 
+     * @require getKeyValidator().evaluate(key) : "The key has to be valid.";
+     * @require getMap().containsKey(key) : "The key has to be used.";
      */
-    public abstract void remove(@Nonnull K key);
+    @Impure
+    public abstract @Capturable @Nonnull @Validated V remove(@NonCaptured @Unmodified @Nonnull K key);
     
-    /* -------------------------------------------------- Notification -------------------------------------------------- */
+    /* -------------------------------------------------- Notifications -------------------------------------------------- */
     
     /**
-     * Notifies the observers that a key-value pair was added.
+     * Notifies the observers that a key-value pair has been added.
      * 
-     * @param key the key of this property that got added.
-     * @param value the value of this property that got added.
+     * @require getKeyValidator().evaluate(key) : "The key has to be valid.";
+     * @require value.equals(get(key)) : "The key now has to map to the value.";
      */
-    protected final void notifyAdded(@Nonnull @Validated K key, @Nonnull @Validated V value) {
+    @Pure
+    protected void notifyAdded(@NonCaptured @Unmodified @Nonnull K key, @NonCaptured @Unmodified @Nonnull @Validated V value) {
+        Require.that(value.equals(get(key))).orThrow("The key $ now has to map to the value $.", key, value);
+        
         if (hasObservers()) {
-            for (final @Nonnull IndexedPropertyObserver<K, V, R> observer : getObservers()) {
+            for (IndexedProperty.@Nonnull Observer<K, V, R> observer : getObservers()) {
                 observer.added(this, key, value);
             }
         }
     }
     
     /**
-     * Notifies the observers that a key-value pair was removed.
+     * Notifies the observers that a key-value pair has been removed.
      * 
-     * @param key the key of this property that got removed.
-     * @param value the value of this property that got removed.
+     * @require getKeyValidator().evaluate(key) : "The key has to be valid.";
+     * @require !value.equals(get(key)) : "The key may no longer map to the value.";
      */
-    protected final void notifyRemoved(@Nonnull @Validated K key, @Nonnull @Validated V value) {
+    @Pure
+    protected void notifyRemoved(@NonCaptured @Unmodified @Nonnull K key, @NonCaptured @Unmodified @Nonnull @Validated V value) {
+        Require.that(!value.equals(get(key))).orThrow("The key $ may no longer map to the value $.", key, value);
+        
         if (hasObservers()) {
-            for (final @Nonnull IndexedPropertyObserver<K, V, R> observer : getObservers()) {
+            for (IndexedProperty.@Nonnull Observer<K, V, R> observer : getObservers()) {
                 observer.removed(this, key, value);
             }
         }

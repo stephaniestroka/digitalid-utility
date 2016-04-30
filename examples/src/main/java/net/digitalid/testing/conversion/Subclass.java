@@ -11,7 +11,7 @@ import net.digitalid.utility.conversion.annotations.Constructing;
 import net.digitalid.utility.conversion.annotations.ConvertToConvertibleType;
 import net.digitalid.utility.conversion.annotations.GenericTypes;
 import net.digitalid.utility.conversion.annotations.IgnoreForConversion;
-import net.digitalid.utility.generator.annotations.Invariant;
+import net.digitalid.utility.validation.annotations.value.Invariant;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;

@@ -20,10 +20,9 @@ import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.conversion.annotations.Recover;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.generator.annotations.Default;
-import net.digitalid.utility.generator.annotations.Interceptor;
-import net.digitalid.utility.generator.annotations.Recover;
+import net.digitalid.utility.generator.annotations.meta.Interceptor;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
@@ -31,6 +30,7 @@ import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.getter.Default;
 import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
@@ -261,10 +261,12 @@ public class MethodInformation extends ExecutableInformation {
                 returnTypeAsString.append("@").append(javaFileGenerator.importIfPossible(annotationMirror.getAnnotationType()));
                 if (annotationMirror.getElementValues().size() > 0) {
                     returnTypeAsString.append("(");
+                    boolean first = true;
                     for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> elementValue : annotationMirror.getElementValues().entrySet()) {
+                        if (first) { first = false; } else { returnTypeAsString.append(", "); }
                         final @Nonnull String nameOfKey = elementValue.getKey().getSimpleName().toString();
                         if (!nameOfKey.equals("value")) {
-                            returnTypeAsString.append(nameOfKey).append("=").append(elementValue.getValue());
+                            returnTypeAsString.append(nameOfKey).append(" = ").append(elementValue.getValue());
                         } else {
                             returnTypeAsString.append(elementValue.getValue());
                         }

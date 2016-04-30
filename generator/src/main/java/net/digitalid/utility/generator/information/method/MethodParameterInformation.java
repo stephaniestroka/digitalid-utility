@@ -9,7 +9,7 @@ import javax.lang.model.type.DeclaredType;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.generator.annotations.Default;
+import net.digitalid.utility.validation.annotations.getter.Default;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;

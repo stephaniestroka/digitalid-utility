@@ -13,13 +13,11 @@ import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.conversion.converter.Converter;
-import net.digitalid.utility.conversion.converter.CustomType;
-import net.digitalid.utility.generator.annotations.Default;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
+import net.digitalid.utility.validation.annotations.getter.Default;
 
 import com.sun.tools.javac.code.Type;
 
@@ -78,10 +76,12 @@ public abstract class FieldInformationImplementation extends ElementInformationI
                 returnTypeAsString.append("@").append(javaFileGenerator.importIfPossible(annotationMirror.getAnnotationType()));
                 if (annotationMirror.getElementValues().size() > 0) {
                     returnTypeAsString.append("(");
+                    boolean first = true;
                     for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> elementValue : annotationMirror.getElementValues().entrySet()) {
+                        if (first) { first = false; } else { returnTypeAsString.append(", "); }
                         final @Nonnull String nameOfKey = elementValue.getKey().getSimpleName().toString();
                         if (!nameOfKey.equals("value")) {
-                            returnTypeAsString.append(nameOfKey).append("=").append(elementValue.getValue());
+                            returnTypeAsString.append(nameOfKey).append(" = ").append(elementValue.getValue());
                         } else {
                             returnTypeAsString.append(elementValue.getValue());
                         }

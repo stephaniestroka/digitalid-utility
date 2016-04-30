@@ -25,7 +25,7 @@ import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterators.ReadOnlyArrayIterator;
-import net.digitalid.utility.generator.annotations.GenerateSubclass;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
@@ -73,7 +73,7 @@ public abstract class FreezableArray<E> extends RootClass implements ReadOnlyArr
      */
     @Pure
     @SafeVarargs
-    public static @Capturable <E> @NonFrozen FreezableArray<E> with(@Captured E... elements) {
+    public static @Capturable <E> @NonFrozen FreezableArray<E> withElements(@Captured E... elements) {
         return elements == null ? null : new FreezableArraySubclass<>(elements);
     }
     
@@ -90,7 +90,7 @@ public abstract class FreezableArray<E> extends RootClass implements ReadOnlyArr
      * Returns a new freezable array with the elements of the given iterable or null if the given iterable is null.
      */
     @Pure
-    public static @Capturable <E> @NonFrozen FreezableArray<E> with(FiniteIterable<? extends E> iterable) {
+    public static @Capturable <E> @NonFrozen FreezableArray<E> withElementsOf(FiniteIterable<? extends E> iterable) {
         return iterable == null ? null : new FreezableArraySubclass<>(iterable);
     }
     
@@ -107,7 +107,7 @@ public abstract class FreezableArray<E> extends RootClass implements ReadOnlyArr
      * Returns a new freezable array with the elements of the given collection or null if the given collection is null.
      */
     @Pure
-    public static @Capturable <E> @NonFrozen FreezableArray<E> with(@NonCaptured @Unmodified Collection<? extends E> collection) {
+    public static @Capturable <E> @NonFrozen FreezableArray<E> withElementsOf(@NonCaptured @Unmodified Collection<? extends E> collection) {
         return collection == null ? null : new FreezableArraySubclass<>(collection);
     }
     

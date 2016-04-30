@@ -16,7 +16,7 @@ import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.functional.fixes.Brackets;
-import net.digitalid.utility.generator.annotations.GenerateSubclass;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
@@ -66,7 +66,7 @@ public abstract class BackedFreezableSet<E> extends BackedFreezableCollection<E>
     @Pure
     @Override
     public @Capturable @Nonnull @NonFrozen FreezableSet<E> clone() {
-        return FreezableHashSet.with(set);
+        return FreezableHashSet.withElementsOf(set);
     }
     
     /* -------------------------------------------------- Object -------------------------------------------------- */

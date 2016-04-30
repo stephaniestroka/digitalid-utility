@@ -9,8 +9,8 @@ import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.cryptography.HashGenerator;
-import net.digitalid.utility.generator.annotations.GenerateBuilder;
-import net.digitalid.utility.generator.annotations.GenerateSubclass;
+import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.group.annotations.InGroup;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
@@ -20,6 +20,8 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class stores the groups, elements and exponents of a host's public key.
+ * 
+ * @invariant verifySubgroupProof() : "The elements au, ai, av and ao are in the subgroup of ab.";
  * 
  * @see PrivateKey
  * @see KeyPair
@@ -160,4 +162,5 @@ public abstract class PublicKey extends AsymmetricKey {
         super.validate();
         Require.that(verifySubgroupProof()).orThrow("The elements au, ai, av and ao have to be in the subgroup of ab.");
     }
+    
 }

@@ -23,7 +23,7 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyListIterator;
-import net.digitalid.utility.generator.annotations.GenerateSubclass;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
@@ -54,7 +54,7 @@ public abstract class FreezableArrayList<E> extends ArrayList<E> implements Free
      * Returns a new freezable array list with the given element.
      */
     @Pure
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableArrayList<E> with(@Captured E element) {
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableArrayList<E> withElement(@Captured E element) {
         final @Nonnull FreezableArrayList<E> list = new FreezableArrayListSubclass<>();
         list.add(element);
         return list;
@@ -77,7 +77,7 @@ public abstract class FreezableArrayList<E> extends ArrayList<E> implements Free
      */
     @Pure
     @SafeVarargs
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableArrayList<E> with(@Captured  E... elements) {
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableArrayList<E> withElements(@Captured  E... elements) {
         if (elements == null) { return null; }
         final @Nonnull FreezableArrayList<E> list = new FreezableArrayListSubclass<>(elements.length);
         list.addAll(Arrays.asList(elements));
@@ -96,7 +96,7 @@ public abstract class FreezableArrayList<E> extends ArrayList<E> implements Free
      * Returns a new freezable array list with the elements of the given collection or null if the given collection is null.
      */
     @Pure
-    public static @Capturable <E> @NonFrozen FreezableArrayList<E> with(@NonCaptured @Unmodified Collection<? extends E> collection) {
+    public static @Capturable <E> @NonFrozen FreezableArrayList<E> withElementsOf(@NonCaptured @Unmodified Collection<? extends E> collection) {
         return collection == null ? null : new FreezableArrayListSubclass<>(collection.size(), collection);
     }
     
@@ -104,7 +104,7 @@ public abstract class FreezableArrayList<E> extends ArrayList<E> implements Free
      * Returns a new freezable array list with the elements of the given iterable or null if the given iterable is null.
      */
     @Pure
-    public static @Capturable <E> @NonFrozen FreezableArrayList<E> with(FiniteIterable<? extends E> iterable) {
+    public static @Capturable <E> @NonFrozen FreezableArrayList<E> withElementsOf(FiniteIterable<? extends E> iterable) {
         return iterable == null ? null : new FreezableArrayListSubclass<>(iterable.size(), iterable);
     }
     

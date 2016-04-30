@@ -18,8 +18,6 @@ import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.generator.annotations.Derive;
-import net.digitalid.utility.generator.annotations.Normalize;
 import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleFieldInformation;
@@ -40,6 +38,8 @@ import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Quartet;
 import net.digitalid.utility.tuples.Triplet;
+import net.digitalid.utility.validation.annotations.getter.Derive;
+import net.digitalid.utility.validation.annotations.getter.Normalize;
 import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
@@ -250,8 +250,8 @@ public class SubclassGenerator extends JavaFileGenerator {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
         beginMethod("public int hashCode()");
-        addStatement("int prime = 92821");
-        addStatement("int result = 46411");
+        addStatement("int prime = 92_821");
+        addStatement("int result = 46_411");
         // TODO: Primitive types are auto-boxed right now. Is the hash of an auto-boxed value always the same?
         final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
         for (@Nonnull FieldInformation field : representingFieldInformation) {

@@ -1,4 +1,4 @@
-package net.digitalid.utility.generator.annotations;
+package net.digitalid.utility.generator.annotations.interceptors;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

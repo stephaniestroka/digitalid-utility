@@ -9,6 +9,8 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.collaboration.annotations.TODO;
@@ -24,7 +26,7 @@ import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
-import net.digitalid.utility.generator.annotations.GenerateSubclass;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.immutable.entry.ReadOnlyEntrySet;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
@@ -61,7 +63,7 @@ public abstract class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> i
      * Returns a new freezable linked hash map with the given initial capacity, load factor and access order.
      */
     @Pure
-    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> with(@NonNegative int initialCapacity, @Positive float loadFactor, boolean accessOrder) {
+    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> withCapacityAndFactorAndOrder(@NonNegative int initialCapacity, @Positive float loadFactor, boolean accessOrder) {
         return new FreezableLinkedHashMapSubclass<>(initialCapacity, loadFactor, accessOrder);
     }
 
@@ -69,16 +71,16 @@ public abstract class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> i
      * Returns a new freezable linked hash map with the given initial capacity and load factor.
      */
     @Pure
-    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> with(@NonNegative int initialCapacity, @Positive float loadFactor) {
-        return FreezableLinkedHashMap.with(initialCapacity, loadFactor, false);
+    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> withCapacityAndFactor(@NonNegative int initialCapacity, @Positive float loadFactor) {
+        return FreezableLinkedHashMap.withCapacityAndFactorAndOrder(initialCapacity, loadFactor, false);
     }
     
     /**
      * Returns a new freezable linked hash map with the given initial capacity.
      */
     @Pure
-    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> with(@NonNegative int initialCapacity) {
-        return FreezableLinkedHashMap.with(initialCapacity, 0.75f);
+    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> withCapacity(@NonNegative int initialCapacity) {
+        return FreezableLinkedHashMap.withCapacityAndFactor(initialCapacity, 0.75f);
     }
     
     /**
@@ -86,7 +88,7 @@ public abstract class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> i
      */
     @Pure
     public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> withDefaultCapacity() {
-        return with(16);
+        return withCapacity(16);
     }
     
     protected FreezableLinkedHashMap(@NonCaptured @Unmodified @Nonnull Map<? extends K, ? extends V> map) {
@@ -97,7 +99,7 @@ public abstract class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> i
      * Returns a new freezable linked hash map with the mappings of the given map or null if the given map is null.
      */
     @Pure
-    public static @Capturable <K, V> @NonFrozen FreezableLinkedHashMap<K, V> with(@NonCaptured @Unmodified Map<? extends K, ? extends V> map) {
+    public static @Capturable <K, V> @NonFrozen FreezableLinkedHashMap<K, V> withMappingsOf(@NonCaptured @Unmodified Map<? extends K, ? extends V> map) {
         return map == null ? null : new FreezableLinkedHashMapSubclass<>(map);
     }
     
@@ -130,19 +132,19 @@ public abstract class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> i
     
     @Pure
     @Override
-    public @Nonnull @NullableElements FreezableSet<K> keySet() {
+    public @NonCapturable @Nonnull @NullableElements FreezableSet<K> keySet() {
         return BackedFreezableSet.with(this, super.keySet());
     }
     
     @Pure
     @Override
-    public @Nonnull @NullableElements FreezableCollection<V> values() {
+    public @NonCapturable @Nonnull @NullableElements FreezableCollection<V> values() {
         return BackedFreezableCollection.with(this, super.values());
     }
     
     @Pure
     @Override
-    public @Nonnull ReadOnlyEntrySet<K, V> entrySet() {
+    public @NonCapturable @Nonnull ReadOnlyEntrySet<K, V> entrySet() {
         return ReadOnlyEntrySet.with(super.entrySet());
     }
     
@@ -151,21 +153,21 @@ public abstract class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> i
     @Impure
     @Override
     @NonFrozenRecipient
-    public @Nullable V put(@Nullable K key, @Nullable V value) {
+    public @Capturable @Nullable V put(@Captured K key, @Captured V value) {
         return super.put(key, value);
     }
     
     @Impure
     @Override
     @NonFrozenRecipient
-    public void putAll(@Nonnull Map<? extends K,? extends V> map) {
+    public void putAll(@NonCaptured @Unmodified @Nonnull Map<? extends K, ? extends V> map) {
         super.putAll(map);
     }
     
     @Impure
     @Override
     @NonFrozenRecipient
-    public @Nonnull V putIfAbsentOrNullElseReturnPresent(@Nonnull K key, @Nonnull V value) {
+    public @NonCapturable @Nonnull V putIfAbsentOrNullElseReturnPresent(@Captured K key, @Captured @Nonnull V value) {
         final @Nullable V oldValue = get(key);
         if (oldValue != null) { return oldValue; }
         put(key, value);
@@ -175,7 +177,7 @@ public abstract class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> i
     @Impure
     @Override
     @NonFrozenRecipient
-    public @Nullable V remove(@Nullable Object object) {
+    public @Capturable @Nullable V remove(@NonCaptured @Unmodified @Nullable Object object) {
         return super.remove(object);
     }
     

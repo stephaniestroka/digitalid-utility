@@ -4,19 +4,22 @@ import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.CallSuper;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.generator.annotations.Derive;
-import net.digitalid.utility.generator.annotations.GenerateBuilder;
-import net.digitalid.utility.generator.annotations.GenerateSubclass;
-import net.digitalid.utility.generator.annotations.Invariant;
+import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.group.annotations.InGroup;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
 import net.digitalid.utility.math.GroupWithKnownOrder;
+import net.digitalid.utility.validation.annotations.getter.Derive;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class stores the groups and exponents of a host's private key.
+ * 
+ * @invariant getCompositeGroup().getModulus().equals(getP().multiply(getQ())) : "The modulus of the composite group is the product of p and q.";
  * 
  * @see PublicKey
  * @see KeyPair
@@ -44,7 +47,6 @@ public abstract class PrivateKey extends AsymmetricKey {
      * Returns the second prime factor of the composite group's modulus.
      */
     @Pure
-    @Invariant(condition = "compositeGroup.getModulus().equals(p.multiply(q))", message = "The modulus of the composite group has to be the product of p and q.")
     protected abstract @Nonnull BigInteger getQ();
     
     /* -------------------------------------------------- Decryption Exponent -------------------------------------------------- */
@@ -115,5 +117,15 @@ public abstract class PrivateKey extends AsymmetricKey {
      */
     @Pure
     public abstract @Nonnull Exponent getX();
+    
+    /* -------------------------------------------------- Validate -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    @CallSuper
+    public void validate() {
+        super.validate();
+        Require.that(getCompositeGroup().getModulus().equals(getP().multiply(getQ()))).orThrow("The modulus of the composite group has to be the product of p and q.");
+    }
     
 }

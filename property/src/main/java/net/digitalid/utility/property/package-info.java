@@ -1,4 +1,4 @@
 /**
- * Provides classes for encapsulating and observing properties.
+ * Provides classes for encapsulating and observing values.
  */
 package net.digitalid.utility.property;

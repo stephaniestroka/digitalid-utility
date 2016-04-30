@@ -6,9 +6,9 @@ import java.util.Date;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.generator.annotations.Default;
-import net.digitalid.utility.generator.annotations.GenerateBuilder;
-import net.digitalid.utility.generator.annotations.GenerateSubclass;
+import net.digitalid.utility.validation.annotations.getter.Default;
+import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.interfaces.LongNumerical;

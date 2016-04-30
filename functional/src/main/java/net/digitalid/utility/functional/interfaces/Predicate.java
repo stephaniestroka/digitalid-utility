@@ -119,4 +119,16 @@ public interface Predicate<T> {
         return object -> object != null ? evaluate(object) : defaultValue;
     }
     
+    /* -------------------------------------------------- Constants -------------------------------------------------- */
+    
+    /**
+     * Stores a predicate which always returns true.
+     */
+    public static final @Nonnull Predicate<Object> ALWAYS_TRUE = object -> true;
+    
+    /**
+     * Stores a predicate which always returns false.
+     */
+    public static final @Nonnull Predicate<Object> ALWAYS_FALSE = object -> false;
+    
 }

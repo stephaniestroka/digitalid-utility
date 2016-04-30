@@ -18,7 +18,7 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterables.InfiniteIterable;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
-import net.digitalid.utility.generator.annotations.Derive;
+import net.digitalid.utility.validation.annotations.getter.Derive;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.generator.information.field.FieldInformation;

@@ -1,55 +1,51 @@
 package net.digitalid.utility.property.nonnullable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.property.Validated;
-import net.digitalid.utility.property.ValueValidator;
+import net.digitalid.utility.validation.annotations.value.Validated;
 
 /**
- * This is the writable abstract class for properties that stores a non-null replaceable value.
+ * This writable property stores a non-nullable value.
  * 
- * @see VolatileNonNullableProperty
+ * @see VolatileWritableNonNullableProperty
  */
-public abstract class WritableNonNullableProperty<V> extends ReadOnlyNonNullableProperty<V> {
-    
-    /* -------------------------------------------------- Constructor -------------------------------------------------- */
-    
-    /**
-     * Creates a new non-nullable replaceable property with the given validator.
-     *
-     * @param validator the validator used to validate the value of this property.
-     */
-    protected WritableNonNullableProperty(@Nonnull ValueValidator<? super V> validator) {
-        super(validator);
-    }
+@Mutable
+public abstract class WritableNonNullableProperty<V> extends NonNullableProperty<V> {
     
     /* -------------------------------------------------- Setter -------------------------------------------------- */
     
     /**
-     * Sets the value of this property to the given new value.
+     * Sets the value of this property to the given value.
      * 
-     * @param newValue the new value to replace the old one with.
-     *
-     * @require getValidator().isValid(newValue) : "The new value is valid.";
+     * @return the old value of this property that got replaced by the given value.
      */
-    public abstract void set(@Nonnull @Validated V newValue);
+    @Impure
+    public abstract @Capturable @Nullable @Validated V set(@Captured @Nonnull @Validated V value);
     
     /* -------------------------------------------------- Notification -------------------------------------------------- */
     
     /**
-     * Notifies the observers that the value of this property has changed.
+     * Notifies the observers that the value of this property has been replaced.
      * 
-     * @param oldValue the old value of this property that got replaced.
-     * @param newValue the new value of this property that replaced the old one.
-     *
-     * @require !oldValue.equals(newValue) : "The old and the new value are not the same.";
+     * @require !newValue.equals(oldValue) : "The new value may not be the same as the old value.";
+     * @require newValue.equals(get()) : "The new value has to be set for this property.";
      */
-    protected final void notify(@Nonnull @Validated V oldValue, @Nonnull @Validated V newValue) {
-        Require.that(!oldValue.equals(newValue)).orThrow("The old and the new value are not the same.");
+    @Pure
+    protected void notifyObservers(@NonCaptured @Unmodified @Nonnull @Validated V oldValue, @NonCaptured @Unmodified @Nonnull @Validated V newValue) {
+        Require.that(!newValue.equals(oldValue)).orThrow("The new value $ may not be the same as the old value $.", newValue, oldValue);
+        Require.that(newValue.equals(get())).orThrow("The new value $ has to be set for this property.", newValue);
         
         if (hasObservers()) {
-            for (final @Nonnull NonNullablePropertyObserver<V> observer : getObservers()) {
+            for (NonNullableProperty.@Nonnull Observer<V> observer : getObservers()) {
                 observer.replaced(this, oldValue, newValue);
             }
         }

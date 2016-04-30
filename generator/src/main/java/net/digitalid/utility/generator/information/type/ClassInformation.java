@@ -24,7 +24,7 @@ import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.BuilderGenerator;
 import net.digitalid.utility.generator.SubclassGenerator;
-import net.digitalid.utility.generator.annotations.Recover;
+import net.digitalid.utility.conversion.annotations.Recover;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;

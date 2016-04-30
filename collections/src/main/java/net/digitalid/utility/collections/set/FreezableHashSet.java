@@ -22,7 +22,7 @@ import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
-import net.digitalid.utility.generator.annotations.GenerateSubclass;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -46,7 +46,7 @@ public abstract class FreezableHashSet<E> extends HashSet<E> implements Freezabl
      * Returns a new freezable hash set with the given initial capacity and the given load factor.
      */
     @Pure
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableHashSet<E> with(@NonNegative int initialCapacity, @Positive float loadFactor) {
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableHashSet<E> withCapacityAndFactor(@NonNegative int initialCapacity, @Positive float loadFactor) {
         return new FreezableHashSetSubclass<>(initialCapacity, loadFactor);
     }
     
@@ -54,24 +54,24 @@ public abstract class FreezableHashSet<E> extends HashSet<E> implements Freezabl
      * Returns a new freezable hash set with the given initial capacity.
      */
     @Pure
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableHashSet<E> with(@NonNegative int initialCapacity) {
-        return with(initialCapacity, 0.75f);
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableHashSet<E> withCapacity(@NonNegative int initialCapacity) {
+        return withCapacityAndFactor(initialCapacity, 0.75f);
     }
     
     /**
      * Returns a new freezable hash set.
      */
     @Pure
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableHashSet<E> with() {
-        return with(16);
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableHashSet<E> withDefaultCapacity() {
+        return withCapacity(16);
     }
     
     /**
      * Returns a new freezable hash set with the given element.
      */
     @Pure
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableHashSet<E> with(@Captured E element) {
-        final @Nonnull FreezableHashSet<E> set = with();
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableHashSet<E> withElement(@Captured E element) {
+        final @Nonnull FreezableHashSet<E> set = withDefaultCapacity();
         set.add(element);
         return set;
     }
@@ -81,9 +81,9 @@ public abstract class FreezableHashSet<E> extends HashSet<E> implements Freezabl
      */
     @Pure
     @SafeVarargs
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableHashSet<E> with(@Captured E... elements) {
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableHashSet<E> withElements(@Captured E... elements) {
         if (elements == null) { return null; }
-        final @Nonnull FreezableHashSet<E> set = with(elements.length);
+        final @Nonnull FreezableHashSet<E> set = withCapacity(elements.length);
         set.addAll(Arrays.asList(elements));
         return set;
     }
@@ -100,7 +100,7 @@ public abstract class FreezableHashSet<E> extends HashSet<E> implements Freezabl
      * Returns a new freezable hash set with the elements of the given collection or null if the given collection is null.
      */
     @Pure
-    public static @Capturable <E> @NonFrozen FreezableHashSet<E> with(@NonCaptured @Unmodified Collection<? extends E> collection) {
+    public static @Capturable <E> @NonFrozen FreezableHashSet<E> withElementsOf(@NonCaptured @Unmodified Collection<? extends E> collection) {
         return collection == null ? null : new FreezableHashSetSubclass<>(collection.size(), collection);
     }
     
@@ -108,7 +108,7 @@ public abstract class FreezableHashSet<E> extends HashSet<E> implements Freezabl
      * Returns a new freezable hash set with the elements of the given iterable or null if the given iterable is null.
      */
     @Pure
-    public static @Capturable <E> @NonFrozen FreezableHashSet<E> with(FiniteIterable<? extends E> iterable) {
+    public static @Capturable <E> @NonFrozen FreezableHashSet<E> withElementsOf(FiniteIterable<? extends E> iterable) {
         return iterable == null ? null : new FreezableHashSetSubclass<>(iterable.size(), iterable);
     }
     

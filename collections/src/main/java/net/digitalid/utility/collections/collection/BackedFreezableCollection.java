@@ -23,7 +23,7 @@ import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
-import net.digitalid.utility.generator.annotations.GenerateSubclass;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
@@ -87,7 +87,7 @@ public abstract class BackedFreezableCollection<E> extends RootClass implements 
     @Pure
     @Override
     public @Capturable @Nonnull @NonFrozen FreezableCollection<E> clone() {
-        return FreezableArrayList.with(collection);
+        return FreezableArrayList.withElementsOf(collection);
     }
     
     /* -------------------------------------------------- Collection -------------------------------------------------- */

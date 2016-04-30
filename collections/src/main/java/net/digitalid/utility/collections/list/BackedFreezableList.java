@@ -23,7 +23,7 @@ import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.fixes.Brackets;
 import net.digitalid.utility.functional.iterators.ReadOnlyListIterator;
-import net.digitalid.utility.generator.annotations.GenerateSubclass;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -75,7 +75,7 @@ public abstract class BackedFreezableList<E> extends BackedFreezableCollection<E
     @Pure
     @Override
     public @Capturable @Nonnull @NonFrozen FreezableList<E> clone() {
-        return FreezableArrayList.with(list);
+        return FreezableArrayList.withElementsOf(list);
     }
     
     /* -------------------------------------------------- List -------------------------------------------------- */

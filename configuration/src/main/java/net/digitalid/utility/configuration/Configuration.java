@@ -34,7 +34,7 @@ import net.digitalid.utility.validation.annotations.type.Functional;
 @Mutable
 public class Configuration<P> {
     
-    /* -------------------------------------------------- Interface -------------------------------------------------- */
+    /* -------------------------------------------------- Observer -------------------------------------------------- */
     
     /**
      * Objects that implement this interface can be used to observe a {@link Configuration configuration}.
