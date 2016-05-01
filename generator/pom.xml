@@ -16,6 +16,11 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-processor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-conversion</artifactId>
             <version>${project.version}</version>
         </dependency>

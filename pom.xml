@@ -69,8 +69,6 @@
         <module>cryptography</module>
         <module>property</module>
         <module>console</module>
-        <module>examples</module>
-        <!-- TODO: conversion and examples should be reversed. -->
     </modules>
     
     <dependencies>

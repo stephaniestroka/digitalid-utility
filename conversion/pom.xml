@@ -16,16 +16,9 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-processor</artifactId>
+            <artifactId>utility-validation</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--TODO: Ideally, this project can use the examples during testing, which requires that the examples do not depend on this project.-->
-<!--        <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-examples</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>-->
 	<dependency>
             <groupId>com.sun</groupId>
             <artifactId>tools</artifactId>
@@ -34,7 +27,6 @@
             <optional>true</optional>
             <systemPath>${java.home}/../lib/tools.jar</systemPath>
         </dependency>
-
     </dependencies>
     
 </project>
