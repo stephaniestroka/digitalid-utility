@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.interfaces;
+package net.digitalid.utility.interfaces;
 
 import javax.annotation.Nonnull;
 

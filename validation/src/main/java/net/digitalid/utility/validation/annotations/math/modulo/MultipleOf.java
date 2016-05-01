@@ -14,13 +14,13 @@ import javax.lang.model.element.Element;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.interfaces.BigIntegerNumerical;
+import net.digitalid.utility.interfaces.LongNumerical;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.interfaces.BigIntegerNumerical;
-import net.digitalid.utility.validation.interfaces.LongNumerical;
 import net.digitalid.utility.validation.validators.ModuloValidator;
 
 /**

@@ -1,7 +1,5 @@
 package net.digitalid.utility.generator.annotations.interceptors;
 
-import net.digitalid.utility.generator.annotations.meta.Interceptor;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,6 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.generator.annotations.meta.Interceptor;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.logging.Log;

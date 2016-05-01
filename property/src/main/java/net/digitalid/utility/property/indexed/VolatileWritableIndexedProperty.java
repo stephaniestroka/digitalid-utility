@@ -18,6 +18,7 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
+import net.digitalid.utility.validation.annotations.getter.Default;
 import net.digitalid.utility.validation.annotations.value.Validated;
 
 /**
@@ -38,13 +39,15 @@ public abstract class VolatileWritableIndexedProperty<K, V, R extends ReadOnlyMa
     
     /* -------------------------------------------------- Map -------------------------------------------------- */
     
-    private final @Nonnull @NonFrozen F map;
+    @Pure
+    @Default("(F) net.digitalid.utility.collections.map.FreezableLinkedHashMap.withDefaultCapacity()")
+    protected abstract @Nonnull @NonFrozen F getMap();
     
     @Pure
     @Override
     @SuppressWarnings("unchecked")
-    public @NonCapturable @Nonnull @NonFrozen R getMap() {
-        return (R) map;
+    public @NonCapturable @Nonnull @NonFrozen R getAll() {
+        return (R) getMap();
     }
     
     /* -------------------------------------------------- Values -------------------------------------------------- */
@@ -54,7 +57,7 @@ public abstract class VolatileWritableIndexedProperty<K, V, R extends ReadOnlyMa
     public @NonCapturable @Nullable @Validated V get(@NonCaptured @Unmodified @Nonnull K key) {
         Require.that(getKeyValidator().evaluate(key)).orThrow("The key $ has to be valid.", key);
         
-        return map.get(key);
+        return getMap().get(key);
     }
     
     /* -------------------------------------------------- Operations -------------------------------------------------- */
@@ -63,9 +66,9 @@ public abstract class VolatileWritableIndexedProperty<K, V, R extends ReadOnlyMa
     @Override
     public void add(@Captured @Nonnull K key, @Captured @Nonnull @Validated V value) {
         Require.that(getKeyValidator().evaluate(key)).orThrow("The key $ has to be valid.", key);
-        Require.that(!getMap().containsKey(key)).orThrow("The key $ may not already be used.", key);
+        Require.that(!getAll().containsKey(key)).orThrow("The key $ may not already be used.", key);
         
-        map.put(key, value);
+        getMap().put(key, value);
         notifyAdded(key, value);
     }
     
@@ -73,17 +76,11 @@ public abstract class VolatileWritableIndexedProperty<K, V, R extends ReadOnlyMa
     @Override
     public @Capturable @Nonnull @Validated V remove(@NonCaptured @Unmodified @Nonnull K key) {
         Require.that(getKeyValidator().evaluate(key)).orThrow("The key $ has to be valid.", key);
-        Require.that(getMap().containsKey(key)).orThrow("The key $ has to be used.", key);
+        Require.that(getAll().containsKey(key)).orThrow("The key $ has to be used.", key);
         
-        final @Nonnull V value = map.remove(key);
+        final @Nonnull V value = getMap().remove(key);
         notifyRemoved(key, value);
         return value;
-    }
-    
-    /* -------------------------------------------------- Constructors -------------------------------------------------- */
-    
-    protected VolatileWritableIndexedProperty(@Nonnull @NonFrozen F map) {
-        this.map = map;
     }
     
     /* -------------------------------------------------- Validate -------------------------------------------------- */
@@ -93,10 +90,10 @@ public abstract class VolatileWritableIndexedProperty<K, V, R extends ReadOnlyMa
     @CallSuper
     public void validate() {
         super.validate();
-        Require.that(!getMap().keySet().containsNull()).orThrow("None of the keys may be null.");
-        Require.that(!getMap().values().containsNull()).orThrow("None of the values may be null.");
-        Require.that(getMap().keySet().matchAll(getKeyValidator())).orThrow("Each key has to be valid.");
-        Require.that(getMap().values().matchAll(getValueValidator())).orThrow("Each value has to be valid.");
+        Require.that(!getAll().keySet().containsNull()).orThrow("None of the keys may be null.");
+        Require.that(!getAll().values().containsNull()).orThrow("None of the values may be null.");
+        Require.that(getAll().keySet().matchAll(getKeyValidator())).orThrow("Each key has to be valid.");
+        Require.that(getAll().values().matchAll(getValueValidator())).orThrow("Each value has to be valid.");
     }
     
 }

@@ -4,7 +4,7 @@
                              http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <artifactId>utility-tuples</artifactId>
+    <artifactId>utility-interfaces</artifactId>
     <packaging>jar</packaging>
     
     <parent>
@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-interfaces</artifactId>
+            <artifactId>utility-annotations</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

@@ -33,7 +33,6 @@ import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
-import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Type;
 
 import static net.digitalid.utility.processing.utility.StaticProcessingEnvironment.*;

@@ -1,4 +1,4 @@
-package net.digitalid.utility.validation.interfaces;
+package net.digitalid.utility.interfaces;
 
 import java.math.BigInteger;
 
@@ -10,8 +10,6 @@ import net.digitalid.utility.validation.annotations.type.Functional;
 
 /**
  * Numerical values can be validated with generated contracts.
- * 
- * @see net.digitalid.utility.validation.annotations.math
  */
 @Functional
 public interface BigIntegerNumerical<T extends BigIntegerNumerical<T>> extends CustomComparable<T> {

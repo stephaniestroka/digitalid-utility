@@ -15,7 +15,7 @@ import net.digitalid.utility.property.indexed.IndexedProperty;
 import net.digitalid.utility.property.nonnullable.NonNullableProperty;
 import net.digitalid.utility.property.nullable.NullableProperty;
 import net.digitalid.utility.rootclass.RootClass;
-import net.digitalid.utility.validation.interfaces.Encapsulator;
+import net.digitalid.utility.validation.annotations.value.Validated;
 
 /**
  * A property is an object that can be {@link Property.Observer observed}.
@@ -26,7 +26,7 @@ import net.digitalid.utility.validation.interfaces.Encapsulator;
  * @see IndexedProperty
  */
 @Mutable
-public abstract class Property<V, O extends Property.Observer<V>> extends RootClass implements Encapsulator<V> {
+public abstract class Property<V, O extends Property.Observer<V>> extends RootClass implements Validated.Value<V> {
     
     /* -------------------------------------------------- Observer -------------------------------------------------- */
     

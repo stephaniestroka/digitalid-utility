@@ -45,6 +45,7 @@ import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
 import net.digitalid.utility.functional.iterators.ReversingIterator;
 import net.digitalid.utility.functional.iterators.ZippingIterator;
+import net.digitalid.utility.interfaces.Countable;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
@@ -60,7 +61,7 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  */
 @ReadOnly
 @Functional
-public interface FiniteIterable<E> extends FunctionalIterable<E> {
+public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
@@ -176,6 +177,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E> {
      * Returns the size of this iterable.
      */
     @Pure
+    @Override
     public default @NonNegative int size() {
         return size(Integer.MAX_VALUE);
     }

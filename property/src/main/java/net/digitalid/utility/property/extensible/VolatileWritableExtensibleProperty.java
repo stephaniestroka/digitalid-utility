@@ -16,6 +16,7 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
+import net.digitalid.utility.validation.annotations.getter.Default;
 import net.digitalid.utility.validation.annotations.value.Validated;
 
 /**
@@ -34,13 +35,15 @@ public abstract class VolatileWritableExtensibleProperty<V, R extends ReadOnlySe
     
     /* -------------------------------------------------- Set -------------------------------------------------- */
     
-    private final @Nonnull @NonFrozen F set;
+    @Pure
+    @Default("(F) net.digitalid.utility.collections.set.FreezableLinkedHashSet.withDefaultCapacity()")
+    protected abstract @Nonnull @NonFrozen F getSet();
     
     @Pure
     @Override
     @SuppressWarnings("unchecked")
     public @NonCapturable @Nonnull @NonFrozen R get() {
-        return (R) set;
+        return (R) getSet();
     }
     
     /* -------------------------------------------------- Operations -------------------------------------------------- */
@@ -48,27 +51,17 @@ public abstract class VolatileWritableExtensibleProperty<V, R extends ReadOnlySe
     @Impure
     @Override
     public boolean add(@Captured @Nonnull @Validated V value) {
-        final boolean notAlreadyContained = set.add(value);
-        
+        final boolean notAlreadyContained = getSet().add(value);
         if (notAlreadyContained) { notifyAdded(value); }
-        
         return notAlreadyContained;
     }
     
     @Impure
     @Override
     public boolean remove(@NonCaptured @Unmodified @Nonnull @Validated V value) {
-        final boolean contained = set.remove(value);
-        
+        final boolean contained = getSet().remove(value);
         if (contained) { notifyRemoved(value); }
-        
         return contained;
-    }
-    
-    /* -------------------------------------------------- Constructors -------------------------------------------------- */
-    
-    protected VolatileWritableExtensibleProperty(@Nonnull @NonFrozen F set) {
-        this.set = set;
     }
     
     /* -------------------------------------------------- Validate -------------------------------------------------- */

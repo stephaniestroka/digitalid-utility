@@ -6,9 +6,9 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.immutable.ImmutableSet;
+import net.digitalid.utility.interfaces.BigIntegerNumerical;
+import net.digitalid.utility.interfaces.LongNumerical;
 import net.digitalid.utility.validation.annotations.type.Stateless;
-import net.digitalid.utility.validation.interfaces.BigIntegerNumerical;
-import net.digitalid.utility.validation.interfaces.LongNumerical;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**

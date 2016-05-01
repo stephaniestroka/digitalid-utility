@@ -9,7 +9,6 @@ import javax.lang.model.type.DeclaredType;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.validation.annotations.getter.Default;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
@@ -17,6 +16,7 @@ import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleDe
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
+import net.digitalid.utility.validation.annotations.getter.Default;
 
 import com.sun.tools.javac.code.Type;
 

@@ -70,6 +70,6 @@ public abstract class IndexedProperty<K, V, R extends ReadOnlyMap<@Nonnull K, @N
      * Returns a read-only view of the indexed values.
      */
     @Pure
-    public abstract @NonCapturable @Nonnull @NonFrozen R getMap();
+    public abstract @NonCapturable @Nonnull @NonFrozen R getAll();
     
 }

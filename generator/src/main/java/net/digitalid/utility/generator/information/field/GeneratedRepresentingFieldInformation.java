@@ -4,8 +4,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.type.DeclaredType;
 
-import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.generator.information.method.MethodInformation;
 
 /**
  * This type collects the relevant information about a generated representing field for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.

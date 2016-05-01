@@ -10,12 +10,12 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
-import net.digitalid.utility.validation.annotations.getter.Normalize;
 import net.digitalid.utility.group.GroupMember;
 import net.digitalid.utility.group.annotations.InSameGroup;
+import net.digitalid.utility.interfaces.BigIntegerNumerical;
 import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.validation.annotations.getter.Normalize;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.interfaces.BigIntegerNumerical;
 
 /**
  * An element is a number in a certain group.
