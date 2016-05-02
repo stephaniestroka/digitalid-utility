@@ -20,7 +20,7 @@ import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.conversion.annotations.Recover;
 import net.digitalid.utility.exceptions.ConformityViolation;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
-import net.digitalid.utility.functional.fixes.Brackets;
+import net.digitalid.utility.fixes.Brackets;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.BuilderGenerator;

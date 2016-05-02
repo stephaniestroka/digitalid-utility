@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
+import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -142,7 +143,7 @@ public class Octet<E0, E1, E2, E3, E4, E5, E6, E7> extends Septet<E0, E1, E2, E3
     @Pure
     @Override
     public @Nonnull String toStringWithoutParentheses() {
-        return super.toStringWithoutParentheses() + ", " + element7;
+        return super.toStringWithoutParentheses() + ", " + Quotes.inCode(element7);
     }
     
 }

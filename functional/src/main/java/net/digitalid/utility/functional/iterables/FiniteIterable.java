@@ -28,7 +28,7 @@ import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.state.Modifiable;
-import net.digitalid.utility.functional.fixes.Fixes;
+import net.digitalid.utility.fixes.Fixes;
 import net.digitalid.utility.functional.interfaces.BinaryOperator;
 import net.digitalid.utility.functional.interfaces.Collector;
 import net.digitalid.utility.functional.interfaces.Consumer;

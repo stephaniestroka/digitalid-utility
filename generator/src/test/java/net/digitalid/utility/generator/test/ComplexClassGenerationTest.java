@@ -26,7 +26,7 @@ public class ComplexClassGenerationTest {
         listOfIntegers.add(1);
         listOfIntegers.add(2);
         listOfIntegers.add(3);
-       return ComplexClassBuilder.withText("This is a test").withSimpleClass(simpleClass).withListOfIntegers(listOfIntegers).withArrayOfStrings(arrayOfStrings);
+        return ComplexClassBuilder.withText("This is a test").withSimpleClass(simpleClass).withListOfIntegers(listOfIntegers).withArrayOfStrings(arrayOfStrings);
     }
     
     @Test
@@ -41,7 +41,7 @@ public class ComplexClassGenerationTest {
         final @Nonnull ComplexClass complexClass1 = prepareBuilder().build();
         final @Nonnull ComplexClass complexClass2 = prepareBuilder().build();
     
-        expectingEqual("representing Fields").of(complexClass1).and(complexClass2);
+        expectingEqual("representing fields").of(complexClass1).and(complexClass2);
     }
     
     @Test
@@ -53,7 +53,7 @@ public class ComplexClassGenerationTest {
         final @Nonnull ComplexClass complexClass1 = prepareBuilder().build();
         final @Nonnull ComplexClass complexClass2 = prepareBuilder().withListOfIntegers(differentListOfIntegers).build();
         
-        expectingDifferent("representing Fields").of(complexClass1).and(complexClass2);
+        expectingDifferent("representing fields").of(complexClass1).and(complexClass2);
     }
     
     @Test
@@ -80,7 +80,7 @@ public class ComplexClassGenerationTest {
     public void shouldProduceSameToString() throws Exception {
         final @Nonnull ComplexClass complexClass = prepareBuilder().build();
     
-        expecting("string representation", Object::toString).of(complexClass).toBe("ComplexClass(text: This is a test, simpleClass: SimpleClass(number: 1), listOfIntegers: [1, 2, 3], arrayOfStrings: [first, second, third])");
+        expecting("string representation", Object::toString).of(complexClass).toBe("ComplexClass(text: \"This is a test\", simpleClass: SimpleClass(number: 1), listOfIntegers: [1, 2, 3], arrayOfStrings: [first, second, third])");
     }
     
     @Test

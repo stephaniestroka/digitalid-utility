@@ -40,6 +40,7 @@
         <module>collaboration</module>
         <module>annotations</module>
         <module>interfaces</module>
+        <module>fixes</module>
         <module>tuples</module>
         <module>functional</module>
         <module>concurrency</module>

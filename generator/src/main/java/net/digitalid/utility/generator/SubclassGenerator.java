@@ -14,8 +14,8 @@ import javax.lang.model.type.TypeMirror;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
-import net.digitalid.utility.functional.fixes.Brackets;
-import net.digitalid.utility.functional.fixes.Quotes;
+import net.digitalid.utility.fixes.Brackets;
+import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
@@ -198,9 +198,9 @@ public class SubclassGenerator extends JavaFileGenerator {
         endMethod();
     }
     
-    private static @Nonnull GenerateComparisonTypeVisitor generateComparisonTypeVisitor = new GenerateComparisonTypeVisitor();
+    private static final @Nonnull GenerateComparisonTypeVisitor generateComparisonTypeVisitor = new GenerateComparisonTypeVisitor();
     
-    private static @Nonnull GenerateToStringTypeVisitor generateToStringTypeVisitor = new GenerateToStringTypeVisitor();
+    private static final @Nonnull GenerateToStringTypeVisitor generateToStringTypeVisitor = new GenerateToStringTypeVisitor();
     
     /**
      * Generates a hashCode method that generate a hashCode from all representing fields.
@@ -212,8 +212,9 @@ public class SubclassGenerator extends JavaFileGenerator {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
         beginMethod("public String toString()");
-        importIfPossible(Objects.class);
-        // TODO: Rather use String.valueOf(object) instead of Objects.toString(object) because the latter forwards to the former anyway and primitive types need not to be boxed.
+        // TODO: Make sure that Arrays.class is also imported when needed. Maybe change the implementation to importing type visitors?
+        importIfPossible(Objects.class); // TODO: No longer needed, at least not for this visitor.
+        importIfPossible(Quotes.class); // TODO: Make sure it is only imported when needed!
         addStatement("return \"" + typeInformation.getName() + typeInformation.getRepresentingFieldInformation().map(field -> field.getName() + ": \" + " + generateToStringTypeVisitor.visit(field.getType(), field.getAccessCode()) + " + \"").join(Brackets.ROUND) + "\"");
         endMethod();
     }
@@ -331,7 +332,6 @@ public class SubclassGenerator extends JavaFileGenerator {
         
         this.typeInformation = typeInformation;
         try {
-        
             beginClass("class " + typeInformation.getSimpleNameOfGeneratedSubclass() + importWithBounds(typeInformation.getTypeArguments()) + (typeInformation.getElement().getKind() == ElementKind.CLASS ? " extends " : " implements ") + importIfPossible(typeInformation.getType()));
             
             generateFields();

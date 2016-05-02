@@ -13,7 +13,7 @@ import javax.lang.model.type.TypeVariable;
 
 import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.conversion.annotations.Recover;
-import net.digitalid.utility.functional.fixes.Brackets;
+import net.digitalid.utility.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;

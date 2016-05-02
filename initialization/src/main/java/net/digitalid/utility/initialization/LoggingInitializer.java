@@ -9,7 +9,7 @@ import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.Initializer;
-import net.digitalid.utility.functional.fixes.Quotes;
+import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 

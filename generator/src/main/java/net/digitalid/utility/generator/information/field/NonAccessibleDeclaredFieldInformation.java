@@ -5,7 +5,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
-import net.digitalid.utility.functional.fixes.Quotes;
+import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 
 /**

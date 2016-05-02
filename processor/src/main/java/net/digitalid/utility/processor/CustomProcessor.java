@@ -28,7 +28,7 @@ import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.state.Unmodifiable;
-import net.digitalid.utility.functional.fixes.Quotes;
+import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.processing.logging.ProcessingLog;

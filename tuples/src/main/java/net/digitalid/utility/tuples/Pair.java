@@ -10,6 +10,7 @@ import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -132,7 +133,7 @@ public class Pair<E0, E1> extends Tuple {
      */
     @Pure
     public @Nonnull String toStringWithoutParentheses() {
-        return element0 + ", " + element1;
+        return Quotes.inCode(element0) + ", " + Quotes.inCode(element1);
     }
     
     @Pure

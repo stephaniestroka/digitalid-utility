@@ -1,4 +1,4 @@
-package net.digitalid.utility.functional.fixes;
+package net.digitalid.utility.fixes;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

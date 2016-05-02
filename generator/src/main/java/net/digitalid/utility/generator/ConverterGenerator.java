@@ -19,7 +19,7 @@ import net.digitalid.utility.conversion.converter.CustomType;
 import net.digitalid.utility.conversion.converter.ResultSet;
 import net.digitalid.utility.conversion.converter.ValueCollector;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
-import net.digitalid.utility.functional.fixes.Quotes;
+import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
