@@ -2,7 +2,6 @@ package net.digitalid.utility.tuples;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -52,7 +51,7 @@ public abstract class Tuple implements Collection<Object>, CustomComparable<Tupl
     /* -------------------------------------------------- Iterator -------------------------------------------------- */
     
     @Mutable
-    public class TupleIterator implements Iterator<Object> {
+    public class Iterator implements java.util.Iterator<Object> {
         
         private int cursor = 0;
         
@@ -79,8 +78,8 @@ public abstract class Tuple implements Collection<Object>, CustomComparable<Tupl
     
     @Pure
     @Override
-    public @Capturable @Nonnull TupleIterator iterator() {
-        return new TupleIterator();
+    public @Capturable @Nonnull Iterator iterator() {
+        return new Iterator();
     }
     
     /* -------------------------------------------------- Collection -------------------------------------------------- */
@@ -178,6 +177,10 @@ public abstract class Tuple implements Collection<Object>, CustomComparable<Tupl
     public int compareTo(@Nonnull Tuple tuple) {
         final int size = Math.min(size(), tuple.size());
         for (int i = 0; i < size; i++) {
+            if (get(i) == null && tuple.get(i) == null) { continue; }
+            if (get(i) == null && tuple.get(i) != null) { return -1; }
+            if (get(i) != null && tuple.get(i) == null) { return 1; }
+            
             // According to the Javadoc, we're allowed to throw a ClassCastException.
             final int comparison = ((Comparable<Object>) get(i)).compareTo(tuple.get(i));
             if (comparison != 0) { return comparison; }
