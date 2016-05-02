@@ -12,12 +12,25 @@ import net.digitalid.utility.time.Time;
 import net.digitalid.utility.time.TimeBuilder;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-/**
- * Unit testing of the class {@link KeyPair}.
- */
 public class KeyPairTest extends CustomTest {
+    
+    /**
+     * Sets the length of the cryptographic parameters.
+     */
+    @BeforeClass
+    public static void setUpParameters() {
+        Parameters.FACTOR.set(128);
+        Parameters.RANDOM_EXPONENT.set(64);
+        Parameters.CREDENTIAL_EXPONENT.set(64);
+        Parameters.RANDOM_CREDENTIAL_EXPONENT.set(96);
+        Parameters.BLINDING_EXPONENT.set(96);
+        Parameters.RANDOM_BLINDING_EXPONENT.set(128);
+        Parameters.VERIFIABLE_ENCRYPTION.set(128);
+        Parameters.ENCRYPTION_KEY.set(128);
+    }
     
     @Test
     public void testKeyPair() {
