@@ -2,8 +2,8 @@ package net.digitalid.utility.validation.validatable;
 
 import net.digitalid.utility.annotations.method.CallSuper;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.contracts.exceptions.InvariantViolationException;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This interface allows to validate the invariant of implementing classes.

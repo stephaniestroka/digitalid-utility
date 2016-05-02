@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
-import net.digitalid.utility.annotations.type.Mutable;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This class implements a logger that logs the messages to the standard output.

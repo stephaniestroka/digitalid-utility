@@ -7,14 +7,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation indicates that the annotated reference is not null.
+ * This annotation indicates that the annotated reference can be null.
  * 
- * Ideally, this annotation would be in {@code net.digitalid.utility.annotations.reference} and be
- * called NonNullable. However, we stick to this package and name because of better tool support.
+ * Ideally, this annotation would be in {@code net.digitalid.utility.annotations.reference}.
+ * However, we stick to this package because of better tool support.
  * 
- * @see Nullable
+ * @see Nonnull
  */
 @Documented
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Nonnull {}
+public @interface Nullable {}

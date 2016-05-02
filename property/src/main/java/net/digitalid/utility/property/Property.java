@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.collections.set.FreezableLinkedHashSet;
 import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.collections.set.ReadOnlySet;
@@ -15,6 +14,7 @@ import net.digitalid.utility.property.indexed.IndexedProperty;
 import net.digitalid.utility.property.nonnullable.NonNullableProperty;
 import net.digitalid.utility.property.nullable.NullableProperty;
 import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Validated;
 
 /**

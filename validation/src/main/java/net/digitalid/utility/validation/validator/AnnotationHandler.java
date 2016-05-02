@@ -48,7 +48,7 @@ public abstract class AnnotationHandler {
     /**
      * Returns the decamelized name of the surrounding annotation.
      * 
-     * @see StringCase#decamelize(java.lang.String)
+     * @see Strings#decamelize(java.lang.String)
      */
     @Pure
     public @Nonnull String getDecamelizedAnnotationName() {

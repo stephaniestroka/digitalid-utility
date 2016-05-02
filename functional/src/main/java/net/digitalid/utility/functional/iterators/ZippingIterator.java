@@ -8,8 +8,8 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
-import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.tuples.Pair;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This class implements a zipping iterator that iterates over the elements of the given iterators in pairs, extending the shorter or truncating the longer iterator depending on the given flag.

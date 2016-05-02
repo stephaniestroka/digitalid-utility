@@ -34,7 +34,6 @@ import javax.tools.JavaFileObject;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
-import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.contracts.Constraint;
 import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
@@ -53,6 +52,7 @@ import net.digitalid.utility.processor.generator.annotations.OnlyPossibleIn;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.contract.Contract;
 
 import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.*;

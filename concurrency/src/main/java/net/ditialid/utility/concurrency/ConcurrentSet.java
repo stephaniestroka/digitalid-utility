@@ -2,7 +2,7 @@ package net.ditialid.utility.concurrency;
 
 import java.util.Set;
 
-import net.digitalid.utility.annotations.type.Mutable;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * Extends Java's {@link java.util.Set} interface.

@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
-import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.directory.Directory;
 import net.digitalid.utility.initialization.Initialize;
 import net.digitalid.utility.logging.Level;
@@ -20,6 +19,7 @@ import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
 import net.digitalid.utility.logging.logger.StandardOutputLogger;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This class implements a logger that logs the messages to a rotating file.

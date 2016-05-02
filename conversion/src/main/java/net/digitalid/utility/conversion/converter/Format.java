@@ -87,9 +87,9 @@ public abstract class Format<C extends Converter> {
     protected abstract @Nonnull C getStringConverter();
 
     /**
-     * Returns the converter which converts objects of type byte[] or {@link Byte[]} to and from the format.
+     * Returns the converter which converts objects of type byte[] or {@link Byte Byte[]} to and from the format.
      * 
-     * @return the converter which converts objects of type byte[] or {@link Byte[]} to and from the format.
+     * @return the converter which converts objects of type byte[] or {@link Byte Byte[]} to and from the format.
      */
     @Pure
     protected abstract @Nonnull C getBinaryConverter();
@@ -111,9 +111,9 @@ public abstract class Format<C extends Converter> {
     protected abstract @Nonnull C getCollectionConverter();
     
     /**
-     * Returns the converter which converts objects of type {@link Object[]} to and from the format.
+     * Returns the converter which converts objects of type {@link Object Object[]} to and from the format.
      * 
-     * @return the converter which converts objects of type {@link Object[]} to and from the format.
+     * @return the converter which converts objects of type {@link Object Object[]} to and from the format.
      */
     @Pure
     protected abstract @Nonnull C getArrayConverter();

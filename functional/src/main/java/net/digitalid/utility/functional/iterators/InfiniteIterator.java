@@ -1,7 +1,7 @@
 package net.digitalid.utility.functional.iterators;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.type.Mutable;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This interface models an iterator that returns an infinite number of elements.

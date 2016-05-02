@@ -7,6 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collections;
 
+import net.digitalid.utility.annotations.method.Pure;
+
 /**
  * This annotation indicates that an object is unmodifiable.
  * Only {@link Pure pure} methods can be called on unmodifiable objects.

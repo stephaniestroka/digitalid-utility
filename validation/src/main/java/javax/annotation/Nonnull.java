@@ -22,7 +22,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 /**
  * This annotation indicates that the annotated reference is not null.
  * 
- * Ideally, this annotation would be in {@code net.digitalid.utility.validation.reference} and be
+ * Ideally, this annotation would be in {@code net.digitalid.utility.annotations.reference} and be
  * called NonNullable. However, we stick to this package and name because of better tool support.
  * 
  * @see Nullable

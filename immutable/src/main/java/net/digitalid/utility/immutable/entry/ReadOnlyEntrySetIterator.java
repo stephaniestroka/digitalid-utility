@@ -7,8 +7,8 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.ownership.Captured;
-import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This class implements an iterator that returns only read-only entries.

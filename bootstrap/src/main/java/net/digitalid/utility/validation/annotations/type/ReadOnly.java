@@ -16,6 +16,8 @@ import javax.annotation.Nonnull;
  * 
  * @see Mutable
  * @see Immutable
+ * @see Stateless
+ * @see Utility
  */
 @Inherited
 @Documented

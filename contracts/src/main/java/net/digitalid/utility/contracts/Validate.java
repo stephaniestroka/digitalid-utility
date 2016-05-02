@@ -29,7 +29,7 @@ public final class Validate extends Constraint {
     /* -------------------------------------------------- Evaluation -------------------------------------------------- */
     
     /**
-     * Returns a non-nullable invariant with the given condition that needs to be checked with {@link #orThrow(java.lang.String)}.
+     * Returns a non-nullable invariant with the given condition that needs to be checked with {@link #orThrow(java.lang.String, java.lang.Object...)}.
      */
     @Pure
     public static @Nonnull Validate that(boolean condition) {

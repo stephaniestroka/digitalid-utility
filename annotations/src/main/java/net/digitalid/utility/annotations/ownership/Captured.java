@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
-import net.digitalid.utility.annotations.type.Mutable;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This annotation indicates that the annotated parameter is captured by the callee and that the

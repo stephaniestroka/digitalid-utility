@@ -13,7 +13,6 @@ import javax.lang.model.element.Element;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.ReadOnlyInterface;
 import net.digitalid.utility.immutable.ImmutableSet;
 import net.digitalid.utility.processing.utility.TypeImporter;
@@ -23,10 +22,10 @@ import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
- * This annotation indicates that a freezable object is not {@link Freezable#isFrozen() frozen}.
+ * This annotation indicates that a freezable object is not {@link ReadOnlyInterface#isFrozen() frozen}.
  * 
  * @see Frozen
- * @see FreezableInterface
+ * @see ReadOnlyInterface
  */
 @Documented
 @Target(ElementType.TYPE_USE)

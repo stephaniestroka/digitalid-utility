@@ -192,7 +192,7 @@
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
-                        <phase>none</phase> <!-- TODO: Remove this line again! -->
+                        <!-- <phase>none</phase> <!- TODO: Remove this line again! -->
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -226,14 +226,14 @@
                 <executions>
                     <execution>
                         <id>jacoco-initialize</id>
-                        <phase>none</phase> <!-- TODO: Remove this line again! -->
+                        <!-- <phase>none</phase> <!- TODO: Remove this line again! -->
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>jacoco-unit-test</id>
-                        <phase>none</phase> <!-- TODO: Change back to 'test'! -->
+                        <phase>test</phase> <!-- TODO: Change back to 'test'! ('none' skips it.) -->
                         <goals>
                             <goal>report</goal>
                         </goals>

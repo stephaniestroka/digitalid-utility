@@ -16,7 +16,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
@@ -31,6 +30,8 @@ import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
  * 
  * @see Mutable
  * @see Immutable
+ * @see Stateless
+ * @see Utility
  */
 @Inherited
 @Documented

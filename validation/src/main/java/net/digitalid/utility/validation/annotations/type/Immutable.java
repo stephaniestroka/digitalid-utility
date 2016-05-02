@@ -35,6 +35,9 @@ import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
  * (This is the case with references to persons, which remain constant but can still be merged.)
  * 
  * @see Mutable
+ * @see ReadOnly
+ * @see Stateless
+ * @see Utility
  */
 @Inherited
 @Documented

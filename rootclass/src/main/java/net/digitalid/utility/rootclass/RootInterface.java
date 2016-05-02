@@ -4,8 +4,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.casting.Castable;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.validatable.Validatable;
 
 /**

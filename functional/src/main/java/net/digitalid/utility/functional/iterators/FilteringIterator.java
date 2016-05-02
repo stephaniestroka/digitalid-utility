@@ -11,8 +11,8 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
-import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.interfaces.Predicate;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This class implements a filtering iterator that iterates over the elements of the given iterator that fulfill the given predicate.

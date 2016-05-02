@@ -9,8 +9,10 @@ import java.lang.annotation.Target;
 /**
  * This annotation indicates that the annotated reference can be null.
  * 
- * Ideally, this annotation would be in {@link net.digitalid.utility.annotations.reference}.
+ * Ideally, this annotation would be in {@code net.digitalid.utility.annotations.reference}.
  * However, we stick to this package because of better tool support.
+ * 
+ * @see Nonnull
  */
 @Documented
 @Target(ElementType.TYPE_USE)

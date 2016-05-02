@@ -8,8 +8,8 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
-import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This class implements a cycling iterator that iterates over the elements of the given iterable indefinitely.

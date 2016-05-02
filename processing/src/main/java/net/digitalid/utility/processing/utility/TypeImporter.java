@@ -5,7 +5,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Impure;
-import net.digitalid.utility.annotations.type.Mutable;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This interface allows a code generator to import the referenced types.

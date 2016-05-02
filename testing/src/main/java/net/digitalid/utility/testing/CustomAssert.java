@@ -124,7 +124,7 @@ public abstract class CustomAssert {
     }
     
     /**
-     * Returns a new expectation evaludator object for a given test subject. The test is conducted on the given object.
+     * Returns a new expectation evaluator object for a given test subject. The test is conducted on the given object.
      */
     public static <T> ExpectationEvaluatorInterface2 expecting(@Nonnull String testSubject, @Nonnull T object) {
         return new ExpectationEvaluator<>(testSubject, o -> o).of(object);
@@ -133,16 +133,17 @@ public abstract class CustomAssert {
     /* -------------------------------------------------- Expectation Equality Evaluator -------------------------------------------------- */
     
     /**
-     * Helper interface that only allows access to the {@link ExpectationEqualityEvaluator#of(Object)} method.
+     * Helper interface that only allows access to the {@link CustomAssert.ExpectationEqualityEvaluator#of(java.lang.Object)} method.
      */
     public interface ExpectationEqualityEvaluatorInterface1<T> extends ExpectationEvaluatorInterface1<T> {
         
+        @Override
         public @Nonnull ExpectationEqualityEvaluatorInterface2<T> of(@Nullable T object);
         
     }
     
     /**
-     * Helper interface that only allows access to the {@link ExpectationEqualityEvaluator#and(Object)} method.
+     * Helper interface that only allows access to the {@link CustomAssert.ExpectationEqualityEvaluator#and(java.lang.Object)} method.
      */
     public interface ExpectationEqualityEvaluatorInterface2<T> extends ExpectationEvaluatorInterface2 {
         
@@ -176,6 +177,7 @@ public abstract class CustomAssert {
         /**
          * Sets the first object that is going to be evaluated.
          */
+        @Override
         public @Nonnull ExpectationEqualityEvaluatorInterface2<T> of(@Nullable T object) {
             this.first = object;
             return this;
@@ -184,6 +186,7 @@ public abstract class CustomAssert {
         /**
          * Sets the second object and evaluates the equality of the result of the given objects evaluated with the given function.
          */
+        @Override
         public void and(@Nullable T second) {
             if (equal) {
                 Assert.assertThat("Expected same " + testSubject + " for objects " + Quotes.inSingle(first) + " and " + Quotes.inSingle(second) + ".", function.evaluate(first), equalTo(function.evaluate(second)));

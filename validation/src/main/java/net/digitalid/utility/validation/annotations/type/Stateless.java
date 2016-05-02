@@ -25,8 +25,10 @@ import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
 /**
  * This annotation indicates that the objects of the annotated class are stateless (have no non-static fields).
  * 
- * @see Utility
+ * @see Mutable
  * @see Immutable
+ * @see ReadOnly
+ * @see Utility
  */
 @Inherited
 @Documented

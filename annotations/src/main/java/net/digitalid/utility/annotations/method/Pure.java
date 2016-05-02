@@ -6,6 +6,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.annotations.parameter.Unmodified;
+
 /**
  * This annotation indicates that the annotated method has no side-effects (other than caching) on the called object (or class).
  * A pure method may, however, modify its parameters, which is indicated by the {@link Modified} and {@link Unmodified} annotations.

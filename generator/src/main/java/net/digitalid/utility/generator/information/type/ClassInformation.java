@@ -123,8 +123,7 @@ public class ClassInformation extends TypeInformation {
     /**
      * The list of constructors. There is at least one constructor per class.
      */
-    @MinSize(1)
-    private final @Unmodifiable @Nonnull FiniteIterable<@Nonnull ConstructorInformation> constructors;
+    private final @Unmodifiable @Nonnull @MinSize(1) FiniteIterable<@Nonnull ConstructorInformation> constructors;
     
     /**
      * Returns the constructors that are declared in this class.

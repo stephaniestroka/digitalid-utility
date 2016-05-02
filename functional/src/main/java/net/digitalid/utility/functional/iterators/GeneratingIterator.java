@@ -6,8 +6,8 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
-import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.interfaces.Producer;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This class implements a generating iterator that generates an infinite number of elements with the given producer.

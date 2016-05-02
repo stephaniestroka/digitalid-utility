@@ -8,10 +8,10 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.annotations.method.Impure;
-import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.processor.generator.ServiceFileGenerator;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This annotation processor generates the service loader entry for other annotation processors.

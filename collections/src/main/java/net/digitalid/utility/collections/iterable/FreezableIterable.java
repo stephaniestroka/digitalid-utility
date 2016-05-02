@@ -3,6 +3,7 @@ package net.digitalid.utility.collections.iterable;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.collections.array.FreezableArray;
 import net.digitalid.utility.collections.collection.FreezableCollection;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
 import net.digitalid.utility.freezable.FreezableInterface;
@@ -10,6 +11,7 @@ import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
 /**
  * This interface models an {@link Iterable iterable} that can be {@link FreezableInterface frozen}.

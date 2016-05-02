@@ -29,7 +29,7 @@ public final class Require extends Constraint {
     /* -------------------------------------------------- Evaluation -------------------------------------------------- */
     
     /**
-     * Returns a non-nullable precondition with the given condition that needs to be checked with {@link #orThrow(java.lang.String)}.
+     * Returns a non-nullable precondition with the given condition that needs to be checked with {@link #orThrow(java.lang.String, java.lang.Object...)}.
      */
     @Pure
     public static @Nonnull Require that(boolean condition) {

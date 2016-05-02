@@ -57,7 +57,7 @@ public class Contract {
     private final @Unmodifiable @Nonnull List<@Nonnull String> arguments;
     
     /**
-     * Returns the arguments with which the {@link #getMessage() message} is {@link FormatString#format(java.lang.CharSequence, java.lang.Object...) formatted}.
+     * Returns the arguments with which the {@link #getMessage() message} is {@link Strings#format(java.lang.CharSequence, java.lang.Object...) formatted}.
      */
     @Pure
     public @Unmodifiable @Nonnull List<@Nonnull String> getArguments() {
@@ -84,7 +84,7 @@ public class Contract {
     
     /**
      * Returns an object that wraps the given {@link #getCondition() condition} and {@link #getMessage() message} with the element name as {@link #getArguments() argument}.
-     * Each number sign in the condition and the message is replaced with the {@link AnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
+     * Each number sign in the condition and the message is replaced with the {@link ValueAnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
      */
     @Pure
     public static @Nonnull Contract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element, @Nonnull String suffix) {
@@ -94,7 +94,7 @@ public class Contract {
     
     /**
      * Returns an object that wraps the given {@link #getCondition() condition} and {@link #getMessage() message} with the element name as {@link #getArguments() argument}.
-     * Each number sign in the condition and the message is replaced with the {@link AnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
+     * Each number sign in the condition and the message is replaced with the {@link ValueAnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
      */
     @Pure
     public static @Nonnull Contract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element) {
@@ -105,7 +105,7 @@ public class Contract {
     
     /**
      * Returns an object that wraps the given {@link #getCondition() condition} and {@link #getMessage() message} with the element name as {@link #getArguments() argument}.
-     * Each number sign in the condition and the message is replaced with the {@link AnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
+     * Each number sign in the condition and the message is replaced with the {@link ValueAnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
      * Each at sign in the condition and the message is replaced with the {@link AnnotationValue#getValue() value} of the given annotation mirror.
      */
     @Pure
@@ -118,7 +118,7 @@ public class Contract {
     
     /**
      * Returns an object that wraps the given {@link #getCondition() condition} and {@link #getMessage() message} with the element name as {@link #getArguments() argument}.
-     * Each number sign in the condition and the message is replaced with the {@link AnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
+     * Each number sign in the condition and the message is replaced with the {@link ValueAnnotationValidator#getName(javax.lang.model.element.Element) name} of the element.
      * Each at sign in the condition and the message is replaced with the {@link AnnotationValue#getValue() value} of the given annotation mirror.
      */
     @Pure

@@ -7,8 +7,8 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
-import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.type.Functional;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This functional interface models a method that consumes objects of type {@code T} without returning a result.

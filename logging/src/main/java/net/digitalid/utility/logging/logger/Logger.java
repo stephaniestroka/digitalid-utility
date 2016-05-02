@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
-import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.logging.Caller;
@@ -14,6 +13,7 @@ import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.Version;
 import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * The logger logs messages of various {@link Level levels}.

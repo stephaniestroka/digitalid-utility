@@ -29,7 +29,7 @@ public final class Ensure extends Constraint {
     /* -------------------------------------------------- Evaluation -------------------------------------------------- */
     
     /**
-     * Returns a postcondition with the given condition that needs to be checked with {@link #orThrow(java.lang.String)}.
+     * Returns a postcondition with the given condition that needs to be checked with {@link #orThrow(java.lang.String, java.lang.Object...)}.
      */
     @Pure
     public static @Nonnull Ensure that(boolean condition) {

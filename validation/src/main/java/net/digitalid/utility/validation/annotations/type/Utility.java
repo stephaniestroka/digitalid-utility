@@ -24,6 +24,9 @@ import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
 /**
  * This annotation indicates that the annotated class has only static fields and methods.
  * 
+ * @see Mutable
+ * @see Immutable
+ * @see ReadOnly
  * @see Stateless
  */
 @Inherited

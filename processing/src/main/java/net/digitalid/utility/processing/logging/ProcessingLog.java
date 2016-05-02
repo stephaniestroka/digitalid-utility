@@ -38,7 +38,7 @@ public class ProcessingLog {
         Require.that(name != null).orThrow("The name may not be null.");
         
         Logger.logger.set(FileLogger.with("target/processor-logs/" + name + ".log"));
-        Level.threshold.set(Level.VERBOSE);
+        Level.threshold.set(Level.INFORMATION);
         Caller.index.set(6);
     }
     

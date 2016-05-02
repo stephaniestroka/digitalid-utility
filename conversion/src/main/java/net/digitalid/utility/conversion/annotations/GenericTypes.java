@@ -7,18 +7,11 @@ import java.lang.annotation.Target;
 
 import javax.annotation.Nonnull;
 
-/**
- * .
- */
+@Deprecated
 @Target({ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface GenericTypes {
     
-    /**
-     * 
-     * 
-     * @return 
-     */
     @Nonnull Class<?>[] value();
     
 }

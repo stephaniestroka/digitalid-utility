@@ -15,7 +15,6 @@ import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.state.Modifiable;
-import net.digitalid.utility.annotations.type.Mutable;
 import net.digitalid.utility.configuration.exceptions.CyclicDependenciesException;
 import net.digitalid.utility.configuration.exceptions.InitializedConfigurationException;
 import net.digitalid.utility.configuration.exceptions.MaskingInitializationException;
@@ -24,6 +23,7 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Functional;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * The configuration of a service is given by a provider.

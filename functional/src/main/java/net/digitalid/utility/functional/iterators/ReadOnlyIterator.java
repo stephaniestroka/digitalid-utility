@@ -3,7 +3,7 @@ package net.digitalid.utility.functional.iterators;
 import java.util.Iterator;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.type.Mutable;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This interface models an iterator whose elements cannot be removed.
