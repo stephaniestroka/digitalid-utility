@@ -58,7 +58,7 @@ public class SimpleClassGenerationTest extends CustomTest {
     public void shouldProduceSameToString() throws Exception {
         final @Nonnull SimpleClass simpleClass = SimpleClassBuilder.withNumber(1).build();
     
-        expecting("string representation", Object::toString).of(simpleClass).toBe("SimpleClass(number=1)");
+        expecting("string representation", Object::toString).of(simpleClass).toBe("SimpleClass(number: 1)");
     }
     
     @Test

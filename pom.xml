@@ -31,7 +31,7 @@
         <maven.compiler.version>1.8</maven.compiler.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <tests.skip>true</tests.skip> <!-- To re-enable tests, run 'mvn install -Dtests.skip=false'. -->
+        <tests.skip>false</tests.skip> <!-- To re-enable tests, run 'mvn install -Dtests.skip=false'. -->
     </properties>
     
     <modules>
@@ -218,7 +218,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.5.201505241946</version>
+                <version>0.7.6.201602180812</version>
                 <configuration>
                     <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
                     <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
@@ -226,14 +226,14 @@
                 <executions>
                     <execution>
                         <id>jacoco-initialize</id>
-                        <!-- <phase>none</phase> <!- TODO: Remove this line again! -->
+                        <phase>none</phase> <!-- TODO: Remove this line again! -->
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>jacoco-unit-test</id>
-                        <phase>test</phase> <!-- TODO: Change back to 'test'! ('none' skips it.) -->
+                        <phase>none</phase> <!-- TODO: Change back to 'test'! ('none' skips it.) -->
                         <goals>
                             <goal>report</goal>
                         </goals>

@@ -6,7 +6,6 @@ import net.digitalid.utility.generator.annotations.generators.GenerateConverter;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.math.Positive;
-import net.digitalid.utility.validation.annotations.value.Invariant;
 
 /**
  *
@@ -17,7 +16,7 @@ import net.digitalid.utility.validation.annotations.value.Invariant;
 public abstract class SimpleClass extends RootClass {
 
     @Pure
-    public abstract @Positive @Invariant(condition = "number % 3 == 0", message = "The number has to be a multiple of 3 but was $.") int getNumber();
+    public abstract @Positive /* @Invariant(condition = "number % 3 == 0", message = "The number has to be a multiple of 3 but was $.") */ int getNumber();
     
     SimpleClass() {
         

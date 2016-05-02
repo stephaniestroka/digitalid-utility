@@ -80,7 +80,7 @@ public class ComplexClassGenerationTest {
     public void shouldProduceSameToString() throws Exception {
         final @Nonnull ComplexClass complexClass = prepareBuilder().build();
     
-        expecting("string representation", Object::toString).of(complexClass).toBe("ComplexClass(text=This is a test, arrayOfStrings=[first, second, third], simpleClass=SimpleClass(number=1), listOfIntegers=[1, 2, 3])");
+        expecting("string representation", Object::toString).of(complexClass).toBe("ComplexClass(text: This is a test, simpleClass: SimpleClass(number: 1), listOfIntegers: [1, 2, 3], arrayOfStrings: [first, second, third])");
     }
     
     @Test
