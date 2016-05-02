@@ -192,7 +192,7 @@
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
-                        <!-- <phase>none</phase> <!- TODO: Remove this line again! -->
+                        <phase>none</phase> <!-- TODO: Remove this line again! -->
                         <goals>
                             <goal>jar</goal>
                         </goals>

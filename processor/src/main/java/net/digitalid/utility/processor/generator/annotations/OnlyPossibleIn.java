@@ -20,10 +20,11 @@ import net.digitalid.utility.processor.generator.JavaFileGenerator;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OnlyPossibleIn {
     
+    // Due to a bug in the Javadoc plugin, the qualified name of the CodeBlock class has to be used in the following comment.
     /**
      * Returns the code blocks in which the annotated method may be invoked.
      * An empty array of code blocks is used to indicate that any block that
-     * {@link JavaFileGenerator.CodeBlock#allowsStatements() allows statements}
+     * {@link net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock#allowsStatements() allows statements}
      * is fine. For this reason, the value defaults to an empty array.
      */
     JavaFileGenerator.@Nonnull CodeBlock[] value() default {};
