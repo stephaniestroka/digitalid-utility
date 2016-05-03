@@ -10,41 +10,39 @@ import net.digitalid.utility.functional.interfaces.UnaryOperator;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * This class implements an iterating iterator that iterates over the sequence produced by the given operator from the given seed.
+ * This class implements an iterating iterator that iterates over the sequence produced by the given operator from the given first element.
  */
 @Mutable
 public class IteratingIterator<E> extends InfiniteIterator<E> {
     
-    /* -------------------------------------------------- Object -------------------------------------------------- */
+    /* -------------------------------------------------- Fields -------------------------------------------------- */
     
-    protected final @Nonnull UnaryOperator<E> operator;
+    private E nextElement;
     
-    protected final E seed;
+    protected final @Nonnull UnaryOperator<E> unaryOperator;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected IteratingIterator(@Nonnull UnaryOperator<E> operator, @Captured E seed) {
-        this.operator = operator;
-        this.seed = seed;
-        this.lastElement = seed;
+    protected IteratingIterator(@Captured E firstElement, @Nonnull UnaryOperator<E> unaryOperator) {
+        this.nextElement = firstElement;
+        this.unaryOperator = unaryOperator;
     }
     
     /**
-     * Returns a new iterating iterator that iterates over the sequence produced by the given operator from the given seed.
+     * Returns a new iterating iterator that iterates over the sequence produced by the given operator from the given first element.
      */
     @Pure
-    public static <E> @Capturable @Nonnull IteratingIterator<E> with(@Nonnull UnaryOperator<E> operator, @Captured E seed) {
-        return new IteratingIterator<>(operator, seed);
+    public static <E> @Capturable @Nonnull IteratingIterator<E> with(@Captured E firstElement, @Nonnull UnaryOperator<E> unaryOperator) {
+        return new IteratingIterator<>(firstElement, unaryOperator);
     }
     
     /* -------------------------------------------------- Methods -------------------------------------------------- */
     
-    private E lastElement;
-    
     @Impure
     @Override
     public E next() {
-        lastElement = operator.evaluate(lastElement);
+        final E lastElement = nextElement;
+        this.nextElement = unaryOperator.evaluate(lastElement);
         return lastElement;
     }
     

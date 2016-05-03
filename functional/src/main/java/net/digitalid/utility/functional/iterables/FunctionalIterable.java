@@ -3,6 +3,7 @@ package net.digitalid.utility.functional.iterables;
 import java.util.Iterator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
@@ -174,7 +175,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * The returned iterable is truncated to the length of the shorter iterable.
      */
     @Pure
-    public default <F> @Nonnull FiniteIterable<Pair<E, F>> zipShortest(@Nonnull FiniteIterable<? extends F> iterable) {
+    public default <F> @Nonnull FiniteIterable<@Nonnull Pair<E, F>> zipShortest(@Nonnull FiniteIterable<? extends F> iterable) {
         return () -> ZippingIterator.with(iterator(), iterable.iterator(), true);
     }
     
@@ -183,21 +184,21 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * The returned iterable is truncated to the length of the shorter iterable.
      */
     @Pure
-    public <F> @Nonnull FunctionalIterable<Pair<E, F>> zipShortest(@Nonnull InfiniteIterable<? extends F> iterable);
+    public <F> @Nonnull FunctionalIterable<@Nonnull Pair<E, F>> zipShortest(@Nonnull InfiniteIterable<? extends F> iterable);
     
     /**
      * Returns the elements from this and the given iterable as pairs, where the i-th pair contains the i-th element of each iterable.
      * The shorter iterable is extended to the length of the longer iterable with null values for the missing elements.
      */
     @Pure
-    public <F> @Nonnull FunctionalIterable<Pair<E, F>> zipLongest(@Nonnull FiniteIterable<? extends F> iterable);
+    public <F> @Nonnull FunctionalIterable<@Nonnull Pair<E, @Nullable F>> zipLongest(@Nonnull FiniteIterable<? extends F> iterable);
     
     /**
      * Returns the elements from this and the given iterable as pairs, where the i-th pair contains the i-th element of each iterable.
      * The shorter iterable is extended to the length of the longer iterable with null values for the missing elements.
      */
     @Pure
-    public default <F> @Nonnull InfiniteIterable<Pair<E, F>> zipLongest(@Nonnull InfiniteIterable<? extends F> iterable) {
+    public default <F> @Nonnull InfiniteIterable<@Nonnull Pair<@Nullable E, F>> zipLongest(@Nonnull InfiniteIterable<? extends F> iterable) {
         return () -> ZippingIterator.with(iterator(), iterable.iterator(), false);
     }
     

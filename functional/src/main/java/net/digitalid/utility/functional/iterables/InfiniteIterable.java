@@ -1,11 +1,10 @@
 package net.digitalid.utility.functional.iterables;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
-import net.digitalid.utility.annotations.parameter.Referenced;
-import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.interfaces.Producer;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
@@ -34,27 +33,29 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
-     * Returns a new infinite iterable that repeats the given object infinitely.
+     * Returns a new infinite iterable that repeats the given element infinitely.
      */
     @Pure
-    public static <E> @Nonnull InfiniteIterable<E> repeat(@Captured E object) {
-        return () -> RepeatingIterator.with(object);
+    public static <E> @Nonnull InfiniteIterable<E> repeat(@Captured E element) {
+        return () -> RepeatingIterator.with(element);
     }
     
     /**
-     * Returns a new infinite iterable that generates an infinite number of elements with the given producer.
+     * Returns a new infinite iterable that iterates over the sequence produced by the given operator from the given first element.
      */
     @Pure
-    public static <E> @Nonnull InfiniteIterable<E> generate(@Referenced @Unmodified @Nonnull Producer<? extends E> producer) {
-        return () -> GeneratingIterator.with(producer);
+    public static <E> @Nonnull InfiniteIterable<E> iterate(@Captured E firstElement, @Nonnull UnaryOperator<E> unaryOperator) {
+        return () -> IteratingIterator.with(firstElement, unaryOperator);
     }
     
     /**
-     * Returns a new infinite iterable that iterates over the sequence produced by the given operator from the given seed.
+     * Returns a new infinite iterable that generates an infinite number of elements with the producer produced by the given producer.
+     * All producers produced by the given producer should produce the same sequence of elements, otherwise operations like
+     * {@link #get(int)} are no longer side-effect free and calling them repeatedly leads to unexpected results.
      */
     @Pure
-    public static <E> @Nonnull InfiniteIterable<E> iterate(@Nonnull UnaryOperator<E> operator, @Captured E seed) {
-        return () -> IteratingIterator.with(operator, seed);
+    public static <E> @Nonnull InfiniteIterable<E> generate(@Captured @Nonnull Producer<? extends Producer<? extends E>> producer) {
+        return () -> GeneratingIterator.with(producer.produce());
     }
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
@@ -115,13 +116,13 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default <F> @Nonnull InfiniteIterable<Pair<E, F>> zipShortest(@Nonnull InfiniteIterable<? extends F> iterable) {
+    public default <F> @Nonnull InfiniteIterable<@Nonnull Pair<E, F>> zipShortest(@Nonnull InfiniteIterable<? extends F> iterable) {
         return () -> ZippingIterator.with(iterator(), iterable.iterator(), true);
     }
     
     @Pure
     @Override
-    public default <F> @Nonnull InfiniteIterable<Pair<E, F>> zipLongest(@Nonnull FiniteIterable<? extends F> iterable) {
+    public default <F> @Nonnull InfiniteIterable<@Nonnull Pair<E, @Nullable F>> zipLongest(@Nonnull FiniteIterable<? extends F> iterable) {
         return () -> ZippingIterator.with(iterator(), iterable.iterator(), false);
     }
     

@@ -124,13 +124,13 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
     
     @Pure
     @Override
-    public default <F> @Nonnull FiniteIterable<Pair<E, F>> zipShortest(@Nonnull InfiniteIterable<? extends F> iterable) {
+    public default <F> @Nonnull FiniteIterable<@Nonnull Pair<E, F>> zipShortest(@Nonnull InfiniteIterable<? extends F> iterable) {
         return () -> ZippingIterator.with(iterator(), iterable.iterator(), true);
     }
     
     @Pure
     @Override
-    public default <F> @Nonnull FiniteIterable<Pair<E, F>> zipLongest(@Nonnull FiniteIterable<? extends F> iterable) {
+    public default <F> @Nonnull FiniteIterable<@Nonnull Pair<@Nullable E, @Nullable F>> zipLongest(@Nonnull FiniteIterable<? extends F> iterable) {
         return () -> ZippingIterator.with(iterator(), iterable.iterator(), false);
     }
     
