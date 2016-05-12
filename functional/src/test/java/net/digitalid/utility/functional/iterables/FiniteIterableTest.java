@@ -1,67 +1,94 @@
 package net.digitalid.utility.functional.iterables;
 
+import javax.annotation.Nonnull;
+
+import net.digitalid.utility.tuples.Pair;
+import net.digitalid.utility.tuples.Quartet;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 public class FiniteIterableTest extends FunctionalIterableTest {
     
     @Test
-    public void testOf_Collection() {
+    public void testCreationWithCollection() {
+        assertElements(FiniteIterable.of(Quartet.of("alpha", "beta", "gamma", "delta")), "alpha", "beta", "gamma", "delta");
     }
     
+    private final @Nonnull FiniteIterable<@Nonnull String> iterable = FiniteIterable.of("alpha", "beta", "gamma", "delta");
+    
     @Test
-    public void testOf_GenericType() {
+    public void testCreationWithArray() {
+        assertElements(iterable, "alpha", "beta", "gamma", "delta");
     }
     
     @Test
     public void testFilter() {
+        assertElements(iterable.filter(a -> a.contains("e")), "beta", "delta");
+        assertElements(iterable.filter(a -> !a.endsWith("ta")), "alpha", "gamma");
     }
     
     @Test
     public void testFilterNulls() {
+        assertElements(FiniteIterable.of(null, "alpha", "beta", null, null, "gamma", "delta").filterNulls(), "alpha", "beta", "gamma", "delta");
     }
     
     @Test
     public void testMap() {
+        assertElements(iterable.map(a -> a.replace("a", "")), "lph", "bet", "gmm", "delt");
     }
     
     @Test
     public void testInstanceOf() {
+        final @Nonnull FiniteIterable<CharSequence> iterable = FiniteIterable.of(null, new StringBuilder("alpha"), "beta", "gamma", new StringBuilder("delta"));
+        assertElements(iterable.instanceOf(String.class), "beta", "gamma");
     }
     
     @Test
     public void testSkip() {
+        assertElements(iterable.skip(2), "gamma", "delta");
+        assertElements(iterable.skip(4));
     }
     
     @Test
     public void testZipShortest() {
+        assertElements(FiniteIterable.of("a", "b", "c").zipShortest(InfiniteIterable.repeat(0)), Pair.of("a", 0), Pair.of("b", 0), Pair.of("c", 0));
     }
     
     @Test
     public void testZipLongest() {
+        assertElements(FiniteIterable.of("a", "b", "c").zipLongest(iterable), Pair.of("a", "alpha"), Pair.of("b", "beta"), Pair.of("c", "gamma"), Pair.of(null, "delta"));
     }
     
-    @Test
-    public void testFlatten() {
-    }
+    private final @Nonnull FiniteIterable<@Nonnull Pair<@Nonnull Integer, @Nonnull Pair<@Nonnull String, @Nonnull String>>> nestedIterable = FiniteIterable.of(0, 1, 2).zipLongest(FiniteIterable.of("a", "b", "c").zipShortest(iterable));
     
     @Test
     public void testFlattenOne() {
+        assertElements(nestedIterable.flattenOne(), 0, Pair.of("a", "alpha"), 1, Pair.of("b", "beta"), 2, Pair.of("c", "gamma"));
     }
     
     @Test
     public void testFlattenAll() {
+        assertElements(nestedIterable.flattenAll(), 0, "a", "alpha", 1, "b", "beta", 2, "c", "gamma");
     }
     
     @Test
     public void testEquals() {
+        Assert.assertTrue(iterable.limit(2).equals(FiniteIterable.of("alpha", "beta")));
     }
     
     @Test
     public void testSize() {
+        Assert.assertEquals(4, iterable.size());
+        Assert.assertFalse(iterable.isEmpty());
+        Assert.assertFalse(iterable.isSingle());
+        Assert.assertFalse(iterable.sizeAtMost(3));
+        Assert.assertFalse(iterable.sizeAtLeast(5));
     }
     
     @Test
     public void testGetFirst_GenericType() {
+        
     }
     
     @Test
