@@ -1,17 +1,23 @@
 package net.digitalid.utility.functional.iterables;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.fixes.Brackets;
 import net.digitalid.utility.functional.interfaces.Collector;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.tuples.Quartet;
 
-import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class FiniteIterableTest extends FunctionalIterableTest {
     
@@ -79,28 +85,28 @@ public class FiniteIterableTest extends FunctionalIterableTest {
     
     @Test
     public void testEquals() {
-        Assert.assertTrue(iterable.limit(2).equals(FiniteIterable.of("alpha", "beta")));
+        assertTrue(iterable.limit(2).equals(FiniteIterable.of("alpha", "beta")));
     }
     
     @Test
     public void testSize() {
-        Assert.assertEquals(4, iterable.size());
-        Assert.assertFalse(iterable.isEmpty());
-        Assert.assertFalse(iterable.isSingle());
-        Assert.assertFalse(iterable.sizeAtMost(3));
-        Assert.assertFalse(iterable.sizeAtLeast(5));
-        Assert.assertTrue(iterable.sizeAtMost(4));
-        Assert.assertTrue(iterable.sizeAtLeast(4));
+        assertEquals(4, iterable.size());
+        assertFalse(iterable.isEmpty());
+        assertFalse(iterable.isSingle());
+        assertFalse(iterable.sizeAtMost(3));
+        assertFalse(iterable.sizeAtLeast(5));
+        assertTrue(iterable.sizeAtMost(4));
+        assertTrue(iterable.sizeAtLeast(4));
     }
     
     @Test
     public void testGetFirst() {
-        Assert.assertEquals("alpha", iterable.getFirst());
+        assertEquals("alpha", iterable.getFirst());
     }
     
     @Test
     public void testGetLast() {
-        Assert.assertEquals("delta", iterable.getLast());
+        assertEquals("delta", iterable.getLast());
     }
     
     private final @Nonnull FiniteIterable<@Nonnull String> combinedIterable = iterable.combine(iterable);
@@ -113,42 +119,42 @@ public class FiniteIterableTest extends FunctionalIterableTest {
     
     @Test
     public void testIndexOf() {
-        Assert.assertEquals(2, combinedIterable.indexOf("gamma"));
-        Assert.assertEquals(-1, combinedIterable.indexOf("omega"));
+        assertEquals(2, combinedIterable.indexOf("gamma"));
+        assertEquals(-1, combinedIterable.indexOf("omega"));
     }
     
     @Test
     public void testLastIndexOf() {
-        Assert.assertEquals(6, combinedIterable.lastIndexOf("gamma"));
-        Assert.assertEquals(-1, combinedIterable.lastIndexOf("omega"));
+        assertEquals(6, combinedIterable.lastIndexOf("gamma"));
+        assertEquals(-1, combinedIterable.lastIndexOf("omega"));
     }
     
     @Test
     public void testCount() {
-        Assert.assertEquals(2, combinedIterable.count("gamma"));
-        Assert.assertEquals(0, combinedIterable.count("omega"));
+        assertEquals(2, combinedIterable.count("gamma"));
+        assertEquals(0, combinedIterable.count("omega"));
     }
     
     @Test
     public void testContains() {
-        Assert.assertTrue(combinedIterable.contains("gamma"));
-        Assert.assertFalse(combinedIterable.contains("omega"));
+        assertTrue(combinedIterable.contains("gamma"));
+        assertFalse(combinedIterable.contains("omega"));
     }
     
     @Test
     public void testContainsAll() {
-        Assert.assertTrue(combinedIterable.containsAll(FiniteIterable.of("beta", "gamma")));
+        assertTrue(combinedIterable.containsAll(FiniteIterable.of("beta", "gamma")));
     }
     
     @Test
     public void testContainsNull() {
-        Assert.assertFalse(combinedIterable.containsNull());
+        assertFalse(combinedIterable.containsNull());
     }
     
     @Test
     public void testContainsDuplicates() {
-        Assert.assertFalse(iterable.containsDuplicates());
-        Assert.assertTrue(combinedIterable.containsDuplicates());
+        assertFalse(iterable.containsDuplicates());
+        assertTrue(combinedIterable.containsDuplicates());
     }
     
     @Test
@@ -161,7 +167,7 @@ public class FiniteIterableTest extends FunctionalIterableTest {
     public void testForEach() {
         final @Nonnull AtomicInteger length = new AtomicInteger(0);
         iterable.doForEach(a -> length.addAndGet(a.length()));
-        Assert.assertEquals(19, length.get());
+        assertEquals(19, length.get());
     }
     
     private final @Nonnull FiniteIterable<@Nonnull String> subiterable = iterable.limit(2);
@@ -185,45 +191,45 @@ public class FiniteIterableTest extends FunctionalIterableTest {
     
     @Test
     public void testFindFirst() {
-        Assert.assertEquals("beta", iterable.findFirst(e -> e.endsWith("ta")));
+        assertEquals("beta", iterable.findFirst(e -> e.endsWith("ta")));
     }
     
     @Test
     public void testFindLast() {
-        Assert.assertEquals("delta", iterable.findLast(e -> e.endsWith("ta")));
+        assertEquals("delta", iterable.findLast(e -> e.endsWith("ta")));
     }
     
     @Test
     public void testFindUnique() {
-        Assert.assertEquals("gamma", iterable.findUnique(e -> e.contains("mm")));
+        assertEquals("gamma", iterable.findUnique(e -> e.contains("mm")));
     }
     
     @Test
     public void testMatchAny() {
-        Assert.assertTrue(iterable.matchAny(e -> e.contains("mm")));
-        Assert.assertFalse(iterable.matchAny(e -> e.contains("mmm")));
+        assertTrue(iterable.matchAny(e -> e.contains("mm")));
+        assertFalse(iterable.matchAny(e -> e.contains("mmm")));
     }
     
     @Test
     public void testMatchAll() {
-        Assert.assertTrue(iterable.matchAll(e -> e.contains("a")));
-        Assert.assertFalse(iterable.matchAll(e -> e.contains("e")));
+        assertTrue(iterable.matchAll(e -> e.contains("a")));
+        assertFalse(iterable.matchAll(e -> e.contains("e")));
     }
     
     @Test
     public void testMatchNone() {
-        Assert.assertTrue(iterable.matchNone(e -> e.contains("mmm")));
-        Assert.assertFalse(iterable.matchNone(e -> e.contains("mm")));
+        assertTrue(iterable.matchNone(e -> e.contains("mmm")));
+        assertFalse(iterable.matchNone(e -> e.contains("mm")));
     }
     
     @Test
     public void testReduce() {
-        Assert.assertEquals("alpha : beta : gamma : delta", iterable.reduce((a, b) -> a + " : " + b));
+        assertEquals("alpha : beta : gamma : delta", iterable.reduce((a, b) -> a + " : " + b));
     }
     
     @Test
     public void testCollect() {
-        Assert.assertEquals(19, (int) iterable.collect(new Collector<String, Integer>() {
+        assertEquals(19, (int) iterable.collect(new Collector<String, Integer>() {
             
             private int length = 0;
             
@@ -243,139 +249,109 @@ public class FiniteIterableTest extends FunctionalIterableTest {
     }
     
     @Test
-    public void testIsOrdered() {
-    }
-    
-    @Test
     public void testIsAscending() {
+        assertFalse(iterable.isAscending());
+        assertTrue(iterable.limit(3).isAscending());
     }
     
     @Test
     public void testIsStrictlyAscending() {
+        assertTrue(FiniteIterable.of("a", "b", "c", "d").isStrictlyAscending());
+        assertFalse(FiniteIterable.of("a", "b", "b", "c").isStrictlyAscending());
     }
     
     @Test
     public void testIsDescending() {
+        assertFalse(iterable.isDescending());
+        assertTrue(iterable.extract(2, 4).isDescending());
     }
     
     @Test
     public void testIsStrictlyDescending() {
+        assertTrue(FiniteIterable.of("d", "c", "b", "a").isStrictlyDescending());
+        assertFalse(FiniteIterable.of("c", "b", "b", "a").isStrictlyDescending());
     }
     
     @Test
-    public void testSorted_Comparator() {
-    }
-    
-    @Test
-    public void testSorted_0args() {
+    public void testSorted() {
+        assertElements(iterable.sorted(), "alpha", "beta", "delta", "gamma");
     }
     
     @Test
     public void testReversed() {
+        assertElements(iterable.reversed(), "delta", "gamma", "beta", "alpha");
     }
     
     @Test
-    public void testMin_Comparator_GenericType() {
+    public void testMin() {
+        assertEquals(iterable.min(), "alpha");
     }
     
     @Test
-    public void testMin_Comparator() {
+    public void testMax() {
+        assertEquals(iterable.max(), "gamma");
     }
     
-    @Test
-    public void testMin_GenericType() {
-    }
-    
-    @Test
-    public void testMin_0args() {
-    }
-    
-    @Test
-    public void testMax_Comparator_GenericType() {
-    }
-    
-    @Test
-    public void testMax_Comparator() {
-    }
-    
-    @Test
-    public void testMax_GenericType() {
-    }
-    
-    @Test
-    public void testMax_0args() {
-    }
+    private final @Nonnull FiniteIterable<@Nonnull Double> numbers = FiniteIterable.of(3.1416, 2.7183);
     
     @Test
     public void testSumAsLong() {
+        assertEquals(5, numbers.sumAsLong());
     }
     
     @Test
     public void testSumAsDouble() {
+        assertEquals(3.1416 + 2.7183, numbers.sumAsDouble(), 0.00001);
     }
     
     @Test
     public void testAverage() {
+        assertEquals((3.1416 + 2.7183) / 2, numbers.average(), 0.00001);
     }
     
     @Test
-    public void testJoin_4args() {
+    public void testJoin() {
+        assertEquals("alpha, beta, gamma, delta", iterable.join());
+        assertEquals("alpha / beta / gamma / delta", iterable.join(" / "));
+        assertEquals("[alpha, beta, gamma, delta]", iterable.join(Brackets.SQUARE));
     }
     
     @Test
-    public void testJoin_3args_1() {
-    }
-    
-    @Test
-    public void testJoin_CharSequence_CharSequence() {
-    }
-    
-    @Test
-    public void testJoin_3args_2() {
-    }
-    
-    @Test
-    public void testJoin_Fixes_CharSequence() {
-    }
-    
-    @Test
-    public void testJoin_Fixes() {
-    }
-    
-    @Test
-    public void testJoin_CharSequence() {
-    }
-    
-    @Test
-    public void testJoin_0args() {
-    }
-    
-    @Test
-    public void testToArray_0args() {
-    }
-    
-    @Test
-    public void testToGenericArray() {
-    }
-    
-    @Test
-    public void testToArray_GenericType() {
+    public void testToArray() {
+        final @Nonnull String[] array = new String[] {"alpha", "beta", "gamma", "delta"};
+        assertArrayEquals(array, iterable.toArray());
+        assertArrayEquals(array, iterable.toGenericArray());
+        assertArrayEquals(array, iterable.toArray(new String[0]));
     }
     
     @Test
     public void testToList() {
+        assertEquals(Arrays.asList("alpha", "beta", "gamma", "delta"), iterable.toList());
     }
     
     @Test
     public void testToSet() {
+        assertEquals(new LinkedHashSet<>(Arrays.asList("alpha", "beta", "gamma", "delta")), iterable.toSet());
     }
     
     @Test
     public void testToMap() {
+        final @Nonnull LinkedHashMap<@Nonnull Character, @Nonnull String> map = new LinkedHashMap<>();
+        map.put('a', "alpha");
+        map.put('b', "beta");
+        map.put('g', "gamma");
+        map.put('d', "delta");
+        assertEquals(map, iterable.toMap(a -> a.charAt(0)));
     }
     
     @Test
     public void testGroupBy() {
+        final @Nonnull LinkedHashMap<@Nonnull Character, @Nonnull List<@Nonnull String>> map = new LinkedHashMap<>();
+        map.put('a', Arrays.asList("alpha"));
+        map.put('b', Arrays.asList("beta"));
+        map.put('g', Arrays.asList("gamma"));
+        map.put('d', Arrays.asList("delta"));
+        assertEquals(map, iterable.groupBy(a -> a.charAt(0)));
     }
     
 }
