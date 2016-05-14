@@ -360,7 +360,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      */
     @Impure
     @Chainable
-    public default FiniteIterable<E> forEach(@NonCaptured @Modified @Nonnull Consumer<? super E> action) {
+    public default FiniteIterable<E> doForEach(@NonCaptured @Modified @Nonnull Consumer<? super E> action) {
         for (E element : this) { action.consume(element); }
         return this;
     }

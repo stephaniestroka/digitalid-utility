@@ -1,7 +1,12 @@
 package net.digitalid.utility.functional.iterables;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.functional.interfaces.Collector;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.tuples.Quartet;
 
@@ -84,135 +89,157 @@ public class FiniteIterableTest extends FunctionalIterableTest {
         Assert.assertFalse(iterable.isSingle());
         Assert.assertFalse(iterable.sizeAtMost(3));
         Assert.assertFalse(iterable.sizeAtLeast(5));
+        Assert.assertTrue(iterable.sizeAtMost(4));
+        Assert.assertTrue(iterable.sizeAtLeast(4));
     }
     
     @Test
-    public void testGetFirst_GenericType() {
-        
+    public void testGetFirst() {
+        Assert.assertEquals("alpha", iterable.getFirst());
     }
     
     @Test
-    public void testGetFirstOrNull() {
+    public void testGetLast() {
+        Assert.assertEquals("delta", iterable.getLast());
     }
     
-    @Test
-    public void testGetFirst_0args() {
-    }
+    private final @Nonnull FiniteIterable<@Nonnull String> combinedIterable = iterable.combine(iterable);
     
     @Test
-    public void testGetLast_GenericType() {
-    }
-    
-    @Test
-    public void testGetLastOrNull() {
-    }
-    
-    @Test
-    public void testGetLast_0args() {
+    public void testCombine() {
+        assertElements(combinedIterable, "alpha", "beta", "gamma", "delta", "alpha", "beta", "gamma", "delta");
+        assertElements(FiniteIterable.of().combine(FiniteIterable.of()));
     }
     
     @Test
     public void testIndexOf() {
+        Assert.assertEquals(2, combinedIterable.indexOf("gamma"));
+        Assert.assertEquals(-1, combinedIterable.indexOf("omega"));
     }
     
     @Test
     public void testLastIndexOf() {
+        Assert.assertEquals(6, combinedIterable.lastIndexOf("gamma"));
+        Assert.assertEquals(-1, combinedIterable.lastIndexOf("omega"));
     }
     
     @Test
     public void testCount() {
+        Assert.assertEquals(2, combinedIterable.count("gamma"));
+        Assert.assertEquals(0, combinedIterable.count("omega"));
     }
     
     @Test
     public void testContains() {
+        Assert.assertTrue(combinedIterable.contains("gamma"));
+        Assert.assertFalse(combinedIterable.contains("omega"));
     }
     
     @Test
-    public void testContainsAll_FiniteIterable() {
-    }
-    
-    @Test
-    public void testContainsAll_Collection() {
+    public void testContainsAll() {
+        Assert.assertTrue(combinedIterable.containsAll(FiniteIterable.of("beta", "gamma")));
     }
     
     @Test
     public void testContainsNull() {
+        Assert.assertFalse(combinedIterable.containsNull());
     }
     
     @Test
     public void testContainsDuplicates() {
+        Assert.assertFalse(iterable.containsDuplicates());
+        Assert.assertTrue(combinedIterable.containsDuplicates());
     }
     
     @Test
     public void testDistinct() {
+        assertElements(iterable.distinct(), "alpha", "beta", "gamma", "delta");
+        assertElements(combinedIterable.distinct(), "alpha", "beta", "gamma", "delta");
     }
     
     @Test
     public void testForEach() {
+        final @Nonnull AtomicInteger length = new AtomicInteger(0);
+        iterable.doForEach(a -> length.addAndGet(a.length()));
+        Assert.assertEquals(19, length.get());
     }
+    
+    private final @Nonnull FiniteIterable<@Nonnull String> subiterable = iterable.limit(2);
     
     @Test
     public void testIntersect() {
+        assertElements(iterable.intersect(subiterable), "alpha", "beta");
+        assertElements(subiterable.intersect(iterable), "alpha", "beta");
     }
     
     @Test
     public void testExclude() {
-    }
-    
-    @Test
-    public void testCombine_FiniteIterable() {
-    }
-    
-    @Test
-    public void testCombine_InfiniteIterable() {
+        assertElements(iterable.exclude(subiterable), "gamma", "delta");
+        assertElements(subiterable.exclude(iterable));
     }
     
     @Test
     public void testRepeated() {
+        assertElements(subiterable.repeated().limit(5), "alpha", "beta", "alpha", "beta", "alpha");
     }
     
     @Test
-    public void testFindFirst_Predicate_GenericType() {
+    public void testFindFirst() {
+        Assert.assertEquals("beta", iterable.findFirst(e -> e.endsWith("ta")));
     }
     
     @Test
-    public void testFindFirst_Predicate() {
-    }
-    
-    @Test
-    public void testFindLast_Predicate_GenericType() {
-    }
-    
-    @Test
-    public void testFindLast_Predicate() {
+    public void testFindLast() {
+        Assert.assertEquals("delta", iterable.findLast(e -> e.endsWith("ta")));
     }
     
     @Test
     public void testFindUnique() {
+        Assert.assertEquals("gamma", iterable.findUnique(e -> e.contains("mm")));
     }
     
     @Test
     public void testMatchAny() {
+        Assert.assertTrue(iterable.matchAny(e -> e.contains("mm")));
+        Assert.assertFalse(iterable.matchAny(e -> e.contains("mmm")));
     }
     
     @Test
     public void testMatchAll() {
+        Assert.assertTrue(iterable.matchAll(e -> e.contains("a")));
+        Assert.assertFalse(iterable.matchAll(e -> e.contains("e")));
     }
     
     @Test
     public void testMatchNone() {
+        Assert.assertTrue(iterable.matchNone(e -> e.contains("mmm")));
+        Assert.assertFalse(iterable.matchNone(e -> e.contains("mm")));
     }
     
     @Test
-    public void testReduce_BinaryOperator_GenericType() {
-    }
-    
-    @Test
-    public void testReduce_BinaryOperator() {
+    public void testReduce() {
+        Assert.assertEquals("alpha : beta : gamma : delta", iterable.reduce((a, b) -> a + " : " + b));
     }
     
     @Test
     public void testCollect() {
+        Assert.assertEquals(19, (int) iterable.collect(new Collector<String, Integer>() {
+            
+            private int length = 0;
+            
+            @Impure
+            @Override
+            public void consume(@Nonnull String string) {
+                length += string.length();
+            }
+            
+            @Pure
+            @Override
+            public @Nonnull Integer getResult() {
+                return length;
+            }
+            
+        }));
     }
     
     @Test
