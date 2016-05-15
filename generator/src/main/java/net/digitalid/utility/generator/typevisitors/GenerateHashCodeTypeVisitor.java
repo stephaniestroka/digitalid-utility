@@ -14,7 +14,7 @@ import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.tuples.Triplet;
 
 /**
- *
+ * A hash code type visitor which implements the hash code method generation for a type.
  */
 public class GenerateHashCodeTypeVisitor extends SimpleTypeVisitor7<@Nonnull Object, @Nullable Triplet<@Nonnull String, @Nonnull JavaFileGenerator, @Nonnull String>> {
     

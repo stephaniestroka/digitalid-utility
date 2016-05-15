@@ -1,40 +1,39 @@
 package net.digitalid.utility.generator.information.type;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeVariable;
-import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.functional.iterables.InfiniteIterable;
-import net.digitalid.utility.generator.BuilderGenerator;
-import net.digitalid.utility.generator.SubclassGenerator;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
+import net.digitalid.utility.generator.generators.BuilderGenerator;
+import net.digitalid.utility.generator.generators.ConverterGenerator;
+import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedDerivedFieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedRepresentingFieldInformation;
+import net.digitalid.utility.generator.information.filter.InformationFilter;
+import net.digitalid.utility.generator.information.filter.MethodSignatureMatcher;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
-import net.digitalid.utility.generator.query.MethodSignatureMatcher;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
-import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.getter.Derive;
+import net.digitalid.utility.validation.annotations.size.MinSize;
 
 /**
- * This type collects the relevant information about a type for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
+ * This type collects the relevant information about a type for generating a {@link SubclassGenerator subclass}, {@link BuilderGenerator builder} and {@link ConverterGenerator converter}.
  * 
  * @see InterfaceInformation
  * @see ClassInformation
@@ -47,7 +46,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns an iterable of constructor information objects.
      */
     @Pure
-    public abstract @Nonnull FiniteIterable<ConstructorInformation> getConstructors();
+    public abstract @Unmodifiable @Nonnull @MinSize(1) FiniteIterable<ConstructorInformation> getConstructors();
     
     /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
     
@@ -55,7 +54,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns an iterable of the representing field information objects.
      */
     @Pure
-    public abstract @Nonnull FiniteIterable<FieldInformation> getRepresentingFieldInformation();
+    public abstract @Unmodifiable @Nonnull FiniteIterable<FieldInformation> getRepresentingFieldInformation();
     
     /* -------------------------------------------------- Accessible Field Information -------------------------------------------------- */
     
@@ -63,7 +62,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns an iterable of the accessible field information objects.
      */
     @Pure
-    public abstract @Nonnull FiniteIterable<FieldInformation> getAccessibleFieldInformation();
+    public abstract @Unmodifiable @Nonnull FiniteIterable<FieldInformation> getAccessibleFieldInformation();
     
     /* -------------------------------------------------- Field Information -------------------------------------------------- */
     
@@ -71,7 +70,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns an iterable of the field information objects.
      */
     @Pure
-    public abstract @Nonnull FiniteIterable<FieldInformation> getFieldInformation();
+    public abstract @Unmodifiable @Nonnull FiniteIterable<FieldInformation> getFieldInformation();
     
     /* -------------------------------------------------- Overridden Methods -------------------------------------------------- */
     
@@ -79,13 +78,13 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns an iterable of the overridden method information objects.
      */
     @Pure
-    public abstract @Nonnull FiniteIterable<MethodInformation> getOverriddenMethods();
+    public abstract @Unmodifiable @Nonnull FiniteIterable<MethodInformation> getOverriddenMethods();
     
     /* -------------------------------------------------- Element -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Nonnull TypeElement getElement() {
+    public @Unmodifiable @Nonnull TypeElement getElement() {
         return (TypeElement) super.getElement();
     }
     
@@ -93,7 +92,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     
     @Pure
     @Override
-    public @Nonnull DeclaredType getType() {
+    public @Unmodifiable @Nonnull DeclaredType getType() {
         return (DeclaredType) super.getType();
     }
     
@@ -101,17 +100,23 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns the type arguments of the represented declared type.
      */
     @Pure
-    public @Nonnull FiniteIterable<@Nonnull TypeVariable> getTypeArguments() {
+    public @Unmodifiable @Nonnull FiniteIterable<@Nonnull TypeVariable> getTypeArguments() {
         return FiniteIterable.of(getType().getTypeArguments()).instanceOf(TypeVariable.class);
     }
     
     /* -------------------------------------------------- Subclass -------------------------------------------------- */
     
+    /**
+     * Returns the simple name of the generated subclass.
+     */
     @Pure
     public @Nonnull String getSimpleNameOfGeneratedSubclass() {
         return getName() + "Subclass";
     }
     
+    /**
+     * Returns the qualified name of the generated subclass.
+     */
     @Pure
     public @Nonnull String getQualifiedNameOfGeneratedSubclass() {
         return getPackageName() + "." + getSimpleNameOfGeneratedSubclass();
@@ -119,11 +124,17 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     
     /* -------------------------------------------------- Builder -------------------------------------------------- */
     
+    /**
+     * Returns the simple name of the generated builder.
+     */
     @Pure
     public @Nonnull String getSimpleNameOfGeneratedBuilder() {
         return getName() + "Builder";
     }
     
+    /**
+     * Returns the qualified name of the generated builder.
+     */
     @Pure
     public @Nonnull String getQualifiedNameOfGeneratedBuilder() {
         return getPackageName() + "." + getSimpleNameOfGeneratedBuilder();
@@ -131,11 +142,17 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     
     /* -------------------------------------------------- Converter -------------------------------------------------- */
     
+    /**
+     * Returns the simple name of the generated converter.
+     */
     @Pure
     public @Nonnull String getSimpleNameOfGeneratedConverter() {
         return getName() + "Converter";
     }
     
+    /**
+     * Returns the qualified name of the generated converter.
+     */
     @Pure
     public @Nonnull String getQualifiedNameOfGeneratedConverter() {
         return getPackageName() + "." + getSimpleNameOfGeneratedConverter();
@@ -146,73 +163,42 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     /**
      * An iterable of all generated field information objects.
      */
-    public final @Nonnull FiniteIterable<GeneratedRepresentingFieldInformation> generatedRepresentingFieldInformation;
+    public final @Unmodifiable @Nonnull FiniteIterable<GeneratedRepresentingFieldInformation> generatedRepresentingFieldInformation;
     
     /* -------------------------------------------------- Derived Field Information -------------------------------------------------- */
     
     /**
      * An iterable of all derived field information objects.
      */
-    public final @Nonnull FiniteIterable<GeneratedDerivedFieldInformation> derivedFieldInformation;
+    public final @Unmodifiable @Nonnull FiniteIterable<GeneratedDerivedFieldInformation> derivedFieldInformation;
     
     /* -------------------------------------------------- Abstract Getter -------------------------------------------------- */
     
     /**
      * Returns a map of indexed abstract getters.
      */
-    public final @Nonnull @NonNullableElements Map<String, MethodInformation> abstractGetters;
+    public final @Unmodifiable @Nonnull Map<@Nonnull String, @Nonnull MethodInformation> abstractGetters;
     
     /* -------------------------------------------------- Abstract Setter -------------------------------------------------- */
     
     /**
      * Returns a map of indexed abstract setters.
      */
-    public final @Nonnull @NonNullableElements Map<String, MethodInformation> abstractSetters;
-    
-    /* -------------------------------------------------- Method Information -------------------------------------------------- */
-    
-    /**
-     * The method indexes method information objects with the field name of the method.
-     */
-    protected @Nonnull @NonNullableElements Map<String, MethodInformation> indexMethodInformation(@Nonnull FiniteIterable<MethodInformation> iterable) {
-        // TODO: The following statement can (and should) replace this whole method: iterable.toMap(method -> method.getFieldName());
-        final @Nonnull @NonNullableElements Map<String, MethodInformation> indexedMethods = new LinkedHashMap<>();
-        for (@Nonnull MethodInformation method : iterable) {
-            indexedMethods.put(method.getFieldName(), method);
-        }
-        return indexedMethods;
-    }
-    
-    protected @Nonnull @NonNullableElements <F extends FieldInformation> Map<String, F> indexFieldInformation(@Nonnull FiniteIterable<F> iterable) {
-        // TODO: This method as well (see above)!
-        final @Nonnull @NonNullableElements Map<String, F> indexedFields = new LinkedHashMap<>();
-        for (@Nonnull F method : iterable) {
-            indexedFields.put(method.getName(), method);
-        }
-        return indexedFields;
-    }
-    
-    /**
-     * Returns an iterable of method information objects for a given type element and declared type.
-     */
-    protected @Nonnull FiniteIterable<@Nonnull MethodInformation> getMethodInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
-        final @Nonnull List<ExecutableElement> allMethods = ElementFilter.methodsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement));
-        return FiniteIterable.of(allMethods).zipShortest(InfiniteIterable.repeat(containingType)).map((pair) -> (MethodInformation.of(pair.get0(), pair.get1())));
-    }
+    public final @Unmodifiable @Nonnull Map<@Nonnull String, @Nonnull MethodInformation> abstractSetters;
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
-     * Creates a new type information instance.
+     * Creates a new type information instance and initializes the abstract getters, abstract setters, generated and derived field information.
      */
     protected TypeInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
         super(typeElement, typeElement.asType(), containingType);
         
-        final @Nonnull FiniteIterable<@Nonnull MethodInformation> methodInformation = getMethodInformation(typeElement, containingType);
+        final @Unmodifiable @Nonnull FiniteIterable<@Nonnull MethodInformation> methodInformation = InformationFilter.getMethodInformation(typeElement, containingType);
         
-        this.abstractGetters = indexMethodInformation(methodInformation.filter((method) -> (method.isGetter() && method.isAbstract())));
+        this.abstractGetters = methodInformation.filter((method) -> (method.isGetter() && method.isAbstract())).toMap(MethodInformation::getFieldName);
     
-        this.abstractSetters = indexMethodInformation(methodInformation.filter((method) -> (method.isSetter() && method.isAbstract())));
+        this.abstractSetters = methodInformation.filter((method) -> (method.isSetter() && method.isAbstract())).toMap(MethodInformation::getFieldName);
         
         final @Nonnull List<@Nonnull Pair<@Nonnull MethodInformation, @Nullable MethodInformation>> gettersAndSetters = new ArrayList<>();
         
@@ -230,13 +216,12 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         final @Nonnull FiniteIterable<MethodInformation> allRemainingAbstractMethods = methodInformation.filter((method) -> (method.isAbstract() && !method.isSetter() && !method.isGetter())).filter(MethodSignatureMatcher.of("equals", Object.class).and(MethodSignatureMatcher.of("toString")).and(MethodSignatureMatcher.of("hashCode")));
         
         if (allRemainingAbstractMethods.size() != 0) {
-            ProcessingLog.debugging("Found abstract methods which cannot be generated: ", allRemainingAbstractMethods.size());
+            ProcessingLog.debugging("Found $ abstract methods which cannot be generated", allRemainingAbstractMethods.size());
             for (MethodInformation remainingAbstractMethod : allRemainingAbstractMethods) {
                 ProcessingLog.debugging("Remaining method $ cannot be generated", remainingAbstractMethod);
             }
             throw FailedClassGenerationException.with("Found abstract methods which cannot be generates: ", SourcePosition.of(typeElement), allRemainingAbstractMethods.join());
         }
-        
     }
     
 }

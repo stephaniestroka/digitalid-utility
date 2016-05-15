@@ -23,9 +23,12 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.conversion.annotations.Recover;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.annotations.meta.Interceptor;
+import net.digitalid.utility.generator.generators.BuilderGenerator;
+import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
@@ -38,7 +41,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 import com.sun.tools.javac.code.Type;
 
 /**
- * This type collects the relevant information about a method for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.
+ * This type collects the relevant information about a method for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  */
 public class MethodInformation extends ExecutableInformation {
     
@@ -248,35 +251,22 @@ public class MethodInformation extends ExecutableInformation {
         return new MethodInformation(element, containingType);
     }
     
+    /**
+     * Returns all return type annotations of the method as a space-separated string.
+     */
     public @Nonnull String getReturnTypeAnnotations(@Nonnull JavaFileGenerator javaFileGenerator) {
         final @Nonnull TypeMirror typeMirror = StaticProcessingEnvironment.getTypeUtils().asMemberOf(getContainingType(), getElement());
         final @Nonnull ExecutableType executableType = (ExecutableType) typeMirror;
         final @Nonnull TypeMirror returnType = executableType.getReturnType();
-        final @Nonnull StringBuilder returnTypeAsString = new StringBuilder();
+        final @Nonnull String returnTypeAnnotationsAsString;
         
         if (returnType instanceof Type.AnnotatedType) {
-            final Type.AnnotatedType annotatedType = (Type.AnnotatedType) returnType;
-            
-            for (AnnotationMirror annotationMirror : annotatedType.getAnnotationMirrors()) {
-                returnTypeAsString.append("@").append(javaFileGenerator.importIfPossible(annotationMirror.getAnnotationType()));
-                if (annotationMirror.getElementValues().size() > 0) {
-                    returnTypeAsString.append("(");
-                    boolean first = true;
-                    for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> elementValue : annotationMirror.getElementValues().entrySet()) {
-                        if (first) { first = false; } else { returnTypeAsString.append(", "); }
-                        final @Nonnull String nameOfKey = elementValue.getKey().getSimpleName().toString();
-                        if (!nameOfKey.equals("value")) {
-                            returnTypeAsString.append(nameOfKey).append(" = ").append(elementValue.getValue());
-                        } else {
-                            returnTypeAsString.append(elementValue.getValue());
-                        }
-                    }
-                    returnTypeAsString.append(")");
-                }
-                returnTypeAsString.append(" ");
-            }
+            final Type.@Nonnull AnnotatedType annotatedType = (Type.AnnotatedType) returnType;
+            returnTypeAnnotationsAsString = ProcessingUtility.getAnnotationsAsString(annotationMirror -> javaFileGenerator.importIfPossible(annotationMirror.getAnnotationType()), annotatedType.getAnnotationMirrors());
+        } else {
+            returnTypeAnnotationsAsString = "";
         }
-        return returnTypeAsString.toString();
+        return returnTypeAnnotationsAsString;
     }
     
     public @Nullable String getReturnType(@Nonnull JavaFileGenerator javaFileGenerator) {

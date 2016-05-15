@@ -10,9 +10,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
-import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
-import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
@@ -44,15 +42,12 @@ public class MethodParameterInformation extends ElementInformationImplementation
         this.matchingFieldInformation = null;
     }
     
-    protected MethodParameterInformation(@Nonnull Element element, @Nonnull DeclaredType containingType, @Nonnull FiniteIterable<DirectlyAccessibleDeclaredFieldInformation> directlyAccessibleDeclaredFieldInformation, @Nonnull FiniteIterable<NonDirectlyAccessibleDeclaredFieldInformation> nonDirectlyAccessibleDeclaredFieldInformation) {
+    protected MethodParameterInformation(@Nonnull Element element, @Nonnull DeclaredType containingType, @Nonnull FiniteIterable<FieldInformation> fieldInformation) {
         super(element, element.asType(), containingType);
         
         Require.that(element.getKind() == ElementKind.PARAMETER).orThrow("The element $ has to be a parameter.", SourcePosition.of(element));
     
-        @Nullable FieldInformation matchingFieldInformation = directlyAccessibleDeclaredFieldInformation.findFirst(field -> field.getName().equals(getName()));
-        if (matchingFieldInformation == null) {
-            matchingFieldInformation = nonDirectlyAccessibleDeclaredFieldInformation.findFirst(field -> field.getName().equals(getName()));
-        }
+        final @Nullable FieldInformation matchingFieldInformation = fieldInformation.findFirst(field -> field.getName().equals(getName()));
         this.matchingFieldInformation = matchingFieldInformation;
     }
     
@@ -107,4 +102,11 @@ public class MethodParameterInformation extends ElementInformationImplementation
         }
         return defaultValue;
     }
+    
+    @Pure
+    @Override
+    public boolean isMandatory() {
+        return !(hasDefaultValue() || hasAnnotation(Nullable.class));
+    }
+    
 }

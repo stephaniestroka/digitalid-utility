@@ -165,7 +165,7 @@ public abstract class ElementInformationImplementation implements ElementInforma
     
     @Pure
     @Override
-    public @Unmodifiable @Nonnull @NonNullableElements Collection<AnnotationMirror> getAnnotations() {
+    public @Unmodifiable @Nonnull @NonNullableElements Collection<? extends AnnotationMirror> getAnnotations() {
         return annotations.values();
     }
     

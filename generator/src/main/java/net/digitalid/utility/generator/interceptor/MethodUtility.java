@@ -34,28 +34,28 @@ public final class MethodUtility {
     }
     
     /**
-     * Creates a call to the method with the given methodName and the information in method information. If a return type is declared, a variable assignment on the variable <i>result&lt;MethodName&gt;</i> is created, where &lt;MethodName&gt; is the name of the method starting with an upper case letter.
+     * Creates a call to the method with the given methodName and the information in method information.
      */
     @Pure
-    private static @Nonnull String createMethodCallWithMethodName(@Nonnull MethodInformation method, @Nonnull String methodName, @Nullable String resultVariable, @Nonnull JavaFileGenerator javaFileGenerator) {
+    private static @Nonnull String createMethodCallWithMethodName(@Nonnull MethodInformation method, @Nonnull String methodName) {
         return methodName + FiniteIterable.of(method.getElement().getParameters()).map(parameter -> parameter.getSimpleName().toString()).join(Brackets.ROUND);
     }
     
     /**
-     * Creates a call to the super method of the method in method information. If a return type is declared, a variable assignment on the variable <i>result&lt;MethodName&gt;</i> is created, where &lt;MethodName&gt; is the name of the method starting with an upper case letter.
+     * Creates a call to the super method of the method in method information.
      */
     @Pure
-    public static @Nonnull String createSuperCall(@Nonnull MethodInformation method, @Nullable String resultVariable, @Nonnull JavaFileGenerator javaFileGenerator) {
-        return createMethodCallWithMethodName(method, "super." + method.getName(), resultVariable, javaFileGenerator);
+    public static @Nonnull String createSuperCall(@Nonnull MethodInformation method) {
+        return createMethodCallWithMethodName(method, "super." + method.getName());
     }
     
     /**
-     * Creates a call to the method with a given prefix and the information taken from the method in method information object. If a return type is declared, a variable assignment on the variable <i>result&lt;MethodName&gt;</i> is created, where &lt;MethodName&gt; is the name of the method starting with an upper case letter.
+     * Creates a call to the method with a given prefix and the information taken from the method in method information object.
      */
     @Pure
-    public static @Nonnull String createMethodCall(@Nonnull MethodInformation method, @Nullable String prefix, @Nullable String resultVariable, @Nonnull JavaFileGenerator javaFileGenerator) {
+    public static @Nonnull String createMethodCall(@Nonnull MethodInformation method, @Nullable String prefix) {
         final @Nonnull String methodName = prefix != null ? prefix + Strings.capitalizeFirstLetters(method.getName()) : method.getName();
-        return createMethodCallWithMethodName(method, methodName, resultVariable, javaFileGenerator);
+        return createMethodCallWithMethodName(method, methodName);
     }
     
 }

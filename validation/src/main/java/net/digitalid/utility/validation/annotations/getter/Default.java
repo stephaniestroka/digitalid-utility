@@ -16,7 +16,7 @@ import net.digitalid.utility.validation.annotations.string.JavaExpression;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.PARAMETER})
+@Target({ElementType.METHOD, ElementType.FIELD})
 public @interface Default {
     
     /**

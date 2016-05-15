@@ -4,8 +4,8 @@ import javax.annotation.Nonnull;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.generator.BuilderGenerator;
-import net.digitalid.utility.generator.SubclassGenerator;
+import net.digitalid.utility.generator.generators.BuilderGenerator;
+import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
@@ -27,6 +27,12 @@ public interface FieldInformation extends ElementInformation, VariableElementInf
     public boolean hasDefaultValue();
     
     /* -------------------------------------------------- Access -------------------------------------------------- */
+    
+    /**
+     * Returns true, if accessible and false otherwise.
+     */
+    @Pure
+    public boolean isAccessible();
     
     /**
      * Returns the code to retrieve the value of this field.

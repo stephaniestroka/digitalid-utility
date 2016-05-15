@@ -8,11 +8,11 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
@@ -101,19 +101,26 @@ public abstract class FieldInformationImplementation extends ElementInformationI
     
     @Pure
     public boolean isArray() {
-        return (getType() instanceof Type.ArrayType);
+        return ProcessingUtility.isArray(getType());
+    }
+    
+    @Pure
+    public boolean isCollection() {
+        return ProcessingUtility.isCollection(getType());
     }
     
     @Pure
     public @Nonnull TypeMirror getComponentType() {
-        Require.that(isArray()).orThrow("Expected array type");
+        return ProcessingUtility.getComponentType(getType());
+    }
     
-        final Type.@Nonnull ArrayType type = (Type.ArrayType) getType();
-        @Nonnull TypeMirror componentType = type.getComponentType();
-        if (componentType instanceof Type.AnnotatedType) {
-            componentType = ((Type.AnnotatedType) componentType).unannotatedType();
-        }
-        return componentType;
+    /* -------------------------------------------------- Is Mandatory -------------------------------------------------- */
+    
+    /**
+     * Returns true if the field is required, false otherwise.
+     */
+    public boolean isMandatory() {
+        return !(this.hasDefaultValue() || this.hasAnnotation(Nullable.class) || !this.getModifiers().contains(Modifier.FINAL));
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */

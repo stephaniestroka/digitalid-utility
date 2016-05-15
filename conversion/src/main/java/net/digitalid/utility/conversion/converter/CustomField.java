@@ -3,11 +3,9 @@ package net.digitalid.utility.conversion.converter;
 import java.lang.annotation.Annotation;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.immutable.ImmutableList;
-import net.digitalid.utility.tuples.Pair;
 
 /**
  * This class represents a field of a type.
@@ -16,12 +14,7 @@ public class CustomField {
     
     /* -------------------------------------------------- Type -------------------------------------------------- */
     
-    private final @Nonnull Pair<@Nonnull CustomType, @Nullable Converter<?>> type;
-    
-    @Pure
-    public @Nonnull Pair<@Nonnull CustomType, @Nullable Converter<?>> getType() {
-        return type;
-    }
+    public final @Nonnull LeafConverter<?> converter;
     
     /* -------------------------------------------------- Name -------------------------------------------------- */ 
     
@@ -42,14 +35,14 @@ public class CustomField {
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
-    private CustomField(@Nonnull Pair<@Nonnull CustomType, @Nullable Converter<?>> type, @Nonnull String name, @Nonnull ImmutableList<@Nonnull Annotation> annotations) {
-        this.type = type;
+    private CustomField(@Nonnull LeafConverter<?> converter, @Nonnull String name, @Nonnull ImmutableList<@Nonnull Annotation> annotations) {
+        this.converter = converter;
         this.name = name;
         this.annotations = annotations;
     }
     
-    public static @Nonnull CustomField with(@Nonnull Pair<@Nonnull CustomType, @Nullable Converter<?>> type, @Nonnull String name, @Nonnull ImmutableList<@Nonnull Annotation> annotations) {
-        return new CustomField(type, name, annotations);
+    public static @Nonnull CustomField with(@Nonnull LeafConverter<?> converter, @Nonnull String name, @Nonnull ImmutableList<@Nonnull Annotation> annotations) {
+        return new CustomField(converter, name, annotations);
     }
     
 }

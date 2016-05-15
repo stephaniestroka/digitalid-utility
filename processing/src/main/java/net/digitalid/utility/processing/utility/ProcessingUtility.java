@@ -1,6 +1,7 @@
 package net.digitalid.utility.processing.utility;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import javax.lang.model.util.SimpleTypeVisitor7;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
@@ -184,6 +186,30 @@ public class ProcessingUtility {
         return null;
     }
     
+    @Pure
+    public static @Nonnull String getAnnotationsAsString(@Nonnull UnaryFunction<AnnotationMirror, String> function, @Nonnull Collection<? extends AnnotationMirror> annotationMirrors) {
+        final @Nonnull StringBuilder annotationsAsString = new StringBuilder();
+        for (@Nonnull AnnotationMirror annotationMirror : annotationMirrors) {
+            annotationsAsString.append("@").append(function.evaluate(annotationMirror));
+            if (annotationMirror.getElementValues().size() > 0) {
+                annotationsAsString.append("(");
+                boolean first = true;
+                for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> elementValue : annotationMirror.getElementValues().entrySet()) {
+                    if (first) { first = false; } else { annotationsAsString.append(", "); }
+                    final @Nonnull String nameOfKey = elementValue.getKey().getSimpleName().toString();
+                    if (!nameOfKey.equals("value")) {
+                        annotationsAsString.append(nameOfKey).append(" = ").append(elementValue.getValue());
+                    } else {
+                        annotationsAsString.append(elementValue.getValue());
+                    }
+                }
+                annotationsAsString.append(")");
+            }
+            annotationsAsString.append(" ");
+        }
+        return annotationsAsString.toString();
+    }
+    
     /* -------------------------------------------------- Assignability -------------------------------------------------- */
     
     /**
@@ -242,6 +268,34 @@ public class ProcessingUtility {
             return isAssignable(((ExecutableElement) element).getReturnType(), type);
         } else {
             return isAssignable(element.asType(), type);
+        }
+    }
+    
+    @Pure
+    public static boolean isArray(@Nonnull TypeMirror type) {
+        return (type instanceof Type.ArrayType);
+    }
+    
+    @Pure
+    public static boolean isCollection(@Nonnull TypeMirror type) {
+        return (type instanceof DeclaredType && ProcessingUtility.isAssignable(type, Collection.class));
+    }
+    
+    @Pure
+    public static @Nonnull TypeMirror getComponentType(@Nonnull TypeMirror type) {
+        Require.that(isArray(type) || isCollection(type)).orThrow("Expected array or collection type");
+    
+        if (isArray(type)) {
+            final Type.@Nonnull ArrayType arrayType = (Type.ArrayType) type;
+            @Nonnull TypeMirror componentType = arrayType.getComponentType();
+            if (componentType instanceof Type.AnnotatedType) {
+                componentType = ((Type.AnnotatedType) componentType).unannotatedType();
+            }
+            return componentType;
+        } else {
+            final @Nonnull List<@Nonnull ? extends TypeMirror> typeArguments = ((DeclaredType) type).getTypeArguments();
+            Require.that(typeArguments.size() == 1).orThrow("Expected collection type with exactly one type argument");
+            return typeArguments.get(0);
         }
     }
     

@@ -1,8 +1,7 @@
-package net.digitalid.utility.generator;
+package net.digitalid.utility.generator.generators;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,11 +16,13 @@ import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.fixes.Brackets;
 import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.GeneratorProcessor;
 import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedFieldInformation;
+import net.digitalid.utility.generator.information.field.GeneratedRepresentingFieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.type.ClassInformation;
@@ -35,6 +36,7 @@ import net.digitalid.utility.generator.typevisitors.GenerateToStringTypeVisitor;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.tuples.Quartet;
 import net.digitalid.utility.tuples.Triplet;
 import net.digitalid.utility.validation.annotations.getter.Derive;
@@ -55,11 +57,46 @@ public class SubclassGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Type Information -------------------------------------------------- */
     
+    /**
+     * Stores the type information.
+     */
     protected final @Nonnull TypeInformation typeInformation;
     
     /* -------------------------------------------------- Generating Methods -------------------------------------------------- */
     
-    protected void generateFields() {
+    private void generateMethodWithStatement(@Nonnull MethodInformation method, @Nonnull String statement) {
+        generateMethodWithStatement(method, statement, null, null);
+    }
+    
+    private void generateMethodWithStatement(@Nonnull MethodInformation method, @Nonnull String statement, @Nullable String returnedValue, @Nullable String defaultValue) {
+        Require.that(!method.hasReturnType() || returnedValue != null).orThrow("Trying to generate the method $ with return type, but a return variable was not given");
+        final @Nonnull String firstMethodCall = implementCallToMethodInterceptors(method, statement, returnedValue, defaultValue);
+        addAnnotation(Override.class);
+        MethodUtility.generateBeginMethod(this, method, null);
+        for (@Nonnull VariableElement parameter : method.getElement().getParameters()) {
+            for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : ValidatorProcessingUtility.getValueValidators(parameter).entrySet()) {
+                addPrecondition(entry.getValue().generateContract(parameter, entry.getKey(), this));
+            }
+        }
+        for (Map.@Nonnull Entry<AnnotationMirror, MethodAnnotationValidator> entry : method.getMethodValidators().entrySet()) {
+            addPrecondition(entry.getValue().generateContract(method.getElement(), entry.getKey(), this));
+        }
+        addStatement(firstMethodCall);
+        for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : method.getReturnValueValidators().entrySet()) {
+            addPostcondition(entry.getValue().generateContract(method.getElement(), entry.getKey(), this));
+        }
+        if (method.hasReturnType()) {
+            addStatement("return " + returnedValue);
+        }
+        endMethod();
+    }
+    
+    /* -------------------------------------------------- Generating Fields -------------------------------------------------- */
+    
+    /**
+     * Generates fields from abstract getters.
+     */
+    private void generateFields() {
         @Nonnull FiniteIterable<GeneratedFieldInformation> generatedFieldInformation = typeInformation.generatedRepresentingFieldInformation.map(f -> (GeneratedFieldInformation) f).combine(typeInformation.derivedFieldInformation);
         for (@Nonnull GeneratedFieldInformation field : generatedFieldInformation) {
             ProcessingLog.verbose("Generating the field $.", field.getName());
@@ -112,9 +149,11 @@ public class SubclassGenerator extends JavaFileGenerator {
             addStatement(superStatement);
             addEmptyLine();
         }
-        for (@Nonnull FieldInformation field : typeInformation.generatedRepresentingFieldInformation) {
+        for (@Nonnull GeneratedRepresentingFieldInformation field : typeInformation.generatedRepresentingFieldInformation) {
             if (field.hasAnnotation(Normalize.class)) {
                 addStatement("this." + field.getName() + " = " + field.getAnnotation(Normalize.class).value());
+            } else if (field.hasSetter() && field.getSetter().hasAnnotation(Normalize.class)) {
+                addStatement("this." + field.getName() + " = " + field.getSetter().getAnnotation(Normalize.class).value());
             } else {
                 addStatement("this." + field.getName() + " = " + field.getName());
             }
@@ -128,15 +167,21 @@ public class SubclassGenerator extends JavaFileGenerator {
         endConstructor();
     }
     
+    /**
+     * Generates a subclass constructor from a given constructor information object;
+     */
     private void generateConstructor(@Nonnull ConstructorInformation constructorInformation) {
-        @Nullable List<? extends TypeMirror> throwTypes = constructorInformation.getElement().getThrownTypes();
-        final @Nonnull FiniteIterable<ElementInformation> constructorParameter = constructorInformation.getParameters().map(parameter -> (ElementInformation) parameter).combine(typeInformation.generatedRepresentingFieldInformation);
+        @Nullable List<@Nonnull ? extends TypeMirror> throwTypes = constructorInformation.getElement().getThrownTypes();
+        final @Nonnull FiniteIterable<@Nonnull ElementInformation> constructorParameter = constructorInformation.getParameters().map(parameter -> (ElementInformation) parameter).combine(typeInformation.generatedRepresentingFieldInformation);
         
         final @Nonnull String superStatement = "super" + constructorInformation.getParameters().map(ElementInformationImplementation::getName).join(Brackets.ROUND);
         
         generateConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + constructorParameter.map(element -> this.importIfPossible(element.getType()) + " " + element.getName()).join(Brackets.ROUND) + (throwTypes == null || throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()), superStatement);
     }
     
+    /**
+     * Generates all subclass constructors.
+     */
     protected void generateConstructors() {
         addSection("Constructors");
         if (typeInformation instanceof ClassInformation) {
@@ -148,94 +193,80 @@ public class SubclassGenerator extends JavaFileGenerator {
         }
     }
     
-    protected @Nonnull String implementCallToMethodInterceptors(@Nonnull MethodInformation method, @Nonnull String lastStatement, @Nullable String returnedValue, @Nullable String defaultValue) {
+    /* -------------------------------------------------- Overridden Methods -------------------------------------------------- */
+    
+    /**
+     * Generates interceptor methods for all method interceptor annotations of a given method.
+     * The first method interceptor calls the original method, which is handed as the parameter methodCall. Further interceptors call the immediate predecessor. The call to the last interceptor is returned.
+     */
+    private @Nonnull String implementCallToMethodInterceptors(@Nonnull MethodInformation method, @Nonnull String methodCall, @Nullable String returnedValue, @Nullable String defaultValue) {
         for (Map.@Nonnull Entry<AnnotationMirror, MethodInterceptor> annotationMirrorMethodInterceptorEntry : method.getInterceptors().entrySet()) {
             final @Nonnull MethodInterceptor methodInterceptor = annotationMirrorMethodInterceptorEntry.getValue();
-            lastStatement = methodInterceptor.generateInterceptorMethod(this, method, lastStatement, returnedValue, defaultValue);
+            methodCall = methodInterceptor.generateInterceptorMethod(this, method, methodCall, returnedValue, defaultValue);
         }
         if (method.hasReturnType()) {
-            lastStatement = method.getReturnType(this) + " " + returnedValue + " = " + lastStatement;
+            methodCall = method.getReturnType(this) + " " + returnedValue + " = " + methodCall;
         }
-        return lastStatement;
+        return methodCall;
     }
-    /* -------------------------------------------------- Overridden Methods -------------------------------------------------- */
     
     /**
      * Overrides the methods of the superclass and generates contracts and/or method interceptors according to the method annotations.
      */
-    protected void overrideMethods() {
+    private void overrideMethods() {
         if (!typeInformation.getOverriddenMethods().isEmpty()) { addSection("Overridden Methods"); }
         for (final @Nonnull MethodInformation method : typeInformation.getOverriddenMethods()) {
-            final @Nonnull String callToSuperMethod = MethodUtility.createSuperCall(method, "result", this);
+            final @Nonnull String callToSuperMethod = MethodUtility.createSuperCall(method);
             generateMethodWithStatement(method, callToSuperMethod, "result", method.getDefaultValue());
         }
     }
     
-    private void generateMethodWithStatement(@Nonnull MethodInformation method, @Nonnull String statement) {
-        generateMethodWithStatement(method, statement, null, null);
-    }
+    /* -------------------------------------------------- Generate RootInterface Methods -------------------------------------------------- */
     
-    private void generateMethodWithStatement(@Nonnull MethodInformation method, @Nonnull String statement, @Nullable String returnedValue, @Nullable String defaultValue) {
-        Require.that(!method.hasReturnType() || returnedValue != null).orThrow("Trying to generate the method $ with return type, but a return variable was not given");
-        final @Nonnull String firstMethodCall = implementCallToMethodInterceptors(method, statement, returnedValue, defaultValue);
-        addAnnotation(Override.class);
-        MethodUtility.generateBeginMethod(this, method, null);
-        for (@Nonnull VariableElement parameter : method.getElement().getParameters()) {
-            for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : ValidatorProcessingUtility.getValueValidators(parameter).entrySet()) {
-                addPrecondition(entry.getValue().generateContract(parameter, entry.getKey(), this));
-            }
-        }
-        for (Map.@Nonnull Entry<AnnotationMirror, MethodAnnotationValidator> entry : method.getMethodValidators().entrySet()) {
-            addPrecondition(entry.getValue().generateContract(method.getElement(), entry.getKey(), this));
-        }
-        addStatement(firstMethodCall);
-        for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : method.getReturnValueValidators().entrySet()) {
-            addPostcondition(entry.getValue().generateContract(method.getElement(), entry.getKey(), this));
-        }
-        if (method.hasReturnType()) {
-            addStatement("return " + returnedValue);
-        }
-        endMethod();
-    }
-    
-    private static final @Nonnull GenerateComparisonTypeVisitor generateComparisonTypeVisitor = new GenerateComparisonTypeVisitor();
-    
+    /**
+     * A type visitor that surrounds character sequences in double quotes and prints arrays correctly.
+     */
     private static final @Nonnull GenerateToStringTypeVisitor generateToStringTypeVisitor = new GenerateToStringTypeVisitor();
     
     /**
-     * Generates a hashCode method that generate a hashCode from all representing fields.
+     * Generates a toString method from all representing fields.
      */
-    protected void generateToStringMethod() {
+    private void generateToStringMethod() {
         if (typeInformation instanceof ClassInformation && ((ClassInformation) typeInformation).toStringMethod != null) {
             return;
         }
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
         beginMethod("public String toString()");
-        // TODO: Make sure that Arrays.class is also imported when needed. Maybe change the implementation to importing type visitors?
-        importIfPossible(Objects.class); // TODO: No longer needed, at least not for this visitor.
-        importIfPossible(Quotes.class); // TODO: Make sure it is only imported when needed!
-        addStatement("return \"" + typeInformation.getName() + typeInformation.getRepresentingFieldInformation().map(field -> field.getName() + ": \" + " + generateToStringTypeVisitor.visit(field.getType(), field.getAccessCode()) + " + \"").join(Brackets.ROUND) + "\"");
+        addStatement("return \"" + typeInformation.getName() + typeInformation.getRepresentingFieldInformation().map(field -> field.getName() + ": \" + " + generateToStringTypeVisitor.visit(field.getType(), Pair.of(field.getAccessCode(), this)) + " + \"").join(Brackets.ROUND) + "\"");
         endMethod();
     }
     
+    /**
+     * Generates a validate method that validates invariants of the type.
+     */
     private void generateValidateMethod() {
         ProcessingLog.debugging("generateValidateMethod()");
-        if (typeInformation instanceof ClassInformation && ((ClassInformation) typeInformation).validateMethod != null) {
-            addAnnotation(Pure.class);
-            addAnnotation(Override.class);
-            beginMethod("public void validate()");
+        if (typeInformation instanceof ClassInformation) {
             final @Nonnull ClassInformation classInformation = (ClassInformation) typeInformation;
-            addStatement(MethodUtility.createSuperCall(classInformation.validateMethod, null, this));
-            for (@Nonnull DirectlyAccessibleFieldInformation field : classInformation.writableAccessibleFields) {
-                for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : ValidatorProcessingUtility.getValueValidators(field.getElement()).entrySet()) {
-                    addInvariant(entry.getValue().generateContract(field.getElement(), entry.getKey(), this));
+            if(classInformation.validateMethod != null) {
+                addAnnotation(Pure.class);
+                addAnnotation(Override.class);
+                beginMethod("public void validate()");
+                addStatement(MethodUtility.createSuperCall(classInformation.validateMethod));
+                for (@Nonnull DirectlyAccessibleFieldInformation field : classInformation.writableAccessibleFields) {
+                    for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : ValidatorProcessingUtility.getValueValidators(field.getElement()).entrySet()) {
+                        addInvariant(entry.getValue().generateContract(field.getElement(), entry.getKey(), this));
+                    }
                 }
+                endMethod();
             }
-            endMethod();
         }
     }
     
+    /**
+     * A hashCode type visitor.
+     */
     private final @Nonnull GenerateHashCodeTypeVisitor generateHashCodeTypeVisitor = new GenerateHashCodeTypeVisitor();
     
     /**
@@ -263,6 +294,11 @@ public class SubclassGenerator extends JavaFileGenerator {
     }
     
     /**
+     * A comparison type visitor.
+     */
+    private static final @Nonnull GenerateComparisonTypeVisitor generateComparisonTypeVisitor = new GenerateComparisonTypeVisitor();
+    
+    /**
      * Generates an equal method that compares all representing fields.
      */
     protected void generateEqualsMethod() {
@@ -275,9 +311,10 @@ public class SubclassGenerator extends JavaFileGenerator {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
         beginMethod("public boolean equals(@" + importIfPossible(Nullable.class) + " Object object)");
-        // TODO: if (object == this) { return true; } first might be valuable for performance reasons.
-        // TODO: Kaspar is not sure whether the equals on the classes is preferable to an instanceof check.
-        beginIf("object == null || !object.getClass().equals(this.getClass())");
+        beginIf("object == this");
+        addStatement("return true");
+        endIf();
+        beginIf("object == null || !(object instanceof " + typeInformation.getName() + ")");
         addStatement("return false");
         endIf();
         addStatement("final @" + importIfPossible(Nonnull.class)+ " " + typeInformation.getName() + " that = (" + typeInformation.getName() + ") object");
@@ -315,7 +352,10 @@ public class SubclassGenerator extends JavaFileGenerator {
         }
     }
     
-    protected void generateMethods() {
+    /**
+     * Generates all root interface methods
+     */
+    private void generateMethods() {
         addSection("Generated Methods");
         generateEqualsMethod();
         generateHashCodeMethod();
@@ -327,6 +367,9 @@ public class SubclassGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
+    /**
+     * Generates a subclass of the given type.
+     */
     protected SubclassGenerator(@Nonnull TypeInformation typeInformation) {
         super(typeInformation.getQualifiedNameOfGeneratedSubclass(), typeInformation.getElement());
         
@@ -346,7 +389,7 @@ public class SubclassGenerator extends JavaFileGenerator {
     }
     
     /**
-     * Generates a subclass (the target) of the given type (the source).
+     * Generates a subclass of the given type and writes it to a file.
      */
     @Pure
     public static void generateSubclassOf(@Nonnull TypeInformation typeInformation) {

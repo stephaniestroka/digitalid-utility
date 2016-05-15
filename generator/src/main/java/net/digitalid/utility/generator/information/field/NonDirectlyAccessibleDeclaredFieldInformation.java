@@ -6,11 +6,13 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.generator.generators.BuilderGenerator;
+import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 
 /**
- * This type collects the relevant information about a non-directly accessible, declared field for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.
+ * This type collects the relevant information about a non-directly accessible, declared field for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  */
 public class NonDirectlyAccessibleDeclaredFieldInformation extends NonDirectlyAccessibleFieldInformation implements PotentiallyInheritedFieldInformation {
     

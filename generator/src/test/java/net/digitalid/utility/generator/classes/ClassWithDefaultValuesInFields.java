@@ -15,11 +15,12 @@ public abstract class ClassWithDefaultValuesInFields {
     @Default("99")
     public abstract int getNumber();
     
+    @Default("\"blubb\"") 
     private final @Nonnull String text;
     
     private final @Nonnull String mandatoryText;
     
-    public ClassWithDefaultValuesInFields(@Default("\"blubb\"") String text, @Nonnull String mandatoryText) {
+    public ClassWithDefaultValuesInFields(String text, @Nonnull String mandatoryText) {
         this.text = text;
         this.mandatoryText = mandatoryText;
     }
