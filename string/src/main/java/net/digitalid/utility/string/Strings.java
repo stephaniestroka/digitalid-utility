@@ -45,7 +45,8 @@ public class Strings {
             }
         }
         if (argumentIndex < arguments.length) {
-            string.append(" [");
+            if (string.length() > 0) { string.append(" "); }
+            string.append("[");
             boolean first = true;
             while (argumentIndex < arguments.length) {
                 if (first) { first = false; } else { string.append(", "); }
@@ -170,11 +171,11 @@ public class Strings {
     }
     
     /**
-     * Appends a representation of the given object to the given string builder.
+     * Returns a string representation of the given object.
      */
     @Pure
-    public static void toString(@NonCaptured @Unmodified @Nonnull Object object, @NonCaptured @Modified @Nonnull StringBuilder string) {
-        string.append(object.getClass().getSimpleName()).append(FiniteIterable.of(object.getClass().getDeclaredFields()).map(field -> field.getName() + ": " + Quotes.inCode(getFieldValueOrErrorMessage(field, object))).join(Brackets.ROUND));
+    public static @Nonnull String toString(@NonCaptured @Unmodified @Nonnull Object object) {
+        return object.getClass().getSimpleName() + FiniteIterable.of(object.getClass().getDeclaredFields()).map(field -> field.getName() + ": " + Quotes.inCode(getFieldValueOrErrorMessage(field, object))).join(Brackets.ROUND);
     }
     
     /* -------------------------------------------------- Cardinal Numbers -------------------------------------------------- */
@@ -193,14 +194,14 @@ public class Strings {
     
     /* -------------------------------------------------- Ordinal Numbers with English Root -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableList<@Nonnull String> ordinalNumbersWithEnglishRoot = ImmutableList.with("first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twelth");
+    private static final @Nonnull ImmutableList<@Nonnull String> ordinalNumbersWithEnglishRoot = ImmutableList.with("first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twelfth", "13th");
     
     /**
      * Returns the given number as an ordinal string (written-out if smaller than 13).
      */
     @Pure
     public static @Nonnull String getOrdinal(@Positive int number) {
-        if (number >= 1 && number <= 12) { return ordinalNumbersWithEnglishRoot.get(number - 1); }
+        if (number >= 1 && number <= 13) { return ordinalNumbersWithEnglishRoot.get(number - 1); }
         final int mod10 = number % 10;
         if (mod10 == 1) { return String.valueOf(number) + "st"; }
         if (mod10 == 2) { return String.valueOf(number) + "nd"; }
@@ -230,13 +231,17 @@ public class Strings {
      */
     @Pure
     public static @Nonnull String pluralize(@Nonnull String word) {
-        if (word.contains("oo") && !word.equals("book")) { return word.replace("oo", "ee"); }
-        for (Map.@Nonnull Entry<String, String> rule : rules.entrySet()) {
-            if (word.endsWith(rule.getKey())) {
-                return word.substring(0, word.length() - rule.getKey().length()) + rule.getValue();
+        if (word.isEmpty()) {
+            return word;
+        } else {
+            if (word.contains("oo") && !word.equals("book")) { return word.replace("oo", "ee"); }
+            for (Map.@Nonnull Entry<String, String> rule : rules.entrySet()) {
+                if (word.endsWith(rule.getKey())) {
+                    return word.substring(0, word.length() - rule.getKey().length()) + rule.getValue();
+                }
             }
+            return word + "s";
         }
-        return word + "s";
     }
     
     /**
@@ -253,26 +258,30 @@ public class Strings {
      * Prepends the given word with the appropriate indefinite article in upper or lower case based on a simple heuristic.
      */
     @Pure
-    public static @Nonnull String withIndefiniteArticle(@Nonnull String word, boolean uppercase) {
-        final @Nonnull String a = (uppercase ? "A" : "a") + " " + word, an = (uppercase ? "An" : "an") + " " + word;
-        final @Nonnull String lowercaseWord = word.toLowerCase();
-        
-        final @Nonnull String[] prefixesForAn = { "hon", "heir" };
-        final @Nonnull String[] prefixesForA = { "us", "univ" };
-        final @Nonnull String[] vowels = { "a", "e", "i", "o", "u" };
-        
-        if (startsWithAny(lowercaseWord, prefixesForAn)) { return an; }
-        if (startsWithAny(lowercaseWord, prefixesForA)) { return a; }
-        if (startsWithAny(lowercaseWord, vowels)) { return an; }
-        else { return a; }
+    public static @Nonnull String prependWithIndefiniteArticle(@Nonnull String word, boolean uppercase) {
+        if (word.isEmpty()) {
+            return word;
+        } else {
+            final @Nonnull String a = (uppercase ? "A" : "a") + " " + word, an = (uppercase ? "An" : "an") + " " + word;
+            final @Nonnull String lowercaseWord = word.toLowerCase();
+            
+            final @Nonnull String[] prefixesForAn = { "hon", "heir" };
+            final @Nonnull String[] prefixesForA = { "us", "univ" };
+            final @Nonnull String[] vowels = { "a", "e", "i", "o", "u" };
+            
+            if (startsWithAny(lowercaseWord, prefixesForAn)) { return an; }
+            if (startsWithAny(lowercaseWord, prefixesForA)) { return a; }
+            if (startsWithAny(lowercaseWord, vowels)) { return an; }
+            else { return a; }
+        }
     }
     
     /**
      * Prepends the given word with the appropriate indefinite article written all lowercase.
      */
     @Pure
-    public static @Nonnull String withIndefiniteArticle(@Nonnull String word) {
-        return withIndefiniteArticle(word, false);
+    public static @Nonnull String prependWithIndefiniteArticle(@Nonnull String word) {
+        return Strings.prependWithIndefiniteArticle(word, false);
     }
     
 }
