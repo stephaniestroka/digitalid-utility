@@ -70,7 +70,7 @@ public @interface UniqueElements {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with(typeImporter.importIfPossible(UniqueElements.class) + ".Generator.validate(#)", "The # may not contain duplicates.", element);
+            return Contract.with(typeImporter.importIfPossible(UniqueElements.class) + ".Validator.validate(#)", "The # may not contain duplicates.", element);
         }
         
     }
