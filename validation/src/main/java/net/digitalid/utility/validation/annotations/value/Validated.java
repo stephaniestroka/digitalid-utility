@@ -72,7 +72,7 @@ public @interface Validated {
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
             if (!ProcessingUtility.isAssignable(ProcessingUtility.getSurroundingType(element), Validated.Value.class)) {
-                ProcessingLog.error("The annotation '@Validated' may only be used in types that extend the encapsulator:", SourcePosition.of(element, annotationMirror));
+                ProcessingLog.error("The annotation '@Validated' may only be used in types that implement the Validated.Value interface:", SourcePosition.of(element, annotationMirror));
             }
         }
         

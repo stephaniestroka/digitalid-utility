@@ -51,9 +51,9 @@ public @interface MultipleOf {
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
             if (ProcessingUtility.isAssignable(element, BigIntegerNumerical.class)) {
-                return Contract.with("# == null || #.getValue().mod(" + typeImporter.importIfPossible(BigInteger.class) + ".valueOf(@).equals(" + typeImporter.importIfPossible(BigInteger.class) + ".ZERO)) > 0", "The # has to be null or a multiple of @ but was $.", element, annotationMirror);
+                return Contract.with("# == null || #.getValue().mod(" + typeImporter.importIfPossible(BigInteger.class) + ".valueOf(@)).equals(" + typeImporter.importIfPossible(BigInteger.class) + ".ZERO)", "The # has to be null or a multiple of @ but was $.", element, annotationMirror);
             } else if (ProcessingUtility.isAssignable(element, BigInteger.class)) {
-                return Contract.with("# == null || #.mod(" + typeImporter.importIfPossible(BigInteger.class) + ".valueOf(@).equals(" + typeImporter.importIfPossible(BigInteger.class) + ".ZERO)) > 0", "The # has to be null or a multiple of @ but was $.", element, annotationMirror);
+                return Contract.with("# == null || #.mod(" + typeImporter.importIfPossible(BigInteger.class) + ".valueOf(@)).equals(" + typeImporter.importIfPossible(BigInteger.class) + ".ZERO)", "The # has to be null or a multiple of @ but was $.", element, annotationMirror);
             } else if (ProcessingUtility.isAssignable(element, LongNumerical.class)) {
                 return Contract.with("# == null || #.getValue() % @ == 0", "The # has to be a multiple of @ but was $.", element, annotationMirror);
             } else {
