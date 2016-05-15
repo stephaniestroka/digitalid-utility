@@ -5,6 +5,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 
@@ -19,6 +20,14 @@ public class NonAccessibleDeclaredFieldInformation extends FieldInformationImple
     
     public static @Nonnull NonAccessibleDeclaredFieldInformation of(@Nonnull Element element, @Nonnull DeclaredType containingType) {
         return new NonAccessibleDeclaredFieldInformation(element, StaticProcessingEnvironment.getTypeUtils().asMemberOf(containingType, element), containingType);
+    }
+    
+    /* -------------------------------------------------- Access -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public boolean isAccessible() {
+        return false;
     }
     
     @Override

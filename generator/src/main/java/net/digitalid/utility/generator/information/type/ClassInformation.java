@@ -166,7 +166,7 @@ public class ClassInformation extends TypeInformation {
         for (@Nonnull ConstructorInformation constructor : constructors) {
             @Nonnull final FiniteIterable<MethodParameterInformation> parameters = constructor.getParameters();
             for (@Nonnull MethodParameterInformation parameter : parameters) {
-                if (parameter.getMatchingField() != null) {
+                if (parameter.getMatchingField() != null && parameter.getMatchingField().isAccessible()) {
                     representingFieldInformation.add(parameter.getMatchingField());
                 }
             }

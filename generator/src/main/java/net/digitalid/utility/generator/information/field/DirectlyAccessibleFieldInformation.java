@@ -35,6 +35,14 @@ public abstract class DirectlyAccessibleFieldInformation extends FieldInformatio
         return field;
     }
     
+    /* -------------------------------------------------- Access -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public boolean isAccessible() {
+        return true;
+    }
+    
     @Pure
     @Override
     public @Nonnull String getAccessCode() {

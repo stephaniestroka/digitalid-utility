@@ -35,9 +35,19 @@ public abstract class NonDirectlyAccessibleFieldInformation extends FieldInforma
         return getter;
     }
     
+    /* -------------------------------------------------- Access -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public boolean isAccessible() {
+        return true;
+    }
+    
     @Pure
     @Override
     public @Nonnull String getAccessCode() {
+        Require.that(isAccessible()).orThrow("The field cannot be accessed");
+        
         return getter.getName() + "()";
     }
     

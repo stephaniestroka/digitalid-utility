@@ -29,6 +29,12 @@ public interface FieldInformation extends ElementInformation, VariableElementInf
     /* -------------------------------------------------- Access -------------------------------------------------- */
     
     /**
+     * Returns true, if accessible and false otherwise.
+     */
+    @Pure
+    public boolean isAccessible();
+    
+    /**
      * Returns the code to retrieve the value of this field.
      */
     @Pure

@@ -1,5 +1,7 @@
 package net.digitalid.utility.generator.generators;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -8,6 +10,9 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 
@@ -145,6 +150,29 @@ public class BuilderGenerator extends JavaFileGenerator {
         return listOfInterfaces;
     }
     
+    // TODO: needs testing
+    private @Nonnull List<? extends AnnotationMirror> getFieldAnnotations(@Nonnull VariableElementInformation field) {
+        final List<AnnotationMirror> annotationsSuitableForFields = new ArrayList<>();
+        for (@Nonnull AnnotationMirror annotationMirror : field.getAnnotations()) {
+            final @Nonnull Element annotationElement = annotationMirror.getAnnotationType().asElement();
+            final @Nullable AnnotationValue annotationValue = ProcessingUtility.getAnnotationValue(annotationElement, Target.class);
+            if (annotationElement != null) {
+                final com.sun.tools.javac.util.List<?> elementTypes = (com.sun.tools.javac.util.List<?>) annotationValue.getValue();
+                for (Object elementType : elementTypes) {
+                    if (elementType == ElementType.FIELD || elementType == ElementType.TYPE_USE || elementType == ElementType.TYPE) {
+                        annotationsSuitableForFields.add(annotationMirror);
+                        continue;
+                    }
+                }
+            } else {
+                ProcessingLog.information("No @Target annotation found");
+                annotationsSuitableForFields.add(annotationMirror);
+            }
+        }
+        ProcessingLog.information("Suitable field annotations are $", annotationsSuitableForFields);
+        return annotationsSuitableForFields;
+    }
+    
     /**
      * Creates a builder that collects all fields and provides a build() method, which returns an instance of the type that the builder builds.
      */
@@ -158,14 +186,15 @@ public class BuilderGenerator extends JavaFileGenerator {
         for (@Nonnull VariableElementInformation field : getConstructorParameters()) {
             field.getAnnotations();
             addSection(Strings.capitalizeFirstLetters(Strings.decamelize(field.getName())));
-            final @Nonnull String annotationsAsString = ProcessingUtility.getAnnotationsAsString(annotationMirror -> importIfPossible(annotationMirror.getAnnotationType()), field.getAnnotations());
-            addField("private " + annotationsAsString + importIfPossible(field.getType()) + " " + field.getName() + " = " + field.getDefaultValue());
+            final @Nonnull String fieldAnnotationsAsString = ProcessingUtility.getAnnotationsAsString(annotationMirror -> importIfPossible(annotationMirror.getAnnotationType()), getFieldAnnotations(field));
+            addField("private " + fieldAnnotationsAsString + importIfPossible(field.getType()) + " " + field.getName() + " = " + field.getDefaultValue());
             final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
             if (field.isMandatory()) {
                 addAnnotation(Override.class);
             }
+            final @Nonnull String parameterAnnotationsAsString = ProcessingUtility.getAnnotationsAsString(annotationMirror -> importIfPossible(annotationMirror.getAnnotationType()), field.getAnnotations());
             addAnnotation(Chainable.class);
-            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + nameOfBuilder + " " + methodName + "(" + annotationsAsString + importIfPossible(field.getType()) + " " + field.getName() + ")");
+            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + nameOfBuilder + " " + methodName + "(" + parameterAnnotationsAsString + importIfPossible(field.getType()) + " " + field.getName() + ")");
             addStatement("this." + field.getName() + " = " + field.getName());
             addStatement("return this");
             endMethod();
