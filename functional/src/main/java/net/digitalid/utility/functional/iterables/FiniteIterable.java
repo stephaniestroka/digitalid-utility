@@ -542,7 +542,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the result of the given collector after consuming all elements of this iterable.
      */
     @Pure
-    public default <R> @Capturable R collect(@NonCaptured @Modified @Nonnull Collector<? super E, ? extends R> collector) {
+    public default @Capturable <R> R collect(@NonCaptured @Modified @Nonnull Collector<? super E, ? extends R> collector) {
         for (E element : this) { collector.consume(element); }
         return collector.getResult();
     }
@@ -881,7 +881,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public default <T> @Capturable @Nonnull T[] toArray(@NonCaptured @Modified @Nonnull T[] array) {
+    public default @Capturable <T> @Nonnull T[] toArray(@NonCaptured @Modified @Nonnull T[] array) {
         final int size = size();
         final @Nonnull T[] result = array.length >= size ? array : (T[]) Array.newInstance(array.getClass().getComponentType(), size);
         final @Nonnull Iterator<E> iterator = iterator();
@@ -926,7 +926,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * {@link #groupBy(net.digitalid.utility.functional.interfaces.UnaryFunction)} instead.
      */
     @Pure
-    public default <K> @Capturable @Modifiable @Nonnull Map<K, E> toMap(@Nonnull UnaryFunction<? super E, ? extends K> function) {
+    public default @Capturable <K> @Modifiable @Nonnull Map<K, E> toMap(@Nonnull UnaryFunction<? super E, ? extends K> function) {
         final @Nonnull Map<K, E> result = new LinkedHashMap<>();
         for (E element : this) {
             result.put(function.evaluate(element), element);
@@ -940,7 +940,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the elements of this iterable as a map grouped by the given function.
      */
     @Pure
-    public default <K> @Capturable @Modifiable @Nonnull Map<K, @Nonnull List<E>> groupBy(@Nonnull UnaryFunction<? super E, ? extends K> function) {
+    public default @Capturable <K> @Modifiable @Nonnull Map<K, @Nonnull List<E>> groupBy(@Nonnull UnaryFunction<? super E, ? extends K> function) {
         final @Nonnull Map<K, List<E>> result = new LinkedHashMap<>(size());
         for (E element : this) {
             final K key = function.evaluate(element);

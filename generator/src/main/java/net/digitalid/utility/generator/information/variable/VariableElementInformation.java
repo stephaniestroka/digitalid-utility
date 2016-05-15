@@ -19,4 +19,7 @@ public interface VariableElementInformation extends ElementInformation {
     @Pure
     public boolean hasDefaultValue();
     
+    @Pure
+    public boolean isMandatory();
+    
 }

@@ -1,4 +1,4 @@
-package net.digitalid.utility.generator;
+package net.digitalid.utility.generator.generators;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -13,14 +13,18 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
-import net.digitalid.utility.conversion.converter.Converter;
 import net.digitalid.utility.conversion.converter.CustomField;
-import net.digitalid.utility.conversion.converter.CustomType;
+import net.digitalid.utility.conversion.converter.NodeConverter;
 import net.digitalid.utility.conversion.converter.ResultSet;
 import net.digitalid.utility.conversion.converter.ValueCollector;
+import net.digitalid.utility.conversion.converter.types.CustomType;
+import net.digitalid.utility.conversion.converter.types.ListConverter;
+import net.digitalid.utility.conversion.converter.types.TupleConverter;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
+import net.digitalid.utility.fixes.Brackets;
 import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.GeneratorProcessor;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.immutable.ImmutableList;
@@ -28,7 +32,6 @@ import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
-import net.digitalid.utility.tuples.Pair;
 
 import com.sun.tools.javac.code.Type;
 
@@ -93,7 +96,8 @@ public class ConverterGenerator extends JavaFileGenerator {
             } else if (fieldType.toString().equals(String.class.getCanonicalName())) {
                 addStatement("valueCollector.setString(" + fieldAccess + ")");
             } else {
-                addStatement(fieldAccess + ".collectValues(valueCollector)");
+                final @Nonnull String converterInstance = importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter") + ".INSTANCE";
+                addStatement(converterInstance + ".convert(" + fieldAccess + ", valueCollector)");
             }
         }
         endMethod();
@@ -163,19 +167,27 @@ public class ConverterGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Class Fields -------------------------------------------------- */
     
+    private @Nonnull String getConverterName(@Nonnull TypeMirror representingFieldType) {
+        final @Nonnull CustomType customType = CustomType.of(representingFieldType);
+        if (customType == CustomType.TUPLE) {
+            return importIfPossible(TupleConverter.class) + ".of" + Brackets.inRound(importIfPossible(ProcessingUtility.getQualifiedName(representingFieldType) + "Converter") + ".INSTANCE");
+        } else if (customType == CustomType.LIST) {
+            final @Nonnull TypeMirror componentType = ProcessingUtility.getComponentType(representingFieldType);
+            return importIfPossible(ListConverter.class) + ".of" + Brackets.inRound(getConverterName(componentType));
+        } else {
+            return importIfPossible(customType.converterName) + ".INSTANCE";
+        }
+    }
+    
     private void generateFields() {
         final @Nonnull StringBuilder fieldsString = new StringBuilder();
         for (@Nonnull FieldInformation representingField : typeInformation.getRepresentingFieldInformation()) {
+            if (fieldsString.length() != 0) {
+                fieldsString.append(", ");
+            }
             representingField.getName();
             
-            final @Nonnull CustomType customType = CustomType.of(representingField.getType());
-            final @Nonnull String converterInstance;
-            if (customType == CustomType.TUPLE) {
-                converterInstance = importIfPossible(ProcessingUtility.getSimpleName(representingField.getType()) + "Converter") + ".INSTANCE";
-            } else {
-                converterInstance = "null";
-            }
-            fieldsString.append(importIfPossible(CustomField.class) + ".with(" + importIfPossible(Pair.class) + ".of(" + importIfPossible(CustomType.class) + "." + customType + ", " + converterInstance + "), " + Quotes.inDouble(representingField.getName()) + ", null)");
+            fieldsString.append(importIfPossible(CustomField.class) + ".with(" + getConverterName(representingField.getType()) + ", " + Quotes.inDouble(representingField.getName()) + ", null)");
         }
         addField("private static " + importIfPossible(ImmutableList.class) + "<" + importIfPossible(CustomField.class) + "> fields = " + importIfPossible(ImmutableList.class) + ".with(" + fieldsString + ")");
     
@@ -194,7 +206,7 @@ public class ConverterGenerator extends JavaFileGenerator {
         this.typeInformation = typeInformation;
     
         try {
-            beginClass("public class " + typeInformation.getSimpleNameOfGeneratedConverter() + importWithBounds(typeInformation.getTypeArguments()) + " implements " + importIfPossible(Converter.class) + "<" + typeInformation.getName() + ">");
+            beginClass("public class " + typeInformation.getSimpleNameOfGeneratedConverter() + importWithBounds(typeInformation.getTypeArguments()) + " implements " + importIfPossible(NodeConverter.class) + "<" + typeInformation.getName() + ">");
             
             generateInstanceField();
             generateFields();

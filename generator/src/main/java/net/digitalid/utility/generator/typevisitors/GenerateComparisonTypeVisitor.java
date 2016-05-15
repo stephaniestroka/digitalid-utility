@@ -14,6 +14,8 @@ import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.tuples.Quartet;
 
 /**
+ * The comparison type visitor generates code that compares two values with each other.
+ * 
  * When using this type visitor, you need to call {@link javax.lang.model.util.AbstractTypeVisitor6#visit(TypeMirror, Object)} with a {@link Quartet quartet} of the left reference, the right reference and a {@link JavaFileGenerator java file generator}. 
  * The {@link javax.lang.model.util.AbstractTypeVisitor6#visit(TypeMirror)} method cannot create the reference names nor a java file generator.
  */

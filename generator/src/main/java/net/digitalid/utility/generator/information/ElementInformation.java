@@ -14,8 +14,8 @@ import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.state.Unmodifiable;
-import net.digitalid.utility.generator.BuilderGenerator;
-import net.digitalid.utility.generator.SubclassGenerator;
+import net.digitalid.utility.generator.generators.BuilderGenerator;
+import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 
 /**

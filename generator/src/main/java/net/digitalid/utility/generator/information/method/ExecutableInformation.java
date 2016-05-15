@@ -12,14 +12,18 @@ import javax.lang.model.type.ExecutableType;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.generators.BuilderGenerator;
+import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
+import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.generator.information.field.NonAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 
 /**
- * This type collects the relevant information about an executable for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.
+ * This type collects the relevant information about an executable for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  * 
  * @see ConstructorInformation
  * @see MethodInformation
@@ -105,12 +109,12 @@ public abstract class ExecutableInformation extends ElementInformationImplementa
         this.parameters = FiniteIterable.of(parameterList);
     }
     
-    protected ExecutableInformation(@Nonnull Element element, @Nonnull DeclaredType containingType, @Nonnull FiniteIterable<@Nonnull DirectlyAccessibleDeclaredFieldInformation> directlyAccessibleDeclaredFieldInformation, @Nonnull FiniteIterable<@Nonnull NonDirectlyAccessibleDeclaredFieldInformation> nonDirectlyAccessibleDeclaredFieldInformation) {
+    protected ExecutableInformation(@Nonnull Element element, @Nonnull DeclaredType containingType, @Nonnull FiniteIterable<@Nonnull FieldInformation> fieldInformation) {
         super(element, StaticProcessingEnvironment.getTypeUtils().asMemberOf(containingType, element), containingType);
         
         final @Nonnull List<MethodParameterInformation> parameterList = new ArrayList<>(getElement().getParameters().size());
         for (@Nonnull VariableElement variableElement : getElement().getParameters()) {
-            parameterList.add(new MethodParameterInformation(variableElement, getContainingType(), directlyAccessibleDeclaredFieldInformation, nonDirectlyAccessibleDeclaredFieldInformation));
+            parameterList.add(new MethodParameterInformation(variableElement, getContainingType(), fieldInformation));
         }
         this.parameters = FiniteIterable.of(parameterList);
     }

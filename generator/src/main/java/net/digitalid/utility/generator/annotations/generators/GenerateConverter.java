@@ -6,8 +6,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import net.digitalid.utility.generator.generators.ConverterGenerator;
+
 /**
- * Marks a class such that the {@link net.digitalid.utility.generator.ConverterGenerator converter generator} generates a converter for this class.
+ * Marks a class such that the {@link ConverterGenerator converter generator} generates a converter for this class.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

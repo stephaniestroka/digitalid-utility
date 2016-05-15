@@ -42,7 +42,7 @@ public abstract class MethodInterceptor extends MethodAnnotationValidator {
         MethodUtility.generateBeginMethod(javaFileGenerator, method, getPrefix());
         implementInterceptorMethod(javaFileGenerator, method, statement, resultVariable, defaultValue);
         javaFileGenerator.endMethod();
-        return MethodUtility.createMethodCall(method, getPrefix(), resultVariable, javaFileGenerator);
+        return MethodUtility.createMethodCall(method, getPrefix());
     }
     
 }

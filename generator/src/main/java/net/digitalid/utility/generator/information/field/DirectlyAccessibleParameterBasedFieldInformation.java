@@ -6,10 +6,12 @@ import javax.lang.model.element.VariableElement;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.generator.generators.BuilderGenerator;
+import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.processing.logging.SourcePosition;
 
 /**
- * This type collects the relevant information about a directly accessible parameter-based field for generating a {@link net.digitalid.utility.generator.SubclassGenerator subclass} and {@link net.digitalid.utility.generator.BuilderGenerator builder}.
+ * This type collects the relevant information about a directly accessible parameter-based field for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  */
 public class DirectlyAccessibleParameterBasedFieldInformation extends DirectlyAccessibleFieldInformation implements ParameterBasedFieldInformation {
     

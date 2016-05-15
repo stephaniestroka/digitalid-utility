@@ -18,7 +18,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @param <C> the specific format converter.
  */
 @Immutable
-public abstract class Format<C extends Converter> {
+public abstract class Format<C extends NodeConverter> {
     
     /* -------------------------------------------------- Required Converters -------------------------------------------------- */
     

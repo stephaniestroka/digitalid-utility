@@ -1,4 +1,4 @@
-package net.digitalid.utility.generator.query;
+package net.digitalid.utility.generator.information.filter;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -21,7 +21,7 @@ public class MethodSignatureMatcher implements Predicate<MethodInformation> {
     /**
      * A regular expression that is used to find a method information.
      */
-    public final @Nonnull Pattern namePattern;
+    private final @Nonnull Pattern namePattern;
     
     /**
      * An array of method parameters.
@@ -31,22 +31,8 @@ public class MethodSignatureMatcher implements Predicate<MethodInformation> {
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
-     * Creates a new method signature matcher with a given name regex and a list of expected parameters.
+     * Creates a new method signature matcher with a given name regex and a list of expected parameters as strings.
      */
-    /*private MethodSignatureMatcher(@Nonnull String nameRegex, @Nullable @NonNullableElements Class<?>... parameters) {
-        this.namePattern = Pattern.compile(nameRegex);
-        if (parameters == null) {
-            this.parameters = new String[0];
-        } else {
-            this.parameters = new String[parameters.length];
-            int i = 0;
-            for (@Nonnull Class<?> parameter : parameters) {
-                this.parameters[i] = parameter.getCanonicalName();
-                i++;
-            }
-        }
-    }*/
-    
     private MethodSignatureMatcher(@Nonnull String nameRegex, @Nullable @NonNullableElements String... parameters) {
         this.namePattern = Pattern.compile(nameRegex);
         if (parameters == null) {
@@ -57,7 +43,7 @@ public class MethodSignatureMatcher implements Predicate<MethodInformation> {
     }
     
     /**
-     * Returns a method signature matcher with a given name regex and a list of expected parameters.
+     * Returns a method signature matcher with a given name regex and a list of expected parameters as classes.
      */
     public static @Nonnull MethodSignatureMatcher of(@Nonnull String nameRegex, @Nullable @NonNullableElements Class<?>... parameters) {
         final @Nonnull String[] typeNames;
@@ -74,10 +60,16 @@ public class MethodSignatureMatcher implements Predicate<MethodInformation> {
         return new MethodSignatureMatcher(nameRegex, typeNames);
     }
     
+    /**
+     * Returns a method signature matcher for a given regular expression that matches the method name and a list of parameters as strings.
+     */
     public static @Nonnull MethodSignatureMatcher of(@Nonnull String nameRegex, @Nullable @NonNullableElements String... parameters) {
         return new MethodSignatureMatcher(nameRegex, parameters);
     }
     
+    /**
+     * Returns a method signature matcher for a given regular expression that matches the method name.
+     */
     public static @Nonnull MethodSignatureMatcher of(@Nonnull String nameRegex) {
         return new MethodSignatureMatcher(nameRegex, null);
     }

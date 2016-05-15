@@ -1,4 +1,4 @@
 /**
- * Provides classes for processing annotations.
+ * Provides classes for code generation.
  */
 package net.digitalid.utility.generator;

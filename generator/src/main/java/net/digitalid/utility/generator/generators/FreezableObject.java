@@ -1,4 +1,4 @@
-package net.digitalid.utility.generator;
+package net.digitalid.utility.generator.generators;
 
 import javax.annotation.Nonnull;
 

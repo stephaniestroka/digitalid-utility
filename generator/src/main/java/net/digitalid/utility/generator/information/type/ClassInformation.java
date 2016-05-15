@@ -1,7 +1,6 @@
 package net.digitalid.utility.generator.information.type;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -20,22 +19,21 @@ import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.conversion.annotations.Recover;
 import net.digitalid.utility.exceptions.ConformityViolation;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
-import net.digitalid.utility.fixes.Brackets;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.generator.BuilderGenerator;
-import net.digitalid.utility.generator.SubclassGenerator;
-import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
+import net.digitalid.utility.generator.generators.BuilderGenerator;
+import net.digitalid.utility.generator.generators.ConverterGenerator;
+import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.field.NonAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleDeclaredFieldInformation;
+import net.digitalid.utility.generator.information.filter.InformationFilter;
+import net.digitalid.utility.generator.information.filter.MethodSignatureMatcher;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.method.MethodParameterInformation;
-import net.digitalid.utility.generator.query.MethodSignatureMatcher;
 import net.digitalid.utility.processing.logging.ProcessingLog;
-import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.string.Strings;
@@ -43,7 +41,7 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
 import net.digitalid.utility.validation.annotations.size.MinSize;
 
 /**
- * This type collects the relevant information about a class for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
+ * This type collects the relevant information about a class for generating a {@link SubclassGenerator subclass}, {@link BuilderGenerator builder} and {@link ConverterGenerator converter}.
  */
 public class ClassInformation extends TypeInformation {
     
@@ -130,8 +128,32 @@ public class ClassInformation extends TypeInformation {
      */
     @Pure
     @Override
-    public @Unmodifiable @Nonnull FiniteIterable<@Nonnull ConstructorInformation> getConstructors() {
+    public @Unmodifiable @Nonnull @MinSize(1) FiniteIterable<@Nonnull ConstructorInformation> getConstructors() {
         return constructors;
+    }
+    
+    /* -------------------------------------------------- Recover Executable -------------------------------------------------- */
+    
+    /**
+     * Returns the executable element used to create an instance of this type.
+     * The executable element is either the recover method (if available) or the single
+     * constructor. If no recover method and multiple constructors exist, a unsupported type exception is thrown, indicating that we cannot defer how to create an instance of this type.
+     * An unexpected failure exception is thrown if no constructors could be found. This should never happen.
+     */
+    public @Nullable ExecutableElement getRecoverExecutable(@Nullable MethodInformation recoverMethod, @Nonnull FiniteIterable<@Nonnull ConstructorInformation> constructors) {
+        if (recoverMethod != null) {
+            return recoverMethod.getElement();
+        } else {
+            if (constructors.size() > 1) {
+                ProcessingLog.debugging("More than one constructor, but no recover method found. We cannot decide which constructor to use for object construction.");
+                return null;
+            } else if (constructors.size() == 0) {
+                throw UnexpectedFailureException.with("No constructor found.");
+            } else {
+                final @Nonnull ConstructorInformation constructor = constructors.iterator().next();
+                return constructor.getElement();
+            }
+        }
     }
     
     /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
@@ -158,102 +180,34 @@ public class ClassInformation extends TypeInformation {
      * Returns a subset of the accessible field information that maps to the parameters of the constructors.
      */
     @Override
-    public @Nonnull FiniteIterable<FieldInformation> getRepresentingFieldInformation() {
+    public @Unmodifiable @Nonnull FiniteIterable<FieldInformation> getRepresentingFieldInformation() {
         return representingFieldInformation;
     }
     
-    /* -------------------------------------------------- Accessible Field Information -------------------------------------------------- */
-    
-    @Override
-    public @Nonnull FiniteIterable<FieldInformation> getAccessibleFieldInformation() {
-        return directlyAccessibleDeclaredFields.map(field -> (FieldInformation) field).combine(nonDirectlyAccessibleDeclaredFields).combine(generatedRepresentingFieldInformation);
-    }
-    
-    /* -------------------------------------------------- Field Information -------------------------------------------------- */
-    
-    @Override
-    public @Nonnull FiniteIterable<FieldInformation> getFieldInformation() {
-        return getAccessibleFieldInformation().combine(nonAccessibleDeclaredFields);
-    }
-    
-    /*@Override 
-    public @Nonnull FiniteIterable<RepresentingFieldInformation> getRepresentingFieldInformation() {
-        return directlyAccessibleParameterBasedFieldInformation.map(field -> (RepresentingFieldInformation) field).combine(nonDirectlyAccessibleParameterBasedFieldInformation).combine(generatedRepresentingFieldInformation);
-    }*/
-    
-    /* -------------------------------------------------- Fields -------------------------------------------------- */
-    
-//    public final @Nonnull FiniteIterable<@Nonnull ParameterBasedFieldInformation> parameterBasedFieldInformation;
-//    
-//    /**
-//     * Stores the fields associated with the parameters of the constructor, which also represent the object.
-//     */
-//    private final @Nonnull FiniteIterable<@Nonnull DirectlyAccessibleParameterBasedFieldInformation> directlyAccessibleParameterBasedFieldInformation;
-//    
-//    final @Nonnull FiniteIterable<@Nonnull NonDirectlyAccessibleParameterBasedFieldInformation> nonDirectlyAccessibleParameterBasedFieldInformation;
-//    
-//    final @Nonnull FiniteIterable<@Nonnull NonAccessibleParameterBasedFieldInformation> nonAccessibleParameterBasedFieldInformation;
-//    
-    /**
-     * Stores the accessible fields that are mutable and must be validated by the generated subclass.
-     */
-    public final @Nonnull FiniteIterable<@Nonnull DirectlyAccessibleDeclaredFieldInformation> writableAccessibleFields;
+    /* -------------------------------------------------- Directly Accessible Field Information -------------------------------------------------- */
     
     /**
      * Stores the directly accessible fields.
      */
-    public final @Nonnull FiniteIterable<@Nonnull DirectlyAccessibleDeclaredFieldInformation> directlyAccessibleDeclaredFields;
+    public final @Unmodifiable @Nonnull FiniteIterable<@Nonnull DirectlyAccessibleDeclaredFieldInformation> directlyAccessibleDeclaredFields;
+    
+    /* -------------------------------------------------- Non-directly Accessible Fields -------------------------------------------------- */
     
     /**
      * Stores the non-directly accessible fields.
      */
-    public final @Nonnull FiniteIterable<@Nonnull NonDirectlyAccessibleDeclaredFieldInformation> nonDirectlyAccessibleDeclaredFields;
-    
-    /**
-     * Stores the non-accessible fields.
-     */
-    public final @Nonnull FiniteIterable<@Nonnull NonAccessibleDeclaredFieldInformation> nonAccessibleDeclaredFields;
-    
-    /**
-     * Stores the implemented getters for the fields in the type.
-     */
-    public final @Nonnull @NonNullableElements Map<String, MethodInformation> implementedGetters;
-    
-    /* -------------------------------------------------- Recover Executable -------------------------------------------------- */
-    
-    /**
-     * Returns the executable element used to create an instance of this type.
-     * The executable element is either the recover method (if available) or the single
-     * constructor. If no recover method and multiple constructors exist, a unsupported type exception is thrown, indicating that we cannot defer how to create an instance of this type.
-     * An unexpected failure exception is thrown if no constructors could be found. This should never happen.
-     */
-    public @Nullable ExecutableElement getRecoverExecutable(@Nullable MethodInformation recoverMethod, @Nonnull FiniteIterable<@Nonnull ConstructorInformation> constructors) {
-        if (recoverMethod != null) {
-            return recoverMethod.getElement();
-        } else {
-            if (constructors.size() > 1) {
-                ProcessingLog.debugging("More than one constructor, but no recover method found. We cannot decide which constructor to use for object construction.");
-                return null;
-            } else if (constructors.size() == 0) {
-                throw UnexpectedFailureException.with("No constructor found.");
-            } else {
-                final @Nonnull ConstructorInformation constructor = constructors.iterator().next();
-                return constructor.getElement();
-            }
-        }
-    }
+    public final @Unmodifiable @Nonnull FiniteIterable<@Nonnull NonDirectlyAccessibleDeclaredFieldInformation> nonDirectlyAccessibleDeclaredFields;
     
     /**
      * Returns a method information object that matches the expected declaration of a getter for a certain field.
      * A {@link ConformityViolation conformity violation exception} is thrown if the getter was not found.
      */
-    private static @Nonnull MethodInformation getGetterOf(@Nonnull String fieldName, @Nonnull FiniteIterable<@Nonnull MethodInformation> methodsOfType) {
+    private static @Unmodifiable @Nonnull MethodInformation getGetterOf(@Nonnull String fieldName, @Nonnull FiniteIterable<@Nonnull MethodInformation> methodsOfType) {
         final @Nonnull String nameRegex = "(get|has|is)" + Strings.capitalizeFirstLetters(fieldName);
         final @Nullable MethodInformation methodInformation = methodsOfType.findFirst(MethodSignatureMatcher.of(nameRegex));
         if (methodInformation == null) {
             throw ConformityViolation.with("Getter method for $ not found", fieldName);
         }
-        ProcessingLog.debugging("getGetterOf($) : $", fieldName, methodInformation);
         return methodInformation;
     }
     
@@ -275,31 +229,6 @@ public class ClassInformation extends TypeInformation {
         return methodsOfType.findFirst(MethodSignatureMatcher.of(methodName, fieldType));
     }
     
-    @SafeVarargs
-    private static void checkRepresentingFields(@Nonnull TypeElement typeElement, @Nonnull FiniteIterable<VariableElement> representingParameters, Map<@Nonnull String, @Nonnull ? extends FieldInformation> indexedFields, @Nonnull Map<@Nonnull String, @Nonnull ? extends FieldInformation>... moreIndexedFields) {
-        ProcessingLog.debugging("RepresentingParameters: $", representingParameters);
-        ProcessingLog.debugging("indexedFields: $", indexedFields);
-        ProcessingLog.debugging("more indexedFields: $", moreIndexedFields);
-        @Nonnull FiniteIterable<@Nonnull VariableElement> parametersWithoutMatchingFields = representingParameters.filter(variableElement -> (!indexedFields.containsKey(variableElement.getSimpleName().toString())));
-        
-        for (@Nonnull Map<String, ? extends FieldInformation> anotherIndexedFieldsMap : moreIndexedFields) {
-            parametersWithoutMatchingFields = parametersWithoutMatchingFields.filter(variableElement -> (!anotherIndexedFieldsMap.containsKey(variableElement.getSimpleName().toString())));
-        }
-        
-        if (!parametersWithoutMatchingFields.isEmpty()) {
-            throw FailedClassGenerationException.with("Found parameters $ in recovery method that do not match any fields in the type", SourcePosition.of(typeElement), parametersWithoutMatchingFields.join(Brackets.SQUARE));
-        }
-    }
-    
-    /**
-     * Retrieves declared field information objects for fields in a type.
-     */
-    private static @Nonnull FiniteIterable<@Nonnull DirectlyAccessibleDeclaredFieldInformation> getDirectlyAccessibleFieldInformation(@Nonnull FiniteIterable<@Nonnull VariableElement> fields, @Nonnull DeclaredType containingType) {
-        return fields.filter((field) -> (!field.getModifiers().contains(Modifier.PRIVATE))).map((field) -> (DirectlyAccessibleDeclaredFieldInformation.of(field, containingType)));
-    }
-    
-    /* -------------------------------------------------- Non-directly Accessible Fields -------------------------------------------------- */
-    
     /**
      * Retrieves declared field information objects for fields in a type.
      */
@@ -311,7 +240,30 @@ public class ClassInformation extends TypeInformation {
                 NonDirectlyAccessibleDeclaredFieldInformation.of(field, containingType, getGetterOf(field.getSimpleName().toString(), methodInformation), getSetterOf(field.getSimpleName().toString(), ProcessingUtility.getQualifiedName(field.asType()), methodInformation))
         );
     }
+    
+    /* -------------------------------------------------- All accessible fields -------------------------------------------------- */
+    
+    /**
+     * Returns all field information objects that represent fields which are accessible from other classes.
+     */
+    @Override
+    public @Nonnull FiniteIterable<FieldInformation> getAccessibleFieldInformation() {
+        return directlyAccessibleDeclaredFields.map(field -> (FieldInformation) field).combine(nonDirectlyAccessibleDeclaredFields).combine(generatedRepresentingFieldInformation);
+    }
+    
+    /* -------------------------------------------------- Writable Accessible Fields -------------------------------------------------- */
+    
+    /**
+     * Stores the accessible fields that are mutable and must be validated by the generated subclass.
+     */
+    public final @Nonnull FiniteIterable<@Nonnull DirectlyAccessibleDeclaredFieldInformation> writableAccessibleFields;
+    
     /* -------------------------------------------------- Non-accessible Fields -------------------------------------------------- */
+    
+    /**
+     * Stores the non-accessible fields.
+     */
+    public final @Nonnull FiniteIterable<@Nonnull NonAccessibleDeclaredFieldInformation> nonAccessibleDeclaredFields;
     
     /**
      * Retrieves declared field information objects for fields in a type.
@@ -326,6 +278,16 @@ public class ClassInformation extends TypeInformation {
         );
     }
     
+    /* -------------------------------------------------- All Field Information -------------------------------------------------- */
+    
+    /**
+     * Returns all field information objects that represent accessible and non-accessible fields.
+     */
+    @Override
+    public @Nonnull FiniteIterable<FieldInformation> getFieldInformation() {
+        return getAccessibleFieldInformation().combine(nonAccessibleDeclaredFields);
+    }
+    
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
@@ -334,7 +296,7 @@ public class ClassInformation extends TypeInformation {
     protected ClassInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
         super(typeElement, containingType);
         
-        final @Nonnull FiniteIterable<MethodInformation> methodInformationIterable = getMethodInformation(typeElement, containingType);
+        final @Nonnull FiniteIterable<MethodInformation> methodInformationIterable = InformationFilter.getMethodInformation(typeElement, containingType);
         
         ProcessingLog.debugging("All methods of type $: $", containingType, methodInformationIterable.join());
         
@@ -353,13 +315,10 @@ public class ClassInformation extends TypeInformation {
         this.cloneMethod = methodInformationIterable.findFirst(clonePredicate);
         this.validateMethod = methodInformationIterable.findFirst(validatePredicate);
         
-        this.implementedGetters = indexMethodInformation(methodInformationIterable.filter(method -> (!method.isAbstract() && method.isGetter())));
-        
         this.overriddenMethods = methodInformationIterable.filter(method -> !method.isDeclaredInRuntimeEnvironment()).filter(method -> !method.isFinal()).filter(method -> !method.isAbstract()).filter(method -> !method.isStatic()).filter(method -> !method.isPrivate()).filter(equalsPredicate.negate().and(hashCodePredicate.negate()).and(toStringPredicate.negate()).and(compareToPredicate.negate()).and(clonePredicate.negate()).and(validatePredicate.negate()));
         
         FiniteIterable<MethodInformation> methodsMatchingTheRecoverMethodMatcher = methodInformationIterable.filter(recoverMethodMatcher);
         if (methodsMatchingTheRecoverMethodMatcher.size() > 1) {
-            ProcessingLog.debugging("More than one recover method found.");
             ProcessingLog.information("More than one recover methods found in class '" + typeElement.getSimpleName() + "'. We cannot decide which method to use for object construction.");
             this.recoverMethod = null;
         } else if (methodsMatchingTheRecoverMethodMatcher.iterator().hasNext()) {
@@ -370,7 +329,7 @@ public class ClassInformation extends TypeInformation {
         
         final @Nonnull FiniteIterable<VariableElement> fields = FiniteIterable.of(ElementFilter.fieldsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement)));
         
-        this.directlyAccessibleDeclaredFields = getDirectlyAccessibleFieldInformation(fields, containingType);
+        this.directlyAccessibleDeclaredFields = fields.filter((field) -> (!field.getModifiers().contains(Modifier.PRIVATE))).map((field) -> (DirectlyAccessibleDeclaredFieldInformation.of(field, containingType)));
         
         this.writableAccessibleFields = directlyAccessibleDeclaredFields.filter((field) -> (!field.getModifiers().contains(Modifier.FINAL)));
         
@@ -378,58 +337,9 @@ public class ClassInformation extends TypeInformation {
         
         this.nonAccessibleDeclaredFields = getNonAccessibleFieldInformation(fields, methodInformationIterable, containingType);
         
-        this.constructors = FiniteIterable.of(javax.lang.model.util.ElementFilter.constructorsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))).map((element) -> (ConstructorInformation.of(element, containingType, directlyAccessibleDeclaredFields, nonDirectlyAccessibleDeclaredFields)));
-        ProcessingLog.debugging("Found constructors: $", constructors.join());
+        this.constructors = FiniteIterable.of(javax.lang.model.util.ElementFilter.constructorsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))).map((element) -> (ConstructorInformation.of(element, containingType, getFieldInformation())));
         
         this.representingFieldInformation = extractRepresentingFieldInformation();
-        
-        /*
-        final @Nullable ExecutableElement recoverExecutable;
-        recoverExecutable = getRecoverExecutable(recoverMethod, constructors);
-        final @Nonnull FiniteIterable<@Nonnull VariableElement> parameterVariables;
-        if (recoverExecutable != null) {
-            parameterVariables = FiniteIterable.of(recoverExecutable.getParameters());
-        } else {
-            parameterVariables = FiniteIterable.of();
-        }
-        
-        final @Nonnull Map<String, DirectlyAccessibleDeclaredFieldInformation> indexedDirectlyAccessibleDeclaredFields = indexFieldInformation(directlyAccessibleDeclaredFields);
-        
-        final @Nonnull Map<String, NonDirectlyAccessibleDeclaredFieldInformation> indexedNonDirectlyAccessibleDeclaredFields = indexFieldInformation(nonDirectlyAccessibleDeclaredFields);
-        
-        final @Nonnull Map<String, NonAccessibleDeclaredFieldInformation> indexedNonAccessibleDeclaredFields = indexFieldInformation(nonAccessibleDeclaredFields);
-        
-        final @Nonnull Map<String, GeneratedRepresentingFieldInformation> indexedGeneratedFields = indexFieldInformation(generatedRepresentingFieldInformation);
-        
-        checkRepresentingFields(typeElement, parameterVariables, indexedDirectlyAccessibleDeclaredFields, indexedNonDirectlyAccessibleDeclaredFields, indexedNonAccessibleDeclaredFields, indexedGeneratedFields);
-        
-        this.directlyAccessibleParameterBasedFieldInformation = parameterVariables.filter(variableElement -> (
-                        indexedDirectlyAccessibleDeclaredFields.containsKey(variableElement.getSimpleName().toString()) && !indexedDirectlyAccessibleDeclaredFields.get(variableElement.getSimpleName().toString()).isPrivate()
-                )
-        ).map(variableElement -> (
-                        DirectlyAccessibleParameterBasedFieldInformation.of(variableElement, indexedDirectlyAccessibleDeclaredFields.get(variableElement.getSimpleName().toString()))
-                )
-        );
-        this.nonDirectlyAccessibleParameterBasedFieldInformation = parameterVariables.filter(variableElement -> (
-                        indexedNonDirectlyAccessibleDeclaredFields.containsKey(variableElement.getSimpleName().toString()) &&
-                                indexedNonDirectlyAccessibleDeclaredFields.get(variableElement.getSimpleName().toString()).isPrivate() &&
-                                hasGetter(variableElement.getSimpleName().toString(), methodInformationIterable)
-                )
-        ).map(variableElement -> (
-                        NonDirectlyAccessibleParameterBasedFieldInformation.of(variableElement, indexedNonDirectlyAccessibleDeclaredFields.get(variableElement.getSimpleName().toString()))
-                )
-        );
-        this.nonAccessibleParameterBasedFieldInformation = parameterVariables.filter(variableElement -> (
-                        indexedNonAccessibleDeclaredFields.containsKey(variableElement.getSimpleName().toString()) &&
-                                indexedNonAccessibleDeclaredFields.get(variableElement.getSimpleName().toString()).isPrivate() &&
-                                !hasGetter(variableElement.getSimpleName().toString(), methodInformationIterable)
-                )
-        ).map(variableElement -> (
-                        NonAccessibleParameterBasedFieldInformation.of(variableElement, indexedNonAccessibleDeclaredFields.get(variableElement.getSimpleName().toString()))
-                )
-        );
-        this.parameterBasedFieldInformation = directlyAccessibleParameterBasedFieldInformation.map(field -> (ParameterBasedFieldInformation) field).combine(nonDirectlyAccessibleParameterBasedFieldInformation).combine(nonAccessibleParameterBasedFieldInformation);
-        */
     }
     
     /**

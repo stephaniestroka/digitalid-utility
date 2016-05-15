@@ -6,8 +6,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import net.digitalid.utility.generator.generators.SubclassGenerator;
+
 /**
- * Marks a class such that the {@link net.digitalid.utility.generator.SubclassGenerator subclass generator} generates a subclass for this class.
+ * Marks a class such that the {@link SubclassGenerator subclass generator} generates a subclass for this class.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
