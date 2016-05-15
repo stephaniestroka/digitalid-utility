@@ -64,9 +64,9 @@ public abstract class SizeValidator extends ValueAnnotationValidator {
     @Override
     public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
         // TODO: isAssignable() does not yet work for arrays.
-        /*if (ProcessingUtility.isAssignable(element, Object[].class)) {
+        if (ProcessingUtility.isArray(element)) {
             return generateContract("# == null || #.length " + getSizeComparison(), "The length of the # has to be " + getMessageCondition() + " but was $.", element, annotationMirror, ".length");
-        } else */if (ProcessingUtility.isAssignable(element, CharSequence.class)) {
+        } else if (ProcessingUtility.isAssignable(element, CharSequence.class)) {
             return generateContract("# == null || #.length() " + getSizeComparison(), "The length of the # has to be " + getMessageCondition() + " but was $.", element, annotationMirror, ".length()");
         } else {
             return generateContract("# == null || #.size() " + getSizeComparison(), "The size of the # has to be " + getMessageCondition() + " but was $.", element, annotationMirror, ".size()");

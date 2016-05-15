@@ -15,6 +15,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
@@ -113,13 +114,19 @@ public class ValidatorProcessingUtility {
     private static @Nonnull FiniteIterable<AnnotationMirror> getAnnotationMirrors(@Nonnull Element element) {
         @Nonnull List<AnnotationMirror> typeUseAnnotations = new LinkedList<>();
         if (element instanceof ExecutableElement) {
-            if (((ExecutableElement) element).getReturnType() instanceof Type.AnnotatedType) {
+            TypeMirror typeMirror = ((ExecutableElement) element).getReturnType();
+            if (typeMirror instanceof Type.AnnotatedType) {
                 Type.AnnotatedType annotatedType = (Type.AnnotatedType) ((ExecutableElement) element).getReturnType();
                 typeUseAnnotations.addAll(annotatedType.getAnnotationMirrors());
+            } else if (typeMirror instanceof Type.ArrayType) {
+                typeUseAnnotations.addAll(((Type.ArrayType) typeMirror).getComponentType().getAnnotationMirrors());
             }
         } else {
+            TypeMirror typeMirror = element.asType();
+            if (typeMirror instanceof Type.ArrayType) {
+                typeUseAnnotations.addAll(((Type.ArrayType) typeMirror).getComponentType().getAnnotationMirrors());
+            }
             typeUseAnnotations.addAll(element.asType().getAnnotationMirrors());
-            ProcessingLog.debugging("type of element is: $", element.getClass());
         }
         return FiniteIterable.of(typeUseAnnotations).combine(FiniteIterable.of(getElementUtils().getAllAnnotationMirrors(element)));
     }

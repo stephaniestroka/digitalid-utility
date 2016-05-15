@@ -272,6 +272,15 @@ public class ProcessingUtility {
     }
     
     @Pure
+    public static boolean isArray(@Nonnull Element element) {
+        if (element instanceof ExecutableElement) {
+            return isArray(((ExecutableElement) element).getReturnType());
+        } else {
+            return isArray(element.asType());
+        }
+    }
+    
+    @Pure
     public static boolean isArray(@Nonnull TypeMirror type) {
         return (type instanceof Type.ArrayType);
     }
