@@ -42,7 +42,7 @@ import net.digitalid.utility.tuples.Triplet;
 import net.digitalid.utility.validation.annotations.getter.Derive;
 import net.digitalid.utility.validation.annotations.getter.Normalize;
 import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
+import net.digitalid.utility.validation.processing.AnnotationHandlerUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
@@ -74,7 +74,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         addAnnotation(Override.class);
         MethodUtility.generateBeginMethod(this, method, null);
         for (@Nonnull VariableElement parameter : method.getElement().getParameters()) {
-            for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : ValidatorProcessingUtility.getValueValidators(parameter).entrySet()) {
+            for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : AnnotationHandlerUtility.getValueValidators(parameter).entrySet()) {
                 addPrecondition(entry.getValue().generateContract(parameter, entry.getKey(), this));
             }
         }
@@ -255,7 +255,7 @@ public class SubclassGenerator extends JavaFileGenerator {
                 beginMethod("public void validate()");
                 addStatement(MethodUtility.createSuperCall(classInformation.validateMethod));
                 for (@Nonnull DirectlyAccessibleFieldInformation field : classInformation.writableAccessibleFields) {
-                    for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : ValidatorProcessingUtility.getValueValidators(field.getElement()).entrySet()) {
+                    for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : AnnotationHandlerUtility.getValueValidators(field.getElement()).entrySet()) {
                         addInvariant(entry.getValue().generateContract(field.getElement(), entry.getKey(), this));
                     }
                 }

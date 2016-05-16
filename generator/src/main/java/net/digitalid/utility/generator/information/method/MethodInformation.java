@@ -36,7 +36,7 @@ import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.getter.Default;
 import net.digitalid.utility.validation.annotations.type.Immutable;
-import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
+import net.digitalid.utility.validation.processing.AnnotationHandlerUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
@@ -224,7 +224,7 @@ public class MethodInformation extends ExecutableInformation {
         
         Require.that(element.getKind() == ElementKind.METHOD).orThrow("The element $ has to be a method.", SourcePosition.of(element));
         
-        this.methodInterceptors = ValidatorProcessingUtility.getAnnotationHandlers(element, Interceptor.class, MethodInterceptor.class);
+        this.methodInterceptors = AnnotationHandlerUtility.getAnnotationHandlers(element, Interceptor.class, MethodInterceptor.class);
         
         if (isDeclaredInDigitalIDLibrary()) {
             if (isGetter() && !hasAnnotation(Pure.class)) { ProcessingLog.error("A getter has to be '@Pure':", SourcePosition.of(element)); }
@@ -241,8 +241,8 @@ public class MethodInformation extends ExecutableInformation {
             if (errorMessage != null) { ProcessingLog.error(errorMessage, SourcePosition.of(element)); }
             ProcessingLog.verbose("Found the recover method", SourcePosition.of(element));
         }
-        this.methodValidators = ValidatorProcessingUtility.getMethodValidators(this.getElement());
-        this.returnValueValidators = ValidatorProcessingUtility.getValueValidators(this.getElement());
+        this.methodValidators = AnnotationHandlerUtility.getMethodValidators(this.getElement());
+        this.returnValueValidators = AnnotationHandlerUtility.getValueValidators(this.getElement());
         ProcessingLog.debugging("Method validators for method $: $", this.getElement(), methodValidators);
         ProcessingLog.debugging("Returned value validators for method $: $", this.getElement(), returnValueValidators);
     }

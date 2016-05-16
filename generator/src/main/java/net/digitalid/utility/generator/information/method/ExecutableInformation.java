@@ -78,9 +78,6 @@ public abstract class ExecutableInformation extends ElementInformationImplementa
     
     /* -------------------------------------------------- Method Parameters -------------------------------------------------- */
     
-    /**
-     * An iterable of parameters.
-     */
     private final @Nonnull FiniteIterable<@Nonnull MethodParameterInformation> parameters;
     
     /**

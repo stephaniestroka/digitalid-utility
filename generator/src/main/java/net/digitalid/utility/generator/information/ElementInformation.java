@@ -164,6 +164,8 @@ public interface ElementInformation extends RootInterface {
     
     /**
      * Returns the annotation with the given type of the represented {@link #getElement() element}.
+     * 
+     * @require hasAnnotation(annotationType) : "The element has to be annotated with the given annotation type.";
      */
     @Pure
     public default <A extends Annotation> @Nonnull A getAnnotation(@Nonnull Class<A> annotationType) {

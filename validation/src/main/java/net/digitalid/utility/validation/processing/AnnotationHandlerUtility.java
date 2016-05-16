@@ -42,7 +42,7 @@ import static net.digitalid.utility.processing.utility.StaticProcessingEnvironme
  * This class provides useful methods to retrieve the annotation handlers from an element.
  */
 @Utility
-public class ValidatorProcessingUtility {
+public class AnnotationHandlerUtility {
     
     /* -------------------------------------------------- Annotation Handlers -------------------------------------------------- */
     
