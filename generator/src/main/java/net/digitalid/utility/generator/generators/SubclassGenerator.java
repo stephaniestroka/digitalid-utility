@@ -200,7 +200,7 @@ public class SubclassGenerator extends JavaFileGenerator {
      * The first method interceptor calls the original method, which is handed as the parameter methodCall. Further interceptors call the immediate predecessor. The call to the last interceptor is returned.
      */
     private @Nonnull String implementCallToMethodInterceptors(@Nonnull MethodInformation method, @Nonnull String methodCall, @Nullable String returnedValue, @Nullable String defaultValue) {
-        for (Map.@Nonnull Entry<AnnotationMirror, MethodInterceptor> annotationMirrorMethodInterceptorEntry : method.getInterceptors().entrySet()) {
+        for (Map.@Nonnull Entry<AnnotationMirror, MethodInterceptor> annotationMirrorMethodInterceptorEntry : method.getMethodInterceptors().entrySet()) {
             final @Nonnull MethodInterceptor methodInterceptor = annotationMirrorMethodInterceptorEntry.getValue();
             methodCall = methodInterceptor.generateInterceptorMethod(this, method, methodCall, returnedValue, defaultValue);
         }

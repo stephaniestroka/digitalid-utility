@@ -49,7 +49,7 @@ public class ProcessingUtility {
      * Returns the qualified name of the package in which the given element is declared.
      */
     @Pure
-    public static @Nonnull String getPackageName(@Nonnull Element element) {
+    public static @Nonnull String getQualifiedPackageName(@Nonnull Element element) {
         return StaticProcessingEnvironment.getElementUtils().getPackageOf(element).getQualifiedName().toString();
     }
     
@@ -59,7 +59,7 @@ public class ProcessingUtility {
     @Pure
     public static boolean isDeclaredInRuntimeEnvironment(@Nonnull Element element) {
         // Matches both 'java.*' and 'javax.*' packages.
-        return getPackageName(element).startsWith("java");
+        return getQualifiedPackageName(element).startsWith("java");
     }
     
     /**
@@ -67,7 +67,7 @@ public class ProcessingUtility {
      */
     @Pure
     public static boolean isDeclaredInDigitalIDLibrary(@Nonnull Element element) {
-        return getPackageName(element).startsWith("net.digitalid.");
+        return getQualifiedPackageName(element).startsWith("net.digitalid.");
     }
     
     /* -------------------------------------------------- Surrounding Type -------------------------------------------------- */
@@ -233,14 +233,14 @@ public class ProcessingUtility {
      */
     @Pure
     public static boolean isAssignable(@Nonnull TypeMirror declaredType, @Nonnull Class<?> desiredType) {
-        ProcessingLog.debugging("Checking whether $ is assignable from $", declaredType.toString(), desiredType.getCanonicalName());
+        ProcessingLog.debugging("Checking whether $ is assignable to $.", declaredType, desiredType.getCanonicalName());
         if (desiredType.isPrimitive()) {
             if (!declaredType.getKind().isPrimitive()) {
                 return false;
             }
             final @Nonnull String declaredPrimitiveType;
             if (declaredType instanceof Type.AnnotatedType) {
-                Type.AnnotatedType annotatedType = (Type.AnnotatedType) declaredType;
+                final Type.@Nonnull AnnotatedType annotatedType = (Type.AnnotatedType) declaredType;
                 declaredPrimitiveType = annotatedType.unannotatedType().toString();
             } else {
                 declaredPrimitiveType = declaredType.toString();
@@ -271,6 +271,13 @@ public class ProcessingUtility {
         }
     }
     
+    /* -------------------------------------------------- Component Type -------------------------------------------------- */
+    
+    @Pure
+    public static boolean isArray(@Nonnull TypeMirror type) {
+        return (type instanceof Type.ArrayType);
+    }
+    
     @Pure
     public static boolean isArray(@Nonnull Element element) {
         if (element instanceof ExecutableElement) {
@@ -281,13 +288,8 @@ public class ProcessingUtility {
     }
     
     @Pure
-    public static boolean isArray(@Nonnull TypeMirror type) {
-        return (type instanceof Type.ArrayType);
-    }
-    
-    @Pure
     public static boolean isCollection(@Nonnull TypeMirror type) {
-        return (type instanceof DeclaredType && ProcessingUtility.isAssignable(type, Collection.class));
+        return (type instanceof DeclaredType && isAssignable(type, Collection.class));
     }
     
     @Pure

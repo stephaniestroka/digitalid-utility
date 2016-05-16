@@ -1,5 +1,7 @@
 package net.digitalid.utility.initialization;
 
+import net.digitalid.utility.initialization.annotations.Initialize;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;

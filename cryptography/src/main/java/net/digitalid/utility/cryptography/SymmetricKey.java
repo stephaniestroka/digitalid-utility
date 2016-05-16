@@ -32,7 +32,7 @@ import net.digitalid.utility.exceptions.MissingSupportException;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
-import net.digitalid.utility.initialization.Initialize;
+import net.digitalid.utility.initialization.annotations.Initialize;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.getter.Default;
 import net.digitalid.utility.validation.annotations.getter.Derive;

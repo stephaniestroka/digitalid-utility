@@ -119,7 +119,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      */
     @Pure
     public @Nonnull String getQualifiedNameOfGeneratedSubclass() {
-        return getPackageName() + "." + getSimpleNameOfGeneratedSubclass();
+        return getQualifiedPackageName() + "." + getSimpleNameOfGeneratedSubclass();
     }
     
     /* -------------------------------------------------- Builder -------------------------------------------------- */
@@ -137,7 +137,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      */
     @Pure
     public @Nonnull String getQualifiedNameOfGeneratedBuilder() {
-        return getPackageName() + "." + getSimpleNameOfGeneratedBuilder();
+        return getQualifiedPackageName() + "." + getSimpleNameOfGeneratedBuilder();
     }
     
     /* -------------------------------------------------- Converter -------------------------------------------------- */
@@ -155,7 +155,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      */
     @Pure
     public @Nonnull String getQualifiedNameOfGeneratedConverter() {
-        return getPackageName() + "." + getSimpleNameOfGeneratedConverter();
+        return getQualifiedPackageName() + "." + getSimpleNameOfGeneratedConverter();
     }
     
     /* -------------------------------------------------- Generated Field Information -------------------------------------------------- */

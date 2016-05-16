@@ -11,16 +11,17 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
+import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
-import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
-import net.digitalid.utility.generator.information.field.NonAccessibleDeclaredFieldInformation;
-import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This type collects the relevant information about an executable for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
@@ -28,6 +29,7 @@ import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
  * @see ConstructorInformation
  * @see MethodInformation
  */
+@Immutable
 public abstract class ExecutableInformation extends ElementInformationImplementation {
     
     /* -------------------------------------------------- Element -------------------------------------------------- */
@@ -102,21 +104,22 @@ public abstract class ExecutableInformation extends ElementInformationImplementa
     protected ExecutableInformation(@Nonnull Element element, @Nonnull DeclaredType containingType) {
         super(element, StaticProcessingEnvironment.getTypeUtils().asMemberOf(containingType, element), containingType);
         
-        final @Nonnull List<MethodParameterInformation> parameterList = new ArrayList<>(getElement().getParameters().size());
+        final @Nonnull List<MethodParameterInformation> parameters = new ArrayList<>(getElement().getParameters().size());
         for (@Nonnull VariableElement variableElement : getElement().getParameters()) {
-            parameterList.add(new MethodParameterInformation(variableElement, getContainingType()));
+            parameters.add(new MethodParameterInformation(variableElement, getContainingType()));
         }
-        this.parameters = FiniteIterable.of(parameterList);
+        this.parameters = FiniteIterable.of(parameters);
     }
     
+    @TODO(task = "Remove the code duplication of the two constructors by making the field information nullable and calling this constructor from the other.", date = "2016-05-16", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.LOW)
     protected ExecutableInformation(@Nonnull Element element, @Nonnull DeclaredType containingType, @Nonnull FiniteIterable<@Nonnull FieldInformation> fieldInformation) {
         super(element, StaticProcessingEnvironment.getTypeUtils().asMemberOf(containingType, element), containingType);
         
-        final @Nonnull List<MethodParameterInformation> parameterList = new ArrayList<>(getElement().getParameters().size());
+        final @Nonnull List<MethodParameterInformation> parameters = new ArrayList<>(getElement().getParameters().size());
         for (@Nonnull VariableElement variableElement : getElement().getParameters()) {
-            parameterList.add(new MethodParameterInformation(variableElement, getContainingType(), fieldInformation));
+            parameters.add(new MethodParameterInformation(variableElement, getContainingType(), fieldInformation));
         }
-        this.parameters = FiniteIterable.of(parameterList);
+        this.parameters = FiniteIterable.of(parameters);
     }
     
 }

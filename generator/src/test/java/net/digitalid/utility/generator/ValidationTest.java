@@ -29,6 +29,18 @@ public class ValidationTest {
         catch (PreconditionViolationException exception) {}
     }
     
+    private static void testIterable(@Nonnull Consumer<Iterable<String>> iterableConsumer, @Nonnull Consumer<String[]> arrayConsumer, @Nonnull String[] positive, @Nonnull String[] negative) {
+        test(iterableConsumer, FiniteIterable.of(positive), FiniteIterable.of(negative));
+        test(arrayConsumer, positive, negative);
+    }
+    
+    private static void testNumerical(@Nonnull Consumer<Long> longConsumer, @Nonnull Consumer<BigInteger> bigIntegerConsumer, @Nonnull Consumer<LongNumerical<?>> longNumericalConsumer, @Nonnull Consumer<BigIntegerNumerical<?>> bigIntegerNumericalConsumer, long positive, long negative) {
+        test(longConsumer, positive, negative);
+        test(bigIntegerConsumer, BigInteger.valueOf(positive), BigInteger.valueOf(negative));
+        test(longNumericalConsumer, new LongValue(positive), new LongValue(negative));
+        test(bigIntegerNumericalConsumer, new BigIntegerValue(positive), new BigIntegerValue(negative));
+    }
+    
     /* -------------------------------------------------- Reference -------------------------------------------------- */
     
     @Test
@@ -37,11 +49,6 @@ public class ValidationTest {
     }
     
     /* -------------------------------------------------- Elements -------------------------------------------------- */
-    
-    private static void testIterable(@Nonnull Consumer<Iterable<String>> iterableConsumer, @Nonnull Consumer<String[]> arrayConsumer, @Nonnull String[] positive, @Nonnull String[] negative) {
-        test(iterableConsumer, FiniteIterable.of(positive), FiniteIterable.of(negative));
-        test(arrayConsumer, positive, negative);
-    }
     
     @Test
     public void testNonNullableElements() {
@@ -105,15 +112,6 @@ public class ValidationTest {
         
     }
     
-    /* -------------------------------------------------- Numerical -------------------------------------------------- */
-    
-    private static void testNumerical(@Nonnull Consumer<Long> longConsumer, @Nonnull Consumer<BigInteger> bigIntegerConsumer, @Nonnull Consumer<LongNumerical<?>> longNumericalConsumer, @Nonnull Consumer<BigIntegerNumerical<?>> bigIntegerNumericalConsumer, long positive, long negative) {
-        test(longConsumer, positive, negative);
-        test(bigIntegerConsumer, BigInteger.valueOf(positive), BigInteger.valueOf(negative));
-        test(longNumericalConsumer, new LongValue(positive), new LongValue(negative));
-        test(bigIntegerNumericalConsumer, new BigIntegerValue(positive), new BigIntegerValue(negative));
-    }
-    
     /* -------------------------------------------------- Math -------------------------------------------------- */
     
     @Test
@@ -173,6 +171,28 @@ public class ValidationTest {
     @Test
     public void testLessThanOrEqualTo() {
         testNumerical(validation::setLessThanOrEqualToLong, validation::setLessThanOrEqualToBigInteger, validation::setLessThanOrEqualToLongNumerical, validation::setLessThanOrEqualToBigIntegerNumerical, 2, 3);
+    }
+    
+    /* -------------------------------------------------- Order -------------------------------------------------- */
+    
+    @Test
+    public void testAscending() {
+        testIterable(validation::setAscendingIterable, validation::setAscendingArray, new String[] {"hello", "hello", "world"}, new String[] {"world", "hello", "hello"});
+    }
+    
+    @Test
+    public void testDescending() {
+        testIterable(validation::setDescendingIterable, validation::setDescendingArray, new String[] {"world", "hello", "hello"}, new String[] {"hello", "hello", "world"});
+    }
+    
+    @Test
+    public void testStrictlyAscending() {
+        testIterable(validation::setStrictlyAscendingIterable, validation::setStrictlyAscendingArray, new String[] {"hello", "world"}, new String[] {"hello", "hello", "world"});
+    }
+    
+    @Test
+    public void testStrictlyDescending() {
+        testIterable(validation::setStrictlyDescendingIterable, validation::setStrictlyDescendingArray, new String[] {"world", "hello"}, new String[] {"world", "hello", "hello"});
     }
     
     /* -------------------------------------------------- Value -------------------------------------------------- */

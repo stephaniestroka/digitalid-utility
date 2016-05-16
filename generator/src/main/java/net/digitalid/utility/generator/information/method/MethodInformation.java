@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -19,6 +18,9 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
+import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.conversion.annotations.Recover;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
@@ -30,10 +32,10 @@ import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
-import net.digitalid.utility.processor.generator.JavaFileGenerator;
+import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.string.Strings;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.getter.Default;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
@@ -43,23 +45,8 @@ import com.sun.tools.javac.code.Type;
 /**
  * This type collects the relevant information about a method for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  */
+@Immutable
 public class MethodInformation extends ExecutableInformation {
-    
-    /* -------------------------------------------------- Value Validators -------------------------------------------------- */
-    
-    private final @Nonnull Map<AnnotationMirror, ValueAnnotationValidator> returnValueValidators;
-    
-    public @Nonnull Map<AnnotationMirror, ValueAnnotationValidator> getReturnValueValidators() {
-        return returnValueValidators;
-    }
-    
-    /* -------------------------------------------------- Method Validators -------------------------------------------------- */
-    
-    private final @Nonnull Map<AnnotationMirror, MethodAnnotationValidator> methodValidators;
-    
-    public @Nonnull Map<AnnotationMirror, MethodAnnotationValidator> getMethodValidators() {
-        return methodValidators;
-    }
     
     /* -------------------------------------------------- Type -------------------------------------------------- */
     
@@ -161,21 +148,40 @@ public class MethodInformation extends ExecutableInformation {
         return hasAnnotation(Recover.class);
     }
     
-    /* -------------------------------------------------- Interceptors -------------------------------------------------- */
+    /* -------------------------------------------------- Return Value Validators -------------------------------------------------- */
     
-    private final @Nonnull @NonNullableElements Map<AnnotationMirror, MethodInterceptor> interceptors;
+    private final @Nonnull Map<@Nonnull AnnotationMirror, @Nonnull ValueAnnotationValidator> returnValueValidators;
+    
+    @Pure
+    public @Nonnull Map<@Nonnull AnnotationMirror, @Nonnull ValueAnnotationValidator> getReturnValueValidators() {
+        return returnValueValidators;
+    }
+    
+    /* -------------------------------------------------- Method Validators -------------------------------------------------- */
+    
+    private final @Nonnull Map<@Nonnull AnnotationMirror, @Nonnull MethodAnnotationValidator> methodValidators;
+    
+    @Pure
+    public @Nonnull Map<@Nonnull AnnotationMirror, @Nonnull MethodAnnotationValidator> getMethodValidators() {
+        return methodValidators;
+    }
+    
+    /* -------------------------------------------------- Method Interceptors -------------------------------------------------- */
+    
+    private final @Nonnull Map<@Nonnull AnnotationMirror, @Nonnull MethodInterceptor> methodInterceptors;
     
     /**
      * Returns the interceptors that intercept the call to this method.
      */
     @Pure
-    public @Nonnull @NonNullableElements Map<AnnotationMirror, MethodInterceptor> getInterceptors() {
-        return interceptors;
+    public @Nonnull Map<@Nonnull AnnotationMirror, @Nonnull MethodInterceptor> getMethodInterceptors() {
+        return methodInterceptors;
     }
     
     /* -------------------------------------------------- Default Values -------------------------------------------------- */
     
     @Pure
+    @TODO(task = "Please document public methods.", date = "2015-05-16", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.LOW)
     public @Nullable String getDefaultValue() {
         if (isGetter()) {
             final @Nonnull FiniteIterable<VariableElement> fields = FiniteIterable.of(ElementFilter.fieldsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers((TypeElement) getContainingType().asElement())));
@@ -218,7 +224,7 @@ public class MethodInformation extends ExecutableInformation {
         
         Require.that(element.getKind() == ElementKind.METHOD).orThrow("The element $ has to be a method.", SourcePosition.of(element));
         
-        this.interceptors = ValidatorProcessingUtility.getAnnotationHandlers(element, Interceptor.class, MethodInterceptor.class);
+        this.methodInterceptors = ValidatorProcessingUtility.getAnnotationHandlers(element, Interceptor.class, MethodInterceptor.class);
         
         if (isDeclaredInDigitalIDLibrary()) {
             if (isGetter() && !hasAnnotation(Pure.class)) { ProcessingLog.error("A getter has to be '@Pure':", SourcePosition.of(element)); }
@@ -254,7 +260,7 @@ public class MethodInformation extends ExecutableInformation {
     /**
      * Returns all return type annotations of the method as a space-separated string.
      */
-    public @Nonnull String getReturnTypeAnnotations(@Nonnull JavaFileGenerator javaFileGenerator) {
+    public @Nonnull String getReturnTypeAnnotations(@Nonnull TypeImporter typeImporter) {
         final @Nonnull TypeMirror typeMirror = StaticProcessingEnvironment.getTypeUtils().asMemberOf(getContainingType(), getElement());
         final @Nonnull ExecutableType executableType = (ExecutableType) typeMirror;
         final @Nonnull TypeMirror returnType = executableType.getReturnType();
@@ -262,14 +268,14 @@ public class MethodInformation extends ExecutableInformation {
         
         if (returnType instanceof Type.AnnotatedType) {
             final Type.@Nonnull AnnotatedType annotatedType = (Type.AnnotatedType) returnType;
-            returnTypeAnnotationsAsString = ProcessingUtility.getAnnotationsAsString(annotationMirror -> javaFileGenerator.importIfPossible(annotationMirror.getAnnotationType()), annotatedType.getAnnotationMirrors());
+            returnTypeAnnotationsAsString = ProcessingUtility.getAnnotationsAsString(annotationMirror -> typeImporter.importIfPossible(annotationMirror.getAnnotationType()), annotatedType.getAnnotationMirrors());
         } else {
             returnTypeAnnotationsAsString = "";
         }
         return returnTypeAnnotationsAsString;
     }
     
-    public @Nullable String getReturnType(@Nonnull JavaFileGenerator javaFileGenerator) {
+    public @Nullable String getReturnType(@Nonnull TypeImporter typeImporter) {
         if (!hasReturnType()) {
             return null;
         }
@@ -282,12 +288,13 @@ public class MethodInformation extends ExecutableInformation {
         final @Nonnull StringBuilder returnTypeAsString = new StringBuilder();
         if (returnType instanceof Type.AnnotatedType) {
             final Type.AnnotatedType annotatedType = (Type.AnnotatedType) returnType;
-            returnTypeAsString.append(getReturnTypeAnnotations(javaFileGenerator));
-            returnTypeAsString.append(javaFileGenerator.importIfPossible(annotatedType.unannotatedType()));
+            returnTypeAsString.append(getReturnTypeAnnotations(typeImporter));
+            returnTypeAsString.append(typeImporter.importIfPossible(annotatedType.unannotatedType()));
         } else {
-            returnTypeAsString.append(javaFileGenerator.importIfPossible(returnType));
+            returnTypeAsString.append(typeImporter.importIfPossible(returnType));
         }
         ProcessingLog.debugging("Stringifying return type: $ = $", returnType.getClass(), returnTypeAsString);
         return returnTypeAsString.toString();
     }
+    
 }
