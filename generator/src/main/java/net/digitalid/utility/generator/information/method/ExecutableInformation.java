@@ -48,7 +48,45 @@ public abstract class ExecutableInformation extends ElementInformationImplementa
         return (ExecutableType) super.getType();
     }
     
+    /* -------------------------------------------------- Method Parameters -------------------------------------------------- */
+    
+    private final @Nonnull FiniteIterable<@Nonnull MethodParameterInformation> parameters;
+    
+    /**
+     * Returns a list of parameters.
+     */
+    @Pure
+    public @Nonnull FiniteIterable<@Nonnull MethodParameterInformation> getParameters() {
+        return parameters;
+        
+    }
+    
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
+    
+    protected ExecutableInformation(@Nonnull Element element, @Nonnull DeclaredType containingType) {
+        super(element, StaticProcessingEnvironment.getTypeUtils().asMemberOf(containingType, element), containingType);
+        
+        final @Nonnull List<MethodParameterInformation> parameters = new ArrayList<>(getElement().getParameters().size());
+        for (@Nonnull VariableElement variableElement : getElement().getParameters()) {
+            parameters.add(new MethodParameterInformation(variableElement, getContainingType()));
+        }
+        this.parameters = FiniteIterable.of(parameters);
+    }
+    
+    @TODO(task = "Remove the code duplication of the two constructors by making the field information nullable and calling this constructor from the other.", date = "2016-05-16", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.LOW)
+    protected ExecutableInformation(@Nonnull Element element, @Nonnull DeclaredType containingType, @Nonnull FiniteIterable<@Nonnull FieldInformation> fieldInformation) {
+        super(element, StaticProcessingEnvironment.getTypeUtils().asMemberOf(containingType, element), containingType);
+        
+        final @Nonnull List<MethodParameterInformation> parameters = new ArrayList<>(getElement().getParameters().size());
+        for (@Nonnull VariableElement variableElement : getElement().getParameters()) {
+            parameters.add(new MethodParameterInformation(variableElement, getContainingType(), fieldInformation));
+        }
+        this.parameters = FiniteIterable.of(parameters);
+    }
+    
     /* -------------------------------------------------- Parameters -------------------------------------------------- */
+    
+    // TODO: Review and document the following methods!
     
     @Pure
     public boolean hasParameters() {
@@ -76,47 +114,11 @@ public abstract class ExecutableInformation extends ElementInformationImplementa
         return hasSingleParameter(type.getCanonicalName());
     }
     
-    /* -------------------------------------------------- Method Parameters -------------------------------------------------- */
-    
-    private final @Nonnull FiniteIterable<@Nonnull MethodParameterInformation> parameters;
-    
-    /**
-     * Returns a list of parameters.
-     */
-    @Pure
-    public @Nonnull FiniteIterable<MethodParameterInformation> getParameters() {
-        return parameters;
-        
-    }
-    
     /* -------------------------------------------------- Exceptions -------------------------------------------------- */
     
     @Pure
     public boolean throwsExceptions() {
         return !getElement().getThrownTypes().isEmpty();
-    }
-    
-    /* -------------------------------------------------- Constructors -------------------------------------------------- */
-    
-    protected ExecutableInformation(@Nonnull Element element, @Nonnull DeclaredType containingType) {
-        super(element, StaticProcessingEnvironment.getTypeUtils().asMemberOf(containingType, element), containingType);
-        
-        final @Nonnull List<MethodParameterInformation> parameters = new ArrayList<>(getElement().getParameters().size());
-        for (@Nonnull VariableElement variableElement : getElement().getParameters()) {
-            parameters.add(new MethodParameterInformation(variableElement, getContainingType()));
-        }
-        this.parameters = FiniteIterable.of(parameters);
-    }
-    
-    @TODO(task = "Remove the code duplication of the two constructors by making the field information nullable and calling this constructor from the other.", date = "2016-05-16", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.LOW)
-    protected ExecutableInformation(@Nonnull Element element, @Nonnull DeclaredType containingType, @Nonnull FiniteIterable<@Nonnull FieldInformation> fieldInformation) {
-        super(element, StaticProcessingEnvironment.getTypeUtils().asMemberOf(containingType, element), containingType);
-        
-        final @Nonnull List<MethodParameterInformation> parameters = new ArrayList<>(getElement().getParameters().size());
-        for (@Nonnull VariableElement variableElement : getElement().getParameters()) {
-            parameters.add(new MethodParameterInformation(variableElement, getContainingType(), fieldInformation));
-        }
-        this.parameters = FiniteIterable.of(parameters);
     }
     
 }

@@ -397,3 +397,28 @@ public class SubclassGenerator extends JavaFileGenerator {
     }
     
 }
+
+/*
+// TODO: Generate this implementation instead.
+public abstract class FreezableObject implements FreezableInterface {
+    
+    private boolean frozen = false;
+    
+    @Pure
+    @Override
+    public final boolean isFrozen() {
+        return frozen;
+    }
+    
+    @Override
+    public @Nonnull @Frozen ReadOnlyInterface freeze() {
+        frozen = true;
+        return this;
+    }
+    
+    @Pure
+    @Override
+    public abstract @Capturable @Nonnull @NonFrozen FreezableObject clone();
+    
+}
+*/

@@ -1,10 +1,7 @@
 package net.digitalid.utility.generator.information;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
@@ -14,11 +11,11 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.field.FieldInformationImplementation;
 import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
+import net.digitalid.utility.immutable.ImmutableSet;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -65,28 +62,30 @@ public abstract class ElementInformationImplementation implements ElementInforma
     
     /* -------------------------------------------------- Modifiers -------------------------------------------------- */
     
-    private final @Unmodifiable @Nonnull Set<@Nonnull Modifier> modifiers;
+    private final @Nonnull ImmutableSet<@Nonnull Modifier> modifiers;
     
     @Pure
     @Override
-    public @Unmodifiable @Nonnull Set<@Nonnull Modifier> getModifiers() {
+    public @Nonnull ImmutableSet<@Nonnull Modifier> getModifiers() {
         return modifiers;
     }
     
     /* -------------------------------------------------- Annotations -------------------------------------------------- */
     
-    private final @Unmodifiable @Nonnull Map<@Nonnull String, @Nonnull AnnotationMirror> annotations;
+    private final @Nonnull FiniteIterable<@Nonnull AnnotationMirror> annotations;
     
     @Pure
     @Override
-    public @Unmodifiable @Nonnull Collection<@Nonnull ? extends AnnotationMirror> getAnnotations() {
-        return annotations.values();
+    public @Nonnull FiniteIterable<@Nonnull AnnotationMirror> getAnnotations() {
+        return annotations;
     }
+    
+    private final @Nonnull Map<@Nonnull String, @Nonnull AnnotationMirror> annotationsMap;
     
     @Pure
     @Override
     public boolean hasAnnotation(@Nonnull Class<? extends Annotation> annotationType) {
-        return annotations.containsKey(annotationType.getCanonicalName());
+        return annotationsMap.containsKey(annotationType.getCanonicalName());
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
@@ -95,8 +94,9 @@ public abstract class ElementInformationImplementation implements ElementInforma
         this.element = element;
         this.type = type;
         this.containingType = containingType;
-        this.modifiers = Collections.unmodifiableSet(element.getModifiers());
-        this.annotations = Collections.unmodifiableMap(FiniteIterable.of(StaticProcessingEnvironment.getElementUtils().getAllAnnotationMirrors(element)).toMap(annotationMirror -> ProcessingUtility.getQualifiedName(annotationMirror)));
+        this.modifiers = ImmutableSet.with(element.getModifiers());
+        this.annotations = FiniteIterable.of(StaticProcessingEnvironment.getElementUtils().getAllAnnotationMirrors(element));
+        this.annotationsMap = annotations.toMap(annotationMirror -> ProcessingUtility.getQualifiedName(annotationMirror));
     }
     
     /* -------------------------------------------------- Object -------------------------------------------------- */

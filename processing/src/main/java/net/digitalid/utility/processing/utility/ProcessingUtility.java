@@ -2,7 +2,6 @@ package net.digitalid.utility.processing.utility;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +22,6 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.SimpleTypeVisitor7;
 
 import net.digitalid.utility.annotations.method.Pure;
@@ -85,22 +83,81 @@ public class ProcessingUtility {
         return getSurroundingType(element.getEnclosingElement());
     }
     
-    /* -------------------------------------------------- Default Constructor -------------------------------------------------- */
+    /* -------------------------------------------------- Member Elements -------------------------------------------------- */
     
     /**
-     * Returns whether the given element is a class with a public default constructor.
+     * Returns the elements in the given iterable which are of the given kind cast to the given type.
      */
     @Pure
-    public static boolean hasPublicDefaultConstructor(@Nonnull Element element) {
-        for (@Nonnull ExecutableElement constructor : ElementFilter.constructorsIn(element.getEnclosedElements())) {
-            ProcessingLog.verbose("Found the constructor", SourcePosition.of(constructor));
-            if (constructor.getParameters().isEmpty() && constructor.getModifiers().contains(Modifier.PUBLIC)) { return true; }
-        }
-        ProcessingLog.debugging("Found no public default constructor in", SourcePosition.of(element));
-        return false;
+    public static <E extends Element> @Nonnull FiniteIterable<@Nonnull E> filter(@Nonnull FiniteIterable<@Nonnull Element> elements, @Nonnull ElementKind kind, @Nonnull Class<E> type) {
+        return elements.filter(element -> element.getKind() == kind).map(type::cast);
+    }
+    
+    /**
+     * Returns the directly declared members of the given type element.
+     */
+    @Pure
+    public static @Nonnull FiniteIterable<@Nonnull Element> getMembers(@Nonnull TypeElement typeElement) {
+        return FiniteIterable.of(typeElement.getEnclosedElements());
+    }
+    
+    /**
+     * Returns the directly declared fields of the given type element.
+     */
+    @Pure
+    public static @Nonnull FiniteIterable<@Nonnull VariableElement> getFields(@Nonnull TypeElement typeElement) {
+        return filter(getMembers(typeElement), ElementKind.FIELD, VariableElement.class);
+    }
+    
+    /**
+     * Returns the directly declared methods of the given type element.
+     */
+    @Pure
+    public static @Nonnull FiniteIterable<@Nonnull ExecutableElement> getMethods(@Nonnull TypeElement typeElement) {
+        return filter(getMembers(typeElement), ElementKind.METHOD, ExecutableElement.class);
+    }
+    
+    /**
+     * Returns the directly declared constructors of the given type element.
+     */
+    @Pure
+    public static @Nonnull FiniteIterable<@Nonnull ExecutableElement> getConstructors(@Nonnull TypeElement typeElement) {
+        return filter(getMembers(typeElement), ElementKind.CONSTRUCTOR, ExecutableElement.class);
+    }
+    
+    /**
+     * Returns the directly declared and inherited members of the given type element.
+     */
+    @Pure
+    public static @Nonnull FiniteIterable<@Nonnull Element> getAllMembers(@Nonnull TypeElement typeElement) {
+        return FiniteIterable.of(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement));
+    }
+    
+    /**
+     * Returns the directly declared and inherited fields of the given type element.
+     */
+    @Pure
+    public static @Nonnull FiniteIterable<@Nonnull VariableElement> getAllFields(@Nonnull TypeElement typeElement) {
+        return filter(getAllMembers(typeElement), ElementKind.FIELD, VariableElement.class);
+    }
+    
+    /**
+     * Returns the directly declared and inherited methods of the given type element.
+     */
+    @Pure
+    public static @Nonnull FiniteIterable<@Nonnull ExecutableElement> getAllMethods(@Nonnull TypeElement typeElement) {
+        return filter(getAllMembers(typeElement), ElementKind.METHOD, ExecutableElement.class);
     }
     
     /* -------------------------------------------------- Annotation Mirrors -------------------------------------------------- */
+    
+    /**
+     * Returns the simple name of the given annotation mirror with a leading at symbol.
+     */
+    @Pure
+    public static @Nonnull String getSimpleName(@Nonnull AnnotationMirror annotationMirror) {
+        return "@" + annotationMirror.getAnnotationType().asElement().getSimpleName();
+    }
     
     /**
      * Returns the qualified name of the annotation type of the given annotation mirror.
@@ -186,8 +243,10 @@ public class ProcessingUtility {
         return null;
     }
     
+    // TODO: Review, simplify and document the following method.
+    
     @Pure
-    public static @Nonnull String getAnnotationsAsString(@Nonnull UnaryFunction<AnnotationMirror, String> function, @Nonnull Collection<? extends AnnotationMirror> annotationMirrors) {
+    public static @Nonnull String getAnnotationsAsString(@Nonnull UnaryFunction<AnnotationMirror, String> function, @Nonnull Iterable<? extends AnnotationMirror> annotationMirrors) {
         final @Nonnull StringBuilder annotationsAsString = new StringBuilder();
         for (@Nonnull AnnotationMirror annotationMirror : annotationMirrors) {
             annotationsAsString.append("@").append(function.evaluate(annotationMirror));
@@ -273,6 +332,8 @@ public class ProcessingUtility {
     
     /* -------------------------------------------------- Component Type -------------------------------------------------- */
     
+    // TODO: Review and document the following methods.
+    
     @Pure
     public static boolean isArray(@Nonnull TypeMirror type) {
         return (type instanceof Type.ArrayType);
@@ -310,15 +371,15 @@ public class ProcessingUtility {
         }
     }
     
-    /* -------------------------------------------------- Type Visitor -------------------------------------------------- */
+    /* -------------------------------------------------- Type Visitors -------------------------------------------------- */
     
     /**
      * This type visitor returns the qualified name of the given type.
      */
     @Stateless
-    public static class TypeVisitor extends SimpleTypeVisitor7<@Nonnull String, @Nullable Void> {
+    public static class QualifiedNameTypeVisitor extends SimpleTypeVisitor7<@Nonnull String, @Nullable Void> {
         
-        protected TypeVisitor() {}
+        protected QualifiedNameTypeVisitor() {}
         
         @Pure
         @Override
@@ -346,53 +407,59 @@ public class ProcessingUtility {
         
     }
     
-    private static final @Nonnull TypeVisitor TYPE_VISITOR = new TypeVisitor();
-    
-    /**
-     * Returns the simple name of the given type mirror.
-     */
-    @Pure
-    public static @Nonnull String getSimpleName(@Nonnull TypeMirror typeMirror) {
-        final @Nonnull String qualifiedName = getQualifiedName(typeMirror);
-        int indexOfPoint = qualifiedName.lastIndexOf(".");
-        if (indexOfPoint >= 0) {
-            return qualifiedName.substring(indexOfPoint + 1);
-        } else {
-            return qualifiedName;
-        }
-    }
+    private static final @Nonnull QualifiedNameTypeVisitor QUALIFIED_NAME_TYPE_VISITOR = new QualifiedNameTypeVisitor();
     
     /**
      * Returns the qualified name of the given type mirror.
      */
     @Pure
     public static @Nonnull String getQualifiedName(@Nonnull TypeMirror typeMirror) {
-        return TYPE_VISITOR.visit(typeMirror);
+        return QUALIFIED_NAME_TYPE_VISITOR.visit(typeMirror);
+    }
+    
+    /**
+     * This type visitor returns the simple name of the given type.
+     */
+    @Stateless
+    public static class SimpleNameTypeVisitor extends QualifiedNameTypeVisitor {
+        
+        protected SimpleNameTypeVisitor() {}
+        
+        @Pure
+        @Override
+        public @Nonnull String visitDeclared(@Nonnull DeclaredType type, @Nullable Void none) {
+            return type.asElement().getSimpleName().toString();
+        }
+        
+    }
+    
+    private static final @Nonnull SimpleNameTypeVisitor SIMPLE_NAME_TYPE_VISITOR = new SimpleNameTypeVisitor();
+    
+    /**
+     * Returns the simple name of the given type mirror.
+     */
+    @Pure
+    public static @Nonnull String getSimpleName(@Nonnull TypeMirror typeMirror) {
+        return SIMPLE_NAME_TYPE_VISITOR.visit(typeMirror);
     }
     
     /* -------------------------------------------------- Fields of Type -------------------------------------------------- */
     
     /**
-     * Returns a list of all the fields with the given type in the given class.
+     * Returns a list of all the fields with the given type in the given type element.
      */
     @Pure
-    public static @Nonnull FiniteIterable<@Nonnull VariableElement> getFieldsOfType(@Nonnull TypeElement classElement, @Nonnull Class<?> fieldType) {
-        final @Nonnull List<@Nonnull VariableElement> fields = new LinkedList<>();
-        for (@Nonnull VariableElement field : ElementFilter.fieldsIn(classElement.getEnclosedElements())) {
-            final @Nonnull String fieldTypeName = getQualifiedName(field.asType());
-            ProcessingLog.verbose("Found with the type $ the field", SourcePosition.of(field), fieldTypeName);
-            if (fieldTypeName.equals(fieldType.getCanonicalName())) { fields.add(field); }
-        }
-        return FiniteIterable.of(fields);
+    public static @Nonnull FiniteIterable<@Nonnull VariableElement> getFieldsOfType(@Nonnull TypeElement typeElement, @Nonnull Class<?> fieldType) {
+        return getFields(typeElement).filter(field -> getQualifiedName(field.asType()).equals(fieldType.getCanonicalName()));
     }
     
     /**
-     * Returns the unique, public and static field with the given type in the given class.
-     * If no field fulfilling all these criteria is found, this method logs a warning message and returns null. 
+     * Returns the unique, public and static field with the given type in the given type element.
+     * If not exactly one field fulfilling all these criteria is found, this method logs a warning message and returns null. 
      */
     @Pure
-    public static @Nullable VariableElement getUniquePublicStaticFieldOfType(@Nonnull TypeElement classElement, @Nonnull Class<?> fieldType) {
-        final @Nonnull FiniteIterable<@Nonnull VariableElement> fields = getFieldsOfType(classElement, fieldType);
+    public static @Nullable VariableElement getUniquePublicStaticFieldOfType(@Nonnull TypeElement typeElement, @Nonnull Class<?> fieldType) {
+        final @Nonnull FiniteIterable<@Nonnull VariableElement> fields = getFieldsOfType(typeElement, fieldType);
         if (fields.isSingle()) {
             final @Nonnull VariableElement field = fields.getFirst();
             if (!field.getModifiers().contains(Modifier.PUBLIC)) {
@@ -403,7 +470,7 @@ public class ProcessingUtility {
                 return field;
             }
         } else {
-            ProcessingLog.warning("There is not exactly one field of type $ in the class", SourcePosition.of(classElement), fieldType.getCanonicalName());
+            ProcessingLog.warning("There is not exactly one field of type $ in the class", SourcePosition.of(typeElement), fieldType.getCanonicalName());
         }
         return null;
     }
@@ -416,7 +483,7 @@ public class ProcessingUtility {
     @Pure
     public static @Nullable ExecutableElement getMethod(@Nonnull TypeElement typeElement, @Nonnull String methodName, @Nonnull Class<?> returnType, @Nonnull Class<?>... parameterTypes) {
         final @Nonnull DeclaredType surroundingType = (DeclaredType) typeElement.asType();
-        for (@Nonnull ExecutableElement inheritedMethod : ElementFilter.methodsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))) {
+        for (@Nonnull ExecutableElement inheritedMethod : getAllMethods(typeElement)) {
             final @Nonnull ExecutableType methodType = (ExecutableType) StaticProcessingEnvironment.getTypeUtils().asMemberOf(surroundingType, inheritedMethod);
             if (inheritedMethod.getSimpleName().contentEquals(methodName) && inheritedMethod.getThrownTypes().isEmpty()) {
                 if (isAssignable(inheritedMethod.getReturnType(), returnType)) {
@@ -440,6 +507,16 @@ public class ProcessingUtility {
     @Pure
     public static boolean hasMethod(@Nonnull TypeElement typeElement, @Nonnull String methodName, @Nonnull Class<?> returnType, @Nonnull Class<?>... parameterTypes) {
         return getMethod(typeElement, methodName, returnType, parameterTypes) != null;
+    }
+    
+    /* -------------------------------------------------- Default Constructor -------------------------------------------------- */
+    
+    /**
+     * Returns whether the given type element has a public default constructor.
+     */
+    @Pure
+    public static boolean hasPublicDefaultConstructor(@Nonnull TypeElement typeElement) {
+        return getConstructors(typeElement).matchAny(constructor -> constructor.getParameters().isEmpty() && constructor.getModifiers().contains(Modifier.PUBLIC));
     }
     
 }

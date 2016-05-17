@@ -15,7 +15,6 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.collaboration.annotations.TODO;
@@ -116,28 +115,6 @@ public class MethodInformation extends ExecutableInformation {
         return Strings.lowercaseFirstCharacter(getName().substring(getName().startsWith("is") ? 2 : 3));
     }
     
-    /* -------------------------------------------------- Modifiers -------------------------------------------------- */
-    
-    /**
-     * Returns whether the represented {@link #getElement() element} is synchronized.
-     */
-    @Pure
-    public boolean isSynchronized() {
-        return getModifiers().contains(Modifier.SYNCHRONIZED);
-    }
-    
-    /**
-     * Returns the modifiers for the method that overrides this method.
-     */
-    @Pure
-    public @Nonnull String getModifiersForOverridingMethod() {
-        final @Nonnull StringBuilder result = new StringBuilder();
-        if (isPublic()) { result.append("public "); }
-        if (isProtected()) { result.append("protected "); }
-        if (isSynchronized()) { result.append("synchronized "); }
-        return result.toString();
-    }
-    
     /* -------------------------------------------------- Annotations -------------------------------------------------- */
     
     /**
@@ -178,13 +155,76 @@ public class MethodInformation extends ExecutableInformation {
         return methodInterceptors;
     }
     
+    /* -------------------------------------------------- Constructors -------------------------------------------------- */
+    
+    protected MethodInformation(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType) {
+        super(element, containingType);
+        
+        Require.that(element.getKind() == ElementKind.METHOD).orThrow("The element $ has to be a method.", SourcePosition.of(element));
+        
+        this.methodInterceptors = AnnotationHandlerUtility.getAnnotationHandlers(element, Interceptor.class, MethodInterceptor.class);
+        
+        if (isDeclaredInDigitalIDLibrary()) {
+            if (isGetter() && !hasAnnotation(Pure.class)) { ProcessingLog.error("A getter has to be '@Pure':", SourcePosition.of(element)); }
+            if (isSetter() && hasAnnotation(Pure.class)) { ProcessingLog.error("A setter may not be '@Pure':", SourcePosition.of(element)); }
+        }
+        
+        if (isRecover()) {
+            @Nullable String errorMessage = null;
+            if (!isStatic()) { errorMessage = "The annotated method has to be static:"; }
+            if (element.getReturnType().getKind() != TypeKind.DECLARED) { errorMessage = "The return type has to be a declared type:"; }
+            final @Nonnull String qualifiedReturnTypeName = ((QualifiedNameable) ((DeclaredType) element.getReturnType()).asElement()).getQualifiedName().toString();
+            final @Nonnull String qualifiedEnclosingClassName = ((QualifiedNameable) element.getEnclosingElement()).getQualifiedName().toString();
+            if (!qualifiedReturnTypeName.equals(qualifiedEnclosingClassName)) { errorMessage = "The return type has to be the enclosing class:"; }
+            if (errorMessage != null) { ProcessingLog.error(errorMessage, SourcePosition.of(element)); }
+            ProcessingLog.verbose("Found the recover method", SourcePosition.of(element));
+        }
+        
+        this.methodValidators = AnnotationHandlerUtility.getMethodValidators(this.getElement());
+        this.returnValueValidators = AnnotationHandlerUtility.getValueValidators(this.getElement());
+        ProcessingLog.debugging("Method validators for method $: $", this.getElement(), methodValidators);
+        ProcessingLog.debugging("Returned value validators for method $: $", this.getElement(), returnValueValidators);
+    }
+    
+    /**
+     * Returns the method information of the given method element and containing type.
+     * 
+     * @require element.getKind() == ElementKind.METHOD : "The element has to be a method.";
+     */
+    @Pure
+    public static @Nonnull MethodInformation of(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType) {
+        return new MethodInformation(element, containingType);
+    }
+    
+    /* -------------------------------------------------- Modifiers -------------------------------------------------- */
+    
+    /**
+     * Returns whether the represented {@link #getElement() element} is synchronized.
+     */
+    @Pure
+    public boolean isSynchronized() {
+        return getModifiers().contains(Modifier.SYNCHRONIZED);
+    }
+    
+    /**
+     * Returns the modifiers for the method that overrides this method.
+     */
+    @Pure
+    public @Nonnull String getModifiersForOverridingMethod() {
+        final @Nonnull StringBuilder result = new StringBuilder();
+        if (isPublic()) { result.append("public "); }
+        if (isProtected()) { result.append("protected "); }
+        if (isSynchronized()) { result.append("synchronized "); }
+        return result.toString();
+    }
+    
     /* -------------------------------------------------- Default Values -------------------------------------------------- */
     
     @Pure
     @TODO(task = "Please document public methods.", date = "2015-05-16", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.LOW)
     public @Nullable String getDefaultValue() {
         if (isGetter()) {
-            final @Nonnull FiniteIterable<VariableElement> fields = FiniteIterable.of(ElementFilter.fieldsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers((TypeElement) getContainingType().asElement())));
+            final @Nonnull FiniteIterable<@Nonnull VariableElement> fields = ProcessingUtility.getAllFields((TypeElement) getContainingType().asElement());
             final @Nullable VariableElement fieldElement = fields.findFirst(field -> field.getSimpleName().contentEquals(getFieldName()));
             if (fieldElement == null) {
                 ProcessingLog.information("Found the method $, which looks like a getter, but does not have a corresponding field.", getName());
@@ -217,45 +257,9 @@ public class MethodInformation extends ExecutableInformation {
         }
     }
     
-    /* -------------------------------------------------- Constructors -------------------------------------------------- */
+    /* -------------------------------------------------- Annotations to String -------------------------------------------------- */
     
-    protected MethodInformation(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType) {
-        super(element, containingType);
-        
-        Require.that(element.getKind() == ElementKind.METHOD).orThrow("The element $ has to be a method.", SourcePosition.of(element));
-        
-        this.methodInterceptors = AnnotationHandlerUtility.getAnnotationHandlers(element, Interceptor.class, MethodInterceptor.class);
-        
-        if (isDeclaredInDigitalIDLibrary()) {
-            if (isGetter() && !hasAnnotation(Pure.class)) { ProcessingLog.error("A getter has to be '@Pure':", SourcePosition.of(element)); }
-            if (isSetter() && hasAnnotation(Pure.class)) { ProcessingLog.error("A setter may not be '@Pure':", SourcePosition.of(element)); }
-        }
-        
-        if (isRecover()) {
-            @Nullable String errorMessage = null;
-            if (!isStatic()) { errorMessage = "The annotated method has to be static:"; }
-            if (element.getReturnType().getKind() != TypeKind.DECLARED) { errorMessage = "The return type has to be a declared type:"; }
-            final @Nonnull String qualifiedReturnTypeName = ((QualifiedNameable) ((DeclaredType) element.getReturnType()).asElement()).getQualifiedName().toString();
-            final @Nonnull String qualifiedEnclosingClassName = ((QualifiedNameable) element.getEnclosingElement()).getQualifiedName().toString();
-            if (!qualifiedReturnTypeName.equals(qualifiedEnclosingClassName)) { errorMessage = "The return type has to be the enclosing class:"; }
-            if (errorMessage != null) { ProcessingLog.error(errorMessage, SourcePosition.of(element)); }
-            ProcessingLog.verbose("Found the recover method", SourcePosition.of(element));
-        }
-        this.methodValidators = AnnotationHandlerUtility.getMethodValidators(this.getElement());
-        this.returnValueValidators = AnnotationHandlerUtility.getValueValidators(this.getElement());
-        ProcessingLog.debugging("Method validators for method $: $", this.getElement(), methodValidators);
-        ProcessingLog.debugging("Returned value validators for method $: $", this.getElement(), returnValueValidators);
-    }
-    
-    /**
-     * Returns the method information of the given method element and containing type.
-     * 
-     * @require element.getKind() == ElementKind.METHOD : "The element has to be a method.";
-     */
-    @Pure
-    public static @Nonnull MethodInformation of(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType) {
-        return new MethodInformation(element, containingType);
-    }
+    // TODO: Review and simplify the following methods!
     
     /**
      * Returns all return type annotations of the method as a space-separated string.

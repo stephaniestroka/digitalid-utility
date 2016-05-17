@@ -16,6 +16,7 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.immutable.ImmutableMap;
 import net.digitalid.utility.validation.annotations.math.Positive;
+import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
@@ -123,6 +124,25 @@ public class Strings {
     @Pure
     public static @Nonnull String uppercaseFirstCharacter(@Nonnull String string) {
         return string.isEmpty() ? "" : string.substring(0, 1).toUpperCase() + string.substring(1);
+    }
+    
+    /* -------------------------------------------------- Substrings -------------------------------------------------- */
+    
+    /**
+     * Returns the substring from the last occurrence of the given delimiter in the given string or the given string if the delimiter is not found.
+     */
+    @Pure
+    public static @Nonnull String substringFromLast(@Nonnull String string, @Nonnull @NonEmpty String delimiter) {
+        return string.substring(string.lastIndexOf(delimiter) + 1);
+    }
+    
+    /**
+     * Returns the substring until the first occurrence of the given delimiter in the given string or the given string if the delimiter is not found.
+     */
+    @Pure
+    public static @Nonnull String substringUntilFirst(@Nonnull String string, @Nonnull @NonEmpty String delimiter) {
+        final int index = string.indexOf(delimiter);
+        return index >= 0 ? string.substring(0, index) : string;
     }
     
     /* -------------------------------------------------- Prefixes -------------------------------------------------- */

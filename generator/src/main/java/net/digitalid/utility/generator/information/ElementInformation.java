@@ -1,8 +1,6 @@
 package net.digitalid.utility.generator.information;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
@@ -12,14 +10,14 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.immutable.ImmutableSet;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.rootclass.RootInterface;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -96,7 +94,7 @@ public interface ElementInformation extends RootInterface {
      * Returns the modifiers of the represented {@link #getElement() element}.
      */
     @Pure
-    public @Unmodifiable @Nonnull @NonNullableElements Set<Modifier> getModifiers();
+    public @Nonnull ImmutableSet<@Nonnull Modifier> getModifiers();
     
     /**
      * Returns whether the represented {@link #getElement() element} is public.
@@ -154,7 +152,7 @@ public interface ElementInformation extends RootInterface {
      * Returns the annotations on the represented {@link #getElement() element}.
      */
     @Pure
-    public @Unmodifiable @Nonnull Collection<@Nonnull ? extends AnnotationMirror> getAnnotations();
+    public @Nonnull FiniteIterable<@Nonnull AnnotationMirror> getAnnotations();
     
     /**
      * Returns whether the represented {@link #getElement() element} has the given annotation.

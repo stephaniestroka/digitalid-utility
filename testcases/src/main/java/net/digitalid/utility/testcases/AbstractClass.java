@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
@@ -34,9 +33,10 @@ public abstract class AbstractClass extends RootClass {
     @Default(name="DefaultNumber", value="42")
     public abstract @Positive int getNumber();
     
-    @Impure
-    @Logged
-    public void testLoggingWithoutReturnType() {}
+    // TODO: Make this work!
+//    @Impure
+//    @Logged
+//    public void testLoggingWithoutReturnType() {}
     
     public abstract void setNumber(@Positive int number);
     

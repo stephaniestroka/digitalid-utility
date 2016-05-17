@@ -12,6 +12,8 @@ import javax.lang.model.type.TypeVariable;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.state.Unmodifiable;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
@@ -28,9 +30,9 @@ import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.tuples.Pair;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.getter.Derive;
-import net.digitalid.utility.validation.annotations.size.MinSize;
+import net.digitalid.utility.validation.annotations.size.NonEmpty;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This type collects the relevant information about a type for generating a {@link SubclassGenerator subclass}, {@link BuilderGenerator builder} and {@link ConverterGenerator converter}.
@@ -38,6 +40,8 @@ import net.digitalid.utility.validation.annotations.size.MinSize;
  * @see InterfaceInformation
  * @see ClassInformation
  */
+@Immutable
+@TODO(task = "The type validators are never loaded, which means their usage is never checked.", date = "2016-05-16", author = Author.KASPAR_ETTER)
 public abstract class TypeInformation extends ElementInformationImplementation {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
@@ -46,7 +50,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns an iterable of constructor information objects.
      */
     @Pure
-    public abstract @Unmodifiable @Nonnull @MinSize(1) FiniteIterable<ConstructorInformation> getConstructors();
+    public abstract @Nonnull @NonEmpty FiniteIterable<ConstructorInformation> getConstructors();
     
     /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
     
@@ -54,7 +58,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns an iterable of the representing field information objects.
      */
     @Pure
-    public abstract @Unmodifiable @Nonnull FiniteIterable<FieldInformation> getRepresentingFieldInformation();
+    public abstract @Nonnull FiniteIterable<FieldInformation> getRepresentingFieldInformation();
     
     /* -------------------------------------------------- Accessible Field Information -------------------------------------------------- */
     
@@ -62,7 +66,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns an iterable of the accessible field information objects.
      */
     @Pure
-    public abstract @Unmodifiable @Nonnull FiniteIterable<FieldInformation> getAccessibleFieldInformation();
+    public abstract @Nonnull FiniteIterable<FieldInformation> getAccessibleFieldInformation();
     
     /* -------------------------------------------------- Field Information -------------------------------------------------- */
     
@@ -70,7 +74,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns an iterable of the field information objects.
      */
     @Pure
-    public abstract @Unmodifiable @Nonnull FiniteIterable<FieldInformation> getFieldInformation();
+    public abstract @Nonnull FiniteIterable<FieldInformation> getFieldInformation();
     
     /* -------------------------------------------------- Overridden Methods -------------------------------------------------- */
     
@@ -78,13 +82,13 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns an iterable of the overridden method information objects.
      */
     @Pure
-    public abstract @Unmodifiable @Nonnull FiniteIterable<MethodInformation> getOverriddenMethods();
+    public abstract @Nonnull FiniteIterable<MethodInformation> getOverriddenMethods();
     
     /* -------------------------------------------------- Element -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Unmodifiable @Nonnull TypeElement getElement() {
+    public @Nonnull TypeElement getElement() {
         return (TypeElement) super.getElement();
     }
     
@@ -92,7 +96,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     
     @Pure
     @Override
-    public @Unmodifiable @Nonnull DeclaredType getType() {
+    public @Nonnull DeclaredType getType() {
         return (DeclaredType) super.getType();
     }
     
@@ -100,7 +104,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns the type arguments of the represented declared type.
      */
     @Pure
-    public @Unmodifiable @Nonnull FiniteIterable<@Nonnull TypeVariable> getTypeArguments() {
+    public @Nonnull FiniteIterable<@Nonnull TypeVariable> getTypeArguments() {
         return FiniteIterable.of(getType().getTypeArguments()).instanceOf(TypeVariable.class);
     }
     
@@ -163,14 +167,14 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     /**
      * An iterable of all generated field information objects.
      */
-    public final @Unmodifiable @Nonnull FiniteIterable<GeneratedRepresentingFieldInformation> generatedRepresentingFieldInformation;
+    public final @Nonnull FiniteIterable<GeneratedRepresentingFieldInformation> generatedRepresentingFieldInformation;
     
     /* -------------------------------------------------- Derived Field Information -------------------------------------------------- */
     
     /**
      * An iterable of all derived field information objects.
      */
-    public final @Unmodifiable @Nonnull FiniteIterable<GeneratedDerivedFieldInformation> derivedFieldInformation;
+    public final @Nonnull FiniteIterable<GeneratedDerivedFieldInformation> derivedFieldInformation;
     
     /* -------------------------------------------------- Abstract Getter -------------------------------------------------- */
     
@@ -196,9 +200,9 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         
         final @Unmodifiable @Nonnull FiniteIterable<@Nonnull MethodInformation> methodInformation = InformationFilter.getMethodInformation(typeElement, containingType);
         
-        this.abstractGetters = methodInformation.filter((method) -> (method.isGetter() && method.isAbstract())).toMap(MethodInformation::getFieldName);
+        this.abstractGetters = methodInformation.filter((method) -> method.isGetter() && method.isAbstract()).toMap(MethodInformation::getFieldName);
     
-        this.abstractSetters = methodInformation.filter((method) -> (method.isSetter() && method.isAbstract())).toMap(MethodInformation::getFieldName);
+        this.abstractSetters = methodInformation.filter((method) -> method.isSetter() && method.isAbstract()).toMap(MethodInformation::getFieldName);
         
         final @Nonnull List<@Nonnull Pair<@Nonnull MethodInformation, @Nullable MethodInformation>> gettersAndSetters = new ArrayList<>();
         
