@@ -42,6 +42,20 @@ public class StringsTest {
     }
     
     @Test
+    public void testSubstringFromLast() {
+        assertEquals("", Strings.substringFromLast("", "."));
+        assertEquals("net", Strings.substringFromLast("www.digitalid.net", "."));
+        assertEquals("test", Strings.substringFromLast("test", "."));
+    }
+    
+    @Test
+    public void testSubstringUntilFirst() {
+        assertEquals("", Strings.substringUntilFirst("", "."));
+        assertEquals("www", Strings.substringUntilFirst("www.digitalid.net", "."));
+        assertEquals("test", Strings.substringUntilFirst("test", "."));
+    }
+    
+    @Test
     public void testLongestCommonPrefix() {
         assertEquals("", Strings.longestCommonPrefix("Hello", "World"));
         assertEquals("", Strings.longestCommonPrefix("", "Hello", "World"));

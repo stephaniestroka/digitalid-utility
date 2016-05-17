@@ -1,6 +1,5 @@
 package net.digitalid.utility.generator.information.field;
 
-import java.util.Collection;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -9,10 +8,9 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.state.Unmodifiable;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 
 /**
  *
@@ -35,8 +33,8 @@ public abstract class GeneratedFieldInformation extends NonDirectlyAccessibleFie
     
     @Pure
     @Override
-    public @Unmodifiable @NonNullableElements @Nonnull Collection<? extends AnnotationMirror> getAnnotations() {
-        return getGetter().getElement().getReturnType().getAnnotationMirrors();
+    public @Nonnull FiniteIterable<@Nonnull AnnotationMirror> getAnnotations() {
+        return FiniteIterable.of(getGetter().getElement().getReturnType().getAnnotationMirrors());
     }
     
 }

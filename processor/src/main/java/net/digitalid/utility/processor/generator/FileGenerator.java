@@ -3,13 +3,16 @@ package net.digitalid.utility.processor.generator;
 import java.io.IOException;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
+import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
+import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
@@ -19,7 +22,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * @see JavaFileGenerator
  */
 @Mutable
-public abstract class FileGenerator {
+public abstract class FileGenerator extends RootClass {
     
     /* -------------------------------------------------- Name -------------------------------------------------- */
     
@@ -28,12 +31,6 @@ public abstract class FileGenerator {
      */
     @Pure
     public abstract @Nonnull String getName();
-    
-    @Pure
-    @Override
-    public @Nonnull String toString() {
-        return getName();
-    }
     
     /* -------------------------------------------------- Written -------------------------------------------------- */
     
@@ -83,6 +80,29 @@ public abstract class FileGenerator {
         ProcessingLog.information("Generated the file " + this);
         this.written = true;
         return true;
+    }
+    
+    /* -------------------------------------------------- Object -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public boolean equals(@Nullable Object object) {
+        if (object == this) { return true; }
+        if (object == null || !(object instanceof FileGenerator)) { return false; }
+        final @Nonnull FileGenerator that = (FileGenerator) object;
+        return this.getName().equals(that.getName());
+    }
+    
+    @Pure
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
+    
+    @Pure
+    @Override
+    public @Nonnull String toString() {
+        return "FileGenerator(name: " + Quotes.inDouble(getName()) + ")";
     }
     
 }

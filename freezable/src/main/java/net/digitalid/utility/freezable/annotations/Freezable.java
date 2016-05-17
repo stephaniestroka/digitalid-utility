@@ -13,7 +13,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
@@ -64,7 +63,7 @@ public @interface Freezable {
             if (!StaticProcessingEnvironment.getTypeUtils().isSubtype(element.asType(), StaticProcessingEnvironment.getElementUtils().getTypeElement(FreezableInterface.class.getCanonicalName()).asType())) {
                 ProcessingLog.error("The freezable type $ has to implement the freezable interface.", SourcePosition.of(element), element);
             }
-            for (@Nonnull ExecutableElement method : ElementFilter.methodsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers((TypeElement) element))) {
+            for (@Nonnull ExecutableElement method : ProcessingUtility.getAllMethods((TypeElement) element)) {
                 if (ProcessingUtility.isDeclaredInDigitalIDLibrary(method)) {
                     if (!ProcessingUtility.hasAnnotation(element, Pure.class) && !ProcessingUtility.hasAnnotation(element, Impure.class)) {
                         ProcessingLog.error("Each method of the freezable type $ has to be either pure or impure.", SourcePosition.of(method), element);

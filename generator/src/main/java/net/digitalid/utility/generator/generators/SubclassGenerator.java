@@ -42,7 +42,7 @@ import net.digitalid.utility.tuples.Triplet;
 import net.digitalid.utility.validation.annotations.getter.Derive;
 import net.digitalid.utility.validation.annotations.getter.Normalize;
 import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.processing.ValidatorProcessingUtility;
+import net.digitalid.utility.validation.processing.AnnotationHandlerUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
@@ -74,7 +74,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         addAnnotation(Override.class);
         MethodUtility.generateBeginMethod(this, method, null);
         for (@Nonnull VariableElement parameter : method.getElement().getParameters()) {
-            for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : ValidatorProcessingUtility.getValueValidators(parameter).entrySet()) {
+            for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : AnnotationHandlerUtility.getValueValidators(parameter).entrySet()) {
                 addPrecondition(entry.getValue().generateContract(parameter, entry.getKey(), this));
             }
         }
@@ -200,7 +200,7 @@ public class SubclassGenerator extends JavaFileGenerator {
      * The first method interceptor calls the original method, which is handed as the parameter methodCall. Further interceptors call the immediate predecessor. The call to the last interceptor is returned.
      */
     private @Nonnull String implementCallToMethodInterceptors(@Nonnull MethodInformation method, @Nonnull String methodCall, @Nullable String returnedValue, @Nullable String defaultValue) {
-        for (Map.@Nonnull Entry<AnnotationMirror, MethodInterceptor> annotationMirrorMethodInterceptorEntry : method.getInterceptors().entrySet()) {
+        for (Map.@Nonnull Entry<AnnotationMirror, MethodInterceptor> annotationMirrorMethodInterceptorEntry : method.getMethodInterceptors().entrySet()) {
             final @Nonnull MethodInterceptor methodInterceptor = annotationMirrorMethodInterceptorEntry.getValue();
             methodCall = methodInterceptor.generateInterceptorMethod(this, method, methodCall, returnedValue, defaultValue);
         }
@@ -255,7 +255,7 @@ public class SubclassGenerator extends JavaFileGenerator {
                 beginMethod("public void validate()");
                 addStatement(MethodUtility.createSuperCall(classInformation.validateMethod));
                 for (@Nonnull DirectlyAccessibleFieldInformation field : classInformation.writableAccessibleFields) {
-                    for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : ValidatorProcessingUtility.getValueValidators(field.getElement()).entrySet()) {
+                    for (Map.@Nonnull Entry<AnnotationMirror, ValueAnnotationValidator> entry : AnnotationHandlerUtility.getValueValidators(field.getElement()).entrySet()) {
                         addInvariant(entry.getValue().generateContract(field.getElement(), entry.getKey(), this));
                     }
                 }
@@ -397,3 +397,28 @@ public class SubclassGenerator extends JavaFileGenerator {
     }
     
 }
+
+/*
+// TODO: Generate this implementation instead.
+public abstract class FreezableObject implements FreezableInterface {
+    
+    private boolean frozen = false;
+    
+    @Pure
+    @Override
+    public final boolean isFrozen() {
+        return frozen;
+    }
+    
+    @Override
+    public @Nonnull @Frozen ReadOnlyInterface freeze() {
+        frozen = true;
+        return this;
+    }
+    
+    @Pure
+    @Override
+    public abstract @Capturable @Nonnull @NonFrozen FreezableObject clone();
+    
+}
+*/

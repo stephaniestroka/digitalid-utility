@@ -13,7 +13,7 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.directory.Directory;
-import net.digitalid.utility.initialization.Initialize;
+import net.digitalid.utility.initialization.annotations.Initialize;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.logger.FileLogger;

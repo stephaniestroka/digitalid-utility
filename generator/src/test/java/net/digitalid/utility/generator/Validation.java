@@ -1,7 +1,6 @@
 package net.digitalid.utility.generator;
 
 import java.math.BigInteger;
-import java.util.Collection;
 
 import javax.annotation.Nonnull;
 
@@ -29,6 +28,9 @@ import net.digitalid.utility.validation.annotations.math.relative.GreaterThanOrE
 import net.digitalid.utility.validation.annotations.math.relative.LessThan;
 import net.digitalid.utility.validation.annotations.math.relative.LessThanOrEqualTo;
 import net.digitalid.utility.validation.annotations.order.Ascending;
+import net.digitalid.utility.validation.annotations.order.Descending;
+import net.digitalid.utility.validation.annotations.order.StrictlyAscending;
+import net.digitalid.utility.validation.annotations.order.StrictlyDescending;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.annotations.value.Invariant;
 import net.digitalid.utility.validation.annotations.value.Validated;
@@ -219,14 +221,35 @@ public abstract class Validation extends RootClass implements Countable, Validat
     @Impure
     public void setLessThanOrEqualToBigIntegerNumerical(@LessThanOrEqualTo(2) BigIntegerNumerical<?> value) {}
     
+    /* -------------------------------------------------- Order -------------------------------------------------- */
+    
+    @Impure
+    public void setAscendingIterable(@Ascending Iterable<String> iterable) {}
+    
+    @Impure
+    public void setAscendingArray(@Ascending String[] array) {}
+    
+    @Impure
+    public void setDescendingIterable(@Descending Iterable<String> iterable) {}
+    
+    @Impure
+    public void setDescendingArray(@Descending String[] array) {}
+    
+    @Impure
+    public void setStrictlyAscendingIterable(@StrictlyAscending Iterable<String> iterable) {}
+    
+    @Impure
+    public void setStrictlyAscendingArray(@StrictlyAscending String[] array) {}
+    
+    @Impure
+    public void setStrictlyDescendingIterable(@StrictlyDescending Iterable<String> iterable) {}
+    
+    @Impure
+    public void setStrictlyDescendingArray(@StrictlyDescending String[] array) {}
+    
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
     @Impure
     public void setInvariant(@Invariant(condition = "value % 3 == 0", message = "The value has to be a multiple of 3 but was $.") int value) {}
-    
-    /* -------------------------------------------------- Ordering -------------------------------------------------- */
-    
-    @Impure
-    public void setAscendingSequence(@Ascending Collection<Integer> collection) {}
     
 }

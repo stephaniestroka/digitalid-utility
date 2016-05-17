@@ -33,6 +33,11 @@ public abstract class AbstractClass extends RootClass {
     @Default(name="DefaultNumber", value="42")
     public abstract @Positive int getNumber();
     
+    // TODO: Make this work!
+//    @Impure
+//    @Logged
+//    public void testLoggingWithoutReturnType() {}
+    
     public abstract void setNumber(@Positive int number);
     
     protected AbstractClass() throws IOException {}

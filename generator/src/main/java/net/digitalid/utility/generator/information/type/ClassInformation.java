@@ -12,7 +12,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementFilter;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.state.Unmodifiable;
@@ -327,7 +326,7 @@ public class ClassInformation extends TypeInformation {
             this.recoverMethod = null;
         }
         
-        final @Nonnull FiniteIterable<VariableElement> fields = FiniteIterable.of(ElementFilter.fieldsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement)));
+        final @Nonnull FiniteIterable<@Nonnull VariableElement> fields = ProcessingUtility.getAllFields(typeElement);
         
         this.directlyAccessibleDeclaredFields = fields.filter((field) -> (!field.getModifiers().contains(Modifier.PRIVATE))).map((field) -> (DirectlyAccessibleDeclaredFieldInformation.of(field, containingType)));
         
@@ -337,7 +336,7 @@ public class ClassInformation extends TypeInformation {
         
         this.nonAccessibleDeclaredFields = getNonAccessibleFieldInformation(fields, methodInformationIterable, containingType);
         
-        this.constructors = FiniteIterable.of(javax.lang.model.util.ElementFilter.constructorsIn(StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement))).map((element) -> (ConstructorInformation.of(element, containingType, getFieldInformation())));
+        this.constructors = ProcessingUtility.getConstructors(typeElement).map((element) -> (ConstructorInformation.of(element, containingType, getFieldInformation())));
         
         this.representingFieldInformation = extractRepresentingFieldInformation();
     }

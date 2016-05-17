@@ -1,30 +1,33 @@
 package net.digitalid.utility.generator.information;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.PackageElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.state.Unmodifiable;
+import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.immutable.ImmutableSet;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.rootclass.RootInterface;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This type collects the relevant information about an element for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
  * 
  * @see ElementInformationImplementation
- * @see net.digitalid.utility.generator.information.field.FieldInformation
+ * @see FieldInformation
  */
-public interface ElementInformation {
+@Immutable
+public interface ElementInformation extends RootInterface {
     
     /* -------------------------------------------------- Element -------------------------------------------------- */
     
@@ -38,7 +41,9 @@ public interface ElementInformation {
      * Returns the name of the represented {@link #getElement() element}.
      */
     @Pure
-    public @Nonnull String getName();
+    public default @Nonnull String getName() {
+        return getElement().getSimpleName().toString();
+    }
     
     /* -------------------------------------------------- Type -------------------------------------------------- */
     
@@ -60,28 +65,28 @@ public interface ElementInformation {
     /* -------------------------------------------------- Package -------------------------------------------------- */
     
     /**
-     * Returns the package in which the represented {@link #getElement() element} is declared.
-     */
-    @Pure
-    public @Nonnull PackageElement getPackageElement();
-    
-    /**
      * Returns the name of the {@link #getPackageElement() package} in which the represented {@link #getElement() element} is declared.
      */
     @Pure
-    public @Nonnull String getPackageName();
+    public default @Nonnull String getQualifiedPackageName() {
+        return ProcessingUtility.getQualifiedPackageName(getElement());
+    }
     
     /**
      * Returns whether the {@link #getElement() element} is declared in the Java Runtime Environment (JRE).
      */
     @Pure
-    public boolean isDeclaredInRuntimeEnvironment();
+    public default boolean isDeclaredInRuntimeEnvironment() {
+        return ProcessingUtility.isDeclaredInRuntimeEnvironment(getElement());
+    }
     
     /**
      * Returns whether the {@link #getElement() element} is declared in the Digital ID library (DID SDK).
      */
     @Pure
-    public boolean isDeclaredInDigitalIDLibrary();
+    public default boolean isDeclaredInDigitalIDLibrary() {
+        return ProcessingUtility.isDeclaredInDigitalIDLibrary(getElement());
+    }
     
     /* -------------------------------------------------- Modifiers -------------------------------------------------- */
     
@@ -89,54 +94,57 @@ public interface ElementInformation {
      * Returns the modifiers of the represented {@link #getElement() element}.
      */
     @Pure
-    public @Unmodifiable @Nonnull @NonNullableElements Set<Modifier> getModifiers();
+    public @Nonnull ImmutableSet<@Nonnull Modifier> getModifiers();
     
     /**
      * Returns whether the represented {@link #getElement() element} is public.
      */
     @Pure
-    public boolean isPublic();
+    public default boolean isPublic() {
+        return getModifiers().contains(Modifier.PUBLIC);
+    }
     
     /**
      * Returns whether the represented {@link #getElement() element} is protected.
      */
     @Pure
-    public boolean isProtected();
+    public default boolean isProtected() {
+        return getModifiers().contains(Modifier.PROTECTED);
+    }
     
     /**
      * Returns whether the represented {@link #getElement() element} is private.
      */
     @Pure
-    public boolean isPrivate();
+    public default boolean isPrivate() {
+        return getModifiers().contains(Modifier.PRIVATE);
+    }
     
     /**
      * Returns whether the represented {@link #getElement() element} is final.
      */
     @Pure
-    public boolean isFinal();
+    public default boolean isFinal() {
+        return getModifiers().contains(Modifier.FINAL);
+    }
     
     /**
      * Returns whether the represented {@link #getElement() element} is static.
      * (Constructors and top-level types cannot be static.)
      */
     @Pure
-    public boolean isStatic();
+    public default boolean isStatic() {
+        return getModifiers().contains(Modifier.STATIC);
+    }
     
     /**
      * Returns whether the represented {@link #getElement() element} is abstract.
      * (Fields cannot be abstract.)
      */
     @Pure
-    public boolean isAbstract();
-    
-    /* -------------------------------------------------- Contract Generators -------------------------------------------------- */
-    
-    /**
-     * TODO: remove!
-     * Returns the contract generators declared on the represented {@link #getElement() element}.
-    @Pure
-    public @Nonnull @NonNullableElements Map<AnnotationMirror, ContractGenerator> getContractGenerators();
-     */
+    public default boolean isAbstract() {
+        return getModifiers().contains(Modifier.ABSTRACT);
+    }
     
     /* -------------------------------------------------- Annotations -------------------------------------------------- */
     
@@ -144,7 +152,7 @@ public interface ElementInformation {
      * Returns the annotations on the represented {@link #getElement() element}.
      */
     @Pure
-    public @Unmodifiable @Nonnull @NonNullableElements Collection<? extends AnnotationMirror> getAnnotations();
+    public @Nonnull FiniteIterable<@Nonnull AnnotationMirror> getAnnotations();
     
     /**
      * Returns whether the represented {@link #getElement() element} has the given annotation.
@@ -152,8 +160,16 @@ public interface ElementInformation {
     @Pure
     public boolean hasAnnotation(@Nonnull Class<? extends Annotation> annotationType);
     
-    // TODO: Implement method to retrieve all annotations including their values as a string. (Determine if there is already somewhere a utility method for that or implement one in ProcessingUtility otherwise.)
-    
+    /**
+     * Returns the annotation with the given type of the represented {@link #getElement() element}.
+     * 
+     * @require hasAnnotation(annotationType) : "The element has to be annotated with the given annotation type.";
+     */
     @Pure
-    public @Nonnull <A extends Annotation> A getAnnotation(@Nonnull Class<A> annotationType);
+    public default <A extends Annotation> @Nonnull A getAnnotation(@Nonnull Class<A> annotationType) {
+        Require.that(hasAnnotation(annotationType)).orThrow("The element $ is not annotated with $.", getElement(), annotationType);
+        
+        return getElement().getAnnotation(annotationType);
+    }
+    
 }

@@ -213,7 +213,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
      * This type visitor imports the given type mirror with its generic parameters if their simple names are not yet mapped to different types.
      */
     @Immutable
-    public class TypeVisitor extends ProcessingUtility.TypeVisitor {
+    public class TypeVisitor extends ProcessingUtility.QualifiedNameTypeVisitor {
         
         protected TypeVisitor() {}
         

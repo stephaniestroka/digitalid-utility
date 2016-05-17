@@ -110,7 +110,7 @@ public class ServiceFileGenerator extends FileGenerator {
         @Nullable String errorMessage = null;
         if (providerElement.getKind() != ElementKind.CLASS) { errorMessage = "Only a class can implement a service:"; }
         else if (providerElement.getModifiers().contains(Modifier.ABSTRACT)) { errorMessage = "Only a non-abstract class can implement a service:"; }
-        else if (!ProcessingUtility.hasPublicDefaultConstructor(providerElement)) { errorMessage = "The annotated class does not have a public default constructor:"; }
+        else if (!ProcessingUtility.hasPublicDefaultConstructor((TypeElement) providerElement)) { errorMessage = "The annotated class does not have a public default constructor:"; }
         else if (!StaticProcessingEnvironment.getTypeUtils().isSubtype(providerElement.asType(), serviceMirror)) { errorMessage = "The annotated class does not implement the specified service:"; }
         
         if (errorMessage == null) {
