@@ -26,8 +26,11 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor7;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.functional.interfaces.UnaryFunction;
+import net.digitalid.utility.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
@@ -273,30 +276,29 @@ public class ProcessingUtility {
         return null;
     }
     
-    // TODO: Review, simplify and document the following method.
-    
+    /**
+     * Returns the given annotation entry as a string.
+     */
     @Pure
-    public static @Nonnull String getAnnotationsAsString(@Nonnull UnaryFunction<AnnotationMirror, String> function, @Nonnull Iterable<? extends AnnotationMirror> annotationMirrors) {
-        final @Nonnull StringBuilder annotationsAsString = new StringBuilder();
-        for (@Nonnull AnnotationMirror annotationMirror : annotationMirrors) {
-            annotationsAsString.append("@").append(function.evaluate(annotationMirror));
-            if (annotationMirror.getElementValues().size() > 0) {
-                annotationsAsString.append("(");
-                boolean first = true;
-                for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> elementValue : annotationMirror.getElementValues().entrySet()) {
-                    if (first) { first = false; } else { annotationsAsString.append(", "); }
-                    final @Nonnull String nameOfKey = elementValue.getKey().getSimpleName().toString();
-                    if (!nameOfKey.equals("value")) {
-                        annotationsAsString.append(nameOfKey).append(" = ").append(elementValue.getValue());
-                    } else {
-                        annotationsAsString.append(elementValue.getValue());
-                    }
-                }
-                annotationsAsString.append(")");
-            }
-            annotationsAsString.append(" ");
-        }
-        return annotationsAsString.toString();
+    private static @Nonnull String getAnnotationEntryAsString(@NonCaptured @Unmodified Map.@Nonnull Entry<@Nonnull ? extends ExecutableElement, @Nonnull ? extends AnnotationValue> annotationEntry) {
+        final @Nonnull String methodName = annotationEntry.getKey().getSimpleName().toString();
+        return (methodName.equals("value") ? "" : methodName + " = ") + annotationEntry.getValue();
+    }
+    
+    /**
+     * Returns the given annotation with its values as a string.
+     */
+    @Pure
+    public static @Nonnull String getAnnotationAsString(@Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
+        return "@" + typeImporter.importIfPossible(annotationMirror.getAnnotationType()) + FiniteIterable.of(annotationMirror.getElementValues().entrySet()).map(ProcessingUtility::getAnnotationEntryAsString).join(Brackets.ROUND, "");
+    }
+    
+    /**
+     * Returns the given annotations with their values as a string.
+     */
+    @Pure
+    public static @Nonnull String getAnnotationsAsString(@Nonnull FiniteIterable<@Nonnull ? extends AnnotationMirror> annotationMirrors, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
+        return annotationMirrors.map(annotationMirror -> getAnnotationAsString(annotationMirror, typeImporter)).join("", " ", "", " ");
     }
     
     /* -------------------------------------------------- Assignability -------------------------------------------------- */
@@ -337,11 +339,7 @@ public class ProcessingUtility {
      */
     @Pure
     public static boolean isAssignable(@Nonnull Element element, @Nonnull Class<?> type) {
-        if (element instanceof ExecutableElement) {
-            return isAssignable(((ExecutableElement) element).getReturnType(), type);
-        } else {
-            return isAssignable(element.asType(), type);
-        }
+        return isAssignable(getType(element), type);
     }
     
     /* -------------------------------------------------- Component Type -------------------------------------------------- */

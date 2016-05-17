@@ -272,7 +272,7 @@ public class MethodInformation extends ExecutableInformation {
         
         if (returnType instanceof Type.AnnotatedType) {
             final Type.@Nonnull AnnotatedType annotatedType = (Type.AnnotatedType) returnType;
-            returnTypeAnnotationsAsString = ProcessingUtility.getAnnotationsAsString(annotationMirror -> typeImporter.importIfPossible(annotationMirror.getAnnotationType()), annotatedType.getAnnotationMirrors());
+            returnTypeAnnotationsAsString = ProcessingUtility.getAnnotationsAsString(FiniteIterable.of(annotatedType.getAnnotationMirrors()), typeImporter);
         } else {
             returnTypeAnnotationsAsString = "";
         }

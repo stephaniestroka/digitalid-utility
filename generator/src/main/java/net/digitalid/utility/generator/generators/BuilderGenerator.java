@@ -125,7 +125,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      */
     private void addSetterForField(@Nonnull ElementInformation field, @Nonnull String returnType, @Nonnull String returnedInstance) {
         final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
-        final @Nonnull String annotationsAsString = ProcessingUtility.getAnnotationsAsString(annotationMirror -> importIfPossible(annotationMirror.getAnnotationType()), field.getAnnotations());
+        final @Nonnull String annotationsAsString = ProcessingUtility.getAnnotationsAsString(field.getAnnotations(), this);
         beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + returnType + " " + methodName + "(" + annotationsAsString + importIfPossible(field.getType()) + " " + field.getName() + ")");
         addStatement("return new " + returnedInstance + "()." + methodName + "(" + field.getName() + ")");
         endMethod();
@@ -151,7 +151,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     }
     
     // TODO: needs testing
-    private @Nonnull List<? extends AnnotationMirror> getFieldAnnotations(@Nonnull VariableElementInformation field) {
+    private @Nonnull FiniteIterable<@Nonnull AnnotationMirror> getFieldAnnotations(@Nonnull VariableElementInformation field) {
         final List<AnnotationMirror> annotationsSuitableForFields = new ArrayList<>();
         for (@Nonnull AnnotationMirror annotationMirror : field.getAnnotations()) {
             final @Nonnull Element annotationElement = annotationMirror.getAnnotationType().asElement();
@@ -170,7 +170,7 @@ public class BuilderGenerator extends JavaFileGenerator {
             }
         }
         ProcessingLog.information("Suitable field annotations are $", annotationsSuitableForFields);
-        return annotationsSuitableForFields;
+        return FiniteIterable.of(annotationsSuitableForFields);
     }
     
     /**
@@ -186,13 +186,13 @@ public class BuilderGenerator extends JavaFileGenerator {
         for (@Nonnull VariableElementInformation field : getConstructorParameters()) {
             field.getAnnotations();
             addSection(Strings.capitalizeFirstLetters(Strings.decamelize(field.getName())));
-            final @Nonnull String fieldAnnotationsAsString = ProcessingUtility.getAnnotationsAsString(annotationMirror -> importIfPossible(annotationMirror.getAnnotationType()), getFieldAnnotations(field));
+            final @Nonnull String fieldAnnotationsAsString = ProcessingUtility.getAnnotationsAsString(getFieldAnnotations(field), this);
             addField("private " + fieldAnnotationsAsString + importIfPossible(field.getType()) + " " + field.getName() + " = " + field.getDefaultValue());
             final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
             if (field.isMandatory()) {
                 addAnnotation(Override.class);
             }
-            final @Nonnull String parameterAnnotationsAsString = ProcessingUtility.getAnnotationsAsString(annotationMirror -> importIfPossible(annotationMirror.getAnnotationType()), field.getAnnotations());
+            final @Nonnull String parameterAnnotationsAsString = ProcessingUtility.getAnnotationsAsString(field.getAnnotations(), this);
             addAnnotation(Chainable.class);
             beginMethod("public @" + importIfPossible(Nonnull.class) + " " + nameOfBuilder + " " + methodName + "(" + parameterAnnotationsAsString + importIfPossible(field.getType()) + " " + field.getName() + ")");
             addStatement("this." + field.getName() + " = " + field.getName());
