@@ -1,6 +1,7 @@
 package net.digitalid.utility.generator;
 
 import java.math.BigInteger;
+import java.util.Collection;
 
 import javax.annotation.Nonnull;
 
@@ -27,6 +28,7 @@ import net.digitalid.utility.validation.annotations.math.relative.GreaterThan;
 import net.digitalid.utility.validation.annotations.math.relative.GreaterThanOrEqualTo;
 import net.digitalid.utility.validation.annotations.math.relative.LessThan;
 import net.digitalid.utility.validation.annotations.math.relative.LessThanOrEqualTo;
+import net.digitalid.utility.validation.annotations.order.Ascending;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.annotations.value.Invariant;
 import net.digitalid.utility.validation.annotations.value.Validated;
@@ -221,5 +223,10 @@ public abstract class Validation extends RootClass implements Countable, Validat
     
     @Impure
     public void setInvariant(@Invariant(condition = "value % 3 == 0", message = "The value has to be a multiple of 3 but was $.") int value) {}
+    
+    /* -------------------------------------------------- Ordering -------------------------------------------------- */
+    
+    @Impure
+    public void setAscendingSequence(@Ascending Collection<Integer> collection) {}
     
 }

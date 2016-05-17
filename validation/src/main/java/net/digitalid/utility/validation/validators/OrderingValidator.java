@@ -46,8 +46,11 @@ public abstract class OrderingValidator extends IterableValidator {
             }
         } else if (type.getKind() == TypeKind.DECLARED) {
             final @Nonnull DeclaredType declaredType = (DeclaredType) type;
-            if (declaredType.getTypeArguments().isEmpty() || !ProcessingUtility.isAssignable(declaredType.getTypeArguments().get(0), Comparable.class)) {
-                ProcessingLog.error("The annotation $ may only be used on iterables whose component type is comparable:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
+            if (declaredType.getTypeArguments().isEmpty()) {
+                ProcessingLog.error("The declared type does not have a generic type argument.", SourcePosition.of(element, annotationMirror));
+            }
+            if (!ProcessingUtility.isAssignable(declaredType.getTypeArguments().get(0), Comparable.class)) {
+                ProcessingLog.error("The annotation $ may only be used on iterables whose component type is comparable, but $ is not:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), declaredType.getTypeArguments().get(0));
             }
         } else {
             ProcessingLog.error("The annotation $ may only be used on arrays or declared types:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());

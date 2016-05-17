@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -254,9 +255,27 @@ public class ProcessingUtility {
         }
         final @Nullable TypeElement desiredTypeElement = StaticProcessingEnvironment.getElementUtils().getTypeElement(desiredType.getCanonicalName());
         if (desiredTypeElement == null) { ProcessingLog.error("Could not retrieve the element for the type $.", desiredType); return false; }
-        boolean result = StaticProcessingEnvironment.getTypeUtils().isAssignable(getType(StaticProcessingEnvironment.getTypeUtils().erasure(declaredType)), desiredTypeElement.asType());
+        
+        boolean result = StaticProcessingEnvironment.getTypeUtils().isAssignable(getType(StaticProcessingEnvironment.getTypeUtils().erasure(getType(declaredType))), desiredTypeElement.asType());
+        if (!result) {
+            ProcessingLog.debugging("The given type $ is not assignable to the desired type $. Checking super types (with type erasure).");
+            result = checkTypeErasedSuperTypes(getType(declaredType), desiredTypeElement.asType());
+        }
         ProcessingLog.debugging("= $", result);
         return result;
+    }
+    
+    private static boolean checkTypeErasedSuperTypes(@Nonnull TypeMirror declaredType, @Nonnull TypeMirror desiredType) {
+        final Queue<TypeMirror> typeMirrors = new LinkedList<>(StaticProcessingEnvironment.getTypeUtils().directSupertypes(getType(declaredType)));
+        while (!typeMirrors.isEmpty()) {
+            final TypeMirror superType = typeMirrors.poll();
+            boolean result = StaticProcessingEnvironment.getTypeUtils().isAssignable(getType(StaticProcessingEnvironment.getTypeUtils().erasure(superType)), desiredType);
+            if (result) {
+                return true;
+            }
+            typeMirrors.addAll(StaticProcessingEnvironment.getTypeUtils().directSupertypes(getType(superType)));
+        }
+        return false;
     }
     
     /**

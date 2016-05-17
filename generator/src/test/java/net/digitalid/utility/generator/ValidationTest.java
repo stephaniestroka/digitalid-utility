@@ -8,6 +8,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
 import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.interfaces.BigIntegerNumerical;
 import net.digitalid.utility.interfaces.LongNumerical;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -23,10 +24,16 @@ public class ValidationTest {
     private static final @Nonnull Validation validation = new ValidationSubclass();
     
     private static <T> void test(@Nonnull Consumer<? super T> consumer, T positive, T negative) {
-        try { consumer.consume(positive); }
-        catch (PreconditionViolationException exception) { fail("The positive sample should not fail."); }
-        try { consumer.consume(negative); fail("The negative sample should fail."); }
-        catch (PreconditionViolationException exception) {}
+        try {
+            consumer.consume(positive);
+        } catch (PreconditionViolationException exception) { 
+            // TODO: is "sample" the right word?
+            fail("The positive sample should not fail.");
+        }
+        try {
+            consumer.consume(negative); 
+            fail("The negative sample should fail.");
+        } catch (PreconditionViolationException exception) {}
     }
     
     /* -------------------------------------------------- Reference -------------------------------------------------- */
@@ -180,6 +187,15 @@ public class ValidationTest {
     @Test
     public void testInvariant() {
         test(validation::setInvariant, 3, 4);
+    }
+    
+    /* -------------------------------------------------- Ordering -------------------------------------------------- */
+    
+    @Test
+    public void testAscending() {
+        final @Nonnull ImmutableList<@Nonnull Integer> ascendingList = ImmutableList.with(1, 2, 3, 4);
+        final @Nonnull ImmutableList<@Nonnull Integer> descendingList = ImmutableList.with(4, 3, 2, 1);
+        test(validation::setAscendingSequence, ascendingList, descendingList);
     }
     
 }
