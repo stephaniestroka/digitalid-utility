@@ -2,6 +2,7 @@ package net.digitalid.utility.processing.utility;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -149,6 +150,24 @@ public class ProcessingUtility {
         return filter(getAllMembers(typeElement), ElementKind.METHOD, ExecutableElement.class);
     }
     
+    /* -------------------------------------------------- Executable Type -------------------------------------------------- */
+    
+    /**
+     * Returns the given type or the return type if the given type is an executable type.
+     */
+    @Pure
+    public static @Nonnull TypeMirror getType(@Nonnull TypeMirror type) {
+        return type.getKind() == TypeKind.EXECUTABLE ? ((ExecutableType) type).getReturnType() : type;
+    }
+    
+    /**
+     * Returns the type of the given element or the return type if the given element is an executable element.
+     */
+    @Pure
+    public static @Nonnull TypeMirror getType(@Nonnull Element element) {
+        return getType(element.asType());
+    }
+    
     /* -------------------------------------------------- Annotation Mirrors -------------------------------------------------- */
     
     /**
@@ -168,15 +187,26 @@ public class ProcessingUtility {
     }
     
     /**
+     * Returns the annotation mirrors that are present on the given element or its (return) (component) type.
+     */
+    @Pure
+    public static @Nonnull FiniteIterable<@Nonnull AnnotationMirror> getAnnotationMirrors(@Nonnull Element element) {
+        final @Nonnull List<@Nonnull AnnotationMirror> annotationMirrors = new LinkedList<>();
+        annotationMirrors.addAll(element.getAnnotationMirrors());
+        final @Nonnull TypeMirror typeMirror = getType(element);
+        annotationMirrors.addAll(typeMirror.getAnnotationMirrors());
+        if (typeMirror.getKind() == TypeKind.ARRAY) {
+            annotationMirrors.addAll(((ArrayType) typeMirror).getComponentType().getAnnotationMirrors());
+        }
+        return FiniteIterable.of(annotationMirrors);
+    }
+    
+    /**
      * Returns the annotation mirror corresponding to the given annotation type of the given element or null if not found.
      */
     @Pure
     public static @Nullable AnnotationMirror getAnnotationMirror(@Nonnull Element element, @Nonnull Class<? extends Annotation> annotationType) {
-        for (@Nonnull AnnotationMirror annotationMirror : StaticProcessingEnvironment.getElementUtils().getAllAnnotationMirrors(element)) {
-            if (getQualifiedName(annotationMirror).equals(annotationType.getCanonicalName())) { return annotationMirror; }
-        }
-        ProcessingLog.debugging("Found no $ annotation on", SourcePosition.of(element), "@" + annotationType.getSimpleName());
-        return null;
+        return getAnnotationMirrors(element).findFirst(annotationMirror -> getQualifiedName(annotationMirror).equals(annotationType.getCanonicalName()));
     }
     
     /**
@@ -270,22 +300,6 @@ public class ProcessingUtility {
     }
     
     /* -------------------------------------------------- Assignability -------------------------------------------------- */
-    
-    /**
-     * Returns the given type or the return type if the given type is an executable type.
-     */
-    @Pure
-    public static @Nonnull TypeMirror getType(@Nonnull TypeMirror type) {
-        return type.getKind() == TypeKind.EXECUTABLE ? ((ExecutableType) type).getReturnType() : type;
-    }
-    
-    /**
-     * Returns the type of the given element or the return type if the given element is an executable element.
-     */
-    @Pure
-    public static @Nonnull TypeMirror getType(@Nonnull Element element) {
-        return getType(element.asType());
-    }
     
     /**
      * Returns whether the given declared type is assignable to the given desired type.

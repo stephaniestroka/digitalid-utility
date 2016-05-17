@@ -17,7 +17,6 @@ import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.immutable.ImmutableSet;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
-import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -95,7 +94,7 @@ public abstract class ElementInformationImplementation implements ElementInforma
         this.type = type;
         this.containingType = containingType;
         this.modifiers = ImmutableSet.with(element.getModifiers());
-        this.annotations = FiniteIterable.of(StaticProcessingEnvironment.getElementUtils().getAllAnnotationMirrors(element));
+        this.annotations = ProcessingUtility.getAnnotationMirrors(element);
         this.annotationsMap = annotations.toMap(annotationMirror -> ProcessingUtility.getQualifiedName(annotationMirror));
     }
     
