@@ -35,9 +35,6 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.annotations.value.Invariant;
 import net.digitalid.utility.validation.annotations.value.Validated;
 
-/**
- * @see ValidationSubclass
- */
 @Stateless
 @GenerateSubclass
 public abstract class Validation extends RootClass implements Countable, Validated.Value<String> {

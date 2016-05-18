@@ -128,7 +128,7 @@ public abstract class FieldInformationImplementation extends ElementInformationI
     protected FieldInformationImplementation(@Nonnull Element element, @Nonnull TypeMirror type, @Nonnull DeclaredType containingType) {
         super(element, type, containingType);
         
-        this.defaultValue = ProcessingUtility.getStringValue(element, Default.class);
+        this.defaultValue = ProcessingUtility.getString(ProcessingUtility.getAnnotationValue(element, Default.class));
     }
     
 }

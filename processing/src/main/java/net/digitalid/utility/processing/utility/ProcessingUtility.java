@@ -221,6 +221,8 @@ public class ProcessingUtility {
         return getAnnotationMirror(element, annotationType) != null;
     }
     
+    /* -------------------------------------------------- Annotation Values -------------------------------------------------- */
+    
     /**
      * Returns the annotation value for the given method name of the given annotation mirror or null if not found.
      */
@@ -260,30 +262,90 @@ public class ProcessingUtility {
         return getAnnotationValue(element, annotationType, "value");
     }
     
+    /* -------------------------------------------------- Value Conversions -------------------------------------------------- */
+    
     /**
-     * Returns the value of the given annotation type on the given element or null if not found.
+     * Returns the given annotation value as a string or propagates null.
      */
     @Pure
-    public static @Nullable String getStringValue(@Nonnull Element element, @Nonnull Class<? extends Annotation> annotationType) {
-        final @Nullable AnnotationValue annotationValue = getAnnotationValue(element, annotationType);
+    public static @Nullable String getString(@Nullable AnnotationValue annotationValue) {
         if (annotationValue != null) {
             final @Nonnull Object object = annotationValue.getValue();
             if (object instanceof String) {
                 return (String) object;
             } else {
-                ProcessingLog.error("The value is not a string:", SourcePosition.of(element, getAnnotationMirror(element, annotationType), annotationValue));
+                ProcessingLog.error("The annotation value is not a string: $.", object);
             }
         }
         return null;
     }
     
     /**
+     * Returns the given annotation value as a class object or propagates null.
+     */
+    @Pure
+    public static @Nullable Class<?> getClass(@Nullable AnnotationValue annotationValue) {
+        if (annotationValue != null) {
+            final @Nonnull Object object = annotationValue.getValue();
+            if (object instanceof DeclaredType) {
+                final @Nonnull TypeElement typeElement = (TypeElement) ((DeclaredType) object).asElement();
+                final @Nonnull String binaryName = StaticProcessingEnvironment.getElementUtils().getBinaryName(typeElement).toString();
+                try {
+                    return Class.forName(binaryName);
+                } catch (@Nonnull ClassNotFoundException exception) {
+                    ProcessingLog.error("Could not find the class $.", binaryName);
+                }
+            } else {
+                ProcessingLog.error("The annotation value is not a class: $.", object);
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Returns the given annotation value as a new instance of the given type or propagates null.
+     */
+    @Pure
+    @SuppressWarnings("unchecked")
+    public static <T> @Nullable T getInstance(@Nullable AnnotationValue annotationValue, @Nonnull Class<T> desiredType) {
+        final @Nullable Class<?> declaredType = getClass(annotationValue);
+        if (declaredType != null) {
+            try {
+                final @Nonnull Object object = declaredType.newInstance();
+                if (desiredType.isInstance(object)) {
+                    return (T) object;
+                } else {
+                    ProcessingLog.error("$ is not an instance of $.", object, desiredType.getCanonicalName());
+                }
+            } catch (@Nonnull InstantiationException | IllegalAccessException exception) {
+                ProcessingLog.error("Could not instantiate the class $.", declaredType.getCanonicalName());
+            }
+        }
+        return null;
+    }
+    
+    /* -------------------------------------------------- Annotation Strings -------------------------------------------------- */
+    
+    /**
+     * Returns the given annotation value as a string.
+     */
+    @Pure
+    private static @Nonnull String getAnnotationValueAsString(@Nonnull AnnotationValue annotationValue, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
+        final @Nonnull Object object = annotationValue.getValue();
+        if (object instanceof DeclaredType) {
+            return typeImporter.importIfPossible((DeclaredType) object) + ".class";
+        } else {
+            return annotationValue.toString();
+        }
+    }
+    
+    /**
      * Returns the given annotation entry as a string.
      */
     @Pure
-    private static @Nonnull String getAnnotationEntryAsString(@NonCaptured @Unmodified Map.@Nonnull Entry<@Nonnull ? extends ExecutableElement, @Nonnull ? extends AnnotationValue> annotationEntry) {
+    private static @Nonnull String getAnnotationEntryAsString(@NonCaptured @Unmodified Map.@Nonnull Entry<@Nonnull ? extends ExecutableElement, @Nonnull ? extends AnnotationValue> annotationEntry, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
         final @Nonnull String methodName = annotationEntry.getKey().getSimpleName().toString();
-        return (methodName.equals("value") ? "" : methodName + " = ") + annotationEntry.getValue();
+        return (methodName.equals("value") ? "" : methodName + " = ") + getAnnotationValueAsString(annotationEntry.getValue(), typeImporter);
     }
     
     /**
@@ -291,7 +353,7 @@ public class ProcessingUtility {
      */
     @Pure
     public static @Nonnull String getAnnotationAsString(@Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-        return "@" + typeImporter.importIfPossible(annotationMirror.getAnnotationType()) + FiniteIterable.of(annotationMirror.getElementValues().entrySet()).map(ProcessingUtility::getAnnotationEntryAsString).join(Brackets.ROUND, "");
+        return "@" + typeImporter.importIfPossible(annotationMirror.getAnnotationType()) + FiniteIterable.of(annotationMirror.getElementValues().entrySet()).map(annotationEntry -> getAnnotationEntryAsString(annotationEntry, typeImporter)).join(Brackets.ROUND, "");
     }
     
     /**

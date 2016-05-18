@@ -28,6 +28,7 @@ import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.state.Unmodifiable;
+import net.digitalid.utility.fixes.Brackets;
 import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.logging.Log;
@@ -126,7 +127,7 @@ public abstract class CustomProcessor implements Processor {
         
         final @Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations = FiniteIterable.of(typeElements);
         if (round == 0 || !onlyInterestedInFirstRound) {
-            ProcessingLog.information("Process " + annotations + " in the " + Strings.getOrdinal(round + 1) + " round.");
+            ProcessingLog.information("Process " + annotations.join(Brackets.SQUARE) + " in the " + Strings.getOrdinal(round + 1) + " round.");
             try {
                 process(annotations, roundEnvironment, round++);
             } catch (@Nonnull Throwable throwable) {
