@@ -16,8 +16,9 @@ import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.freezable.FreezableInterface;
-import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
@@ -26,6 +27,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.processing.ErrorLogger;
 import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
 
 /**
@@ -59,17 +61,17 @@ public @interface Freezable {
         
         @Pure
         @Override
-        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
+        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             if (!StaticProcessingEnvironment.getTypeUtils().isSubtype(element.asType(), StaticProcessingEnvironment.getElementUtils().getTypeElement(FreezableInterface.class.getCanonicalName()).asType())) {
-                ProcessingLog.error("The freezable type $ has to implement the freezable interface.", SourcePosition.of(element), element);
+                errorLogger.log("The freezable type $ has to implement the freezable interface.", SourcePosition.of(element), element);
             }
             for (@Nonnull ExecutableElement method : ProcessingUtility.getAllMethods((TypeElement) element)) {
                 if (ProcessingUtility.isDeclaredInDigitalIDLibrary(method)) {
                     if (!ProcessingUtility.hasAnnotation(element, Pure.class) && !ProcessingUtility.hasAnnotation(element, Impure.class)) {
-                        ProcessingLog.error("Each method of the freezable type $ has to be either pure or impure.", SourcePosition.of(method), element);
+                        errorLogger.log("Each method of the freezable type $ has to be either pure or impure.", SourcePosition.of(method), element);
                     }
                     if (!method.getModifiers().contains(Modifier.STATIC) && ProcessingUtility.hasAnnotation(element, Impure.class) && !ProcessingUtility.hasAnnotation(element, NonFrozenRecipient.class)) {
-                        ProcessingLog.error("Each impure non-static method of the freezable type $ has to be also annotated with '@NonFrozenRecipient'.", SourcePosition.of(method), element);
+                        errorLogger.log("Each impure non-static method of the freezable type $ has to be also annotated with '@NonFrozenRecipient'.", SourcePosition.of(method), element);
                     }
                 }
             }

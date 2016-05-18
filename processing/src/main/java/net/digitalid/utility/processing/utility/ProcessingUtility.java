@@ -305,11 +305,34 @@ public class ProcessingUtility {
     /* -------------------------------------------------- Assignability -------------------------------------------------- */
     
     /**
+     * 
+     */
+    @Pure
+    private static boolean checkTypeErasedSuperTypes(@Nonnull TypeMirror declaredType, @Nonnull TypeMirror desiredType) {
+        final Queue<TypeMirror> typeMirrors = new LinkedList<>(StaticProcessingEnvironment.getTypeUtils().directSupertypes(getType(declaredType)));
+        while (!typeMirrors.isEmpty()) {
+            final TypeMirror superType = typeMirrors.poll();
+            boolean result = StaticProcessingEnvironment.getTypeUtils().isAssignable(getType(StaticProcessingEnvironment.getTypeUtils().erasure(superType)), desiredType);
+            if (result) {
+                return true;
+            }
+            typeMirrors.addAll(StaticProcessingEnvironment.getTypeUtils().directSupertypes(getType(superType)));
+        }
+        return false;
+    }
+    
+    /**
      * Returns whether the given declared type is assignable to the given desired type.
      */
     @Pure
     public static boolean isAssignable(@Nonnull TypeMirror declaredType, @Nonnull Class<?> desiredType) {
-        ProcessingLog.debugging("Checking whether $ is assignable to $.", declaredType, desiredType.getCanonicalName());
+        ProcessingLog.verbose("Checking whether $ is assignable to $.", declaredType, desiredType.getCanonicalName());
+        
+        if (desiredType.isArray()) {
+            // TODO: find a way to check whether the declaredType is an array of a certain type.
+            return true;
+        }
+        
         if (desiredType.isPrimitive()) {
             if (!declaredType.getKind().isPrimitive()) {
                 return false;
@@ -323,11 +346,7 @@ public class ProcessingUtility {
             }
             return declaredPrimitiveType.equals(desiredType.toString());
         }
-        // TODO: arrays cannot be fetched like this!
-        if (desiredType.isArray()) {
-            // TODO: find a way to check whether the declaredType is an array of a certain type.
-            return true;
-        }
+        
         final @Nullable TypeElement desiredTypeElement = StaticProcessingEnvironment.getElementUtils().getTypeElement(desiredType.getCanonicalName());
         if (desiredTypeElement == null) { ProcessingLog.error("Could not retrieve the element for the type $.", desiredType); return false; }
         
@@ -338,19 +357,6 @@ public class ProcessingUtility {
         }
         ProcessingLog.debugging("= $", result);
         return result;
-    }
-    
-    private static boolean checkTypeErasedSuperTypes(@Nonnull TypeMirror declaredType, @Nonnull TypeMirror desiredType) {
-        final Queue<TypeMirror> typeMirrors = new LinkedList<>(StaticProcessingEnvironment.getTypeUtils().directSupertypes(getType(declaredType)));
-        while (!typeMirrors.isEmpty()) {
-            final TypeMirror superType = typeMirrors.poll();
-            boolean result = StaticProcessingEnvironment.getTypeUtils().isAssignable(getType(StaticProcessingEnvironment.getTypeUtils().erasure(superType)), desiredType);
-            if (result) {
-                return true;
-            }
-            typeMirrors.addAll(StaticProcessingEnvironment.getTypeUtils().directSupertypes(getType(superType)));
-        }
-        return false;
     }
     
     /**

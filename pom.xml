@@ -74,11 +74,13 @@
     </modules>
     
     <dependencies>
+        <!-- Activate this dependency as soon as needed:
         <dependency>
             <groupId>com.google.j2objc</groupId>
             <artifactId>j2objc-annotations</artifactId>
             <version>0.9.8</version>
         </dependency>
+        -->
         <!-- Add this dependency wherever you have testcases:
         <dependency>
             <groupId>net.digitalid.utility</groupId>

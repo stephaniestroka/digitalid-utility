@@ -25,14 +25,13 @@ public class ValidationTest {
     private static <T> void test(@Nonnull Consumer<? super T> consumer, T positive, T negative) {
         try {
             consumer.consume(positive);
-        } catch (PreconditionViolationException exception) { 
-            // TODO: is "sample" the right word?
+        } catch (@Nonnull PreconditionViolationException exception) { 
             fail("The positive sample should not fail.");
         }
         try {
             consumer.consume(negative); 
             fail("The negative sample should fail.");
-        } catch (PreconditionViolationException exception) {}
+        } catch (@Nonnull PreconditionViolationException exception) {}
     }
     
     private static void testIterable(@Nonnull Consumer<Iterable<String>> iterableConsumer, @Nonnull Consumer<String[]> arrayConsumer, @Nonnull String[] positive, @Nonnull String[] negative) {

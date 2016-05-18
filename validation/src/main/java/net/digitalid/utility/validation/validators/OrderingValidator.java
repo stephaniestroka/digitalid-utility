@@ -14,13 +14,13 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.collaboration.annotations.TODO;
 import net.digitalid.utility.collaboration.enumerations.Author;
-import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
+import net.digitalid.utility.validation.processing.ErrorLogger;
 
 /**
  * This class implements common methods for all ordering-related validators.
@@ -35,25 +35,24 @@ public abstract class OrderingValidator extends IterableValidator {
     @Pure
     @Override
     @TODO(task = "Whether the type argument is comparable should be determined on the instantiated iterable type and not the declared type (which might no longer be generic).", date = "2016-04-29", author = Author.KASPAR_ETTER)
-    public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
-        super.checkUsage(element, annotationMirror);
+    public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
+        super.checkUsage(element, annotationMirror, errorLogger);
         
         final @Nonnull TypeMirror type = ProcessingUtility.getType(element);
         if (type.getKind() == TypeKind.ARRAY) {
             final @Nonnull ArrayType arrayType = (ArrayType) type;
             if (!ProcessingUtility.isAssignable(arrayType.getComponentType(), Comparable.class)) {
-                ProcessingLog.error("The annotation $ may only be used on arrays whose component type is comparable, which is not the case for $:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), arrayType.getComponentType());
+                errorLogger.log("The annotation $ may only be used on arrays whose component type is comparable, which is not the case for $:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), arrayType.getComponentType());
             }
         } else if (type.getKind() == TypeKind.DECLARED) {
             final @Nonnull DeclaredType declaredType = (DeclaredType) type;
             if (declaredType.getTypeArguments().isEmpty()) {
-                ProcessingLog.error("The declared type does not have a generic type argument.", SourcePosition.of(element, annotationMirror));
-            }
-            if (!ProcessingUtility.isAssignable(declaredType.getTypeArguments().get(0), Comparable.class)) {
-                ProcessingLog.error("The annotation $ may only be used on iterables whose component type is comparable, but $ is not:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), declaredType.getTypeArguments().get(0));
+                errorLogger.log("The declared type $ does not have a generic type argument.", SourcePosition.of(element, annotationMirror), declaredType);
+            } else if (!ProcessingUtility.isAssignable(declaredType.getTypeArguments().get(0), Comparable.class)) {
+                errorLogger.log("The annotation $ may only be used on iterables whose component type is comparable, but $ is not:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), declaredType.getTypeArguments().get(0));
             }
         } else {
-            ProcessingLog.error("The annotation $ may only be used on arrays or declared types:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
+            errorLogger.log("The annotation $ may only be used on arrays or declared types:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
         }
     }
     

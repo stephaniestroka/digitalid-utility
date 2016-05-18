@@ -102,7 +102,7 @@ public class AnnotationHandlerUtility {
             final @Nullable H cachedAnnotationHandler = getCachedAnnotationHandler(annotationMirror, metaAnnotationType, annotationHandlerType);
             if (cachedAnnotationHandler != null) {
                 ProcessingLog.debugging("Found the cached annotation handler $ for", SourcePosition.of(element, annotationMirror), cachedAnnotationHandler.getClass().getCanonicalName());
-                cachedAnnotationHandler.checkUsage(element, annotationMirror);
+                cachedAnnotationHandler.checkUsage(element, annotationMirror, ErrorLogger.INSTANCE);
                 result.put(annotationMirror, cachedAnnotationHandler);
             } else {
                 final @Nullable String annotationHandlerImplementationBinaryName = getAnnotationHandlerImplementationBinaryName(annotationMirror, metaAnnotationType);
@@ -112,7 +112,7 @@ public class AnnotationHandlerUtility {
                         if (annotationHandlerType.isInstance(annotationHandler)) {
                             cachedAnnotationHandlers.put(getAnnotationHandlerCacheKey(annotationMirror, metaAnnotationType), annotationHandler);
                             ProcessingLog.debugging("Found the annotation handler $ for", SourcePosition.of(element, annotationMirror), annotationHandler.getClass().getCanonicalName());
-                            annotationHandler.checkUsage(element, annotationMirror);
+                            annotationHandler.checkUsage(element, annotationMirror, ErrorLogger.INSTANCE);
                             result.put(annotationMirror, annotationHandler);
                         } else {
                             ProcessingLog.error("The annotation handler $ is not an instance of $:", SourcePosition.of(element, annotationMirror), annotationHandler.getClass().getCanonicalName(), annotationHandlerType.getClass().getCanonicalName());

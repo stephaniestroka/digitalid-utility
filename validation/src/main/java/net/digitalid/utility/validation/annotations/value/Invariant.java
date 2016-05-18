@@ -15,6 +15,8 @@ import javax.lang.model.element.Element;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.immutable.ImmutableSet;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
@@ -22,6 +24,7 @@ import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
+import net.digitalid.utility.validation.processing.ErrorLogger;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
@@ -64,7 +67,8 @@ public @interface Invariant {
         
         @Pure
         @Override
-        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {}
+        @TODO(task = "Shouldn't the target type rather be object?", date = "2016-05-18", author = Author.KASPAR_ETTER)
+        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {}
         
         @Pure
         @Override

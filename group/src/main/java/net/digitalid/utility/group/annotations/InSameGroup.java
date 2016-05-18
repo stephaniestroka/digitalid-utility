@@ -15,13 +15,13 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.group.GroupMember;
 import net.digitalid.utility.immutable.ImmutableSet;
-import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
+import net.digitalid.utility.validation.processing.ErrorLogger;
 import net.digitalid.utility.validation.validators.StringValidator;
 
 /**
@@ -54,11 +54,11 @@ public @interface InSameGroup {
         
         @Pure
         @Override
-        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
-            super.checkUsage(element, annotationMirror);
+        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
+            super.checkUsage(element, annotationMirror, errorLogger);
             
             if (!ProcessingUtility.isAssignable(ProcessingUtility.getSurroundingType(element), GroupMember.class)) {
-                ProcessingLog.error("The annotation $ may only be used in group members:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
+                errorLogger.log("The annotation $ may only be used in group members:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
             }
         }
         

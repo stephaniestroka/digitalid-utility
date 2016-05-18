@@ -14,11 +14,13 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.meta.TypeValidator;
+import net.digitalid.utility.validation.processing.ErrorLogger;
 import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
 
 /**
@@ -46,10 +48,10 @@ public @interface Utility {
         
         @Pure
         @Override
-        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
+        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             for (@Nonnull Element member : StaticProcessingEnvironment.getElementUtils().getAllMembers((TypeElement) element)) {
                 if (ProcessingUtility.isDeclaredInDigitalIDLibrary(member) && !member.getModifiers().contains(Modifier.STATIC)) {
-                    ProcessingLog.error("The utility type $ may only have static fields and methods.", SourcePosition.of(member), element);
+                    errorLogger.log("The utility type $ may only have static fields and methods.", SourcePosition.of(member), element);
                 }
             }
         }

@@ -15,10 +15,12 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.meta.TypeValidator;
+import net.digitalid.utility.validation.processing.ErrorLogger;
 import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
 
 /**
@@ -54,10 +56,10 @@ public @interface Immutable {
         
         @Pure
         @Override
-        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
+        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             for (@Nonnull ExecutableElement method : ProcessingUtility.getAllMethods((TypeElement) element)) {
                 if (ProcessingUtility.isDeclaredInDigitalIDLibrary(method) && !method.getModifiers().contains(Modifier.STATIC) && !ProcessingUtility.hasAnnotation(element, Pure.class)) {
-                    ProcessingLog.error("The immutable type $ may only contain non-static methods that are pure.", SourcePosition.of(method), element);
+                    errorLogger.log("The immutable type $ may only contain non-static methods that are pure.", SourcePosition.of(method), element);
                 }
             }
         }

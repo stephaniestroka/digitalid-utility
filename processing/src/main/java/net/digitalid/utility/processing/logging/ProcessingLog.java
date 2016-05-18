@@ -24,9 +24,11 @@ import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
  * This class makes it easier to log messages during annotation processing.
+ * If you need to call {@link #log(net.digitalid.utility.logging.Level, java.lang.CharSequence, net.digitalid.utility.processing.logging.SourcePosition, java.lang.Object...)}
+ * directly in order to have a correct {@link Caller#index}, you can extend this class.
  */
 @Utility
-public class ProcessingLog {
+public abstract class ProcessingLog {
     
     /* -------------------------------------------------- Setup -------------------------------------------------- */
     
@@ -56,7 +58,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    private static void log(@Nonnull Level level, @Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    protected static void log(@Nonnull Level level, @Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nullable Object... arguments) {
         Require.that(level != null).orThrow("The level may not be null.");
         Require.that(message != null).orThrow("The message may not be null.");
         

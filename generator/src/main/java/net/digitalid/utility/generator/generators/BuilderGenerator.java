@@ -169,7 +169,7 @@ public class BuilderGenerator extends JavaFileGenerator {
                 annotationsSuitableForFields.add(annotationMirror);
             }
         }
-        ProcessingLog.information("Suitable field annotations are $", annotationsSuitableForFields);
+        ProcessingLog.verbose("Suitable field annotations are $", annotationsSuitableForFields);
         return FiniteIterable.of(annotationsSuitableForFields);
     }
     
