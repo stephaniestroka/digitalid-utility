@@ -14,7 +14,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.freezable.ReadOnlyInterface;
-import net.digitalid.utility.immutable.ImmutableSet;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -41,11 +41,11 @@ public @interface NonFrozen {
     @Stateless
     public static class Validator extends ValueAnnotationValidator {
         
-        private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.<Class<?>>with(ReadOnlyInterface.class);
+        private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(ReadOnlyInterface.class);
         
         @Pure
         @Override
-        public @Nonnull ImmutableSet<@Nonnull Class<?>> getTargetTypes() {
+        public @Nonnull FiniteIterable<@Nonnull Class<?>> getTargetTypes() {
             return targetTypes;
         }
         

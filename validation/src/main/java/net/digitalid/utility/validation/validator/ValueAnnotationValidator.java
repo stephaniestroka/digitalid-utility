@@ -8,9 +8,7 @@ import javax.lang.model.element.ElementKind;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.collaboration.annotations.TODO;
-import net.digitalid.utility.collaboration.enumerations.Author;
-import net.digitalid.utility.immutable.ImmutableSet;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
@@ -31,20 +29,14 @@ public abstract class ValueAnnotationValidator extends AnnotationHandler impleme
      * Returns the types of values to which the surrounding annotation can be applied.
      */
     @Pure
-    @TODO(task = "Change the return type to FiniteIterable.", date = "2016-05-18", author = Author.KASPAR_ETTER)
-    public abstract @Nonnull ImmutableSet<Class<?>> getTargetTypes();
+    public abstract @Nonnull FiniteIterable<Class<?>> getTargetTypes();
     
     /* -------------------------------------------------- Usage Check -------------------------------------------------- */
     
     @Pure
     @Override
-    @TODO(task = "Instead of looping through the target types, use predicate matching.", date = "2016-05-18", author = Author.KASPAR_ETTER)
     public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
-        boolean elementAssignableToTargetType = false;
-        for (@Nonnull Class<?> targetType : getTargetTypes()) {
-            if (ProcessingUtility.isAssignable(element, targetType)) { elementAssignableToTargetType = true; }
-        }
-        if (!elementAssignableToTargetType) {
+        if (getTargetTypes().matchNone(targetType -> ProcessingUtility.isAssignable(element, targetType))) {
             errorLogger.log("The element $ is not assignable to a target type of $.", SourcePosition.of(element, annotationMirror), element, getAnnotationNameWithLeadingAt());
         }
     }
