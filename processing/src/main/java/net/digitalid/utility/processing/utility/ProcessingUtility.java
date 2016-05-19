@@ -297,7 +297,7 @@ public class ProcessingUtility {
                     return null;
                 }
             case ARRAY:
-                final @Nullable Class<?> componentType  = getClass(((ArrayType) typeMirror).getComponentType());
+                final @Nullable Class<?> componentType = getClass(((ArrayType) typeMirror).getComponentType());
                 return componentType != null ? Array.newInstance(componentType, 0).getClass() : null;
             case BOOLEAN: return boolean.class;
             case CHAR: return char.class;
@@ -452,6 +452,7 @@ public class ProcessingUtility {
     
     @Pure
     public static boolean isArray(@Nonnull TypeMirror type) {
+        // TODO: Don't make instanceof checks.
         return (type instanceof Type.ArrayType);
     }
     

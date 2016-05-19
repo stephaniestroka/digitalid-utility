@@ -16,6 +16,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.functional.conversion.ArrayConversion;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -43,7 +44,7 @@ public @interface UniqueElements {
          * Returns whether all elements in the given iterable are unique.
          */
         @Pure
-        public static boolean validate(@NonCaptured @Unmodified @Nullable Iterable<?> iterable) {
+        public static boolean validate(@NonCaptured @Unmodified @Nullable Iterable<@Nullable?> iterable) {
             if (iterable == null) { return true; }
             final @Nonnull HashSet<Object> set = new HashSet<>();
             for (@Nullable Object element : iterable) {
@@ -57,7 +58,7 @@ public @interface UniqueElements {
          * Returns whether all elements in the given array are unique.
          */
         @Pure
-        public static boolean validate(@NonCaptured @Unmodified @Nullable Object[] array) {
+        public static boolean validate(@NonCaptured @Unmodified @Nullable @NullableElements Object[] array) {
             if (array == null) { return true; }
             final @Nonnull HashSet<Object> set = new HashSet<>();
             for (@Nullable Object element : array) {
@@ -65,6 +66,70 @@ public @interface UniqueElements {
                 else { set.add(element); }
             }
             return true;
+        }
+        
+        /**
+         * Returns whether all elements in the given array are unique.
+         */
+        @Pure
+        public static boolean validate(@NonCaptured @Unmodified @Nullable boolean[] array) {
+            return validate(ArrayConversion.box(array));
+        }
+        
+        /**
+         * Returns whether all elements in the given array are unique.
+         */
+        @Pure
+        public static boolean validate(@NonCaptured @Unmodified @Nullable char[] array) {
+            return validate(ArrayConversion.box(array));
+        }
+        
+        /**
+         * Returns whether all elements in the given array are unique.
+         */
+        @Pure
+        public static boolean validate(@NonCaptured @Unmodified @Nullable byte[] array) {
+            return validate(ArrayConversion.box(array));
+        }
+        
+        /**
+         * Returns whether all elements in the given array are unique.
+         */
+        @Pure
+        public static boolean validate(@NonCaptured @Unmodified @Nullable short[] array) {
+            return validate(ArrayConversion.box(array));
+        }
+        
+        /**
+         * Returns whether all elements in the given array are unique.
+         */
+        @Pure
+        public static boolean validate(@NonCaptured @Unmodified @Nullable int[] array) {
+            return validate(ArrayConversion.box(array));
+        }
+        
+        /**
+         * Returns whether all elements in the given array are unique.
+         */
+        @Pure
+        public static boolean validate(@NonCaptured @Unmodified @Nullable long[] array) {
+            return validate(ArrayConversion.box(array));
+        }
+        
+        /**
+         * Returns whether all elements in the given array are unique.
+         */
+        @Pure
+        public static boolean validate(@NonCaptured @Unmodified @Nullable float[] array) {
+            return validate(ArrayConversion.box(array));
+        }
+        
+        /**
+         * Returns whether all elements in the given array are unique.
+         */
+        @Pure
+        public static boolean validate(@NonCaptured @Unmodified @Nullable double[] array) {
+            return validate(ArrayConversion.box(array));
         }
         
         @Pure

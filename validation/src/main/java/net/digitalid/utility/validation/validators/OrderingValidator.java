@@ -12,6 +12,7 @@ import javax.lang.model.type.TypeMirror;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.collaboration.annotations.TODO;
 import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.processing.logging.SourcePosition;
@@ -68,17 +69,18 @@ public abstract class OrderingValidator extends IterableValidator {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public static boolean validate(@Nullable Iterable<@Nullable ?> iterable, boolean strictly, boolean ascending) {
+    public static boolean validate(@NonCaptured @Unmodified @Nullable Iterable<@Nullable ?> iterable, boolean strictly, boolean ascending) {
         if (iterable == null) { return true; }
         @Nullable Object lastElement = null;
-        for (final @Nullable Object element : iterable) {
-            if (element == null) { continue; }
-            if (lastElement != null) {
-                if (element instanceof Comparable<?>) {
-                    if (((Comparable<Object>) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
+        for (@Nullable Object element : iterable) {
+            if (element != null) {
+                if (lastElement != null) {
+                    if (element instanceof Comparable<?>) {
+                        if (((Comparable<Object>) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
+                    }
                 }
+                lastElement = element;
             }
-            lastElement = element;
         }
         return true;
     }
@@ -93,22 +95,48 @@ public abstract class OrderingValidator extends IterableValidator {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public static boolean validate(@Nullable @NullableElements Object[] array, boolean strictly, boolean ascending) {
+    public static boolean validate(@NonCaptured @Unmodified @Nullable @NullableElements Object[] array, boolean strictly, boolean ascending) {
         if (array == null) { return true; }
         @Nullable Object lastElement = null;
-        for (final @Nullable Object element : array) {
-            if (element == null) { continue; }
-            if (lastElement != null) {
-                if (element instanceof Comparable<?>) {
-                    if (((Comparable<Object>) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
+        for (@Nullable Object element : array) {
+            if (element != null) {
+                if (lastElement != null) {
+                    if (element instanceof Comparable<?>) {
+                        if (((Comparable<Object>) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
+                    }
                 }
+                lastElement = element;
             }
-            lastElement = element;
         }
         return true;
     }
     
-    // TODO: Provide validate implementations for all primitive types!
+    /**
+     * Returns whether the values in the given array are ordered.
+     * 
+     * @param strictly whether the ordering is strict (i.e. without equal values).
+     * @param ascending whether the ordering is ascending (true) or descending (false).
+     * 
+     * @return {@code true} if the values in the array are ordered, {@code false} otherwise.
+     */
+    @Pure
+    public static boolean validate(@NonCaptured @Unmodified @Nullable int[] array, boolean strictly, boolean ascending) {
+        if (array == null) { return true; }
+        for (int i = 0; i < array.length - 1; i++) {
+            if (strictly && ascending && array[i] >= array[i + 1]) { return false; }
+            if (!strictly && ascending && array[i] > array[i + 1]) { return false; }
+            if (strictly && !ascending && array[i] <= array[i + 1]) { return false; }
+            if (!strictly && !ascending && array[i] < array[i + 1]) { return false; }
+            
+//            if ((array[i] + (strictly ? 1 : 0)) * (ascending ? 1 : -1) > array[i + 1] * (ascending ? 1 : -1)) { return false; }
+            
+            // TODO: This implementation does not handle overflows correctly.
+//            if ((array[i + 1] - array[i]) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
+        }
+        return true;
+    }
+    
+    // TODO: Also implement the method for other primitive values.
     
     /* -------------------------------------------------- Abstract Methods -------------------------------------------------- */
     

@@ -34,7 +34,7 @@ public class ValidationTest {
         } catch (@Nonnull PreconditionViolationException exception) {}
     }
     
-    private static void testIterable(@Nonnull Consumer<Iterable<String>> iterableConsumer, @Nonnull Consumer<String[]> arrayConsumer, @Nonnull String[] positive, @Nonnull String[] negative) {
+    private static void testStringIterableAndArray(@Nonnull Consumer<Iterable<String>> iterableConsumer, @Nonnull Consumer<String[]> arrayConsumer, @Nonnull String[] positive, @Nonnull String[] negative) {
         test(iterableConsumer, FiniteIterable.of(positive), FiniteIterable.of(negative));
         test(arrayConsumer, positive, negative);
     }
@@ -56,13 +56,18 @@ public class ValidationTest {
     /* -------------------------------------------------- Elements -------------------------------------------------- */
     
     @Test
-    public void testNonNullableElements() {
-        testIterable(validation::setNonNullableElementsIterable, validation::setNonNullableElementsArray, new String[] {"hello", "world"}, new String[] {"hello", null});
+    public void testNonNullableStrings() {
+        testStringIterableAndArray(validation::setNonNullableStringIterable, validation::setNonNullableStringArray, new String[] {"hello", "world"}, new String[] {"hello", null});
     }
     
     @Test
-    public void testUniqueElements() {
-        testIterable(validation::setUniqueElementsIterable, validation::setUniqueElementsArray, new String[] {"hello", "world"}, new String[] {"hello", "hello"});
+    public void testUniqueStrings() {
+        testStringIterableAndArray(validation::setUniqueStringIterable, validation::setUniqueStringArray, new String[] {"hello", "world"}, new String[] {"hello", "hello"});
+    }
+    
+    @Test
+    public void testUniqueInts() {
+        test(validation::setUniqueIntArray, new int[] {1, 2}, new int[] {1, 1});
     }
     
     /* -------------------------------------------------- Index -------------------------------------------------- */
@@ -181,23 +186,43 @@ public class ValidationTest {
     /* -------------------------------------------------- Order -------------------------------------------------- */
     
     @Test
-    public void testAscending() {
-        testIterable(validation::setAscendingIterable, validation::setAscendingArray, new String[] {"hello", "hello", "world"}, new String[] {"world", "hello", "hello"});
+    public void testAscendingInts() {
+        test(validation::setAscendingIntArray, new int[] {1, 1, 2, 3}, new int[] {1, 2, 3, 1});
     }
     
     @Test
-    public void testDescending() {
-        testIterable(validation::setDescendingIterable, validation::setDescendingArray, new String[] {"world", "hello", "hello"}, new String[] {"hello", "hello", "world"});
+    public void testDescendingInts() {
+        test(validation::setDescendingIntArray, new int[] {3, 2, 1, 1}, new int[] {1, 3, 2, 1});
     }
     
     @Test
-    public void testStrictlyAscending() {
-        testIterable(validation::setStrictlyAscendingIterable, validation::setStrictlyAscendingArray, new String[] {"hello", "world"}, new String[] {"hello", "hello", "world"});
+    public void testStrictlyAscendingInts() {
+        test(validation::setStrictlyAscendingIntArray, new int[] {1, 2, 3}, new int[] {1, 1, 2});
     }
     
     @Test
-    public void testStrictlyDescending() {
-        testIterable(validation::setStrictlyDescendingIterable, validation::setStrictlyDescendingArray, new String[] {"world", "hello"}, new String[] {"world", "hello", "hello"});
+    public void testStrictlyDescendingInts() {
+        test(validation::setStrictlyDescendingIntArray, new int[] {3, 2, 1}, new int[] {2, 1, 1});
+    }
+    
+    @Test
+    public void testAscendingStrings() {
+        testStringIterableAndArray(validation::setAscendingStringIterable, validation::setAscendingStringArray, new String[] {"hello", "hello", "world"}, new String[] {"world", "hello", "hello"});
+    }
+    
+    @Test
+    public void testDescendingStrings() {
+        testStringIterableAndArray(validation::setDescendingStringIterable, validation::setDescendingStringArray, new String[] {"world", "hello", "hello"}, new String[] {"hello", "hello", "world"});
+    }
+    
+    @Test
+    public void testStrictlyAscendingStrings() {
+        testStringIterableAndArray(validation::setStrictlyAscendingStringIterable, validation::setStrictlyAscendingStringArray, new String[] {"hello", "my", "world"}, new String[] {"hello", "hello", "world"});
+    }
+    
+    @Test
+    public void testStrictlyDescendingStrings() {
+        testStringIterableAndArray(validation::setStrictlyDescendingStringIterable, validation::setStrictlyDescendingStringArray, new String[] {"world", "my", "hello"}, new String[] {"world", "hello", "hello"});
     }
     
     /* -------------------------------------------------- Value -------------------------------------------------- */

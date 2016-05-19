@@ -61,16 +61,19 @@ public abstract class Validation extends RootClass implements Countable, Validat
     /* -------------------------------------------------- Elements -------------------------------------------------- */
     
     @Impure
-    public void setNonNullableElementsIterable(@NonNullableElements Iterable<String> iterable) {}
+    public void setNonNullableStringIterable(@NonNullableElements Iterable<String> iterable) {}
     
     @Impure
-    public void setNonNullableElementsArray(@NonNullableElements String[] array) {}
+    public void setNonNullableStringArray(@NonNullableElements String[] array) {}
     
     @Impure
-    public void setUniqueElementsIterable(@UniqueElements Iterable<String> iterable) {}
+    public void setUniqueStringIterable(@UniqueElements Iterable<String> iterable) {}
     
     @Impure
-    public void setUniqueElementsArray(@UniqueElements String[] array) {}
+    public void setUniqueStringArray(@UniqueElements String[] array) {}
+    
+    @Impure
+    public void setUniqueIntArray(@UniqueElements int[] array) {}
     
     /* -------------------------------------------------- Index -------------------------------------------------- */
     
@@ -221,30 +224,40 @@ public abstract class Validation extends RootClass implements Countable, Validat
     /* -------------------------------------------------- Order -------------------------------------------------- */
     
     @Impure
-    public void setAscendingIterable(@Ascending Iterable<String> iterable) {}
+    public void setAscendingIntArray(@Ascending int[] array) {}
     
     @Impure
-    public void setAscendingArray(@Ascending String[] array) {}
+    public void setDescendingIntArray(@Descending int[] array) {}
     
     @Impure
-    public void setDescendingIterable(@Descending Iterable<String> iterable) {}
+    public void setStrictlyAscendingIntArray(@StrictlyAscending int[] array) {}
     
     @Impure
-    public void setDescendingArray(@Descending String[] array) {}
+    public void setStrictlyDescendingIntArray(@StrictlyDescending int[] array) {}
     
     @Impure
-    public void setStrictlyAscendingIterable(@StrictlyAscending Iterable<String> iterable) {}
+    public void setAscendingStringIterable(@Ascending Iterable<String> iterable) {}
     
     @Impure
-    public void setStrictlyAscendingArray(@StrictlyAscending String[] array) {}
+    public void setAscendingStringArray(@Ascending String[] array) {}
     
     @Impure
-    public void setStrictlyDescendingIterable(@StrictlyDescending Iterable<String> iterable) {}
+    public void setDescendingStringIterable(@Descending Iterable<String> iterable) {}
     
     @Impure
-    public void setStrictlyDescendingArray(@StrictlyDescending String[] array) {}
+    public void setDescendingStringArray(@Descending String[] array) {}
     
-    // TODO: Do the same for a primitive type like int!
+    @Impure
+    public void setStrictlyAscendingStringIterable(@StrictlyAscending Iterable<String> iterable) {}
+    
+    @Impure
+    public void setStrictlyAscendingStringArray(@StrictlyAscending String[] array) {}
+    
+    @Impure
+    public void setStrictlyDescendingStringIterable(@StrictlyDescending Iterable<String> iterable) {}
+    
+    @Impure
+    public void setStrictlyDescendingStringArray(@StrictlyDescending String[] array) {}
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
