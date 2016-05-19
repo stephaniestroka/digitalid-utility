@@ -2,6 +2,7 @@ package net.digitalid.utility.conversion.converter.types;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,7 +50,7 @@ public enum CustomType {
     BINARY(typeMirror -> (typeMirror.toString().equals(byte[].class.getCanonicalName()) || typeMirror.toString().equals(Byte[].class.getCanonicalName())) && (typeMirror.getAnnotation(MaxSize.class) == null || typeMirror.getAnnotation(MaxSize.class).value() > 256), BinaryConverter.class.getName()),
     
     // TODO: Consider ReadOnlyList and co.
-    LIST(typeMirror -> ProcessingUtility.isAssignable(typeMirror, List.class), ListConverter.class.getName()),
+    LIST(typeMirror -> ProcessingUtility.isAssignable(typeMirror, List.class) || ProcessingUtility.isAssignable(typeMirror, Set.class), ListConverter.class.getName()),
     
     TUPLE(typeMirror -> ProcessingUtility.isAssignable(typeMirror, Tuple.class), TupleConverter.class.getName());
     
