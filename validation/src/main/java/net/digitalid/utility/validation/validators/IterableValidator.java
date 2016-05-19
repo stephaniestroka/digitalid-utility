@@ -11,13 +11,14 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * This class declares the target types for iterable annotations.
  * 
  * @see net.digitalid.utility.validation.annotations.elements
+ * @see OrderingValidator
  */
 @Stateless
 public abstract class IterableValidator extends ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(Iterable.class, Object[].class);
+    private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(Iterable.class, Object[].class, boolean[].class, char[].class, byte[].class, short[].class, int[].class, long[].class, float[].class, double[].class);
     
     @Pure
     @Override

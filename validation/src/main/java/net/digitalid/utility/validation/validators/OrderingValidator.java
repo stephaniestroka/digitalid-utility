@@ -41,14 +41,14 @@ public abstract class OrderingValidator extends IterableValidator {
         final @Nonnull TypeMirror type = ProcessingUtility.getType(element);
         if (type.getKind() == TypeKind.ARRAY) {
             final @Nonnull ArrayType arrayType = (ArrayType) type;
-            if (!ProcessingUtility.isAssignable(arrayType.getComponentType(), Comparable.class)) {
+            if (!ProcessingUtility.isRawlyAssignable(arrayType.getComponentType(), Comparable.class)) {
                 errorLogger.log("The annotation $ may only be used on arrays whose component type is comparable, which is not the case for $:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), arrayType.getComponentType());
             }
         } else if (type.getKind() == TypeKind.DECLARED) {
             final @Nonnull DeclaredType declaredType = (DeclaredType) type;
             if (declaredType.getTypeArguments().isEmpty()) {
                 errorLogger.log("The declared type $ does not have a generic type argument.", SourcePosition.of(element, annotationMirror), declaredType);
-            } else if (!ProcessingUtility.isAssignable(declaredType.getTypeArguments().get(0), Comparable.class)) {
+            } else if (!ProcessingUtility.isRawlyAssignable(declaredType.getTypeArguments().get(0), Comparable.class)) {
                 errorLogger.log("The annotation $ may only be used on iterables whose component type is comparable, but $ is not:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), declaredType.getTypeArguments().get(0));
             }
         } else {
@@ -107,6 +107,8 @@ public abstract class OrderingValidator extends IterableValidator {
         }
         return true;
     }
+    
+    // TODO: Provide validate implementations for all primitive types!
     
     /* -------------------------------------------------- Abstract Methods -------------------------------------------------- */
     

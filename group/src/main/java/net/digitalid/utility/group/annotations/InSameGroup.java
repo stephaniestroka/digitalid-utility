@@ -57,7 +57,7 @@ public @interface InSameGroup {
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             super.checkUsage(element, annotationMirror, errorLogger);
             
-            if (!ProcessingUtility.isAssignable(ProcessingUtility.getSurroundingType(element), GroupMember.class)) {
+            if (!ProcessingUtility.isRawlyAssignable(ProcessingUtility.getSurroundingType(element), GroupMember.class)) {
                 errorLogger.log("The annotation $ may only be used in group members:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
             }
         }

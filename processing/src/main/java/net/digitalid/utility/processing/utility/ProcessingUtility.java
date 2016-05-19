@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,6 +33,7 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.immutable.ImmutableMap;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -297,8 +297,8 @@ public class ProcessingUtility {
                     return null;
                 }
             case ARRAY:
-                final @Nonnull Class<?> componentType  = getClass(((ArrayType) typeMirror).getComponentType());
-                return Array.newInstance(componentType, 0).getClass();
+                final @Nullable Class<?> componentType  = getClass(((ArrayType) typeMirror).getComponentType());
+                return componentType != null ? Array.newInstance(componentType, 0).getClass() : null;
             case BOOLEAN: return boolean.class;
             case CHAR: return char.class;
             case BYTE: return byte.class;
@@ -393,67 +393,57 @@ public class ProcessingUtility {
     
     /* -------------------------------------------------- Assignability -------------------------------------------------- */
     
+    private static final @Nonnull ImmutableMap<@Nonnull Class<?>, @Nonnull TypeKind> primitiveTypes = ImmutableMap.<Class<?>, TypeKind>with(boolean.class, TypeKind.BOOLEAN).with(char.class, TypeKind.CHAR).with(byte.class, TypeKind.BYTE).with(short.class, TypeKind.SHORT).with(int.class, TypeKind.INT).with(long.class, TypeKind.LONG).with(float.class, TypeKind.FLOAT).with(double.class, TypeKind.DOUBLE).build();
+    
     /**
-     * 
+     * Returns the given class object as a type mirror.
      */
     @Pure
-    private static boolean checkTypeErasedSuperTypes(@Nonnull TypeMirror declaredType, @Nonnull TypeMirror desiredType) {
-        final Queue<TypeMirror> typeMirrors = new LinkedList<>(StaticProcessingEnvironment.getTypeUtils().directSupertypes(getType(declaredType)));
-        while (!typeMirrors.isEmpty()) {
-            final TypeMirror superType = typeMirrors.poll();
-            boolean result = StaticProcessingEnvironment.getTypeUtils().isAssignable(getType(StaticProcessingEnvironment.getTypeUtils().erasure(superType)), desiredType);
-            if (result) {
-                return true;
-            }
-            typeMirrors.addAll(StaticProcessingEnvironment.getTypeUtils().directSupertypes(getType(superType)));
+    public static @Nullable TypeMirror getTypeMirror(@Nonnull Class<?> type) {
+        if (type.isArray()) {
+            final @Nullable TypeMirror componentType = getTypeMirror(type.getComponentType());
+            if (componentType == null) { ProcessingLog.error("Could not retrieve a type mirror for the component type of the array $.", type.getCanonicalName()); }
+            else { return StaticProcessingEnvironment.getTypeUtils().getArrayType(componentType); }
+        } else if (type.isPrimitive()) {
+            final @Nullable TypeKind typeKind = primitiveTypes.get(type);
+            if (typeKind == null) { ProcessingLog.error("There is no mapping for the primitive type $.", type.getName()); }
+            else { return StaticProcessingEnvironment.getTypeUtils().getPrimitiveType(typeKind); }
+        } else if (type.isLocalClass()) {
+            ProcessingLog.error("Cannot retrieve a type mirror for the local class $.", type.getName());
+        } else if (type.isAnonymousClass()) {
+            ProcessingLog.error("Cannot retrieve a type mirror for the anonymous class $.", type.getName());
+        } else {
+            final @Nullable TypeElement desiredTypeElement = StaticProcessingEnvironment.getElementUtils().getTypeElement(type.getCanonicalName());
+            if (desiredTypeElement == null) { ProcessingLog.error("Could not retrieve the element for the type $.", type.getCanonicalName()); }
+            else { return desiredTypeElement.asType(); }
         }
-        return false;
+        return null;
+    }
+    
+    /**
+     * Returns the given class object as an erased type mirror.
+     */
+    @Pure
+    public static @Nullable TypeMirror getErasedTypeMirror(@Nonnull Class<?> type) {
+        final @Nullable TypeMirror typeMirror = getTypeMirror(type);
+        return typeMirror != null ? StaticProcessingEnvironment.getTypeUtils().erasure(typeMirror) : null;
     }
     
     /**
      * Returns whether the given declared type is assignable to the given desired type.
      */
     @Pure
-    public static boolean isAssignable(@Nonnull TypeMirror declaredType, @Nonnull Class<?> desiredType) {
-        ProcessingLog.verbose("Checking whether $ is assignable to $.", declaredType, desiredType.getCanonicalName());
-        
-        if (desiredType.isArray()) {
-            // TODO: find a way to check whether the declaredType is an array of a certain type.
-            return true;
-        }
-        
-        if (desiredType.isPrimitive()) {
-            if (!declaredType.getKind().isPrimitive()) {
-                return false;
-            }
-            final @Nonnull String declaredPrimitiveType;
-            if (declaredType instanceof Type.AnnotatedType) {
-                final Type.@Nonnull AnnotatedType annotatedType = (Type.AnnotatedType) declaredType;
-                declaredPrimitiveType = annotatedType.unannotatedType().toString();
-            } else {
-                declaredPrimitiveType = declaredType.toString();
-            }
-            return declaredPrimitiveType.equals(desiredType.toString());
-        }
-        
-        final @Nullable TypeElement desiredTypeElement = StaticProcessingEnvironment.getElementUtils().getTypeElement(desiredType.getCanonicalName());
-        if (desiredTypeElement == null) { ProcessingLog.error("Could not retrieve the element for the type $.", desiredType); return false; }
-        
-        boolean result = StaticProcessingEnvironment.getTypeUtils().isAssignable(getType(StaticProcessingEnvironment.getTypeUtils().erasure(getType(declaredType))), desiredTypeElement.asType());
-        if (!result) {
-            ProcessingLog.debugging("The given type $ is not assignable to the desired type $. Checking super types (with type erasure).");
-            result = checkTypeErasedSuperTypes(getType(declaredType), desiredTypeElement.asType());
-        }
-        ProcessingLog.debugging("= $", result);
-        return result;
+    public static boolean isRawlyAssignable(@Nonnull TypeMirror declaredType, @Nonnull Class<?> desiredType) {
+        final @Nullable TypeMirror typeMirror = getErasedTypeMirror(desiredType);
+        return typeMirror != null ? StaticProcessingEnvironment.getTypeUtils().isAssignable(declaredType, typeMirror) : false;
     }
     
     /**
      * Returns whether the given element is assignable to the given type.
      */
     @Pure
-    public static boolean isAssignable(@Nonnull Element element, @Nonnull Class<?> type) {
-        return isAssignable(getType(element), type);
+    public static boolean isRawlyAssignable(@Nonnull Element element, @Nonnull Class<?> type) {
+        return isRawlyAssignable(getType(element), type);
     }
     
     /* -------------------------------------------------- Component Type -------------------------------------------------- */
@@ -476,7 +466,7 @@ public class ProcessingUtility {
     
     @Pure
     public static boolean isCollection(@Nonnull TypeMirror type) {
-        return (type instanceof DeclaredType && isAssignable(type, Collection.class));
+        return (type instanceof DeclaredType && ProcessingUtility.isRawlyAssignable(type, Collection.class));
     }
     
     @Pure
@@ -612,7 +602,7 @@ public class ProcessingUtility {
         for (@Nonnull ExecutableElement inheritedMethod : getAllMethods(typeElement)) {
             final @Nonnull ExecutableType methodType = (ExecutableType) StaticProcessingEnvironment.getTypeUtils().asMemberOf(surroundingType, inheritedMethod);
             if (inheritedMethod.getSimpleName().contentEquals(methodName) && inheritedMethod.getThrownTypes().isEmpty()) {
-                if (isAssignable(inheritedMethod.getReturnType(), returnType)) {
+                if (isRawlyAssignable(inheritedMethod.getReturnType(), returnType)) {
                     if (methodType.getParameterTypes().size() == parameterTypes.length) {
                         boolean isAssignable = true;
                         for (int i = 0; i < parameterTypes.length; i++) {

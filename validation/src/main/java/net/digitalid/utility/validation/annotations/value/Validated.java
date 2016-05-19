@@ -14,7 +14,6 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.functional.interfaces.Predicate;
-import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
@@ -60,18 +59,10 @@ public @interface Validated {
     @Stateless
     public static class Validator extends ValueAnnotationValidator {
         
-        private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of();
-        
-        @Pure
-        @Override
-        public @Nonnull FiniteIterable<@Nonnull Class<?>> getTargetTypes() {
-            return targetTypes;
-        }
-        
         @Pure
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
-            if (!ProcessingUtility.isAssignable(ProcessingUtility.getSurroundingType(element), Validated.Value.class)) {
+            if (!ProcessingUtility.isRawlyAssignable(ProcessingUtility.getSurroundingType(element), Validated.Value.class)) {
                 errorLogger.log("The annotation '@Validated' may only be used in types that implement the Validated.Value interface:", SourcePosition.of(element, annotationMirror));
             }
         }

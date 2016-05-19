@@ -37,7 +37,7 @@ public abstract class MethodAnnotationValidator extends AnnotationHandler implem
     public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
         if (element.getKind() != ElementKind.METHOD && element.getKind() != ElementKind.CONSTRUCTOR) {
             errorLogger.log("The method annotation $ may only be used on methods and constructors.", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
-        } else if (!ProcessingUtility.isAssignable(element.getEnclosingElement(), getReceiverType())) { // ((ExecutableElement) element).getReceiverType() is only possible in Java 1.8.
+        } else if (!ProcessingUtility.isRawlyAssignable(element.getEnclosingElement(), getReceiverType())) { // ((ExecutableElement) element).getReceiverType() is only possible in Java 1.8.
             errorLogger.log("The method annotation $ can only be used in $.", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), getReceiverType().getCanonicalName());
         }
     }

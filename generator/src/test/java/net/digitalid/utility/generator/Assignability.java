@@ -37,7 +37,7 @@ public abstract class Assignability {
     public abstract @UnassignableTo(String[].class) String getStringUnassignableToStringArray();
     
     @Pure
-    public abstract @UnassignableTo(String[][].class) String getStringUnassignableToArrayOfStringArrays();
+    public abstract @UnassignableTo(String[][].class) String getStringUnassignableToNestedStringArray();
     
     /* -------------------------------------------------- Primitives -------------------------------------------------- */
     
@@ -69,7 +69,7 @@ public abstract class Assignability {
     public abstract @UnassignableTo(int[].class) int getIntUnassignableToIntArray();
     
     @Pure
-    public abstract @UnassignableTo(int[][].class) int getIntUnassignableToArrayOfIntArrays();
+    public abstract @UnassignableTo(int[][].class) int getIntUnassignableToNestedIntArray();
     
     /* -------------------------------------------------- Arrays -------------------------------------------------- */
     
@@ -77,10 +77,31 @@ public abstract class Assignability {
     public abstract @AssignableTo(int[].class) int[] getIntArrayAssignableToIntArray();
     
     @Pure
+    public abstract @AssignableTo(Object.class) int[] getIntArrayAssignableToObject();
+    
+    @Pure
+    public abstract @AssignableTo(int[][].class) int[][] getNestedIntArrayAssignableToNestedIntArray();
+    
+    @Pure
+    public abstract @AssignableTo(Object[].class) int[][] getNestedIntArrayAssignableToObjectArray();
+    
+    @Pure
     public abstract @AssignableTo(String[].class) String[] getStringArrayAssignableToStringArray();
     
     @Pure
     public abstract @AssignableTo(Object[].class) String[] getStringArrayAssignableToObjectArray();
+    
+    @Pure
+    public abstract @AssignableTo(Object.class) String[] getStringArrayAssignableToObject();
+    
+    @Pure
+    public abstract @AssignableTo(String[][].class) String[][] getNestedStringArrayAssignableToNestedStringArray();
+    
+    @Pure
+    public abstract @AssignableTo(Object[][].class) String[][] getNestedStringArrayAssignableToNestedObjectArray();
+    
+    @Pure
+    public abstract @AssignableTo(Object[].class) String[][] getNestedStringArrayAssignableToObjectArray();
     
     @Pure
     public abstract @UnassignableTo(int.class) int[] getIntArrayUnassignableToInt();
@@ -92,7 +113,10 @@ public abstract class Assignability {
     public abstract @UnassignableTo(Integer[].class) int[] getIntArrayUnassignableToIntegerArray();
     
     @Pure
-    public abstract @UnassignableTo(int[][].class) int[] getIntArrayUnassignableToArrayOfIntArrays();
+    public abstract @UnassignableTo(int[][].class) int[] getIntArrayUnassignableToNestedIntArray();
+    
+    @Pure
+    public abstract @UnassignableTo(int[].class) int[][] getNestedIntArrayUnassignableToIntArray();
     
     @Pure
     public abstract @UnassignableTo(String.class) String[] getStringArrayUnassignableToString();
@@ -101,6 +125,17 @@ public abstract class Assignability {
     public abstract @UnassignableTo(String[].class) Object[] getObjectArrayUnassignableToStringArray();
     
     @Pure
-    public abstract @UnassignableTo(String[][].class) String[] getStringArrayUnassignableToArrayOfStringArrays();
+    public abstract @UnassignableTo(String[][].class) String[] getStringArrayUnassignableToNestedStringArray();
+    
+    @Pure
+    public abstract @UnassignableTo(String[].class) String[][] getNestedStringArrayUnassignableToStringArray();
+    
+    /* -------------------------------------------------- Generics -------------------------------------------------- */
+    
+    // TODO: Make some tests for types with generic parameters!
+    
+    /* -------------------------------------------------- Nested -------------------------------------------------- */
+    
+    // TODO: Make some tests for nested classes!
     
 }

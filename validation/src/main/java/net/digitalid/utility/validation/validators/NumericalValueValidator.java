@@ -51,11 +51,11 @@ public abstract class NumericalValueValidator extends ValueAnnotationValidator {
     @Pure
     @Override
     public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-        if (ProcessingUtility.isAssignable(element, BigIntegerNumerical.class)) {
+        if (ProcessingUtility.isRawlyAssignable(element, BigIntegerNumerical.class)) {
             return Contract.with("# == null || #.getValue().compareTo(" + typeImporter.importIfPossible(BigInteger.class) + ".ZERO) " + getComparisonOperator() + " 0", "The # has to be null or " + getDecamelizedAnnotationName().replace(" ", "-") + " but was $.", element);
-        } else if (ProcessingUtility.isAssignable(element, BigInteger.class)) {
+        } else if (ProcessingUtility.isRawlyAssignable(element, BigInteger.class)) {
             return Contract.with("# == null || #.compareTo(" + typeImporter.importIfPossible(BigInteger.class) + ".ZERO) " + getComparisonOperator() + " 0", "The # has to be null or " + getDecamelizedAnnotationName().replace(" ", "-") + " but was $.", element);
-        } else if (ProcessingUtility.isAssignable(element, LongNumerical.class)) {
+        } else if (ProcessingUtility.isRawlyAssignable(element, LongNumerical.class)) {
             return Contract.with("# == null || #.getValue() " + getComparisonOperator() + " 0", "The # has to be " + getDecamelizedAnnotationName().replace(" ", "-") + " but was $.", element);
         } else {
             return Contract.with("# " + getComparisonOperator() + " 0", "The # has to be " + getDecamelizedAnnotationName().replace(" ", "-") + " but was $.", element);

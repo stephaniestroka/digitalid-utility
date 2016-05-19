@@ -45,11 +45,11 @@ public @interface Even {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            if (ProcessingUtility.isAssignable(element, BigIntegerNumerical.class)) {
+            if (ProcessingUtility.isRawlyAssignable(element, BigIntegerNumerical.class)) {
                 return Contract.with("# == null || #.getValue().getLowestSetBit() != 0", "The # has to be null or even but was $.", element);
-            } else if (ProcessingUtility.isAssignable(element, BigInteger.class)) {
+            } else if (ProcessingUtility.isRawlyAssignable(element, BigInteger.class)) {
                 return Contract.with("# == null || #.getLowestSetBit() != 0", "The # has to be null or even but was $.", element);
-            } else if (ProcessingUtility.isAssignable(element, LongNumerical.class)) {
+            } else if (ProcessingUtility.isRawlyAssignable(element, LongNumerical.class)) {
                 return Contract.with("# == null || #.getValue() % 2 == 0", "The # has to be null or even but was $.", element);
             } else {
                 return Contract.with("# % 2 == 0", "The # has to be even but was $.", element);

@@ -27,7 +27,7 @@ public abstract class SizeValidator extends ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(Collection.class, Countable.class, Object[].class, CharSequence.class);
+    private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(CharSequence.class, Collection.class, Countable.class, Object[].class, boolean[].class, char[].class, byte[].class, short[].class, int[].class, long[].class, float[].class, double[].class);
     
     @Pure
     @Override
@@ -63,11 +63,10 @@ public abstract class SizeValidator extends ValueAnnotationValidator {
     @Pure
     @Override
     public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-        // TODO: isAssignable() does not yet work for arrays.
-        if (ProcessingUtility.isArray(element)) {
-            return generateContract("# == null || #.length " + getSizeComparison(), "The length of the # has to be " + getMessageCondition() + " but was $.", element, annotationMirror, ".length");
-        } else if (ProcessingUtility.isAssignable(element, CharSequence.class)) {
+        if (ProcessingUtility.isRawlyAssignable(element, CharSequence.class)) {
             return generateContract("# == null || #.length() " + getSizeComparison(), "The length of the # has to be " + getMessageCondition() + " but was $.", element, annotationMirror, ".length()");
+        } else if (ProcessingUtility.isArray(element)) {
+            return generateContract("# == null || #.length " + getSizeComparison(), "The length of the # has to be " + getMessageCondition() + " but was $.", element, annotationMirror, ".length");
         } else {
             return generateContract("# == null || #.size() " + getSizeComparison(), "The size of the # has to be " + getMessageCondition() + " but was $.", element, annotationMirror, ".size()");
         }

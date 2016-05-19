@@ -69,15 +69,15 @@ public class ConverterGenerator extends JavaFileGenerator {
                     componentType = ((Type.AnnotatedType) componentType).unannotatedType();
                 }
                 addStatement("valueCollector.setArray(" + fieldAccess + ", " + importIfPossible(componentType.toString()) + ".class)");
-            } else if (ProcessingUtility.isAssignable(fieldType, List.class)) {
+            } else if (ProcessingUtility.isRawlyAssignable(fieldType, List.class)) {
                 DeclaredType declaredType = (DeclaredType) fieldType;
                 final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
                 addStatement("valueCollector.setList(" + fieldAccess + ", " + typeArgumentsAsClasses + ")");
-            } else if (ProcessingUtility.isAssignable(fieldType, Set.class)) {
+            } else if (ProcessingUtility.isRawlyAssignable(fieldType, Set.class)) {
                 DeclaredType declaredType = (DeclaredType) fieldType;
                 final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
                 addStatement("valueCollector.setSet(" + fieldAccess + ", " + typeArgumentsAsClasses + ")");
-            } else if (ProcessingUtility.isAssignable(fieldType, Map.class)) {
+            } else if (ProcessingUtility.isRawlyAssignable(fieldType, Map.class)) {
                 DeclaredType declaredType = (DeclaredType) fieldType;
                 final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
                 addStatement("valueCollector.setMap(" + fieldAccess + ", " + typeArgumentsAsClasses + ")");
@@ -121,15 +121,15 @@ public class ConverterGenerator extends JavaFileGenerator {
                 Type.ArrayType arrayType = (Type.ArrayType) fieldType;
                 final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(arrayType.getComponentType()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
                 addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getArray(" + typeArgumentsAsClasses + ")");
-            } else if (ProcessingUtility.isAssignable(fieldType, List.class)) {
+            } else if (ProcessingUtility.isRawlyAssignable(fieldType, List.class)) {
                 DeclaredType declaredType = (DeclaredType) fieldType;
                 final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
                 addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getList(" + typeArgumentsAsClasses + ")");
-            } else if (ProcessingUtility.isAssignable(fieldType, Set.class)) {
+            } else if (ProcessingUtility.isRawlyAssignable(fieldType, Set.class)) {
                 DeclaredType declaredType = (DeclaredType) fieldType;
                 final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
                 addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getSet(" + typeArgumentsAsClasses + ")");
-            } else if (ProcessingUtility.isAssignable(fieldType, Map.class)) {
+            } else if (ProcessingUtility.isRawlyAssignable(fieldType, Map.class)) {
                 DeclaredType declaredType = (DeclaredType) fieldType;
                 final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
                 addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getMap(" + typeArgumentsAsClasses + ")");

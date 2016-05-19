@@ -244,6 +244,8 @@ public abstract class Validation extends RootClass implements Countable, Validat
     @Impure
     public void setStrictlyDescendingArray(@StrictlyDescending String[] array) {}
     
+    // TODO: Do the same for a primitive type like int!
+    
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
     @Impure
