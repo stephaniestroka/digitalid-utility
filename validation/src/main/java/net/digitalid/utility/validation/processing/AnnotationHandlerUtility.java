@@ -36,36 +36,6 @@ public class AnnotationHandlerUtility {
     private static final @Nonnull Map<@Nonnull String, @Nonnull AnnotationHandler> cachedAnnotationHandlers = new HashMap<>();
     
     /**
-     * Returns the cache key for the given annotation mirror and meta-annotation type.
-     */
-    @Pure
-    private static @Nonnull String getAnnotationHandlerCacheKey(@Nonnull AnnotationMirror annotationMirror, @Nonnull Class<? extends Annotation> metaAnnotationType) {
-        return ProcessingUtility.getQualifiedName(annotationMirror) + "$" + metaAnnotationType.getCanonicalName();
-    }
-    
-    /**
-     * Returns the cached annotation handler for the given annotation mirror and meta-annotation type or null if no annotation handler for the given annotation mirror and meta-annotation type is cached.
-     */
-    @Pure
-    @SuppressWarnings("unchecked")
-    private static <H extends AnnotationHandler> @Nullable H getCachedAnnotationHandler(@Nonnull AnnotationMirror annotationMirror, @Nonnull Class<? extends Annotation> metaAnnotationType, @Nonnull Class<H> annotationHandlerType) {
-        final @Nonnull String cacheKey = getAnnotationHandlerCacheKey(annotationMirror, metaAnnotationType);
-        final @Nullable AnnotationHandler cachedAnnotationHandler = cachedAnnotationHandlers.get(cacheKey);
-        return annotationHandlerType.isInstance(cachedAnnotationHandler) ? (H) cachedAnnotationHandler : null;
-    }
-    
-    /**
-     * Returns a new annotation handler for the given annotation mirror and meta-annotation type or null if the given annotation mirror does not specify an annotation handler with the given meta-annotation type.
-     */
-    @Pure
-    @SuppressWarnings("unchecked")
-    private static <H extends AnnotationHandler> @Nullable H getNewAnnotationHandler(@Nonnull AnnotationMirror annotationMirror, @Nonnull Class<? extends Annotation> metaAnnotationType, @Nonnull Class<H> annotationHandlerType) {
-        final @Nonnull TypeElement annotationElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
-        final @Nullable AnnotationValue metaAnnotationValue = ProcessingUtility.getAnnotationValue(annotationElement, metaAnnotationType);
-        return ProcessingUtility.getInstance(metaAnnotationValue, annotationHandlerType);
-    }
-    
-    /**
      * Returns the annotation handlers of the given type which are found with the given meta-annotation type on the annotations of the given element.
      */
     @Pure
@@ -73,13 +43,16 @@ public class AnnotationHandlerUtility {
     public static @Capturable <H extends AnnotationHandler> @Modifiable @Nonnull Map<@Nonnull AnnotationMirror, @Nonnull H> getAnnotationHandlers(@Nonnull Element element, @Nonnull Class<? extends Annotation> metaAnnotationType, @Nonnull Class<H> annotationHandlerType) {
         final @Nonnull Map<@Nonnull AnnotationMirror, @Nonnull H> result = new LinkedHashMap<>();
         for (@Nonnull AnnotationMirror annotationMirror : ProcessingUtility.getAnnotationMirrors(element)) {
-            // TODO: Also cache the non-existence of an annotation handler!
-            @Nullable H annotationHandler = getCachedAnnotationHandler(annotationMirror, metaAnnotationType, annotationHandlerType);
-            if (annotationHandler == null) {
-                annotationHandler = getNewAnnotationHandler(annotationMirror, metaAnnotationType, annotationHandlerType);
-                if (annotationHandler != null) {
-                    cachedAnnotationHandlers.put(getAnnotationHandlerCacheKey(annotationMirror, metaAnnotationType), annotationHandler);
-                }
+            final @Nullable H annotationHandler;
+            final @Nonnull String cacheKey = ProcessingUtility.getQualifiedName(annotationMirror) + "$" + metaAnnotationType.getCanonicalName();
+            if (cachedAnnotationHandlers.containsKey(cacheKey)) {
+                final @Nullable AnnotationHandler cachedAnnotationHandler = cachedAnnotationHandlers.get(cacheKey);
+                annotationHandler = annotationHandlerType.isInstance(cachedAnnotationHandler) ? (H) cachedAnnotationHandler : null;
+            } else {
+                final @Nonnull TypeElement annotationElement = (TypeElement) annotationMirror.getAnnotationType().asElement();
+                final @Nullable AnnotationValue metaAnnotationValue = ProcessingUtility.getAnnotationValue(annotationElement, metaAnnotationType);
+                annotationHandler = ProcessingUtility.getInstance(metaAnnotationValue, annotationHandlerType);
+                cachedAnnotationHandlers.put(cacheKey, annotationHandler);
             }
             if (annotationHandler != null) {
                 ProcessingLog.debugging("Found the annotation handler $ for", SourcePosition.of(element, annotationMirror), annotationHandler.getClass().getCanonicalName());
