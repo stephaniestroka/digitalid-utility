@@ -14,7 +14,6 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
@@ -61,12 +60,8 @@ public @interface UnassignableTo {
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             final @Nullable Class<?> desiredType = ProcessingUtility.getClass(ProcessingUtility.getAnnotationValue(annotationMirror));
-            if (desiredType != null) {
-                if (!ProcessingUtility.isAssignable(element, desiredType)) {
-                    ProcessingLog.verbose("The value is unassignable to $:", SourcePosition.of(element), desiredType.getCanonicalName());
-                } else {
-                    errorLogger.log("The value is assignable to $:", SourcePosition.of(element), desiredType.getCanonicalName());
-                }
+            if (desiredType != null && ProcessingUtility.isAssignable(element, desiredType)) {
+                errorLogger.log("The value is assignable to $:", SourcePosition.of(element), desiredType.getCanonicalName());
             }
         }
         

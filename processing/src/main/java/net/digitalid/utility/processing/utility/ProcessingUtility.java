@@ -1,6 +1,7 @@
 package net.digitalid.utility.processing.utility;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -281,20 +282,46 @@ public class ProcessingUtility {
     }
     
     /**
+     * Returns the given type mirror as a class object.
+     */
+    @Pure
+    public static @Nullable Class<?> getClass(@Nonnull TypeMirror typeMirror) {
+        switch (typeMirror.getKind()) {
+            case DECLARED:
+                final @Nonnull TypeElement typeElement = (TypeElement) ((DeclaredType) typeMirror).asElement();
+                final @Nonnull String binaryName = StaticProcessingEnvironment.getElementUtils().getBinaryName(typeElement).toString();
+                try {
+                    return Class.forName(binaryName);
+                } catch (@Nonnull ClassNotFoundException exception) {
+                    ProcessingLog.error("Could not find the class $.", binaryName);
+                    return null;
+                }
+            case ARRAY:
+                final @Nonnull Class<?> componentType  = getClass(((ArrayType) typeMirror).getComponentType());
+                return Array.newInstance(componentType, 0).getClass();
+            case BOOLEAN: return boolean.class;
+            case CHAR: return char.class;
+            case BYTE: return byte.class;
+            case SHORT: return short.class;
+            case INT: return int.class;
+            case LONG: return long.class;
+            case FLOAT: return float.class;
+            case DOUBLE: return double.class;
+            default:
+                ProcessingLog.error("The type mirror represents neither a primitive, a declared nor an array type: $.", typeMirror);
+                return null;
+        }
+    }
+    
+    /**
      * Returns the given annotation value as a class object or propagates null.
      */
     @Pure
     public static @Nullable Class<?> getClass(@Nullable AnnotationValue annotationValue) {
         if (annotationValue != null) {
             final @Nonnull Object object = annotationValue.getValue();
-            if (object instanceof DeclaredType) {
-                final @Nonnull TypeElement typeElement = (TypeElement) ((DeclaredType) object).asElement();
-                final @Nonnull String binaryName = StaticProcessingEnvironment.getElementUtils().getBinaryName(typeElement).toString();
-                try {
-                    return Class.forName(binaryName);
-                } catch (@Nonnull ClassNotFoundException exception) {
-                    ProcessingLog.error("Could not find the class $.", binaryName);
-                }
+            if (object instanceof TypeMirror) {
+                return getClass((TypeMirror) object);
             } else {
                 ProcessingLog.error("The annotation value is not a class: $.", object);
             }
@@ -332,8 +359,8 @@ public class ProcessingUtility {
     @Pure
     private static @Nonnull String getAnnotationValueAsString(@Nonnull AnnotationValue annotationValue, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
         final @Nonnull Object object = annotationValue.getValue();
-        if (object instanceof DeclaredType) {
-            return typeImporter.importIfPossible((DeclaredType) object) + ".class";
+        if (object instanceof TypeMirror) {
+            return typeImporter.importIfPossible((TypeMirror) object) + ".class";
         } else {
             return annotationValue.toString();
         }

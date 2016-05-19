@@ -114,7 +114,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         this.qualifiedClassName = qualifiedClassName;
         this.sourceClassElement = sourceClassElement;
         this.packageName = qualifiedClassName.substring(0, qualifiedClassName.lastIndexOf('.'));
-        ProcessingLog.verbose("Generating the class " + this);
+        ProcessingLog.verbose("Generating the Java source file for the class $.", getName());
     }
     
     /**
@@ -213,9 +213,9 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
      * This type visitor imports the given type mirror with its generic parameters if their simple names are not yet mapped to different types.
      */
     @Immutable
-    public class TypeVisitor extends ProcessingUtility.QualifiedNameTypeVisitor {
+    public class ImportingTypeVisitor extends ProcessingUtility.QualifiedNameTypeVisitor {
         
-        protected TypeVisitor() {}
+        protected ImportingTypeVisitor() {}
         
         @Pure
         @Override
@@ -239,7 +239,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         
     }
     
-    private final @Nonnull TypeVisitor typeVisitor = new TypeVisitor();
+    private final @Nonnull ImportingTypeVisitor importingTypeVisitor = new ImportingTypeVisitor();
     
     /* -------------------------------------------------- Type Importer -------------------------------------------------- */
     
@@ -284,7 +284,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @Override
     @NonWrittenRecipient
     public @Nonnull String importIfPossible(@Nonnull TypeMirror typeMirror) {
-        return typeVisitor.visit(typeMirror);
+        return importingTypeVisitor.visit(typeMirror);
     }
     
     @Impure
@@ -593,12 +593,6 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @NonWrittenRecipient
     @OnlyPossibleIn({NONE, CLASS, INTERFACE})
     public void beginInterface(@Nonnull String declaration) {
-        ProcessingLog.debugging("beginInterface");
-        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        ProcessingLog.debugging("stack trace:");
-        for (StackTraceElement stackTraceElement : stackTrace) {
-            ProcessingLog.debugging(stackTraceElement.toString());
-        }
         beginClassOrInterface(declaration, CodeBlock.INTERFACE);
     }
     
@@ -606,7 +600,6 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @NonWrittenRecipient
     @OnlyPossibleIn({INTERFACE})
     public void endInterface() {
-        ProcessingLog.debugging("endInterface");
         endClassOrInterface(CodeBlock.INTERFACE);
     }
     
@@ -616,7 +609,6 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @NonWrittenRecipient
     @OnlyPossibleIn({NONE, CLASS, INTERFACE})
     public void beginClass(@Nonnull String declaration) {
-        ProcessingLog.debugging("beginClass");
         beginClassOrInterface(declaration, CodeBlock.CLASS);
     }
     
@@ -624,7 +616,6 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @NonWrittenRecipient
     @OnlyPossibleIn({CLASS})
     public void endClass() {
-        ProcessingLog.debugging("endClass");
         endClassOrInterface(CodeBlock.CLASS);
     }
     
@@ -634,7 +625,6 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @NonWrittenRecipient
     @OnlyPossibleIn({CLASS, METHOD})
     public void beginAnonymousClass(@Nonnull String declaration) {
-        ProcessingLog.debugging("beginAnonymousClass");
         requireCurrentCodeBlock(CLASS, METHOD);
         beginBlock(declaration, CodeBlock.ANONYMOUS_CLASS, CLASS, METHOD);
         addEmptyLine();
@@ -644,7 +634,6 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @NonWrittenRecipient
     @OnlyPossibleIn({ANONYMOUS_CLASS})
     public void endAnonymousClass() {
-        ProcessingLog.debugging("endAnonymousClass");
         endBlock(ANONYMOUS_CLASS);
     }
     
@@ -877,7 +866,6 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @NonWrittenRecipient
     @OnlyPossibleIn()
     public void addPostcondition(@Nonnull Contract generatedContract) {
-        ProcessingLog.debugging("addPostcondition($)", generatedContract.getCondition());
         addContract(Ensure.class, generatedContract);
     }
     
