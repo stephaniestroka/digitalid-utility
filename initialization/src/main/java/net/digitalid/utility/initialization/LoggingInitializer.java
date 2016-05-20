@@ -11,6 +11,7 @@ import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.Initializer;
 import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.logging.Log;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
@@ -24,7 +25,7 @@ public abstract class LoggingInitializer extends Initializer {
     /**
      * Creates and registers this initializer with the given target and dependencies.
      */
-    protected LoggingInitializer(@NonCaptured @Modified @Nonnull Configuration<?> target, @NonCaptured @Unmodified @Nonnull Configuration<?>... dependencies) {
+    protected LoggingInitializer(@NonCaptured @Modified @Nonnull Configuration<?> target, @NonCaptured @Unmodified @Nonnull @NonNullableElements Configuration<?>... dependencies) {
         super(target, dependencies);
         
         Log.debugging("The initializer " + this + " was loaded.");

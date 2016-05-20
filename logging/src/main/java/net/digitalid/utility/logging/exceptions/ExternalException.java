@@ -8,6 +8,7 @@ import net.digitalid.utility.exceptions.InternalException;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -34,7 +35,7 @@ public abstract class ExternalException extends Exception {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ExternalException(@Nullable String message, @Nullable Exception cause, @Captured @Nullable Object... arguments) {
+    protected ExternalException(@Nullable String message, @Nullable Exception cause, @Captured @Nonnull @NullableElements Object... arguments) {
         super(message == null ? "An external exception occurred." : Strings.format(message, arguments), cause);
         
         this.arguments = ImmutableList.with(arguments);
@@ -42,7 +43,7 @@ public abstract class ExternalException extends Exception {
         Log.warning("An external exception occurred:", this);
     }
     
-    protected ExternalException(@Nullable String message, @Captured @Nullable Object... arguments) {
+    protected ExternalException(@Nullable String message, @Captured @Nonnull @NullableElements Object... arguments) {
         this(message, null, arguments);
     }
     

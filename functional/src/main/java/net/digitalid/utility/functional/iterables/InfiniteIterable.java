@@ -84,7 +84,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default @Nonnull FunctionalIterable<E> filterNulls() {
+    public default @Nonnull InfiniteIterable<E> filterNulls() {
         return filter(element -> element != null);
     }
     

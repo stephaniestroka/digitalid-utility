@@ -36,8 +36,10 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.ImmutableMap;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.annotations.type.Utility;
+import net.digitalid.utility.validation.annotations.type.kind.EnumType;
 
 import com.sun.tools.javac.code.Type;
 
@@ -279,6 +281,45 @@ public class ProcessingUtility {
             }
         }
         return null;
+    }
+    
+    /**
+     * Returns the given annotation value as a constant of the given enum type or propagates null.
+     */
+    @Pure
+    public static <T extends Enum<T>> @Nullable T getEnum(@Nullable AnnotationValue annotationValue, @Nonnull @EnumType Class<T> type) {
+        if (annotationValue != null) {
+            final @Nonnull Object object = annotationValue.getValue();
+            if (object instanceof VariableElement) {
+                final @Nonnull String name = ((VariableElement) object).getSimpleName().toString();
+                try {
+                    return Enum.valueOf(type, name);
+                } catch (@Nonnull IllegalArgumentException exception) {
+                    ProcessingLog.error("The enum type $ has no constant with the name $.", type.getCanonicalName(), name);
+                }
+            } else {
+                ProcessingLog.error("The annotation value is not an enum constant: $.", object);
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Returns the given annotation value as constants of the given enum type or returns an empty iterable if the given annotation value is null.
+     */
+    @Pure
+    @SuppressWarnings("unchecked")
+    public static <T extends Enum<T>> @Nonnull FiniteIterable<@Nonnull T> getEnums(@Nullable AnnotationValue annotationValue, @Nonnull @EnumType Class<T> type) {
+        if (annotationValue != null) {
+            final @Nonnull Object object = annotationValue.getValue();
+            if (object instanceof List<?>) {
+                final @Nonnull List<@Nonnull ? extends AnnotationValue> list = (List<? extends AnnotationValue>) object;
+                return FiniteIterable.of(list).map(value -> getEnum(value, type)).filterNulls();
+            } else {
+                ProcessingLog.error("The annotation value is not a list: $.", object);
+            }
+        }
+        return FiniteIterable.of();
     }
     
     /**
@@ -621,7 +662,7 @@ public class ProcessingUtility {
      * Returns the method with the given name, return type, parameter types and no thrown types in the given type element or null if no such method is found.
      */
     @Pure
-    public static @Nullable ExecutableElement getMethod(@Nonnull TypeElement typeElement, @Nonnull String methodName, @Nonnull Class<?> returnType, @Nonnull Class<?>... parameterTypes) {
+    public static @Nullable ExecutableElement getMethod(@Nonnull TypeElement typeElement, @Nonnull String methodName, @Nonnull Class<?> returnType, @Nonnull @NonNullableElements Class<?>... parameterTypes) {
         final @Nonnull DeclaredType surroundingType = (DeclaredType) typeElement.asType();
         for (@Nonnull ExecutableElement inheritedMethod : getAllMethods(typeElement)) {
             final @Nonnull ExecutableType methodType = (ExecutableType) StaticProcessingEnvironment.getTypeUtils().asMemberOf(surroundingType, inheritedMethod);
@@ -645,7 +686,7 @@ public class ProcessingUtility {
      * Returns whether the given type element contains a method with the given name, return type, parameter types and no thrown types.
      */
     @Pure
-    public static boolean hasMethod(@Nonnull TypeElement typeElement, @Nonnull String methodName, @Nonnull Class<?> returnType, @Nonnull Class<?>... parameterTypes) {
+    public static boolean hasMethod(@Nonnull TypeElement typeElement, @Nonnull String methodName, @Nonnull Class<?> returnType, @Nonnull @NonNullableElements Class<?>... parameterTypes) {
         return getMethod(typeElement, methodName, returnType, parameterTypes) != null;
     }
     

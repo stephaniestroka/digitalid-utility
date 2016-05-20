@@ -12,6 +12,7 @@ import net.digitalid.utility.generator.annotations.interceptors.Logged;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.getter.Default;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -42,7 +43,7 @@ public abstract class AbstractClass extends RootClass {
     
     protected AbstractClass() throws IOException {}
     
-    public static void main(@Nonnull String... args) throws IOException {
+    public static void main(@Nonnull @NullableElements String... args) throws IOException {
         Level.threshold.set(Level.VERBOSE);
         Configuration.initializeAllConfigurations();
         final @Nonnull AbstractClass object = AbstractClassBuilder.withValue(new String[] {"test"}).withNumber(4).build();

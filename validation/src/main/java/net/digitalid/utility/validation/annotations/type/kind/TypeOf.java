@@ -5,9 +5,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
@@ -17,12 +14,10 @@ import javax.lang.model.element.ElementKind;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
-import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
@@ -66,14 +61,14 @@ public @interface TypeOf {
             return targetTypes;
         }
         
-        private static final @Unmodifiable @Nonnull @NonNullableElements List<ElementKind> typeKinds = Collections.unmodifiableList(Arrays.asList(CLASS, INTERFACE, ENUM, ANNOTATION_TYPE));
+        private static final @Nonnull FiniteIterable<@Nonnull ElementKind> typeKinds = FiniteIterable.of(CLASS, INTERFACE, ENUM, ANNOTATION_TYPE);
         
         @Pure
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             super.checkUsage(element, annotationMirror, errorLogger);
             
-            if (ProcessingUtility.isRawlyAssignable(element, Class.class) && !typeKinds.containsAll(Arrays.asList(element.getAnnotation(TypeOf.class).value()))) {
+            if (ProcessingUtility.isRawlyAssignable(element, Class.class) && !typeKinds.containsAll(ProcessingUtility.getEnums(ProcessingUtility.getAnnotationValue(annotationMirror), ElementKind.class))) {
                 errorLogger.log("In case of classes, the annotation '@TypeKind' may only be used with CLASS, INTERFACE, ENUM and ANNOTATION_TYPE:", SourcePosition.of(element, annotationMirror));
             }
         }
@@ -82,7 +77,7 @@ public @interface TypeOf {
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
             final @Nonnull StringBuilder condition = new StringBuilder("# == null");
-            for (@Nonnull ElementKind kind : element.getAnnotation(TypeOf.class).value()) {
+            for (@Nonnull ElementKind kind : ProcessingUtility.getEnums(ProcessingUtility.getAnnotationValue(annotationMirror), ElementKind.class)) {
                 condition.append(" || ").append(ElementKindValidator.getCondition(element, kind, typeImporter));
             }
             return Contract.with(condition.toString(), "The # has to be null or one of the specified kinds but was $.", element);

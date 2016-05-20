@@ -167,7 +167,7 @@ public abstract class CustomProcessor implements Processor {
     @Override
     public @Capturable @Unmodifiable @Nonnull Set<@Nonnull String> getSupportedAnnotationTypes() {
         final @Nullable SupportedAnnotations supportedAnnotations = getClass().getAnnotation(SupportedAnnotations.class);
-        if  (supportedAnnotations != null) {
+        if (supportedAnnotations != null) {
             final @Nonnull Set<@Nonnull String> result = new HashSet<>(supportedAnnotations.value().length + supportedAnnotations.prefix().length);
             for (@Nonnull Class<? extends Annotation> annotation : supportedAnnotations.value()) {
                 result.add(annotation.getCanonicalName());

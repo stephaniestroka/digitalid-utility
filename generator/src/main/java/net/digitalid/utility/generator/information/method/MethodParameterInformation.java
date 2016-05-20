@@ -55,7 +55,7 @@ public class MethodParameterInformation extends ElementInformationImplementation
     
     @Override
     public @Nonnull String toString() {
-        return getType()  + " " + getElement();
+        return getType() + " " + getElement();
     }
     
     /* -------------------------------------------------- Default Value -------------------------------------------------- */

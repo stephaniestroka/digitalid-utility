@@ -15,6 +15,8 @@ import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.immutable.ImmutableMap;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
@@ -32,7 +34,7 @@ public class Strings {
      * Formats the given message by replacing each given symbol with the corresponding argument surrounded by the given quotes.
      */
     @Pure
-    public static @Nonnull String format(@Nonnull CharSequence message, char symbol, @Nullable Quotes quotes, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static @Nonnull String format(@Nonnull CharSequence message, char symbol, @Nullable Quotes quotes, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         final @Nonnull StringBuilder string = new StringBuilder(message);
         int stringIndex = 0;
         int argumentIndex = 0;
@@ -64,7 +66,7 @@ public class Strings {
      * Formats the given message by replacing each dollar sign with the corresponding argument surrounded by the given quotes.
      */
     @Pure
-    public static @Nonnull String format(@Nonnull CharSequence message, @Nullable Quotes quotes, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static @Nonnull String format(@Nonnull CharSequence message, @Nullable Quotes quotes, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         return format(message, '$', quotes, arguments);
     }
     
@@ -72,7 +74,7 @@ public class Strings {
      * Formats the given message by replacing each dollar sign with the corresponding argument in single quotes.
      */
     @Pure
-    public static @Nonnull String format(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static @Nonnull String format(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         return format(message, '$', Quotes.SINGLE, arguments);
     }
     
@@ -180,7 +182,7 @@ public class Strings {
      * Returns the longest common prefix of the given strings.
      */
     @Pure
-    public static @Nonnull String longestCommonPrefix(@NonCaptured @Unmodified @Nonnull String... strings) {
+    public static @Nonnull String longestCommonPrefix(@NonCaptured @Unmodified @Nonnull @NonNullableElements String... strings) {
         if (strings.length == 0) { return ""; }
         @Nonnull String prefix = strings[0];
         string: for (int s = 1; s < strings.length; s++) {
@@ -201,7 +203,7 @@ public class Strings {
      * Returns whether the given word starts with any of the given prefixes.
      */
     @Pure
-    public static boolean startsWithAny(@Nonnull String word, @NonCaptured @Unmodified @Nonnull String... prefixes) {
+    public static boolean startsWithAny(@Nonnull String word, @NonCaptured @Unmodified @Nonnull @NonNullableElements String... prefixes) {
         for (@Nonnull String prefix : prefixes) {
             if (word.startsWith(prefix)) { return true; }
         }

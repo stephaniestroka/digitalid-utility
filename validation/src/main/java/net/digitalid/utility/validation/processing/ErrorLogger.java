@@ -9,6 +9,7 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.validator.AnnotationHandler;
 
@@ -31,7 +32,7 @@ public class ErrorLogger extends ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public void log(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public void log(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         log(Level.ERROR, message, position, arguments);
     }
     

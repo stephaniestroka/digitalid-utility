@@ -13,6 +13,7 @@ import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.Version;
 import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
@@ -49,7 +50,7 @@ public abstract class Logger {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void log(@Nonnull Level level, @Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void log(@Nonnull Level level, @Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         Require.that(level != null).orThrow("The level may not be null.");
         
         if (level.getValue() >= Level.threshold.get().getValue()) {

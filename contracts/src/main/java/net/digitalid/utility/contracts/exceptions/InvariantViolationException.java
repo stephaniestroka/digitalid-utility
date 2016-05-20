@@ -4,6 +4,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -14,7 +16,7 @@ public class InvariantViolationException extends ContractViolationException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected InvariantViolationException(@Nullable String message, @Nullable Object... arguments) {
+    protected InvariantViolationException(@Nullable String message, @Captured @Nonnull @NullableElements Object... arguments) {
         super(message, arguments);
     }
     
@@ -23,7 +25,7 @@ public class InvariantViolationException extends ContractViolationException {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Pure
-    public static @Nonnull InvariantViolationException with(@Nullable String message, @Nullable Object... arguments) {
+    public static @Nonnull InvariantViolationException with(@Nullable String message, @Captured @Nonnull @NullableElements Object... arguments) {
         return new InvariantViolationException(message, arguments);
     }
     

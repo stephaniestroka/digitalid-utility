@@ -105,7 +105,7 @@ public class GeneratorProcessor extends CustomProcessor {
             if (rootElement.getKind() == ElementKind.CLASS || rootElement.getKind() == ElementKind.INTERFACE) {
                 // TODO: In order to just generate a builder, the class can actually be final.
                 if (!rootElement.getModifiers().contains(Modifier.FINAL) && !rootElement.getSimpleName().toString().endsWith("Test") && !rootElement.getSimpleName().toString().equals("ConverterAnnotations")) {
-                    ProcessingLog.debugging("Generate the classes for  " + Quotes.inSingle(rootElement.getSimpleName()));
+                    ProcessingLog.debugging("Generate the classes for " + Quotes.inSingle(rootElement.getSimpleName()));
                     final long start = System.currentTimeMillis();
                     final boolean generated = generateClasses((TypeElement) rootElement, (DeclaredType) rootElement.asType());
                     final long end = System.currentTimeMillis();

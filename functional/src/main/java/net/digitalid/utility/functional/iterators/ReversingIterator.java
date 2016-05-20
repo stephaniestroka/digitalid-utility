@@ -7,8 +7,9 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
-import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
+import net.digitalid.utility.annotations.parameter.Referenced;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
@@ -24,7 +25,7 @@ public class ReversingIterator<E> extends ReadOnlyIterator<E> {
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     @SafeVarargs
-    protected ReversingIterator(@Captured E... elements) {
+    protected ReversingIterator(@Referenced @Unmodified @Nonnull E... elements) {
         this.elements = elements;
         this.cursor = elements.length - 1;
     }
@@ -34,7 +35,7 @@ public class ReversingIterator<E> extends ReadOnlyIterator<E> {
      */
     @Pure
     @SafeVarargs
-    public static <E> @Capturable @Nonnull ReversingIterator<E> with(@Captured E... elements) {
+    public static <E> @Capturable @Nonnull ReversingIterator<E> with(@Referenced @Unmodified @Nonnull E... elements) {
         return new ReversingIterator<>(elements);
     }
     

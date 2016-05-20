@@ -408,7 +408,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
      */
     @Pure
     @NonWrittenRecipient
-    protected void requireCurrentCodeBlock(@Nonnull CodeBlock... codeBlocks) {
+    protected void requireCurrentCodeBlock(@Nonnull @NonNullableElements CodeBlock... codeBlocks) {
         requireNotWritten();
         
         if (codeBlocks.length == 0) {
@@ -449,7 +449,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
      */
     @Impure
     @NonWrittenRecipient
-    protected void beginBlock(@Nonnull String declaration, @Nonnull CodeBlock codeBlock, @Nonnull CodeBlock... requiredCurrentCodeBlocks) {
+    protected void beginBlock(@Nonnull String declaration, @Nonnull CodeBlock codeBlock, @Nonnull @NonNullableElements CodeBlock... requiredCurrentCodeBlocks) {
         requireCurrentCodeBlock(requiredCurrentCodeBlocks);
         
         addCodeLineWithIndentation(declaration + (declaration.isEmpty() ? "" : " ") + "{");
@@ -461,7 +461,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
      */
     @Impure
     @NonWrittenRecipient
-    protected void beginBlock(@Nonnull String keyword, @Nonnull String condition, @Nonnull CodeBlock codeBlock, @Nonnull CodeBlock... requiredCurrentCodeBlocks) {
+    protected void beginBlock(@Nonnull String keyword, @Nonnull String condition, @Nonnull CodeBlock codeBlock, @Nonnull @NonNullableElements CodeBlock... requiredCurrentCodeBlocks) {
         beginBlock(keyword + " (" + condition + ")", codeBlock, requiredCurrentCodeBlocks);
     }
     
@@ -470,7 +470,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
      */
     @Impure
     @NonWrittenRecipient
-    protected void endBlock(@Nonnull CodeBlock... requiredCurrentCodeBlocks) {
+    protected void endBlock(@Nonnull @NonNullableElements CodeBlock... requiredCurrentCodeBlocks) {
         requireCurrentCodeBlock(requiredCurrentCodeBlocks);
         
         codeBlocksStack.pop();
@@ -541,7 +541,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn({NONE, CLASS, INTERFACE, ANONYMOUS_CLASS})
-    public void addAnnotation(@Nonnull Class<? extends Annotation> annotationType, @Nullable String optionalValues, @Nonnull Object... optionalArguments) {
+    public void addAnnotation(@Nonnull Class<? extends Annotation> annotationType, @Nullable String optionalValues, @Nonnull @NonNullableElements Object... optionalArguments) {
         requireCurrentCodeBlock(NONE, CLASS, INTERFACE, ANONYMOUS_CLASS);
         
         addCodeLineWithIndentation("@" + importIfPossible(annotationType) + (optionalValues != null ? "(" + Strings.format(optionalValues, Quotes.CODE, optionalArguments) + ")" : ""));
@@ -852,7 +852,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @NonWrittenRecipient
     @OnlyPossibleIn()
     protected void addContract(@Nonnull Class<? extends Constraint> contractType, @Nonnull Contract generatedContract) {
-        addStatement(importIfPossible(contractType) + ".that(" + generatedContract.getCondition() + ").orThrow(" + Quotes.inDouble(generatedContract.getMessage()) + (!generatedContract.getArguments().isEmpty() ? ", " + FiniteIterable.of(generatedContract.getArguments()).join() : "") + ")");
+        addStatement(importIfPossible(contractType) + ".that(" + generatedContract.getCondition() + ").orThrow(" + Quotes.inDouble(generatedContract.getMessage()) + (!generatedContract.getArguments().isEmpty() ? ", " + generatedContract.getArguments().join() : "") + ")");
     }
     
     @Impure

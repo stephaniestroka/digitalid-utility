@@ -21,7 +21,6 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
-import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
@@ -78,7 +77,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      */
     @Pure
     @SafeVarargs
-    public static <E> @Nonnull FiniteIterable<E> of(@Referenced @Unmodified @Captured E... elements) {
+    public static <E> @Nonnull FiniteIterable<E> of(@Referenced @Unmodified @Nonnull E... elements) {
         return () -> ReadOnlyArrayIterator.with(elements);
     }
     
@@ -92,7 +91,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
     
     @Pure
     @Override
-    public default @Nonnull FunctionalIterable<E> filterNulls() {
+    public default @Nonnull FiniteIterable<E> filterNulls() {
         return filter(element -> element != null);
     }
     

@@ -50,8 +50,8 @@ public abstract class ElementKindValidator extends ValueAnnotationValidator {
     public static @Nonnull String getCondition(@Nonnull Element element, @Nonnull ElementKind kind, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
         if (ProcessingUtility.isRawlyAssignable(element, Class.class)) {
             switch (kind) {
-                case CLASS: return "!#.isInterface() && !#.isEnum() && !#.isAnnotation()";
-                case INTERFACE: return "#.isInterface()";
+                case CLASS: return "!#.isInterface() && !#.isEnum()";
+                case INTERFACE: return "#.isInterface() && !#.isAnnotation()";
                 case ENUM: return "#.isEnum()";
                 case ANNOTATION_TYPE: return "#.isAnnotation()";
                 default: return "false";

@@ -3,6 +3,7 @@ package net.digitalid.utility.generator;
 import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
+import javax.lang.model.element.ElementKind;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
@@ -44,6 +45,11 @@ import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
 import net.digitalid.utility.validation.annotations.string.Regex;
 import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.annotations.type.kind.AnnotationType;
+import net.digitalid.utility.validation.annotations.type.kind.ClassType;
+import net.digitalid.utility.validation.annotations.type.kind.EnumType;
+import net.digitalid.utility.validation.annotations.type.kind.InterfaceType;
+import net.digitalid.utility.validation.annotations.type.kind.TypeOf;
 import net.digitalid.utility.validation.annotations.value.Invariant;
 import net.digitalid.utility.validation.annotations.value.Validated;
 
@@ -381,6 +387,8 @@ public abstract class Validation extends RootClass implements Countable, Validat
     @Impure
     public void setSizeIntArray(@Size(3) int[] array) {}
     
+    // TODO: EmptyOrSingleRecipient
+    
     /* -------------------------------------------------- String -------------------------------------------------- */
     
     @Impure
@@ -394,11 +402,30 @@ public abstract class Validation extends RootClass implements Countable, Validat
     
     /* -------------------------------------------------- Type Kind -------------------------------------------------- */
     
+    @Impure
+    public void setAnnotationType(@AnnotationType Class<?> type) {}
+    
+    @Impure
+    public void setClassType(@ClassType Class<?> type) {}
+    
+    @Impure
+    public void setEnumType(@EnumType Class<?> type) {}
+    
+    @Impure
+    public void setInterfaceType(@InterfaceType Class<?> type) {}
+    
+    @Impure
+    public void setTypeOf(@TypeOf({ElementKind.CLASS, ElementKind.INTERFACE}) Class<?> type) {}
+    
     /* -------------------------------------------------- Type Nesting -------------------------------------------------- */
+    
+    // TODO
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
     @Impure
     public void setInvariant(@Invariant(condition = "value % 3 == 0", message = "The value has to be a multiple of 3 but was $.") int value) {}
+    
+    // TODO
     
 }

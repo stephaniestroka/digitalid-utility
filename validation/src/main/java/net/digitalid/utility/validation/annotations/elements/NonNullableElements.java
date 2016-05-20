@@ -23,8 +23,8 @@ import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.validators.IterableValidator;
 
 /**
- * This annotation indicates that the elements of an {@link Iterable iterable} are {@link Nonnull non-nullable}.
- * (This annotation is only necessary until the source code can be transitioned to Java 1.8 with its type annotations).
+ * This annotation indicates that the elements of an {@link Iterable iterable} or array are {@link Nonnull non-nullable}.
+ * Even though Java 1.8 now supports type annotations, this annotation is still useful for contract generation and arrays.
  * 
  * @see NullableElements
  */

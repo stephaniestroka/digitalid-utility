@@ -7,9 +7,9 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
-import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.parameter.Referenced;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -26,7 +26,7 @@ public class ReadOnlyArrayIterator<E> extends ReadOnlyIterator<E> {
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     @SafeVarargs
-    protected ReadOnlyArrayIterator(@Referenced @Captured E... elements) {
+    protected ReadOnlyArrayIterator(@Referenced @Unmodified @Nonnull E... elements) {
         this.elements = elements;
     }
     
@@ -35,7 +35,7 @@ public class ReadOnlyArrayIterator<E> extends ReadOnlyIterator<E> {
      */
     @Pure
     @SafeVarargs
-    public static <E> @Capturable @Nonnull ReadOnlyArrayIterator<E> with(@Referenced @Captured E... elements) {
+    public static <E> @Capturable @Nonnull ReadOnlyArrayIterator<E> with(@Referenced @Unmodified @Nonnull E... elements) {
         return new ReadOnlyArrayIterator<>(elements);
     }
     

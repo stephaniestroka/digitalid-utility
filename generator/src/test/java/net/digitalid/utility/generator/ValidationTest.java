@@ -39,7 +39,7 @@ public class ValidationTest {
     }
     
     @SafeVarargs
-    private static <T> void testPositives(@Nonnull Consumer<? super T> consumer, T... positives) {
+    private static <T> void testPositives(@Nonnull Consumer<? super T> consumer, @Nonnull T... positives) {
         for (T positive : positives) {
             try {
                 consumer.consume(positive);
@@ -50,7 +50,7 @@ public class ValidationTest {
     }
     
     @SafeVarargs
-    private static <T> void testNegatives(@Nonnull Consumer<? super T> consumer, T... negatives) {
+    private static <T> void testNegatives(@Nonnull Consumer<? super T> consumer, @Nonnull T... negatives) {
         for (T negative : negatives) {
             try {
                 consumer.consume(negative);
@@ -327,6 +327,44 @@ public class ValidationTest {
     }
     
     /* -------------------------------------------------- Type Kind -------------------------------------------------- */
+    
+    public static @interface AnnotationType {}
+    
+    public static class ClassType {}
+    
+    public static enum EnumType {}
+    
+    public static interface InterfaceType {}
+    
+    @Test
+    public void testAnnotationType() {
+        testPositives(validation::setAnnotationType, null, AnnotationType.class);
+        testNegatives(validation::setAnnotationType, ClassType.class, EnumType.class, InterfaceType.class);
+    }
+    
+    @Test
+    public void testClassType() {
+        testPositives(validation::setClassType, null, ClassType.class);
+        testNegatives(validation::setClassType, AnnotationType.class, EnumType.class, InterfaceType.class);
+    }
+    
+    @Test
+    public void testEnumType() {
+        testPositives(validation::setEnumType, null, EnumType.class);
+        testNegatives(validation::setEnumType, AnnotationType.class, ClassType.class, InterfaceType.class);
+    }
+    
+    @Test
+    public void testInterfaceType() {
+        testPositives(validation::setInterfaceType, null, InterfaceType.class);
+        testNegatives(validation::setInterfaceType, AnnotationType.class, ClassType.class, EnumType.class);
+    }
+    
+    @Test
+    public void testTypeOf() {
+        testPositives(validation::setTypeOf, null, ClassType.class, InterfaceType.class);
+        testNegatives(validation::setTypeOf, AnnotationType.class, EnumType.class);
+    }
     
     /* -------------------------------------------------- Type Nesting -------------------------------------------------- */
     

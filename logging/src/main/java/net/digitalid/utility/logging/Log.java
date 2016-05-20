@@ -7,6 +7,7 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.logging.logger.Logger;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
@@ -22,7 +23,7 @@ public final class Log {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void error(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void error(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         Logger.log(Level.ERROR, message, throwable);
     }
     
@@ -31,7 +32,7 @@ public final class Log {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void error(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void error(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         Logger.log(Level.ERROR, message, null);
     }
     
@@ -42,7 +43,7 @@ public final class Log {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void warning(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void warning(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         Logger.log(Level.WARNING, message, throwable);
     }
     
@@ -51,7 +52,7 @@ public final class Log {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void warning(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void warning(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         Logger.log(Level.WARNING, message, null);
     }
     
@@ -62,7 +63,7 @@ public final class Log {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void information(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void information(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         Logger.log(Level.INFORMATION, message, throwable);
     }
     
@@ -71,7 +72,7 @@ public final class Log {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void information(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void information(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         Logger.log(Level.INFORMATION, message, null);
     }
     
@@ -82,7 +83,7 @@ public final class Log {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void debugging(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void debugging(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         Logger.log(Level.DEBUGGING, message, throwable);
     }
     
@@ -91,7 +92,7 @@ public final class Log {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void debugging(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void debugging(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         Logger.log(Level.DEBUGGING, message, null);
     }
     
@@ -102,7 +103,7 @@ public final class Log {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void verbose(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void verbose(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         Logger.log(Level.VERBOSE, message, throwable);
     }
     
@@ -111,7 +112,7 @@ public final class Log {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void verbose(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void verbose(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         Logger.log(Level.VERBOSE, message, null);
     }
     

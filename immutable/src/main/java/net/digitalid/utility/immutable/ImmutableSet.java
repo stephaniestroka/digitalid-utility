@@ -55,7 +55,7 @@ public class ImmutableSet<E> extends LinkedHashSet<E> implements CollectionItera
      */
     @Pure
     @SafeVarargs
-    public static <E> ImmutableSet<E> with(@Captured E... elements) {
+    public static <E> ImmutableSet<E> with(@NonCaptured @Unmodified E... elements) {
         return elements == null ? null : new ImmutableSet<>(Arrays.asList(elements));
     }
     
