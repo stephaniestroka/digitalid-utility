@@ -1,14 +1,16 @@
 package net.digitalid.utility.generator;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
+import net.digitalid.utility.testing.TestTypes;
 import net.digitalid.utility.validation.annotations.testing.AssignableTo;
 import net.digitalid.utility.validation.annotations.testing.UnassignableTo;
-import net.digitalid.utility.validation.annotations.type.Mutable;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
-@Mutable
+@Immutable
 @GenerateSubclass
 @SuppressWarnings("PublicField")
 public abstract class Assignability {
@@ -132,10 +134,42 @@ public abstract class Assignability {
     
     /* -------------------------------------------------- Generics -------------------------------------------------- */
     
-    // TODO: Make some tests for types with generic parameters!
+    @Pure
+    public abstract @AssignableTo(List.class) List<String> getStringListAssignableToList();
+    
+    @Pure
+    public abstract @AssignableTo(List[].class) List<String>[] getStringListArrayAssignableToListArray();
+    
+    @Pure
+    public abstract @AssignableTo(Comparable[].class) Integer[] getIntegerArrayAssignableToComparableArray();
+    
+    @Pure
+    public abstract @UnassignableTo(LinkedList.class) List<String> getStringListUnassignableToLinkedList();
     
     /* -------------------------------------------------- Nested -------------------------------------------------- */
     
-    // TODO: Make some tests for nested classes!
+    @Pure
+    public abstract TestTypes.@AssignableTo(TestTypes.NestedSuperclass.class) NestedSuperclass getNestedSuperclassAssignableToNestedSuperclass();
+    
+    @Pure
+    public abstract TestTypes.@AssignableTo(TestTypes.NestedSuperclass.class) NestedSubclass getNestedSubclassAssignableToNestedSuperclass();
+    
+    @Pure
+    public abstract TestTypes.@AssignableTo(TestTypes.InnerSuperclass.class) InnerSuperclass getInnerSuperclassAssignableToInnerSuperclass();
+    
+    @Pure
+    public abstract TestTypes.@AssignableTo(TestTypes.InnerSuperclass.class) InnerSubclass getInnerSubclassAssignableToInnerSuperclass();
+    
+    @Pure
+    public abstract TestTypes.@UnassignableTo(TestTypes.NestedSubclass.class) NestedSuperclass getNestedSuperclassUnassignableToNestedSubclass();
+    
+    @Pure
+    public abstract TestTypes.@UnassignableTo(TestTypes.InnerSubclass.class) InnerSuperclass getInnerSuperclassUnassignableToInnerSubclass();
+    
+    @Pure
+    public abstract TestTypes.@UnassignableTo(TestTypes.InnerSuperclass.class) NestedSuperclass getNestedSuperclassUnassignableToInnerSuperclass();
+    
+    @Pure
+    public abstract TestTypes.@UnassignableTo(TestTypes.NestedSuperclass.class) InnerSuperclass getInnerSuperclassUnassignableToNestedSuperclass();
     
 }
