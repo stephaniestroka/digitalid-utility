@@ -21,24 +21,28 @@ public class StringsTest {
     public void testCapitalizeFirstLetters() {
         assertEquals("Hello World", Strings.capitalizeFirstLetters("hello world"));
         assertEquals("", Strings.capitalizeFirstLetters(""));
+        assertEquals(null, Strings.capitalizeFirstLetters(null));
     }
     
     @Test
     public void testDecamelize() {
         assertEquals("hello world", Strings.decamelize("HelloWorld"));
         assertEquals("", Strings.decamelize(""));
+        assertEquals(null, Strings.decamelize(null));
     }
     
     @Test
     public void testLowercaseFirstCharacter() {
         assertEquals("hello world", Strings.lowercaseFirstCharacter("Hello world"));
         assertEquals("", Strings.lowercaseFirstCharacter(""));
+        assertEquals(null, Strings.lowercaseFirstCharacter(null));
     }
     
     @Test
     public void testUppercaseFirstCharacter() {
         assertEquals("Hello world", Strings.uppercaseFirstCharacter("hello world"));
         assertEquals("", Strings.uppercaseFirstCharacter(""));
+        assertEquals(null, Strings.uppercaseFirstCharacter(null));
     }
     
     @Test
@@ -53,6 +57,18 @@ public class StringsTest {
         assertEquals("", Strings.substringUntilFirst("", "."));
         assertEquals("www", Strings.substringUntilFirst("www.digitalid.net", "."));
         assertEquals("test", Strings.substringUntilFirst("test", "."));
+    }
+    
+    @Test
+    public void testRepeatString() {
+        assertEquals(null, Strings.repeat(null, 3));
+        assertEquals("", Strings.repeat("", 3));
+        assertEquals("www", Strings.repeat("w", 3));
+    }
+    
+    @Test
+    public void testRepeatCharacter() {
+        assertEquals("www", Strings.repeat('w', 3));
     }
     
     @Test
@@ -86,6 +102,7 @@ public class StringsTest {
     @Test
     public void testToString() {
         assertEquals("Student(name: \"John Doe\", age: 42)", Strings.toString(new Student("John Doe", 42)));
+        assertEquals("null", Strings.toString(null));
     }
     
     @Test
@@ -119,6 +136,7 @@ public class StringsTest {
     @Test
     public void testPluralize() {
         assertEquals("", Strings.pluralize(""));
+        assertEquals(null, Strings.pluralize(null));
         assertEquals("tests", Strings.pluralize("test"));
         assertEquals("men", Strings.pluralize("man"));
         assertEquals("women", Strings.pluralize("woman"));
@@ -140,6 +158,7 @@ public class StringsTest {
     @Test
     public void testPrependWithIndefiniteArticle() {
         assertEquals("", Strings.prependWithIndefiniteArticle(""));
+        assertEquals(null, Strings.prependWithIndefiniteArticle(null));
         assertEquals("a bug", Strings.prependWithIndefiniteArticle("bug"));
         assertEquals("a user", Strings.prependWithIndefiniteArticle("user"));
         assertEquals("an error", Strings.prependWithIndefiniteArticle("error"));

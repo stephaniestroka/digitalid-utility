@@ -9,7 +9,10 @@ import net.digitalid.utility.contracts.exceptions.PreconditionViolationException
 import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.interfaces.BigIntegerNumerical;
+import net.digitalid.utility.interfaces.Countable;
 import net.digitalid.utility.interfaces.LongNumerical;
+import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 import org.junit.Test;
@@ -46,6 +49,13 @@ public class ValidationTest {
         test(bigIntegerNumericalConsumer, new BigIntegerValue(positive), new BigIntegerValue(negative));
     }
     
+    private static void testSize(@Nonnull Consumer<String> stringConsumer, @Nonnull Consumer<Countable> countableConsumer, @Nonnull Consumer<String[]> stringArrayConsumer, @Nonnull Consumer<int[]> intArrayConsumer, @NonNegative int positiveSize, @NonNegative int negativeSize) {
+        test(stringConsumer, Strings.repeat('a', positiveSize), Strings.repeat('a', negativeSize));
+        test(countableConsumer, () -> positiveSize, () -> negativeSize);
+        test(stringArrayConsumer, new String[positiveSize], new String[negativeSize]);
+        test(intArrayConsumer, new int[positiveSize], new int[negativeSize]);
+    }
+    
     /* -------------------------------------------------- Reference -------------------------------------------------- */
     
     @Test
@@ -74,12 +84,12 @@ public class ValidationTest {
     
     @Test
     public void testIndex() {
-        test(validation::setIndex, 3, 4);
+        test(validation::setIndex, 2, 3);
     }
     
     @Test
     public void testIndexForInsertion() {
-        test(validation::setIndexForInsertion, 4, 5);
+        test(validation::setIndexForInsertion, 3, 4);
     }
     
     /* -------------------------------------------------- Numericals -------------------------------------------------- */
@@ -226,6 +236,53 @@ public class ValidationTest {
     }
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
+    
+    @Test
+    public void testEmpty() {
+        testSize(validation::setEmptyString, validation::setEmptyCountable, validation::setEmptyStringArray, validation::setEmptyIntArray, 0, 1);
+    }
+    
+    @Test
+    public void testEmptyOrSingle() {
+        testSize(validation::setEmptyOrSingleString, validation::setEmptyOrSingleCountable, validation::setEmptyOrSingleStringArray, validation::setEmptyOrSingleIntArray, 0, 2);
+        testSize(validation::setEmptyOrSingleString, validation::setEmptyOrSingleCountable, validation::setEmptyOrSingleStringArray, validation::setEmptyOrSingleIntArray, 1, 2);
+    }
+    
+    @Test
+    public void testMaxSize() {
+        testSize(validation::setMaxSizeString, validation::setMaxSizeCountable, validation::setMaxSizeStringArray, validation::setMaxSizeIntArray, 3, 4);
+    }
+    
+    @Test
+    public void testMinSize() {
+        testSize(validation::setMinSizeString, validation::setMinSizeCountable, validation::setMinSizeStringArray, validation::setMinSizeIntArray, 3, 2);
+    }
+    
+    @Test
+    public void testNonEmpty() {
+        testSize(validation::setNonEmptyString, validation::setNonEmptyCountable, validation::setNonEmptyStringArray, validation::setNonEmptyIntArray, 1, 0);
+    }
+    
+    @Test
+    public void testNonEmptyOrSingle() {
+        testSize(validation::setNonEmptyOrSingleString, validation::setNonEmptyOrSingleCountable, validation::setNonEmptyOrSingleStringArray, validation::setNonEmptyOrSingleIntArray, 2, 0);
+        testSize(validation::setNonEmptyOrSingleString, validation::setNonEmptyOrSingleCountable, validation::setNonEmptyOrSingleStringArray, validation::setNonEmptyOrSingleIntArray, 2, 1);
+    }
+    
+    @Test
+    public void testNonSingle() {
+        testSize(validation::setNonSingleString, validation::setNonSingleCountable, validation::setNonSingleStringArray, validation::setNonSingleIntArray, 0, 1);
+    }
+    
+    @Test
+    public void testSingle() {
+        testSize(validation::setSingleString, validation::setSingleCountable, validation::setSingleStringArray, validation::setSingleIntArray, 1, 0);
+    }
+    
+    @Test
+    public void testSize() {
+        testSize(validation::setSizeString, validation::setSizeCountable, validation::setSizeStringArray, validation::setSizeIntArray, 3, 2);
+    }
     
     /* -------------------------------------------------- String -------------------------------------------------- */
     

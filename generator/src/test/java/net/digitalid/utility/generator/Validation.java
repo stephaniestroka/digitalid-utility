@@ -31,6 +31,15 @@ import net.digitalid.utility.validation.annotations.order.Ascending;
 import net.digitalid.utility.validation.annotations.order.Descending;
 import net.digitalid.utility.validation.annotations.order.StrictlyAscending;
 import net.digitalid.utility.validation.annotations.order.StrictlyDescending;
+import net.digitalid.utility.validation.annotations.size.Empty;
+import net.digitalid.utility.validation.annotations.size.EmptyOrSingle;
+import net.digitalid.utility.validation.annotations.size.MaxSize;
+import net.digitalid.utility.validation.annotations.size.MinSize;
+import net.digitalid.utility.validation.annotations.size.NonEmpty;
+import net.digitalid.utility.validation.annotations.size.NonEmptyOrSingle;
+import net.digitalid.utility.validation.annotations.size.NonSingle;
+import net.digitalid.utility.validation.annotations.size.Single;
+import net.digitalid.utility.validation.annotations.size.Size;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.annotations.value.Invariant;
 import net.digitalid.utility.validation.annotations.value.Validated;
@@ -44,7 +53,7 @@ public abstract class Validation extends RootClass implements Countable, Validat
     @Pure
     @Override
     public @NonNegative int size() {
-        return 4;
+        return 3;
     }
     
     @Pure
@@ -260,6 +269,114 @@ public abstract class Validation extends RootClass implements Countable, Validat
     public void setStrictlyDescendingStringArray(@StrictlyDescending String[] array) {}
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
+    
+    @Impure
+    public void setEmptyString(@Empty String string) {}
+    
+    @Impure
+    public void setEmptyCountable(@Empty Countable countable) {}
+    
+    @Impure
+    public void setEmptyStringArray(@Empty String[] array) {}
+    
+    @Impure
+    public void setEmptyIntArray(@Empty int[] array) {}
+    
+    @Impure
+    public void setEmptyOrSingleString(@EmptyOrSingle String string) {}
+    
+    @Impure
+    public void setEmptyOrSingleCountable(@EmptyOrSingle Countable countable) {}
+    
+    @Impure
+    public void setEmptyOrSingleStringArray(@EmptyOrSingle String[] array) {}
+    
+    @Impure
+    public void setEmptyOrSingleIntArray(@EmptyOrSingle int[] array) {}
+    
+    @Impure
+    public void setMaxSizeString(@MaxSize(3) String string) {}
+    
+    @Impure
+    public void setMaxSizeCountable(@MaxSize(3) Countable countable) {}
+    
+    @Impure
+    public void setMaxSizeStringArray(@MaxSize(3) String[] array) {}
+    
+    @Impure
+    public void setMaxSizeIntArray(@MaxSize(3) int[] array) {}
+    
+    @Impure
+    public void setMinSizeString(@MinSize(3) String string) {}
+    
+    @Impure
+    public void setMinSizeCountable(@MinSize(3) Countable countable) {}
+    
+    @Impure
+    public void setMinSizeStringArray(@MinSize(3) String[] array) {}
+    
+    @Impure
+    public void setMinSizeIntArray(@MinSize(3) int[] array) {}
+    
+    @Impure
+    public void setNonEmptyString(@NonEmpty String string) {}
+    
+    @Impure
+    public void setNonEmptyCountable(@NonEmpty Countable countable) {}
+    
+    @Impure
+    public void setNonEmptyStringArray(@NonEmpty String[] array) {}
+    
+    @Impure
+    public void setNonEmptyIntArray(@NonEmpty int[] array) {}
+    
+    @Impure
+    public void setNonEmptyOrSingleString(@NonEmptyOrSingle String string) {}
+    
+    @Impure
+    public void setNonEmptyOrSingleCountable(@NonEmptyOrSingle Countable countable) {}
+    
+    @Impure
+    public void setNonEmptyOrSingleStringArray(@NonEmptyOrSingle String[] array) {}
+    
+    @Impure
+    public void setNonEmptyOrSingleIntArray(@NonEmptyOrSingle int[] array) {}
+    
+    @Impure
+    public void setNonSingleString(@NonSingle String string) {}
+    
+    @Impure
+    public void setNonSingleCountable(@NonSingle Countable countable) {}
+    
+    @Impure
+    public void setNonSingleStringArray(@NonSingle String[] array) {}
+    
+    @Impure
+    public void setNonSingleIntArray(@NonSingle int[] array) {}
+    
+    @Impure
+    public void setSingleString(@Single String string) {}
+    
+    @Impure
+    public void setSingleCountable(@Single Countable countable) {}
+    
+    @Impure
+    public void setSingleStringArray(@Single String[] array) {}
+    
+    @Impure
+    public void setSingleIntArray(@Single int[] array) {}
+    
+    @Impure
+    public void setSizeString(@Size(3) String string) {}
+    
+    @Impure
+    public void setSizeCountable(@Size(3) Countable countable) {}
+    
+    @Impure
+    public void setSizeStringArray(@Size(3) String[] array) {}
+    
+    @Impure
+    public void setSizeIntArray(@Size(3) int[] array) {}
     
     /* -------------------------------------------------- String -------------------------------------------------- */
     
