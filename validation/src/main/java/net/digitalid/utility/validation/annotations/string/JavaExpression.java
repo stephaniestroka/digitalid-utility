@@ -38,13 +38,14 @@ public @interface JavaExpression {
     public static class Validator extends StringValidator {
         
         /**
-         * Returns whether the given string is a valid Java expression.
+         * Returns whether the given expression is valid (inline) Java.
          */
         @Pure
-        public static boolean validate(@Nullable String string) {
-            if (string == null) { return true; }
-            // TODO: Do some reasonable checks here.
-            return true;
+        public static boolean validate(@Nullable String expression) {
+            if (expression == null) { return true; }
+            final @Nonnull String expressionWithoutStrings = expression.replaceAll("\".*?\"", "\"\"");
+            if (expressionWithoutStrings.contains("{") || expressionWithoutStrings.contains("}") || expressionWithoutStrings.contains(";")) { return false; }
+            return expressionWithoutStrings.replace("(", "").length() == expressionWithoutStrings.replace(")", "").length();
         }
         
         @Pure

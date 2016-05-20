@@ -16,12 +16,13 @@ import javax.lang.model.element.Element;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.collaboration.annotations.TODO;
-import net.digitalid.utility.collaboration.enumerations.Author;
+import net.digitalid.utility.processing.logging.SourcePosition;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
+import net.digitalid.utility.validation.processing.ErrorLogger;
 import net.digitalid.utility.validation.validators.StringValidator;
 
 /**
@@ -48,25 +49,34 @@ public @interface Regex {
     @Stateless
     public static class Validator extends StringValidator {
         
+        @Pure
+        @Override
+        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
+            super.checkUsage(element, annotationMirror, errorLogger);
+            
+            final @Nullable String regex = ProcessingUtility.getString(ProcessingUtility.getAnnotationValue(annotationMirror));
+            if (regex != null) {
+                try {
+                    Pattern.compile(regex);
+                } catch (@Nonnull PatternSyntaxException exception) {
+                    errorLogger.log("The regular expression $ is invalid because of: " + exception.getDescription(), SourcePosition.of(element, annotationMirror), regex);
+                }
+            }
+        }
+        
         /**
-         * Returns whether the given string is a valid regular expression.
+         * Returns whether the given string matches the given regular expression.
          */
         @Pure
-        public static boolean validate(@Nullable String string) {
+        public static boolean validate(@Nonnull String regex, @Nullable String string) {
             if (string == null) { return true; }
-            try {
-                Pattern.compile(string);
-                return true;
-            } catch (@Nonnull PatternSyntaxException exception) {
-                return false;
-            }
+            else { return string.matches(regex); }
         }
         
         @Pure
         @Override
-        @TODO(task = "The following implementation is wrong: It checks whether the annotated variable is a valid regular expression instead of whether the annotated variable matches the regex of the annotation value.", date = "2016-04-26", author = Author.KASPAR_ETTER)
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with(typeImporter.importIfPossible(Regex.class) + ".Validator.validate(#)", "The # has to be a valid regular expression but was $.", element);
+            return Contract.with(typeImporter.importIfPossible(Regex.class) + ".Validator.validate(\"@\", #)", "The # has to match the regular expression '@' but was $.", element, annotationMirror);
         }
         
     }

@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
+import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.interfaces.BigIntegerNumerical;
@@ -28,13 +29,34 @@ public class ValidationTest {
     private static <T> void test(@Nonnull Consumer<? super T> consumer, T positive, T negative) {
         try {
             consumer.consume(positive);
-        } catch (@Nonnull PreconditionViolationException exception) { 
-            fail("The positive sample should not fail.");
+        } catch (@Nonnull PreconditionViolationException exception) {
+            fail("The positive sample " + Quotes.inSingle(positive) + " should not fail.");
         }
         try {
             consumer.consume(negative); 
-            fail("The negative sample should fail.");
+            fail("The negative sample " + Quotes.inSingle(negative) + " should fail.");
         } catch (@Nonnull PreconditionViolationException exception) {}
+    }
+    
+    @SafeVarargs
+    private static <T> void testPositives(@Nonnull Consumer<? super T> consumer, T... positives) {
+        for (T positive : positives) {
+            try {
+                consumer.consume(positive);
+            } catch (@Nonnull PreconditionViolationException exception) {
+                fail("The positive sample " + Quotes.inSingle(positive) + " should not fail.");
+            }
+        }
+    }
+    
+    @SafeVarargs
+    private static <T> void testNegatives(@Nonnull Consumer<? super T> consumer, T... negatives) {
+        for (T negative : negatives) {
+            try {
+                consumer.consume(negative);
+                fail("The negative sample " + Quotes.inSingle(negative) + " should fail.");
+            } catch (@Nonnull PreconditionViolationException exception) {}
+        }
     }
     
     private static void testStringIterableAndArray(@Nonnull Consumer<Iterable<String>> iterableConsumer, @Nonnull Consumer<String[]> arrayConsumer, @Nonnull String[] positive, @Nonnull String[] negative) {
@@ -285,6 +307,24 @@ public class ValidationTest {
     }
     
     /* -------------------------------------------------- String -------------------------------------------------- */
+    
+    @Test
+    public void testCodeIdentifier() {
+        testPositives(validation::setCodeIdentifier, null, "_", "$", "hi", "hi5", "_h$i5");
+        testNegatives(validation::setCodeIdentifier, "", "5", "5hi", "hi 5", "hi#5");
+    }
+    
+    @Test
+    public void testJavaExpression() {
+        testPositives(validation::setJavaExpression, null, "", "3 + 4", "2 * (3 + 4)", "new String(\":-)\")");
+        testNegatives(validation::setJavaExpression, "return 0;", "2 * ((3 + 4)", "while (true) {}");
+    }
+    
+    @Test
+    public void testRegex() {
+        testPositives(validation::setRegex, null, "ba", "aba", "bab", "abab", "aababb");
+        testNegatives(validation::setRegex, "", "a", "b", "ab", "cba");
+    }
     
     /* -------------------------------------------------- Type Kind -------------------------------------------------- */
     

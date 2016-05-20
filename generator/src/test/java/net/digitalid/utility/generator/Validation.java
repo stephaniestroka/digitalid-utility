@@ -40,6 +40,9 @@ import net.digitalid.utility.validation.annotations.size.NonEmptyOrSingle;
 import net.digitalid.utility.validation.annotations.size.NonSingle;
 import net.digitalid.utility.validation.annotations.size.Single;
 import net.digitalid.utility.validation.annotations.size.Size;
+import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
+import net.digitalid.utility.validation.annotations.string.JavaExpression;
+import net.digitalid.utility.validation.annotations.string.Regex;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.annotations.value.Invariant;
 import net.digitalid.utility.validation.annotations.value.Validated;
@@ -379,6 +382,15 @@ public abstract class Validation extends RootClass implements Countable, Validat
     public void setSizeIntArray(@Size(3) int[] array) {}
     
     /* -------------------------------------------------- String -------------------------------------------------- */
+    
+    @Impure
+    public void setCodeIdentifier(@CodeIdentifier String identifier) {}
+    
+    @Impure
+    public void setJavaExpression(@JavaExpression String expression) {}
+    
+    @Impure
+    public void setRegex(@Regex("a*bab*") String string) {}
     
     /* -------------------------------------------------- Type Kind -------------------------------------------------- */
     

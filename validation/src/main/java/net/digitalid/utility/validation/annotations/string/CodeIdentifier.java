@@ -46,7 +46,7 @@ public @interface CodeIdentifier {
         @Pure
         public static boolean validate(@Nullable String string) {
             if (string == null) { return true; }
-            return PATTERN.matcher(string).matches();
+            else { return PATTERN.matcher(string).matches(); }
         }
         
         @Pure
