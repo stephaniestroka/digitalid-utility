@@ -13,8 +13,6 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
-import net.digitalid.utility.collaboration.annotations.TODO;
-import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
@@ -35,7 +33,6 @@ public abstract class OrderingValidator extends IterableValidator {
     
     @Pure
     @Override
-    @TODO(task = "Whether the type argument is comparable should be determined on the instantiated iterable type and not the declared type (which might no longer be generic).", date = "2016-04-29", author = Author.KASPAR_ETTER)
     public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
         super.checkUsage(element, annotationMirror, errorLogger);
         
@@ -46,11 +43,15 @@ public abstract class OrderingValidator extends IterableValidator {
                 errorLogger.log("The annotation $ may only be used on arrays whose component type is comparable, which is not the case for $:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), arrayType.getComponentType());
             }
         } else if (type.getKind() == TypeKind.DECLARED) {
-            final @Nonnull DeclaredType declaredType = (DeclaredType) type;
-            if (declaredType.getTypeArguments().isEmpty()) {
-                errorLogger.log("The declared type $ does not have a generic type argument.", SourcePosition.of(element, annotationMirror), declaredType);
-            } else if (!ProcessingUtility.isRawlyAssignable(declaredType.getTypeArguments().get(0), Comparable.class)) {
-                errorLogger.log("The annotation $ may only be used on iterables whose component type is comparable, but $ is not:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), declaredType.getTypeArguments().get(0));
+            final @Nullable DeclaredType supertype = ProcessingUtility.getSupertype((DeclaredType) type, Iterable.class);
+            if (supertype != null) {
+                if (supertype.getTypeArguments().size() != 1) {
+                    errorLogger.log("The supertype $ of the declared type $ does not have exactly one generic type argument.", SourcePosition.of(element, annotationMirror), supertype, type);
+                } else if (!ProcessingUtility.isRawlyAssignable(supertype.getTypeArguments().get(0), Comparable.class)) {
+                    errorLogger.log("The annotation $ may only be used on iterables whose component type is comparable, but $ is not:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), supertype.getTypeArguments().get(0));
+                }
+            } else {
+                errorLogger.log("The declared type $ is not iterable.", SourcePosition.of(element, annotationMirror), type);
             }
         } else {
             errorLogger.log("The annotation $ may only be used on arrays or declared types:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());

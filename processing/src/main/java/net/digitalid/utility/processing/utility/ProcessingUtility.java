@@ -491,7 +491,7 @@ public class ProcessingUtility {
     /* -------------------------------------------------- Type Visitors -------------------------------------------------- */
     
     /**
-     * This type visitor returns the qualified name of the given type.
+     * This type visitor returns the qualified name of the given type without generic parameters.
      */
     @Stateless
     public static class QualifiedNameTypeVisitor extends SimpleTypeVisitor7<@Nonnull String, @Nullable Void> {
@@ -519,7 +519,7 @@ public class ProcessingUtility {
         @Pure
         @Override
         public @Nonnull String visitWildcard(@Nonnull WildcardType type, @Nullable Void none) {
-            return "Object";
+            return visit(type.getExtendsBound());
         }
         
     }
@@ -527,7 +527,7 @@ public class ProcessingUtility {
     private static final @Nonnull QualifiedNameTypeVisitor QUALIFIED_NAME_TYPE_VISITOR = new QualifiedNameTypeVisitor();
     
     /**
-     * Returns the qualified name of the given type mirror.
+     * Returns the qualified name of the given type mirror without generic parameters.
      */
     @Pure
     public static @Nonnull String getQualifiedName(@Nonnull TypeMirror typeMirror) {
@@ -535,7 +535,7 @@ public class ProcessingUtility {
     }
     
     /**
-     * This type visitor returns the simple name of the given type.
+     * This type visitor returns the simple name of the given type without generic parameters.
      */
     @Stateless
     public static class SimpleNameTypeVisitor extends QualifiedNameTypeVisitor {
@@ -553,11 +553,34 @@ public class ProcessingUtility {
     private static final @Nonnull SimpleNameTypeVisitor SIMPLE_NAME_TYPE_VISITOR = new SimpleNameTypeVisitor();
     
     /**
-     * Returns the simple name of the given type mirror.
+     * Returns the simple name of the given type mirror without generic parameters.
      */
     @Pure
     public static @Nonnull String getSimpleName(@Nonnull TypeMirror typeMirror) {
         return SIMPLE_NAME_TYPE_VISITOR.visit(typeMirror);
+    }
+    
+    /* -------------------------------------------------- Supertypes -------------------------------------------------- */
+    
+    /**
+     * Returns the supertype of the given source type that corresponds to the given target type.
+     */
+    @Pure
+    public static @Nullable DeclaredType getSupertype(@Nonnull DeclaredType sourceType, @Nonnull Class<?> targetType) {
+        if (getQualifiedName(sourceType).equals(targetType.getCanonicalName())) {
+            return sourceType;
+        } else {
+            final @Nonnull List<@Nonnull ? extends TypeMirror> supertypes = StaticProcessingEnvironment.getTypeUtils().directSupertypes(sourceType);
+            for (@Nonnull TypeMirror supertype : supertypes) {
+                if (supertype.getKind() == TypeKind.DECLARED) {
+                    final @Nullable DeclaredType result = getSupertype((DeclaredType) supertype, targetType);
+                    if (result != null) { return result; }
+                } else {
+                    ProcessingLog.error("The supertype $ of the declared type $ is not a declared type.", supertype, sourceType);
+                }
+            }
+            return null;
+        }
     }
     
     /* -------------------------------------------------- Fields of Type -------------------------------------------------- */
