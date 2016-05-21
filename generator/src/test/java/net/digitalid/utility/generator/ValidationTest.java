@@ -5,23 +5,33 @@ import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
 import net.digitalid.utility.fixes.Quotes;
+import net.digitalid.utility.freezable.FreezableInterface;
+import net.digitalid.utility.freezable.ReadOnlyInterface;
+import net.digitalid.utility.freezable.annotations.Freezable;
+import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.interfaces.BigIntegerNumerical;
 import net.digitalid.utility.interfaces.Countable;
 import net.digitalid.utility.interfaces.LongNumerical;
 import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.testing.CustomTest;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class ValidationTest {
+public class ValidationTest extends CustomTest {
     
     /* -------------------------------------------------- Static -------------------------------------------------- */
     
@@ -337,13 +347,13 @@ public class ValidationTest {
     
     /* -------------------------------------------------- Type Kind -------------------------------------------------- */
     
-    public static @interface AnnotationType {}
+    private static @interface AnnotationType {}
     
-    public static class ClassType {}
+    private static class ClassType {}
     
-    public static enum EnumType {}
+    private static enum EnumType {}
     
-    public static interface InterfaceType {}
+    private static interface InterfaceType {}
     
     @Test
     public void testAnnotationType() {
@@ -421,6 +431,90 @@ public class ValidationTest {
     @Test
     public void testInvariant() {
         test(validation::setInvariant, 3, 4);
+    }
+    
+    @Test
+    public void testValidated() {
+        test(validation::setValidated, "12345", "123456");
+    }
+    
+    /* -------------------------------------------------- Threading -------------------------------------------------- */
+    
+    @Test
+    public void testMainThread() {
+        try {
+            validation.setMainThread();
+        } catch (@Nonnull PreconditionViolationException exception) {
+            fail("The test is running on the main thread.");
+        }
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    validation.setMainThread();
+                    fail("This is not the main thread.");
+                } catch (@Nonnull PreconditionViolationException exception) {}
+            }
+        }.start();
+    }
+    
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
+    
+    @ReadOnly(FreezableObject.class)
+    private static interface ReadOnlyObject extends ReadOnlyInterface {
+        
+        @Pure
+        @Override
+        public @Capturable @Nonnull @NonFrozen FreezableObject clone();
+        
+    }
+    
+    @Freezable(ReadOnlyObject.class)
+    private static class FreezableObject implements ReadOnlyObject, FreezableInterface {
+        
+        private boolean frozen = false;
+        
+        @Pure
+        @Override
+        public boolean isFrozen() {
+            return frozen;
+        }
+        
+        @Impure
+        @Override
+        public @Chainable @Nonnull @Frozen ReadOnlyObject freeze() {
+            this.frozen = true;
+            return this;
+        }
+        
+        @Pure
+        @Override
+        public @Capturable @Nonnull @NonFrozen FreezableObject clone() {
+            return new FreezableObject();
+        }
+        
+    }
+    
+    private static final @Nonnull ReadOnlyObject frozenObject = new FreezableObject().freeze();
+    
+    private static final @Nonnull FreezableObject nonFrozenObject = new FreezableObject();
+    
+    @Test
+    public void testFrozen() {
+        test(validation::setFrozen, frozenObject, nonFrozenObject);
+    }
+    
+    @Test
+    public void testNonFrozen() {
+        test(validation::setNonFrozen, nonFrozenObject, frozenObject);
+    }
+    
+    @Test
+    public void testNonFrozenRecipient() {
+        try {
+            validation.setNonFrozenRecipient();
+            fail("The recipient is frozen.");
+        } catch (@Nonnull PreconditionViolationException exception) {}
     }
     
 }

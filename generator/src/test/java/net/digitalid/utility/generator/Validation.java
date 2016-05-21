@@ -8,12 +8,19 @@ import javax.lang.model.element.NestingKind;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.freezable.FreezableInterface;
+import net.digitalid.utility.freezable.ReadOnlyInterface;
+import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.interfaces.BigIntegerNumerical;
 import net.digitalid.utility.interfaces.Countable;
 import net.digitalid.utility.interfaces.LongNumerical;
 import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.threading.annotations.MainThread;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.UniqueElements;
 import net.digitalid.utility.validation.annotations.index.Index;
@@ -29,6 +36,7 @@ import net.digitalid.utility.validation.annotations.math.relative.GreaterThan;
 import net.digitalid.utility.validation.annotations.math.relative.GreaterThanOrEqualTo;
 import net.digitalid.utility.validation.annotations.math.relative.LessThan;
 import net.digitalid.utility.validation.annotations.math.relative.LessThanOrEqualTo;
+import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.order.Ascending;
 import net.digitalid.utility.validation.annotations.order.Descending;
 import net.digitalid.utility.validation.annotations.order.StrictlyAscending;
@@ -62,7 +70,7 @@ import net.digitalid.utility.validation.annotations.value.Validated;
 
 @Stateless
 @GenerateSubclass
-public abstract class Validation extends RootClass implements Countable, Validated.Value<String> {
+public abstract class Validation extends RootClass implements Countable, Validated.Value<String>, FreezableInterface {
     
     /* -------------------------------------------------- Interfaces -------------------------------------------------- */
     
@@ -76,6 +84,24 @@ public abstract class Validation extends RootClass implements Countable, Validat
     @Override
     public @Nonnull Predicate<? super String> getValueValidator() {
         return a -> a.length() <= 5;
+    }
+    
+    @Pure
+    @Override
+    public boolean isFrozen() {
+        return true;
+    }
+    
+    @Impure
+    @Override
+    public @Chainable @Nonnull @Frozen ReadOnlyInterface freeze() {
+        return this;
+    }
+    
+    @Pure
+    @Override
+    public @Capturable @Nonnull @NonFrozen FreezableInterface clone() {
+        return new ValidationSubclass();
     }
     
     /* -------------------------------------------------- Reference -------------------------------------------------- */
@@ -448,15 +474,26 @@ public abstract class Validation extends RootClass implements Countable, Validat
     @Impure
     public void setInvariant(@Invariant(condition = "value % 3 == 0", message = "The value has to be a multiple of 3 but was $.") int value) {}
     
-    // TODO
+    @Impure
+    public void setValidated(@Validated String string) {}
     
     /* -------------------------------------------------- Threading -------------------------------------------------- */
     
-    // TODO: @MainThread
+    @Impure
+    @MainThread
+    public void setMainThread() {}
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
-    // TODO: @Frozen, @NonFrozen and @NonFrozenRecipient
+    @Impure
+    public void setFrozen(@Frozen ReadOnlyInterface freezable) {}
+    
+    @Impure
+    public void setNonFrozen(@NonFrozen ReadOnlyInterface freezable) {}
+    
+    @Impure
+    @NonFrozenRecipient
+    public void setNonFrozenRecipient() {}
     
     // TODO: Test @InGroup and @InSameGroup in the group project.
     

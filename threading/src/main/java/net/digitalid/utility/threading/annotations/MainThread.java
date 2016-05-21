@@ -11,6 +11,8 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.threading.Threading;
 import net.digitalid.utility.validation.annotations.meta.MethodValidator;
@@ -43,8 +45,8 @@ public @interface MainThread {
         
         @Pure
         @Override
-        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
-            return Contract.with(typeImporter.importIfPossible(Threading.class) + ".isMainThread()", "The method # may only be called on the main thread.", element);
+        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
+            return Contract.with(typeImporter.importIfPossible(Threading.class) + ".isMainThread()", "The method # may only be called on the main thread.");
         }
         
     }

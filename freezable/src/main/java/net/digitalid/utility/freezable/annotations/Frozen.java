@@ -52,7 +52,7 @@ public @interface Frozen {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("#.isFrozen()", "The # has to be frozen.", element);
+            return Contract.with("# == null || #.isFrozen()", "The # has to be null or frozen.", element);
         }
         
     }
