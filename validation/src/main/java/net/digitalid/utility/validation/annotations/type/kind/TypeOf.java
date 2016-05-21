@@ -68,7 +68,7 @@ public @interface TypeOf {
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             ValueAnnotationValidator.super.checkUsage(element, annotationMirror, errorLogger);
             
-            if (ProcessingUtility.isRawlyAssignable(element, Class.class) && !typeKinds.containsAll(ProcessingUtility.getEnums(ProcessingUtility.getAnnotationValue(annotationMirror), ElementKind.class))) {
+            if (ProcessingUtility.isSubtype(element, Class.class) && !typeKinds.containsAll(ProcessingUtility.getEnums(ProcessingUtility.getAnnotationValue(annotationMirror), ElementKind.class))) {
                 errorLogger.log("In case of classes, the annotation '@TypeKind' may only be used with CLASS, INTERFACE, ENUM and ANNOTATION_TYPE:", SourcePosition.of(element, annotationMirror));
             }
         }

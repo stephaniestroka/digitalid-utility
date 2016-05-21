@@ -39,12 +39,6 @@ public @interface MainThread {
         
         @Pure
         @Override
-        public @Nonnull Class<?> getReceiverType() {
-            return Object.class;
-        }
-        
-        @Pure
-        @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
             return Contract.with(typeImporter.importIfPossible(Threading.class) + ".isMainThread()", "The method # may only be called on the main thread.");
         }

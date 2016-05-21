@@ -45,20 +45,21 @@ public @interface Functional {
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             if (element.getKind() != ElementKind.INTERFACE) {
-                errorLogger.log("Only an interface can be functional.", SourcePosition.of(element));
-            }
-            boolean found = false;
-            for (@Nonnull ExecutableElement method : ProcessingUtility.getAllMethods((TypeElement) element)) {
-                if (method.getModifiers().contains(Modifier.ABSTRACT)) {
-                    if (found) {
-                        errorLogger.log("The functional interface $ may have only one abstract method.", SourcePosition.of(method), element);
-                    } else {
-                        found = true;
+                errorLogger.log("Only an interface can be functional.", SourcePosition.of(element, annotationMirror));
+            } else {
+                boolean found = false;
+                for (@Nonnull ExecutableElement method : ProcessingUtility.getAllMethods((TypeElement) element)) {
+                    if (method.getModifiers().contains(Modifier.ABSTRACT)) {
+                        if (found) {
+                            errorLogger.log("The functional interface $ may have only one abstract method.", SourcePosition.of(method), element);
+                        } else {
+                            found = true;
+                        }
                     }
                 }
-            }
-            if (!found) {
-                errorLogger.log("The functional interface $ must have an abstract method.", SourcePosition.of(element), element);
+                if (!found) {
+                    errorLogger.log("The functional interface $ has to have an abstract method.", SourcePosition.of(element), element);
+                }
             }
         }
         

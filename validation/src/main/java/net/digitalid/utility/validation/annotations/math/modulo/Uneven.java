@@ -45,11 +45,11 @@ public @interface Uneven {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            if (ProcessingUtility.isRawlyAssignable(element, BigIntegerNumerical.class)) {
+            if (ProcessingUtility.isSubtype(element, BigIntegerNumerical.class)) {
                 return Contract.with("# == null || #.getValue().getLowestSetBit() == 0", "The # has to be null or uneven but was $.", element);
-            } else if (ProcessingUtility.isRawlyAssignable(element, BigInteger.class)) {
+            } else if (ProcessingUtility.isSubtype(element, BigInteger.class)) {
                 return Contract.with("# == null || #.getLowestSetBit() == 0", "The # has to be null or uneven but was $.", element);
-            } else if (ProcessingUtility.isRawlyAssignable(element, LongNumerical.class)) {
+            } else if (ProcessingUtility.isSubtype(element, LongNumerical.class)) {
                 return Contract.with("# == null || #.getValue() % 2 == 1", "The # has to be null or uneven but was $.", element);
             } else {
                 return Contract.with("# % 2 == 1", "The # has to be uneven but was $.", element);

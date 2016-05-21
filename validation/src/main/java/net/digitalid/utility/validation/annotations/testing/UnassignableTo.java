@@ -52,7 +52,7 @@ public @interface UnassignableTo {
             final @Nonnull TypeMirror declaredType = ProcessingUtility.getType(element);
             final @Nullable Class<?> desiredType = ProcessingUtility.getClass(ProcessingUtility.getAnnotationValue(annotationMirror));
             if (desiredType != null && ProcessingUtility.isRawlyAssignable(declaredType, desiredType)) {
-                errorLogger.log("The value of type $ is rawly assignable to $:", SourcePosition.of(element), ProcessingUtility.getSimpleName(declaredType), desiredType.getCanonicalName());
+                errorLogger.log("The value of type $ is rawly assignable to $:", SourcePosition.of(element), ProcessingUtility.getSimpleName(declaredType), desiredType.getSimpleName());
             }
         }
         

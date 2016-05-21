@@ -49,7 +49,7 @@ public abstract class NestingKindValidator implements ValueAnnotationValidator {
      */
     @Pure
     public static @Nonnull String getCondition(@Nonnull Element element, @Nonnull NestingKind kind, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-        if (ProcessingUtility.isRawlyAssignable(element, Class.class)) {
+        if (ProcessingUtility.isSubtype(element, Class.class)) {
             switch (kind) {
                 case ANONYMOUS: return "#.isAnonymousClass()";
                 case LOCAL: return "#.isLocalClass()";

@@ -227,7 +227,7 @@ public class MethodInformation extends ExecutableInformation {
             final @Nonnull FiniteIterable<@Nonnull VariableElement> fields = ProcessingUtility.getAllFields((TypeElement) getContainingType().asElement());
             final @Nullable VariableElement fieldElement = fields.findFirst(field -> field.getSimpleName().contentEquals(getFieldName()));
             if (fieldElement == null) {
-                ProcessingLog.information("Found the method $, which looks like a getter, but does not have a corresponding field.", getName());
+                ProcessingLog.debugging("Found the method $, which looks like a getter, but does not have a corresponding field.", getName());
                 return null;
             }
             final @Nullable Default defaultAnnotation = fieldElement.getAnnotation(Default.class);

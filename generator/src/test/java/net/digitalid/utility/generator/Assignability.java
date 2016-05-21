@@ -4,15 +4,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.testing.TestTypes;
 import net.digitalid.utility.validation.annotations.testing.AssignableTo;
 import net.digitalid.utility.validation.annotations.testing.UnassignableTo;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 @Immutable
-@GenerateSubclass
-@SuppressWarnings("PublicField")
 public abstract class Assignability {
     
     /* -------------------------------------------------- Objects -------------------------------------------------- */

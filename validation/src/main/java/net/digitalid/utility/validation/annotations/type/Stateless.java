@@ -51,7 +51,7 @@ public @interface Stateless {
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             for (@Nonnull VariableElement field : ProcessingUtility.getAllFields((TypeElement) element)) {
                 if (!field.getModifiers().contains(Modifier.STATIC)) {
-                    errorLogger.log("The stateless type $ may not have non-static fields.", SourcePosition.of(field), element);
+                    errorLogger.log("The stateless type $ may only have static fields.", SourcePosition.of(field), element);
                 }
             }
         }

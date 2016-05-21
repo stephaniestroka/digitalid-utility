@@ -39,7 +39,7 @@ public abstract class OrderingValidator extends IterableValidator {
         final @Nonnull TypeMirror type = ProcessingUtility.getType(element);
         if (type.getKind() == TypeKind.ARRAY) {
             final @Nonnull ArrayType arrayType = (ArrayType) type;
-            if (!ProcessingUtility.isRawlyAssignable(arrayType.getComponentType(), Comparable.class)) {
+            if (!arrayType.getComponentType().getKind().isPrimitive() && !ProcessingUtility.isSubtype(arrayType.getComponentType(), Comparable.class)) {
                 errorLogger.log("The annotation $ may only be used on arrays whose component type is comparable, which is not the case for $:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), arrayType.getComponentType());
             }
         } else if (type.getKind() == TypeKind.DECLARED) {
@@ -47,7 +47,7 @@ public abstract class OrderingValidator extends IterableValidator {
             if (supertype != null) {
                 if (supertype.getTypeArguments().size() != 1) {
                     errorLogger.log("The supertype $ of the declared type $ does not have exactly one generic type argument.", SourcePosition.of(element, annotationMirror), supertype, type);
-                } else if (!ProcessingUtility.isRawlyAssignable(supertype.getTypeArguments().get(0), Comparable.class)) {
+                } else if (!ProcessingUtility.isSubtype(supertype.getTypeArguments().get(0), Comparable.class)) {
                     errorLogger.log("The annotation $ may only be used on iterables whose component type is comparable, but $ is not:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), supertype.getTypeArguments().get(0));
                 }
             } else {

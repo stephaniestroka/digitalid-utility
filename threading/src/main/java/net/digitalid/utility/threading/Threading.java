@@ -9,7 +9,7 @@ import net.digitalid.utility.validation.annotations.type.Utility;
  * This class facilitates the handling of threads.
  */
 @Utility
-public final class Threading {
+public abstract class Threading {
     
     /* -------------------------------------------------- Main Thread -------------------------------------------------- */
     
@@ -22,7 +22,7 @@ public final class Threading {
      * Returns whether the current thread is the main thread.
      */
     @Pure
-    public static final boolean isMainThread() {
+    public static boolean isMainThread() {
         return Thread.currentThread() == main;
     }
     

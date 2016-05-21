@@ -16,7 +16,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
-import net.digitalid.utility.processor.generator.JavaFileGenerator;
+import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.getter.Default;
 
 import com.sun.tools.javac.code.Type;
@@ -68,12 +68,12 @@ public abstract class FieldInformationImplementation extends ElementInformationI
     
     /* -------------------------------------------------- Type -------------------------------------------------- */
     
-    public @Nonnull String getFieldType(@Nonnull JavaFileGenerator javaFileGenerator) {
+    public @Nonnull String getFieldType(@Nonnull TypeImporter typeImporter) {
         final @Nonnull StringBuilder returnTypeAsString = new StringBuilder();
         if (getType() instanceof Type.AnnotatedType) {
             final Type.AnnotatedType annotatedType = (Type.AnnotatedType) getType();
             for (AnnotationMirror annotationMirror : annotatedType.getAnnotationMirrors()) {
-                returnTypeAsString.append("@").append(javaFileGenerator.importIfPossible(annotationMirror.getAnnotationType()));
+                returnTypeAsString.append("@").append(typeImporter.importIfPossible(annotationMirror.getAnnotationType()));
                 if (annotationMirror.getElementValues().size() > 0) {
                     returnTypeAsString.append("(");
                     boolean first = true;
@@ -90,9 +90,9 @@ public abstract class FieldInformationImplementation extends ElementInformationI
                 }
                 returnTypeAsString.append(" ");
             }
-            returnTypeAsString.append(javaFileGenerator.importIfPossible(annotatedType.unannotatedType()));
+            returnTypeAsString.append(typeImporter.importIfPossible(annotatedType.unannotatedType()));
         } else {
-            returnTypeAsString.append(javaFileGenerator.importIfPossible(getType()));
+            returnTypeAsString.append(typeImporter.importIfPossible(getType()));
         }
         return returnTypeAsString.toString();
     }

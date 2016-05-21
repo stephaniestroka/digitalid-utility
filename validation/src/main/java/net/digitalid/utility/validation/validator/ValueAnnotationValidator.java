@@ -25,7 +25,7 @@ public interface ValueAnnotationValidator extends AnnotationHandler, ContractGen
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    public static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(Object.class);
+    public static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(Object.class, boolean.class, char.class, byte.class, short.class, int.class, long.class, float.class, double.class);
     
     /**
      * Returns the types of values to which the surrounding annotation can be applied.
@@ -40,7 +40,7 @@ public interface ValueAnnotationValidator extends AnnotationHandler, ContractGen
     @Pure
     @Override
     public default void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
-        if (getTargetTypes().matchNone(targetType -> ProcessingUtility.isRawlyAssignable(element, targetType))) {
+        if (getTargetTypes().matchNone(targetType -> ProcessingUtility.isSubtype(element, targetType))) {
             errorLogger.log("The element $ is not assignable to a target type of $.", SourcePosition.of(element, annotationMirror), element, getAnnotationNameWithLeadingAt());
         }
     }

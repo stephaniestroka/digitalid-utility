@@ -432,7 +432,7 @@ public class ProcessingUtility {
         return annotationMirrors.map(annotationMirror -> getAnnotationAsString(annotationMirror, typeImporter)).join("", " ", "", " ");
     }
     
-    /* -------------------------------------------------- Assignability -------------------------------------------------- */
+    /* -------------------------------------------------- Type Conversion -------------------------------------------------- */
     
     private static final @Nonnull ImmutableMap<@Nonnull Class<?>, @Nonnull TypeKind> primitiveTypes = ImmutableMap.<Class<?>, TypeKind>with(boolean.class, TypeKind.BOOLEAN).with(char.class, TypeKind.CHAR).with(byte.class, TypeKind.BYTE).with(short.class, TypeKind.SHORT).with(int.class, TypeKind.INT).with(long.class, TypeKind.LONG).with(float.class, TypeKind.FLOAT).with(double.class, TypeKind.DOUBLE).build();
     
@@ -470,6 +470,8 @@ public class ProcessingUtility {
         return typeMirror != null ? StaticProcessingEnvironment.getTypeUtils().erasure(typeMirror) : null;
     }
     
+    /* -------------------------------------------------- Assignability -------------------------------------------------- */
+    
     /**
      * Returns whether the given declared type is assignable to the given desired type.
      */
@@ -490,11 +492,20 @@ public class ProcessingUtility {
     /* -------------------------------------------------- Subtyping -------------------------------------------------- */
     
     /**
-     * Returns whether the given type element is a subtype of the given type.
+     * Returns whether the given declared type is a subtype of the given desired type.
      */
     @Pure
-    public static boolean isSubtype(@Nonnull TypeElement element, @Nonnull Class<?> type) {
-        return StaticProcessingEnvironment.getTypeUtils().isSubtype(element.asType(), getTypeMirror(type));
+    public static boolean isSubtype(@Nonnull TypeMirror declaredType, @Nonnull Class<?> desiredType) {
+        final @Nullable TypeMirror typeMirror = getErasedTypeMirror(desiredType);
+        return typeMirror != null ? StaticProcessingEnvironment.getTypeUtils().isSubtype(declaredType, typeMirror) : false;
+    }
+    
+    /**
+     * Returns whether the type of the given element is a subtype of the given type.
+     */
+    @Pure
+    public static boolean isSubtype(@Nonnull Element element, @Nonnull Class<?> type) {
+        return isSubtype(getType(element), type);
     }
     
     /* -------------------------------------------------- Component Type -------------------------------------------------- */
@@ -533,6 +544,7 @@ public class ProcessingUtility {
             }
             return componentType;
         } else {
+            // TODO: This doesn't work if the type extends the collection class/interface without redeclaring the generic parameter. See the OrderingValidator for how to do this properly.
             final @Nonnull List<@Nonnull ? extends TypeMirror> typeArguments = ((DeclaredType) type).getTypeArguments();
             Require.that(typeArguments.size() == 1).orThrow("Expected collection type with exactly one type argument");
             return typeArguments.get(0);

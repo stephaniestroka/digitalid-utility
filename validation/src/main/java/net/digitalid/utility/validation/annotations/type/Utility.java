@@ -49,6 +49,9 @@ public @interface Utility {
         @Pure
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
+            if (!element.getModifiers().contains(Modifier.ABSTRACT)) {
+                errorLogger.log("By convention, the utility type $ has to be abstract.", SourcePosition.of(element), element);
+            }
             for (@Nonnull Element member : ProcessingUtility.getAllMembers((TypeElement) element)) {
                 if (ProcessingUtility.isDeclaredInDigitalIDLibrary(member) && member.getKind() != ElementKind.CONSTRUCTOR && !member.getModifiers().contains(Modifier.STATIC)) {
                     errorLogger.log("The utility type $ may only have static fields and methods.", SourcePosition.of(member), element);

@@ -1,55 +1,42 @@
-package net.digitalid.utility.validation.annotations.value;
+package net.digitalid.utility.validation.annotations.testing;
 
-import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
-import net.digitalid.utility.processing.utility.TypeImporter;
-import net.digitalid.utility.validation.annotations.getter.Default;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
-import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Stateless;
-import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.processing.ErrorLogger;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
- * This annotation indicates that a value has been validated.
+ * This annotation indicates that the annotated type is not a subtype of the given type.
+ * 
+ * @see SubtypeOf
  */
-@Documented
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
-@ValueValidator(Validated.Validator.class)
-public @interface Validated {
+@ValueValidator(NotSubtypeOf.Validator.class)
+public @interface NotSubtypeOf {
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
     /**
-     * This interface encapsulates a value which is validated by the given validator.
+     * Returns the type of which the annotated type should not be a subtype.
      */
-    @Functional
-    public static interface Value<V> {
-        
-        /**
-         * Returns the validator which validates the encapsulated value(s).
-         */
-        @Pure
-        @Default("object -> true")
-        public @Nonnull Predicate<? super V> getValueValidator();
-        
-    }
+    @Nonnull Class<?> value();
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
     
@@ -62,15 +49,11 @@ public @interface Validated {
         @Pure
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
-            if (!ProcessingUtility.isSubtype(ProcessingUtility.getSurroundingType(element), Validated.Value.class)) {
-                errorLogger.log("The annotation '@Validated' may only be used in types that implement the Validated.Value interface:", SourcePosition.of(element, annotationMirror));
+            final @Nonnull TypeMirror declaredType = ProcessingUtility.getType(element);
+            final @Nullable Class<?> desiredType = ProcessingUtility.getClass(ProcessingUtility.getAnnotationValue(annotationMirror));
+            if (desiredType != null && ProcessingUtility.isSubtype(declaredType, desiredType)) {
+                errorLogger.log("The type $ is a subtype of $:", SourcePosition.of(element), ProcessingUtility.getSimpleName(declaredType), desiredType.getSimpleName());
             }
-        }
-        
-        @Pure
-        @Override
-        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == null || getValueValidator().evaluate(#)", "The # has to be null or valid but was $.", element);
         }
         
     }
