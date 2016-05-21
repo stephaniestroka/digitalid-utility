@@ -9,7 +9,6 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
-import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.ReadOnlyInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
@@ -21,54 +20,20 @@ import net.digitalid.utility.interfaces.BigIntegerNumerical;
 import net.digitalid.utility.interfaces.Countable;
 import net.digitalid.utility.interfaces.LongNumerical;
 import net.digitalid.utility.string.Strings;
-import net.digitalid.utility.testing.CustomTest;
+import net.digitalid.utility.testing.ContractTest;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
+import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
-public class ValidationTest extends CustomTest {
+public class ValidationTest extends ContractTest {
     
     /* -------------------------------------------------- Static -------------------------------------------------- */
     
     private static final @Nonnull Validation validation = new ValidationSubclass();
-    
-    private static <T> void test(@Nonnull Consumer<? super T> consumer, T positive, T negative) {
-        try {
-            consumer.consume(positive);
-        } catch (@Nonnull PreconditionViolationException exception) {
-            fail("The positive sample " + Quotes.inSingle(positive) + " should not fail.");
-        }
-        try {
-            consumer.consume(negative); 
-            fail("The negative sample " + Quotes.inSingle(negative) + " should fail.");
-        } catch (@Nonnull PreconditionViolationException exception) {}
-    }
-    
-    @SafeVarargs
-    private static <T> void testPositives(@Nonnull Consumer<? super T> consumer, @Nonnull T... positives) {
-        for (T positive : positives) {
-            try {
-                consumer.consume(positive);
-            } catch (@Nonnull PreconditionViolationException exception) {
-                fail("The positive sample " + Quotes.inSingle(positive) + " should not fail.");
-            }
-        }
-    }
-    
-    @SafeVarargs
-    private static <T> void testNegatives(@Nonnull Consumer<? super T> consumer, @Nonnull T... negatives) {
-        for (T negative : negatives) {
-            try {
-                consumer.consume(negative);
-                fail("The negative sample " + Quotes.inSingle(negative) + " should fail.");
-            } catch (@Nonnull PreconditionViolationException exception) {}
-        }
-    }
     
     private static void testStringIterableAndArray(@Nonnull Consumer<Iterable<String>> iterableConsumer, @Nonnull Consumer<String[]> arrayConsumer, @Nonnull String[] positive, @Nonnull String[] negative) {
         test(iterableConsumer, FiniteIterable.of(positive), FiniteIterable.of(negative));
@@ -321,7 +286,7 @@ public class ValidationTest extends CustomTest {
     public void testEmptyOrSingleRecipient() {
         try {
             validation.setEmptyOrSingleRecipient();
-            fail("The recipient is not empty or single.");
+            Assert.fail("The recipient is not empty or single.");
         } catch (@Nonnull PreconditionViolationException exception) {}
     }
     
@@ -445,14 +410,14 @@ public class ValidationTest extends CustomTest {
         try {
             validation.setMainThread();
         } catch (@Nonnull PreconditionViolationException exception) {
-            fail("The test is running on the main thread.");
+            Assert.fail("The test is running on the main thread.");
         }
         new Thread() {
             @Override
             public void run() {
                 try {
                     validation.setMainThread();
-                    fail("This is not the main thread.");
+                    Assert.fail("This is not the main thread.");
                 } catch (@Nonnull PreconditionViolationException exception) {}
             }
         }.start();
@@ -513,7 +478,7 @@ public class ValidationTest extends CustomTest {
     public void testNonFrozenRecipient() {
         try {
             validation.setNonFrozenRecipient();
-            fail("The recipient is frozen.");
+            Assert.fail("The recipient is frozen.");
         } catch (@Nonnull PreconditionViolationException exception) {}
     }
     
