@@ -39,7 +39,7 @@ public @interface Functional {
      * This class checks the use of the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends TypeAnnotationValidator {
+    public static class Validator implements TypeAnnotationValidator {
         
         @Pure
         @Override

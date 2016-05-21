@@ -115,6 +115,7 @@ public abstract class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> i
     
     @Impure
     @Override
+    @NonFrozenRecipient
     public @Chainable @Nonnull @Frozen ReadOnlyMap<K, V> freeze() {
         this.frozen = true;
         return this;

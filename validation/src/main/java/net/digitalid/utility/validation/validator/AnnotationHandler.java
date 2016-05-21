@@ -8,7 +8,9 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.processing.AnnotationHandlerUtility;
 import net.digitalid.utility.validation.processing.ErrorLogger;
 
 /**
@@ -17,9 +19,12 @@ import net.digitalid.utility.validation.processing.ErrorLogger;
  * @see MethodAnnotationValidator
  * @see ValueAnnotationValidator
  * @see TypeAnnotationValidator
+ * 
+ * @see AnnotationHandlerUtility
  */
 @Stateless
-public abstract class AnnotationHandler {
+@Functional
+public interface AnnotationHandler {
     
     /* -------------------------------------------------- Usage Check -------------------------------------------------- */
     
@@ -27,7 +32,7 @@ public abstract class AnnotationHandler {
      * Checks whether the given annotation is used correctly on the given element.
      */
     @Pure
-    public abstract void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger);
+    public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger);
     
     /* -------------------------------------------------- Annotation Name -------------------------------------------------- */
     
@@ -35,7 +40,7 @@ public abstract class AnnotationHandler {
      * Returns the name of the surrounding annotation.
      */
     @Pure
-    public @Nonnull String getAnnotationName() {
+    public default @Nonnull String getAnnotationName() {
         final @Nonnull String name = getClass().getName();
         return name.contains("$") ? name.substring(name.lastIndexOf('.') + 1, name.indexOf('$')) : name;
     }
@@ -44,7 +49,7 @@ public abstract class AnnotationHandler {
      * Returns the name of the surrounding annotation with a leading at symbol.
      */
     @Pure
-    public @Nonnull String getAnnotationNameWithLeadingAt() {
+    public default @Nonnull String getAnnotationNameWithLeadingAt() {
         return "@" + getAnnotationName();
     }
     
@@ -54,7 +59,7 @@ public abstract class AnnotationHandler {
      * @see Strings#decamelize(java.lang.String)
      */
     @Pure
-    public @Nonnull String getDecamelizedAnnotationName() {
+    public default @Nonnull String getDecamelizedAnnotationName() {
         return Strings.decamelize(getAnnotationName());
     }
     

@@ -18,7 +18,6 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
@@ -357,7 +356,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
     /**
      * Performs the given action for each element of this iterable and returns this iterable.
      */
-    @Impure
+    @Pure
     @Chainable
     public default FiniteIterable<E> doForEach(@NonCaptured @Modified @Nonnull Consumer<? super E> action) {
         for (E element : this) { action.consume(element); }

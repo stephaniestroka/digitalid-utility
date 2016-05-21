@@ -13,9 +13,6 @@ import javax.lang.model.element.Element;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.collaboration.annotations.TODO;
-import net.digitalid.utility.collaboration.enumerations.Author;
-import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.processing.utility.TypeImporter;
@@ -41,7 +38,7 @@ public @interface NonFrozenRecipient {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends MethodAnnotationValidator {
+    public static class Validator implements MethodAnnotationValidator {
         
         @Pure
         @Override
@@ -51,7 +48,6 @@ public @interface NonFrozenRecipient {
         
         @Pure
         @Override
-        @TODO(task = "Generate method validators as pre- instead of postconditions.", date = "2016-04-29", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.HIGH)
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
             return Contract.with("!isFrozen()", "The method " + Quotes.inSingle(element.getSimpleName().toString()) + " may only be called on non-frozen objects.");
         }

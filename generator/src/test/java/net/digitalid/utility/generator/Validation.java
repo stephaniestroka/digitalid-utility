@@ -54,7 +54,7 @@ import net.digitalid.utility.validation.annotations.size.Size;
 import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
 import net.digitalid.utility.validation.annotations.string.Regex;
-import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.type.kind.AnnotationType;
 import net.digitalid.utility.validation.annotations.type.kind.ClassType;
 import net.digitalid.utility.validation.annotations.type.kind.EnumType;
@@ -68,7 +68,7 @@ import net.digitalid.utility.validation.annotations.type.nesting.TopLevelType;
 import net.digitalid.utility.validation.annotations.value.Invariant;
 import net.digitalid.utility.validation.annotations.value.Validated;
 
-@Stateless
+@Mutable
 @GenerateSubclass
 public abstract class Validation extends RootClass implements Countable, Validated.Value<String>, FreezableInterface {
     
@@ -94,6 +94,7 @@ public abstract class Validation extends RootClass implements Countable, Validat
     
     @Impure
     @Override
+    @NonFrozenRecipient
     public @Chainable @Nonnull @Frozen ReadOnlyInterface freeze() {
         return this;
     }
@@ -494,7 +495,5 @@ public abstract class Validation extends RootClass implements Countable, Validat
     @Impure
     @NonFrozenRecipient
     public void setNonFrozenRecipient() {}
-    
-    // TODO: Test @InGroup and @InSameGroup in the group project.
     
 }

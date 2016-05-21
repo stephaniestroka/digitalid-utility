@@ -9,6 +9,7 @@ import net.digitalid.utility.contracts.exceptions.PreconditionViolationException
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
@@ -28,6 +29,7 @@ public interface FreezableIterable<E> extends ReadOnlyIterable<E>, FreezableInte
     
     @Impure
     @Override
+    @NonFrozenRecipient
     public @Chainable @Nonnull @Frozen ReadOnlyIterable<E> freeze();
     
 }

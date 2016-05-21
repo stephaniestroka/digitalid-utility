@@ -23,7 +23,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * @see net.digitalid.utility.validation.annotations.size
  */
 @Stateless
-public abstract class SizeValidator extends ValueAnnotationValidator {
+public abstract class SizeValidator implements ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     

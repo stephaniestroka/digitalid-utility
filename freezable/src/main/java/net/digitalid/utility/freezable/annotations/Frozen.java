@@ -39,7 +39,7 @@ public @interface Frozen {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends ValueAnnotationValidator {
+    public static class Validator implements ValueAnnotationValidator {
         
         private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(ReadOnlyInterface.class);
         

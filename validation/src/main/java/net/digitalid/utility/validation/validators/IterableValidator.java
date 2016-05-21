@@ -14,7 +14,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * @see OrderingValidator
  */
 @Stateless
-public abstract class IterableValidator extends ValueAnnotationValidator {
+public abstract class IterableValidator implements ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     

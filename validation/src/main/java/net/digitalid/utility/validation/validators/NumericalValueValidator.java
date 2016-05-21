@@ -26,7 +26,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * @see ValueRelativeNumericalValueValidator
  */
 @Stateless
-public abstract class NumericalValueValidator extends ValueAnnotationValidator {
+public abstract class NumericalValueValidator implements ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     

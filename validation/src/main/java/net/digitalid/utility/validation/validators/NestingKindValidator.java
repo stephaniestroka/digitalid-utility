@@ -22,7 +22,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * @see net.digitalid.utility.validation.annotations.type.nesting
  */
 @Stateless
-public abstract class NestingKindValidator extends ValueAnnotationValidator {
+public abstract class NestingKindValidator implements ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     

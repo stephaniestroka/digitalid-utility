@@ -124,6 +124,7 @@ public abstract class FreezableLinkedHashSet<E> extends LinkedHashSet<E> impleme
     
     @Impure
     @Override
+    @NonFrozenRecipient
     public @Nonnull @Frozen ReadOnlySet<E> freeze() {
         this.frozen = true;
         return this;

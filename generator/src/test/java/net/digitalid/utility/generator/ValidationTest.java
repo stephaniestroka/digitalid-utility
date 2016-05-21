@@ -14,6 +14,7 @@ import net.digitalid.utility.freezable.ReadOnlyInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.interfaces.BigIntegerNumerical;
@@ -447,6 +448,7 @@ public class ValidationTest extends ContractTest {
         
         @Impure
         @Override
+        @NonFrozenRecipient
         public @Chainable @Nonnull @Frozen ReadOnlyObject freeze() {
             this.frozen = true;
             return this;

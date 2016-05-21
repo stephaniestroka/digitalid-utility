@@ -35,7 +35,7 @@ public @interface EmptyOrSingleRecipient {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends MethodAnnotationValidator {
+    public static class Validator implements MethodAnnotationValidator {
         
         @Pure
         @Override

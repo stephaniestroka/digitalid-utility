@@ -17,7 +17,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * @see net.digitalid.utility.validation.annotations.math.modulo
  */
 @Stateless
-public abstract class ModuloValidator extends ValueAnnotationValidator {
+public abstract class ModuloValidator implements ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     

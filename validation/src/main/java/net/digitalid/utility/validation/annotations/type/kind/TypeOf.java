@@ -51,7 +51,7 @@ public @interface TypeOf {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends ValueAnnotationValidator {
+    public static class Validator implements ValueAnnotationValidator {
         
         private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(Class.class, Element.class);
         
@@ -66,7 +66,7 @@ public @interface TypeOf {
         @Pure
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
-            super.checkUsage(element, annotationMirror, errorLogger);
+            ValueAnnotationValidator.super.checkUsage(element, annotationMirror, errorLogger);
             
             if (ProcessingUtility.isRawlyAssignable(element, Class.class) && !typeKinds.containsAll(ProcessingUtility.getEnums(ProcessingUtility.getAnnotationValue(annotationMirror), ElementKind.class))) {
                 errorLogger.log("In case of classes, the annotation '@TypeKind' may only be used with CLASS, INTERFACE, ENUM and ANNOTATION_TYPE:", SourcePosition.of(element, annotationMirror));

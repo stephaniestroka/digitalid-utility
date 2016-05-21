@@ -21,17 +21,17 @@ import net.digitalid.utility.validation.processing.ErrorLogger;
  * @see ValueValidator
  */
 @Stateless
-public abstract class ValueAnnotationValidator extends AnnotationHandler implements ContractGenerator {
+public interface ValueAnnotationValidator extends AnnotationHandler, ContractGenerator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(Object.class);
+    public static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(Object.class);
     
     /**
      * Returns the types of values to which the surrounding annotation can be applied.
      */
     @Pure
-    public @Nonnull FiniteIterable<Class<?>> getTargetTypes() {
+    public default @Nonnull FiniteIterable<@Nonnull Class<?>> getTargetTypes() {
         return targetTypes;
     }
     
@@ -39,7 +39,7 @@ public abstract class ValueAnnotationValidator extends AnnotationHandler impleme
     
     @Pure
     @Override
-    public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
+    public default void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
         if (getTargetTypes().matchNone(targetType -> ProcessingUtility.isRawlyAssignable(element, targetType))) {
             errorLogger.log("The element $ is not assignable to a target type of $.", SourcePosition.of(element, annotationMirror), element, getAnnotationNameWithLeadingAt());
         }

@@ -16,10 +16,8 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
-import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
-import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.processing.ErrorLogger;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
@@ -46,7 +44,7 @@ public @interface UnassignableTo {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends ValueAnnotationValidator {
+    public static class Validator implements ValueAnnotationValidator {
         
         @Pure
         @Override
@@ -56,12 +54,6 @@ public @interface UnassignableTo {
             if (desiredType != null && ProcessingUtility.isRawlyAssignable(declaredType, desiredType)) {
                 errorLogger.log("The value of type $ is rawly assignable to $:", SourcePosition.of(element), ProcessingUtility.getSimpleName(declaredType), desiredType.getCanonicalName());
             }
-        }
-        
-        @Pure
-        @Override
-        public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("true", "The universe got hacked if true is no longer true.", element);
         }
         
     }

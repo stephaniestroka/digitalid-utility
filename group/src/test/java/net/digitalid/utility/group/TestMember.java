@@ -8,9 +8,9 @@ import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.group.annotations.InGroup;
 import net.digitalid.utility.group.annotations.InSameGroup;
 import net.digitalid.utility.rootclass.RootClass;
-import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
-@Immutable
+@Mutable
 @GenerateSubclass
 public abstract class TestMember extends RootClass implements GroupMember {
     

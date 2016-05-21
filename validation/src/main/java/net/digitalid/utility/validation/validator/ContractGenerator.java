@@ -26,6 +26,8 @@ public interface ContractGenerator {
      * The type importer can be used to import referenced types.
      */
     @Pure
-    public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter);
+    public default @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+        return Contract.with("true", "The universe got hacked if true is no longer true.");
+    }
     
 }

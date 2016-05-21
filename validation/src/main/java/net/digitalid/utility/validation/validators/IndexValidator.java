@@ -20,7 +20,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * @see net.digitalid.utility.validation.annotations.index
  */
 @Stateless
-public abstract class IndexValidator extends ValueAnnotationValidator {
+public abstract class IndexValidator implements ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
@@ -37,7 +37,7 @@ public abstract class IndexValidator extends ValueAnnotationValidator {
     @Pure
     @Override
     public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
-        super.checkUsage(element, annotationMirror, errorLogger);
+        ValueAnnotationValidator.super.checkUsage(element, annotationMirror, errorLogger);
         
         if (!ProcessingUtility.hasMethod(ProcessingUtility.getSurroundingType(element), "size", int.class)) {
             errorLogger.log("The annotation $ may only be used in types with an 'int size()' method:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());

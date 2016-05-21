@@ -17,6 +17,7 @@ import net.digitalid.utility.collections.collection.FreezableCollection;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.validation.annotations.math.relative.GreaterThanOrEqualTo;
@@ -39,6 +40,7 @@ public interface FreezableList<E> extends ReadOnlyList<E>, List<E>, FreezableCol
     
     @Impure
     @Override
+    @NonFrozenRecipient
     public @Chainable @Nonnull @Frozen ReadOnlyList<E> freeze();
     
     /* -------------------------------------------------- List -------------------------------------------------- */

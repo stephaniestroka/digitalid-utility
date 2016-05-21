@@ -51,7 +51,7 @@ public @interface Invariant {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends ValueAnnotationValidator {
+    public static class Validator implements ValueAnnotationValidator {
         
         @Pure
         @Override

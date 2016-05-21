@@ -15,12 +15,12 @@ import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.getter.Default;
 import net.digitalid.utility.validation.annotations.math.Positive;
-import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * Description.
  */
-@Immutable
+@Mutable
 @GenerateBuilder
 @GenerateSubclass
 public abstract class AbstractClass extends RootClass {

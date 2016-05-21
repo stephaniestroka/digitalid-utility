@@ -21,7 +21,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * @see net.digitalid.utility.validation.annotations.type.kind
  */
 @Stateless
-public abstract class ElementKindValidator extends ValueAnnotationValidator {
+public abstract class ElementKindValidator implements ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     

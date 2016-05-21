@@ -487,6 +487,16 @@ public class ProcessingUtility {
         return isRawlyAssignable(getType(element), type);
     }
     
+    /* -------------------------------------------------- Subtyping -------------------------------------------------- */
+    
+    /**
+     * Returns whether the given type element is a subtype of the given type.
+     */
+    @Pure
+    public static boolean isSubtype(@Nonnull TypeElement element, @Nonnull Class<?> type) {
+        return StaticProcessingEnvironment.getTypeUtils().isSubtype(element.asType(), getTypeMirror(type));
+    }
+    
     /* -------------------------------------------------- Component Type -------------------------------------------------- */
     
     // TODO: Review and document the following methods.

@@ -53,13 +53,13 @@ public @interface ReadOnly {
      * This class checks the use of the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends TypeAnnotationValidator {
+    public static class Validator implements TypeAnnotationValidator {
         
         @Pure
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             for (@Nonnull ExecutableElement method : ProcessingUtility.getAllMethods((TypeElement) element)) {
-                if (ProcessingUtility.isDeclaredInDigitalIDLibrary(method) && !method.getModifiers().contains(Modifier.STATIC) && !ProcessingUtility.hasAnnotation(element, Pure.class)) {
+                if (ProcessingUtility.isDeclaredInDigitalIDLibrary(method) && !method.getModifiers().contains(Modifier.STATIC) && !ProcessingUtility.hasAnnotation(method, Pure.class)) {
                     errorLogger.log("The read-only type $ may only contain non-static methods that are pure.", SourcePosition.of(method), element);
                 }
             }

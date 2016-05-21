@@ -120,6 +120,7 @@ public abstract class FreezableArrayList<E> extends ArrayList<E> implements Free
     
     @Impure
     @Override
+    @NonFrozenRecipient
     public @Nonnull @Frozen ReadOnlyList<E> freeze() {
         this.frozen = true;
         return this;
