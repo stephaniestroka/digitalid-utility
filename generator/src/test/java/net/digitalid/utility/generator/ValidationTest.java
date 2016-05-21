@@ -1,5 +1,6 @@
 package net.digitalid.utility.generator;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
@@ -306,6 +307,14 @@ public class ValidationTest {
         testSize(validation::setSizeString, validation::setSizeCountable, validation::setSizeStringArray, validation::setSizeIntArray, 3, 2);
     }
     
+    @Test
+    public void testEmptyOrSingleRecipient() {
+        try {
+            validation.setEmptyOrSingleRecipient();
+            fail("The recipient is not empty or single.");
+        } catch (@Nonnull PreconditionViolationException exception) {}
+    }
+    
     /* -------------------------------------------------- String -------------------------------------------------- */
     
     @Test
@@ -367,6 +376,45 @@ public class ValidationTest {
     }
     
     /* -------------------------------------------------- Type Nesting -------------------------------------------------- */
+    
+    private static final @Nonnull Class<?> anonymousType = new Serializable(){}.getClass();
+    
+    private static final @Nonnull Class<?> localType;
+    
+    static {
+        class LocalClass {}
+        localType = LocalClass.class;
+    }
+    
+    @Test
+    public void testAnonymousType() {
+        testPositives(validation::setAnonymousType, null, anonymousType);
+        testNegatives(validation::setAnonymousType, localType, ValidationTest.class, AnnotationType.class, ClassType.class, EnumType.class, InterfaceType.class);
+    }
+    
+    @Test
+    public void testLocalType() {
+        testPositives(validation::setLocalType, null, localType);
+        testNegatives(validation::setLocalType, anonymousType, ValidationTest.class, AnnotationType.class, ClassType.class, EnumType.class, InterfaceType.class);
+    }
+    
+    @Test
+    public void testMemberType() {
+        testPositives(validation::setMemberType, null, AnnotationType.class, ClassType.class, EnumType.class, InterfaceType.class);
+        testNegatives(validation::setMemberType, anonymousType, localType, ValidationTest.class);
+    }
+    
+    @Test
+    public void testNestingOf() {
+        testPositives(validation::setNestingOf, null, ValidationTest.class, AnnotationType.class, ClassType.class, EnumType.class, InterfaceType.class);
+        testNegatives(validation::setNestingOf, anonymousType, localType);
+    }
+    
+    @Test
+    public void testTopLevelType() {
+        testPositives(validation::setTopLevelType, null, ValidationTest.class);
+        testNegatives(validation::setTopLevelType, anonymousType, localType, AnnotationType.class, ClassType.class, EnumType.class, InterfaceType.class);
+    }
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     

@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.NestingKind;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
@@ -34,6 +35,7 @@ import net.digitalid.utility.validation.annotations.order.StrictlyAscending;
 import net.digitalid.utility.validation.annotations.order.StrictlyDescending;
 import net.digitalid.utility.validation.annotations.size.Empty;
 import net.digitalid.utility.validation.annotations.size.EmptyOrSingle;
+import net.digitalid.utility.validation.annotations.size.EmptyOrSingleRecipient;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.size.MinSize;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
@@ -50,6 +52,11 @@ import net.digitalid.utility.validation.annotations.type.kind.ClassType;
 import net.digitalid.utility.validation.annotations.type.kind.EnumType;
 import net.digitalid.utility.validation.annotations.type.kind.InterfaceType;
 import net.digitalid.utility.validation.annotations.type.kind.TypeOf;
+import net.digitalid.utility.validation.annotations.type.nesting.AnonymousType;
+import net.digitalid.utility.validation.annotations.type.nesting.LocalType;
+import net.digitalid.utility.validation.annotations.type.nesting.MemberType;
+import net.digitalid.utility.validation.annotations.type.nesting.NestingOf;
+import net.digitalid.utility.validation.annotations.type.nesting.TopLevelType;
 import net.digitalid.utility.validation.annotations.value.Invariant;
 import net.digitalid.utility.validation.annotations.value.Validated;
 
@@ -387,7 +394,9 @@ public abstract class Validation extends RootClass implements Countable, Validat
     @Impure
     public void setSizeIntArray(@Size(3) int[] array) {}
     
-    // TODO: EmptyOrSingleRecipient
+    @Impure
+    @EmptyOrSingleRecipient
+    public void setEmptyOrSingleRecipient() {}
     
     /* -------------------------------------------------- String -------------------------------------------------- */
     
@@ -419,7 +428,20 @@ public abstract class Validation extends RootClass implements Countable, Validat
     
     /* -------------------------------------------------- Type Nesting -------------------------------------------------- */
     
-    // TODO
+    @Impure
+    public void setAnonymousType(@AnonymousType Class<?> type) {}
+    
+    @Impure
+    public void setLocalType(@LocalType Class<?> type) {}
+    
+    @Impure
+    public void setMemberType(@MemberType Class<?> type) {}
+    
+    @Impure
+    public void setNestingOf(@NestingOf({NestingKind.TOP_LEVEL, NestingKind.MEMBER}) Class<?> type) {}
+    
+    @Impure
+    public void setTopLevelType(@TopLevelType Class<?> type) {}
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
@@ -427,5 +449,15 @@ public abstract class Validation extends RootClass implements Countable, Validat
     public void setInvariant(@Invariant(condition = "value % 3 == 0", message = "The value has to be a multiple of 3 but was $.") int value) {}
     
     // TODO
+    
+    /* -------------------------------------------------- Threading -------------------------------------------------- */
+    
+    // TODO: @MainThread
+    
+    /* -------------------------------------------------- Freezable -------------------------------------------------- */
+    
+    // TODO: @Frozen, @NonFrozen and @NonFrozenRecipient
+    
+    // TODO: Test @InGroup and @InSameGroup in the group project.
     
 }

@@ -46,7 +46,7 @@ public @interface EmptyOrSingleRecipient {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("size() <= 1", "The size of this countable has to be zero or one but was $.", element);
+            return Contract.with("size() <= 1", "The size of this countable has to be zero or one but was $.", "size()");
         }
         
     }
