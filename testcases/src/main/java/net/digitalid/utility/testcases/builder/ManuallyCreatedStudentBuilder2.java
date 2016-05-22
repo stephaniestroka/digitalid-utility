@@ -97,6 +97,7 @@ public abstract class ManuallyCreatedStudentBuilder2 extends RootClass {
         return new ManuallyCreatedStudentFieldsBuilder().withName(name);
     }
     
+    @Pure
     public static void main(String[] args) {
         //ManuallyCreatedStudentBuilder.withName("bla").withID(1).withBuddies(buddies).build();
         ManuallyCreatedStudentBuilder2.withName("bla").withId(1).build();

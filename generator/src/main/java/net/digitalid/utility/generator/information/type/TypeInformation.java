@@ -202,6 +202,8 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         // Make the usage checks of the type annotations:
         AnnotationHandlerUtility.getTypeValidators(typeElement);
         
+        // TODO: Enforce that every type has an @Immutable, @Stateless, @Utility and the like annotation?
+        
         final @Nonnull FiniteIterable<@Nonnull MethodInformation> methodInformation = InformationFilter.getMethodInformation(typeElement, containingType);
         
         this.abstractGetters = methodInformation.filter((method) -> method.isGetter() && method.isAbstract()).toMap(MethodInformation::getFieldName);

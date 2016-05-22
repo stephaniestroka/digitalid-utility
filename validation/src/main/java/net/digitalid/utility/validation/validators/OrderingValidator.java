@@ -4,22 +4,19 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.processing.ErrorLogger;
 
 /**
  * This class implements common methods for all ordering-related validators.
@@ -36,25 +33,9 @@ public abstract class OrderingValidator extends IterableValidator {
     public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
         super.checkUsage(element, annotationMirror, errorLogger);
         
-        final @Nonnull TypeMirror type = ProcessingUtility.getType(element);
-        if (type.getKind() == TypeKind.ARRAY) {
-            final @Nonnull ArrayType arrayType = (ArrayType) type;
-            if (!arrayType.getComponentType().getKind().isPrimitive() && !ProcessingUtility.isSubtype(arrayType.getComponentType(), Comparable.class)) {
-                errorLogger.log("The annotation $ may only be used on arrays whose component type is comparable, which is not the case for $:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), arrayType.getComponentType());
-            }
-        } else if (type.getKind() == TypeKind.DECLARED) {
-            final @Nullable DeclaredType supertype = ProcessingUtility.getSupertype((DeclaredType) type, Iterable.class);
-            if (supertype != null) {
-                if (supertype.getTypeArguments().size() != 1) {
-                    errorLogger.log("The supertype $ of the declared type $ does not have exactly one generic type argument.", SourcePosition.of(element, annotationMirror), supertype, type);
-                } else if (!ProcessingUtility.isSubtype(supertype.getTypeArguments().get(0), Comparable.class)) {
-                    errorLogger.log("The annotation $ may only be used on iterables whose component type is comparable, but $ is not:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), supertype.getTypeArguments().get(0));
-                }
-            } else {
-                errorLogger.log("The declared type $ is not iterable.", SourcePosition.of(element, annotationMirror), type);
-            }
-        } else {
-            errorLogger.log("The annotation $ may only be used on arrays or declared types:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
+        final @Nullable TypeMirror componentType = ProcessingUtility.getComponentType(element, errorLogger);
+        if (componentType != null && !componentType.getKind().isPrimitive() && !ProcessingUtility.isRawSubtype(componentType, Comparable.class)) {
+            errorLogger.log("The annotation $ may only be used on arrays and iterables whose component type is comparable, which is not the case for $:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), componentType);
         }
     }
     
@@ -70,15 +51,13 @@ public abstract class OrderingValidator extends IterableValidator {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public static boolean validate(@NonCaptured @Unmodified @Nullable Iterable<@Nullable ?> iterable, boolean strictly, boolean ascending) {
+    public static <T extends Comparable<? super T>> boolean validate(@NonCaptured @Unmodified @Nullable Iterable<@Nullable T> iterable, boolean strictly, boolean ascending) {
         if (iterable == null) { return true; }
-        @Nullable Object lastElement = null;
-        for (@Nullable Object element : iterable) {
+        @Nullable T lastElement = null;
+        for (@Nullable T element : iterable) {
             if (element != null) {
                 if (lastElement != null) {
-                    if (element instanceof Comparable<?>) {
-                        if (((Comparable<Object>) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
-                    }
+                    if (element.compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
                 }
                 lastElement = element;
             }
@@ -96,15 +75,13 @@ public abstract class OrderingValidator extends IterableValidator {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public static boolean validate(@NonCaptured @Unmodified @Nullable @NullableElements Object[] array, boolean strictly, boolean ascending) {
+    public static <T extends Comparable<? super T>> boolean validate(@NonCaptured @Unmodified @Nullable @NullableElements T[] array, boolean strictly, boolean ascending) {
         if (array == null) { return true; }
-        @Nullable Object lastElement = null;
-        for (@Nullable Object element : array) {
+        @Nullable T lastElement = null;
+        for (@Nullable T element : array) {
             if (element != null) {
                 if (lastElement != null) {
-                    if (element instanceof Comparable<?>) {
-                        if (((Comparable<Object>) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
-                    }
+                    if (element.compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
                 }
                 lastElement = element;
             }

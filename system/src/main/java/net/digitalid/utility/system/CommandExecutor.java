@@ -14,7 +14,7 @@ import net.digitalid.utility.validation.annotations.type.Utility;
  * This class makes it easier to execute commands.
  */
 @Utility
-public final class CommandExecutor {
+public abstract class CommandExecutor {
     
     /* -------------------------------------------------- Execute -------------------------------------------------- */
     

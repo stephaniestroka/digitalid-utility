@@ -9,11 +9,11 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
-import net.digitalid.utility.validation.processing.ErrorLogger;
 
 /**
  * A value annotation validator validates the (return) value of the annotated variable (or method).
@@ -40,8 +40,8 @@ public interface ValueAnnotationValidator extends AnnotationHandler, ContractGen
     @Pure
     @Override
     public default void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
-        if (getTargetTypes().matchNone(targetType -> ProcessingUtility.isSubtype(element, targetType))) {
-            errorLogger.log("The element $ is not assignable to a target type of $.", SourcePosition.of(element, annotationMirror), element, getAnnotationNameWithLeadingAt());
+        if (getTargetTypes().matchNone(targetType -> ProcessingUtility.isRawSubtype(element, targetType))) {
+            errorLogger.log("The element $ does not belong to a subtype of a target type of $.", SourcePosition.of(element, annotationMirror), element, getAnnotationNameWithLeadingAt());
         }
     }
     

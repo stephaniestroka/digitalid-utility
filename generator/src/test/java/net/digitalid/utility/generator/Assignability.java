@@ -88,6 +88,9 @@ public abstract class Assignability {
     public abstract @AssignableTo(String[].class) String[] getStringArrayAssignableToStringArray();
     
     @Pure
+    public abstract @AssignableTo(Comparable[].class) String[] getStringArrayAssignableToComparableArray();
+    
+    @Pure
     public abstract @AssignableTo(Object[].class) String[] getStringArrayAssignableToObjectArray();
     
     @Pure

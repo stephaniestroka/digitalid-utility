@@ -9,7 +9,7 @@ import net.digitalid.utility.validation.annotations.type.Utility;
  * This class specifies the cryptographic parameters.
  */
 @Utility
-public final class Parameters {
+public abstract class Parameters {
     
     /**
      * The bit-length of the prime factors.

@@ -88,6 +88,9 @@ public abstract class Subtyping {
     public abstract @SubtypeOf(String[].class) String[] getStringArraySubtypeOfStringArray();
     
     @Pure
+    public abstract @SubtypeOf(Comparable[].class) String[] getStringArraySubtypeOfComparableArray();
+    
+    @Pure
     public abstract @SubtypeOf(Object[].class) String[] getStringArraySubtypeOfObjectArray();
     
     @Pure

@@ -15,6 +15,7 @@ import javax.lang.model.element.TypeElement;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.state.Modifiable;
+import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
@@ -31,7 +32,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * This class provides useful methods to retrieve the annotation handlers from an element.
  */
 @Utility
-public class AnnotationHandlerUtility {
+public abstract class AnnotationHandlerUtility {
     
     private static final @Nonnull Map<@Nonnull String, @Nonnull AnnotationHandler> cachedAnnotationHandlers = new HashMap<>();
     

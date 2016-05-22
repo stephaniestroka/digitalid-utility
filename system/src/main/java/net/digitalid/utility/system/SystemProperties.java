@@ -12,7 +12,7 @@ import net.digitalid.utility.validation.annotations.type.Utility;
  * This class makes it easier to access system properties.
  */
 @Utility
-public class SystemProperties {
+public abstract class SystemProperties {
     
     /* -------------------------------------------------- User Name -------------------------------------------------- */
 

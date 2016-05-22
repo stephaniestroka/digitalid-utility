@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateConverter;
@@ -33,6 +34,7 @@ public abstract class ComplexClass extends RootClass {
         this.text = text;
     }
     
+    @Impure
     public void corruptMethod() {
         text = null;
     }

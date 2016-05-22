@@ -15,13 +15,13 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.processing.ErrorLogger;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 import net.digitalid.utility.validation.validators.ElementKindValidator;
 
@@ -68,7 +68,7 @@ public @interface TypeOf {
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             ValueAnnotationValidator.super.checkUsage(element, annotationMirror, errorLogger);
             
-            if (ProcessingUtility.isSubtype(element, Class.class) && !typeKinds.containsAll(ProcessingUtility.getEnums(ProcessingUtility.getAnnotationValue(annotationMirror), ElementKind.class))) {
+            if (ProcessingUtility.isRawSubtype(element, Class.class) && !typeKinds.containsAll(ProcessingUtility.getEnums(ProcessingUtility.getAnnotationValue(annotationMirror), ElementKind.class))) {
                 errorLogger.log("In case of classes, the annotation '@TypeKind' may only be used with CLASS, INTERFACE, ENUM and ANNOTATION_TYPE:", SourcePosition.of(element, annotationMirror));
             }
         }

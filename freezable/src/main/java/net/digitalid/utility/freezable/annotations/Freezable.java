@@ -19,6 +19,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.freezable.FreezableInterface;
+import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.meta.TypeValidator;
@@ -26,7 +27,6 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 import net.digitalid.utility.validation.annotations.type.Stateless;
-import net.digitalid.utility.validation.processing.ErrorLogger;
 import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
 
 /**
@@ -62,17 +62,12 @@ public @interface Freezable {
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             final @Nonnull TypeElement typeElement = (TypeElement) element;
-            if (!ProcessingUtility.isSubtype(typeElement, FreezableInterface.class)) {
+            if (!ProcessingUtility.isRawSubtype(typeElement, FreezableInterface.class)) {
                 errorLogger.log("The freezable type $ has to implement the freezable interface.", SourcePosition.of(element, annotationMirror), typeElement);
             }
-            for (@Nonnull ExecutableElement method : ProcessingUtility.getAllMethods(typeElement)) {
-                if (ProcessingUtility.isDeclaredInDigitalIDLibrary(method)) {
-                    if (!ProcessingUtility.hasAnnotation(method, Pure.class) && !ProcessingUtility.hasAnnotation(method, Impure.class)) {
-                        errorLogger.log("Each method of the freezable type $ has to be either pure or impure.", SourcePosition.of(method), element);
-                    }
-                    if (!method.getModifiers().contains(Modifier.STATIC) && ProcessingUtility.hasAnnotation(method, Impure.class) && !ProcessingUtility.hasAnnotation(method, NonFrozenRecipient.class)) {
-                        errorLogger.log("Each impure non-static method of the freezable type $ has to be also annotated with '@NonFrozenRecipient'.", SourcePosition.of(method), typeElement);
-                    }
+            for (@Nonnull ExecutableElement method : ProcessingUtility.getAllMethods(typeElement).filter(ProcessingUtility::isDeclaredInDigitalIDLibrary)) {
+                if (!method.getModifiers().contains(Modifier.STATIC) && ProcessingUtility.hasAnnotation(method, Impure.class) && !ProcessingUtility.hasAnnotation(method, NonFrozenRecipient.class)) {
+                    errorLogger.log("Each impure non-static method of the freezable type $ has to be also annotated with '@NonFrozenRecipient'.", SourcePosition.of(method), typeElement);
                 }
             }
         }

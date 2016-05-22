@@ -10,6 +10,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
@@ -100,16 +101,19 @@ public abstract class FieldInformationImplementation extends ElementInformationI
     /* -------------------------------------------------- Is Array -------------------------------------------------- */
     
     @Pure
+    @Override
     public boolean isArray() {
-        return ProcessingUtility.isArray(getType());
+        return getType().getKind() == TypeKind.ARRAY;
     }
     
     @Pure
-    public boolean isCollection() {
-        return ProcessingUtility.isCollection(getType());
+    // TODO: Why is method not in the interface?
+    public boolean isIterable() {
+        return ProcessingUtility.isRawSubtype(getType(), Iterable.class);
     }
     
     @Pure
+    @Override
     public @Nonnull TypeMirror getComponentType() {
         return ProcessingUtility.getComponentType(getType());
     }

@@ -8,11 +8,11 @@ import javax.lang.model.element.ElementKind;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.meta.MethodValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
-import net.digitalid.utility.validation.processing.ErrorLogger;
 
 /**
  * A method annotation validator validates the state in which the annotated method is called.
@@ -39,7 +39,7 @@ public interface MethodAnnotationValidator extends AnnotationHandler, ContractGe
     public default void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
         if (element.getKind() != ElementKind.METHOD && element.getKind() != ElementKind.CONSTRUCTOR) {
             errorLogger.log("The method annotation $ may only be used on methods and constructors.", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
-        } else if (!ProcessingUtility.isSubtype(ProcessingUtility.getSurroundingType(element), getReceiverType())) {
+        } else if (!ProcessingUtility.isRawSubtype(ProcessingUtility.getSurroundingType(element), getReceiverType())) {
             errorLogger.log("The method annotation $ can only be used in $.", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), getReceiverType().getCanonicalName());
         }
     }

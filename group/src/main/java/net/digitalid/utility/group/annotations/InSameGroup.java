@@ -15,13 +15,13 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.group.GroupMember;
+import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.processing.ErrorLogger;
 import net.digitalid.utility.validation.validators.StringValidator;
 
 /**
@@ -57,7 +57,7 @@ public @interface InSameGroup {
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             super.checkUsage(element, annotationMirror, errorLogger);
             
-            if (!ProcessingUtility.isSubtype(ProcessingUtility.getSurroundingType(element), GroupMember.class)) {
+            if (!ProcessingUtility.isRawSubtype(ProcessingUtility.getSurroundingType(element), GroupMember.class)) {
                 errorLogger.log("The annotation $ may only be used in group members:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
             }
         }

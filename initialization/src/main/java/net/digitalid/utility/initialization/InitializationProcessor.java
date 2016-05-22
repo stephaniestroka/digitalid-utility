@@ -1,7 +1,5 @@
 package net.digitalid.utility.initialization;
 
-import net.digitalid.utility.initialization.annotations.Initialize;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +25,7 @@ import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.Initializer;
 import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.initialization.annotations.Initialize;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;

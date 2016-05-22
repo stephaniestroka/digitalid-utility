@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
@@ -39,10 +40,12 @@ public abstract class AbstractClass extends RootClass {
 //    @Logged
 //    public void testLoggingWithoutReturnType() {}
     
+    @Impure
     public abstract void setNumber(@Positive int number);
     
     protected AbstractClass() throws IOException {}
     
+    @Pure
     public static void main(@Nonnull @NullableElements String... args) throws IOException {
         Level.threshold.set(Level.VERBOSE);
         Configuration.initializeAllConfigurations();

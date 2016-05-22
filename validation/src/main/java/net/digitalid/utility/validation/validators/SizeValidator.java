@@ -5,6 +5,7 @@ import java.util.Collection;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.type.TypeKind;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
@@ -63,9 +64,9 @@ public abstract class SizeValidator implements ValueAnnotationValidator {
     @Pure
     @Override
     public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-        if (ProcessingUtility.isSubtype(element, CharSequence.class)) {
+        if (ProcessingUtility.isRawSubtype(element, CharSequence.class)) {
             return generateContract("# == null || #.length() " + getSizeComparison(), "The length of the # has to be " + getMessageCondition() + " but was $.", element, annotationMirror, ".length()");
-        } else if (ProcessingUtility.isArray(element)) {
+        } else if (ProcessingUtility.getType(element).getKind() == TypeKind.ARRAY) {
             return generateContract("# == null || #.length " + getSizeComparison(), "The length of the # has to be " + getMessageCondition() + " but was $.", element, annotationMirror, ".length");
         } else {
             return generateContract("# == null || #.size() " + getSizeComparison(), "The size of the # has to be " + getMessageCondition() + " but was $.", element, annotationMirror, ".size()");

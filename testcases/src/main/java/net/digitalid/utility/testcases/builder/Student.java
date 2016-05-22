@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -31,6 +32,7 @@ public abstract class Student extends RootClass /* implements Convertible */ {
     // @Representation
     public abstract @Nonnull @MaxSize(64) String getName();
     
+    @Impure
     public abstract void setName(@Nonnull @MaxSize(64) String name);
     
     /**

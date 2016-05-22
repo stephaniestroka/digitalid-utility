@@ -17,7 +17,7 @@ import net.digitalid.utility.validation.annotations.type.Utility;
  * This class provides references to all directories that are used by this implementation.
  */
 @Utility
-public final class Directory {
+public abstract class Directory {
     
     /* -------------------------------------------------- Root Directory -------------------------------------------------- */
     

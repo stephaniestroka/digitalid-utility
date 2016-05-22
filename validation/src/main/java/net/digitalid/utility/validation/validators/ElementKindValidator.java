@@ -48,7 +48,7 @@ public abstract class ElementKindValidator implements ValueAnnotationValidator {
      */
     @Pure
     public static @Nonnull String getCondition(@Nonnull Element element, @Nonnull ElementKind kind, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-        if (ProcessingUtility.isSubtype(element, Class.class)) {
+        if (ProcessingUtility.isRawSubtype(element, Class.class)) {
             switch (kind) {
                 case CLASS: return "!#.isInterface() && !#.isEnum()";
                 case INTERFACE: return "#.isInterface() && !#.isAnnotation()";

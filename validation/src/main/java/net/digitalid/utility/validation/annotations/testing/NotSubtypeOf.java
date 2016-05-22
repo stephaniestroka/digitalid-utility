@@ -14,11 +14,11 @@ import javax.lang.model.type.TypeMirror;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
-import net.digitalid.utility.validation.processing.ErrorLogger;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
@@ -51,7 +51,7 @@ public @interface NotSubtypeOf {
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             final @Nonnull TypeMirror declaredType = ProcessingUtility.getType(element);
             final @Nullable Class<?> desiredType = ProcessingUtility.getClass(ProcessingUtility.getAnnotationValue(annotationMirror));
-            if (desiredType != null && ProcessingUtility.isSubtype(declaredType, desiredType)) {
+            if (desiredType != null && ProcessingUtility.isRawSubtype(declaredType, desiredType)) {
                 errorLogger.log("The type $ is a subtype of $:", SourcePosition.of(element), ProcessingUtility.getSimpleName(declaredType), desiredType.getSimpleName());
             }
         }

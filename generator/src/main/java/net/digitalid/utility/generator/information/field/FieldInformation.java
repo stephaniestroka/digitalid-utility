@@ -54,6 +54,7 @@ public interface FieldInformation extends ElementInformation, VariableElementInf
     
     /* -------------------------------------------------- Is Array -------------------------------------------------- */
     
+    @Pure
     public boolean isArray();
     
     public @Nonnull TypeMirror getComponentType();

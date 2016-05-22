@@ -20,6 +20,7 @@ public abstract class SimpleGenericClass<P extends Processor> extends RootClass 
         
     }
     
+    @Pure
     public void addTo(List<? super Processor> list) {
         list.add(getProcessor());
     }

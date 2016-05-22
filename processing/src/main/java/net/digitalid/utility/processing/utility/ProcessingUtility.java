@@ -2,7 +2,6 @@ package net.digitalid.utility.processing.utility;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +33,8 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.ImmutableMap;
+import net.digitalid.utility.processing.annotations.LogsErrorWhenReturningNull;
+import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -41,7 +42,6 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.annotations.type.Utility;
 import net.digitalid.utility.validation.annotations.type.kind.EnumType;
 
-import com.sun.tools.javac.code.Type;
 
 /**
  * This class provides useful methods for annotation processing.
@@ -181,8 +181,8 @@ public class ProcessingUtility {
      * Returns the simple name of the given annotation mirror with a leading at symbol.
      */
     @Pure
-    public static @Nonnull String getSimpleName(@Nonnull AnnotationMirror annotationMirror) {
-        return "@" + annotationMirror.getAnnotationType().asElement().getSimpleName();
+    public static @Nonnull String getSimpleNameWithLeadingAt(@Nonnull AnnotationMirror annotationMirror) {
+        return "@" + annotationMirror.getAnnotationType().asElement().getSimpleName().toString();
     }
     
     /**
@@ -230,8 +230,9 @@ public class ProcessingUtility {
      * Returns the annotation value for the given method name of the given annotation mirror or null if not found.
      */
     @Pure
+    @LogsErrorWhenReturningNull
     public static @Nullable AnnotationValue getAnnotationValue(@Nonnull AnnotationMirror annotationMirror, @Nonnull String methodName) {
-        for (Map.@Nonnull Entry<? extends ExecutableElement, ? extends AnnotationValue> annotationEntry : StaticProcessingEnvironment.getElementUtils().getElementValuesWithDefaults(annotationMirror).entrySet()) {
+        for (Map.@Nonnull Entry<@Nonnull ? extends ExecutableElement, @Nonnull ? extends AnnotationValue> annotationEntry : StaticProcessingEnvironment.getElementUtils().getElementValuesWithDefaults(annotationMirror).entrySet()) {
             if (annotationEntry.getKey().getSimpleName().contentEquals(methodName)) {
                 return annotationEntry.getValue();
             }
@@ -244,6 +245,7 @@ public class ProcessingUtility {
      * Returns the annotation value for the value method of the given annotation mirror or null if not found.
      */
     @Pure
+    @LogsErrorWhenReturningNull
     public static @Nullable AnnotationValue getAnnotationValue(@Nonnull AnnotationMirror annotationMirror) {
         return getAnnotationValue(annotationMirror, "value");
     }
@@ -326,6 +328,7 @@ public class ProcessingUtility {
      * Returns the given type mirror as a class object.
      */
     @Pure
+    @LogsErrorWhenReturningNull
     public static @Nullable Class<?> getClass(@Nonnull TypeMirror typeMirror) {
         switch (typeMirror.getKind()) {
             case DECLARED:
@@ -440,6 +443,7 @@ public class ProcessingUtility {
      * Returns the given class object as a type mirror.
      */
     @Pure
+    @LogsErrorWhenReturningNull
     public static @Nullable TypeMirror getTypeMirror(@Nonnull Class<?> type) {
         if (type.isArray()) {
             final @Nullable TypeMirror componentType = getTypeMirror(type.getComponentType());
@@ -465,6 +469,7 @@ public class ProcessingUtility {
      * Returns the given class object as an erased type mirror.
      */
     @Pure
+    @LogsErrorWhenReturningNull
     public static @Nullable TypeMirror getErasedTypeMirror(@Nonnull Class<?> type) {
         final @Nullable TypeMirror typeMirror = getTypeMirror(type);
         return typeMirror != null ? StaticProcessingEnvironment.getTypeUtils().erasure(typeMirror) : null;
@@ -473,7 +478,7 @@ public class ProcessingUtility {
     /* -------------------------------------------------- Assignability -------------------------------------------------- */
     
     /**
-     * Returns whether the given declared type is assignable to the given desired type.
+     * Returns whether the given declared type is rawly assignable to the given desired type.
      */
     @Pure
     public static boolean isRawlyAssignable(@Nonnull TypeMirror declaredType, @Nonnull Class<?> desiredType) {
@@ -482,7 +487,7 @@ public class ProcessingUtility {
     }
     
     /**
-     * Returns whether the given element is assignable to the given type.
+     * Returns whether the given element is rawly assignable to the given type.
      */
     @Pure
     public static boolean isRawlyAssignable(@Nonnull Element element, @Nonnull Class<?> type) {
@@ -492,63 +497,20 @@ public class ProcessingUtility {
     /* -------------------------------------------------- Subtyping -------------------------------------------------- */
     
     /**
-     * Returns whether the given declared type is a subtype of the given desired type.
+     * Returns whether the given declared type is a raw subtype of the given desired type.
      */
     @Pure
-    public static boolean isSubtype(@Nonnull TypeMirror declaredType, @Nonnull Class<?> desiredType) {
+    public static boolean isRawSubtype(@Nonnull TypeMirror declaredType, @Nonnull Class<?> desiredType) {
         final @Nullable TypeMirror typeMirror = getErasedTypeMirror(desiredType);
         return typeMirror != null ? StaticProcessingEnvironment.getTypeUtils().isSubtype(declaredType, typeMirror) : false;
     }
     
     /**
-     * Returns whether the type of the given element is a subtype of the given type.
+     * Returns whether the type of the given element is a raw subtype of the given type.
      */
     @Pure
-    public static boolean isSubtype(@Nonnull Element element, @Nonnull Class<?> type) {
-        return isSubtype(getType(element), type);
-    }
-    
-    /* -------------------------------------------------- Component Type -------------------------------------------------- */
-    
-    // TODO: Review and document the following methods.
-    
-    @Pure
-    public static boolean isArray(@Nonnull TypeMirror type) {
-        // TODO: Don't make instanceof checks.
-        return (type instanceof Type.ArrayType);
-    }
-    
-    @Pure
-    public static boolean isArray(@Nonnull Element element) {
-        if (element instanceof ExecutableElement) {
-            return isArray(((ExecutableElement) element).getReturnType());
-        } else {
-            return isArray(element.asType());
-        }
-    }
-    
-    @Pure
-    public static boolean isCollection(@Nonnull TypeMirror type) {
-        return (type instanceof DeclaredType && ProcessingUtility.isRawlyAssignable(type, Collection.class));
-    }
-    
-    @Pure
-    public static @Nonnull TypeMirror getComponentType(@Nonnull TypeMirror type) {
-        Require.that(isArray(type) || isCollection(type)).orThrow("Expected array or collection type");
-    
-        if (isArray(type)) {
-            final Type.@Nonnull ArrayType arrayType = (Type.ArrayType) type;
-            @Nonnull TypeMirror componentType = arrayType.getComponentType();
-            if (componentType instanceof Type.AnnotatedType) {
-                componentType = ((Type.AnnotatedType) componentType).unannotatedType();
-            }
-            return componentType;
-        } else {
-            // TODO: This doesn't work if the type extends the collection class/interface without redeclaring the generic parameter. See the OrderingValidator for how to do this properly.
-            final @Nonnull List<@Nonnull ? extends TypeMirror> typeArguments = ((DeclaredType) type).getTypeArguments();
-            Require.that(typeArguments.size() == 1).orThrow("Expected collection type with exactly one type argument");
-            return typeArguments.get(0);
-        }
+    public static boolean isRawSubtype(@Nonnull Element element, @Nonnull Class<?> type) {
+        return ProcessingUtility.isRawSubtype(getType(element), type);
     }
     
     /* -------------------------------------------------- Type Visitors -------------------------------------------------- */
@@ -623,27 +585,91 @@ public class ProcessingUtility {
         return SIMPLE_NAME_TYPE_VISITOR.visit(typeMirror);
     }
     
-    /* -------------------------------------------------- Supertypes -------------------------------------------------- */
+    /* -------------------------------------------------- Type Equality -------------------------------------------------- */
     
     /**
-     * Returns the supertype of the given source type that corresponds to the given target type.
+     * Returns whether the given mirror corresponds to the given type.
+     */
+    @Pure
+    public static boolean correspond(@Nonnull TypeMirror mirror, @Nonnull Class<?> type) {
+        return getQualifiedName(mirror).equals(type.getCanonicalName());
+    }
+    
+    /**
+     * Returns whether the type of the given element corresponds to the given type.
+     */
+    @Pure
+    public static boolean correspond(@Nonnull Element element, @Nonnull Class<?> type) {
+        return correspond(getType(element), type);
+    }
+    
+    /* -------------------------------------------------- Supertype -------------------------------------------------- */
+    
+    /**
+     * Returns the supertype of the given source type that corresponds to the given target type or null (without logged errors) if not found.
      */
     @Pure
     public static @Nullable DeclaredType getSupertype(@Nonnull DeclaredType sourceType, @Nonnull Class<?> targetType) {
-        if (getQualifiedName(sourceType).equals(targetType.getCanonicalName())) {
+        if (correspond(sourceType, targetType)) {
             return sourceType;
         } else {
             final @Nonnull List<@Nonnull ? extends TypeMirror> supertypes = StaticProcessingEnvironment.getTypeUtils().directSupertypes(sourceType);
             for (@Nonnull TypeMirror supertype : supertypes) {
-                if (supertype.getKind() == TypeKind.DECLARED) {
-                    final @Nullable DeclaredType result = getSupertype((DeclaredType) supertype, targetType);
-                    if (result != null) { return result; }
-                } else {
-                    ProcessingLog.error("The supertype $ of the declared type $ is not a declared type.", supertype, sourceType);
-                }
+                final @Nullable DeclaredType result = getSupertype((DeclaredType) supertype, targetType);
+                if (result != null) { return result; }
             }
             return null;
         }
+    }
+    
+    /* -------------------------------------------------- Component Type -------------------------------------------------- */
+    
+    /**
+     * Returns the component type of the given type if it is an array or an iterable and logs errors with the given logger otherwise.
+     */
+    @Pure
+    @LogsErrorWhenReturningNull
+    public static @Nullable TypeMirror getComponentType(@Nonnull TypeMirror type, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
+        if (type.getKind() == TypeKind.ARRAY) {
+            return ((ArrayType) type).getComponentType();
+        } else if (type.getKind() == TypeKind.DECLARED) {
+            final @Nullable DeclaredType supertype = ProcessingUtility.getSupertype((DeclaredType) type, Iterable.class);
+            if (supertype != null) {
+                return supertype.getTypeArguments().get(0);
+            } else {
+                errorLogger.log("The declared type $ is not iterable.", null, type);
+            }
+        } else {
+            errorLogger.log("The type $ is neither an array nor a declared type.", null, type);
+        }
+        return null;
+    }
+    
+    /**
+     * Returns the component type of the given type if it is an array or an iterable.
+     */
+    @Pure
+    @LogsErrorWhenReturningNull
+    public static @Nullable TypeMirror getComponentType(@Nonnull TypeMirror type) {
+        return getComponentType(type, ErrorLogger.INSTANCE);
+    }
+    
+    /**
+     * Returns the component type of the type of the given element if it is an array or an iterable and logs errors with the given logger otherwise.
+     */
+    @Pure
+    @LogsErrorWhenReturningNull
+    public static @Nullable TypeMirror getComponentType(@Nonnull Element element, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
+        return getComponentType(getType(element), errorLogger);
+    }
+    
+    /**
+     * Returns the component type of the type of the given element if it is an array or an iterable.
+     */
+    @Pure
+    @LogsErrorWhenReturningNull
+    public static @Nullable TypeMirror getComponentType(@Nonnull Element element) {
+        return getComponentType(element, ErrorLogger.INSTANCE);
     }
     
     /* -------------------------------------------------- Fields of Type -------------------------------------------------- */
@@ -653,27 +679,27 @@ public class ProcessingUtility {
      */
     @Pure
     public static @Nonnull FiniteIterable<@Nonnull VariableElement> getFieldsOfType(@Nonnull TypeElement typeElement, @Nonnull Class<?> fieldType) {
-        return getFields(typeElement).filter(field -> getQualifiedName(field.asType()).equals(fieldType.getCanonicalName()));
+        return getFields(typeElement).filter(field -> correspond(field, fieldType));
     }
     
     /**
      * Returns the unique, public and static field with the given type in the given type element.
-     * If not exactly one field fulfilling all these criteria is found, this method logs a warning message and returns null. 
      */
     @Pure
+    @LogsErrorWhenReturningNull
     public static @Nullable VariableElement getUniquePublicStaticFieldOfType(@Nonnull TypeElement typeElement, @Nonnull Class<?> fieldType) {
         final @Nonnull FiniteIterable<@Nonnull VariableElement> fields = getFieldsOfType(typeElement, fieldType);
         if (fields.isSingle()) {
             final @Nonnull VariableElement field = fields.getFirst();
             if (!field.getModifiers().contains(Modifier.PUBLIC)) {
-                ProcessingLog.warning("The field of type $ has to be public:", SourcePosition.of(field), fieldType.getCanonicalName());
+                ProcessingLog.error("The field of type $ has to be public:", SourcePosition.of(field), fieldType.getCanonicalName());
             } else if (!field.getModifiers().contains(Modifier.STATIC)) {
-                ProcessingLog.warning("The field of type $ has to be static:", SourcePosition.of(field), fieldType.getCanonicalName());
+                ProcessingLog.error("The field of type $ has to be static:", SourcePosition.of(field), fieldType.getCanonicalName());
             } else {
                 return field;
             }
         } else {
-            ProcessingLog.warning("There is not exactly one field of type $ in the class", SourcePosition.of(typeElement), fieldType.getCanonicalName());
+            ProcessingLog.error("There is not exactly one field of type $ in the class", SourcePosition.of(typeElement), fieldType.getCanonicalName());
         }
         return null;
     }
@@ -681,20 +707,20 @@ public class ProcessingUtility {
     /* -------------------------------------------------- Methods -------------------------------------------------- */
     
     /**
-     * Returns the method with the given name, return type, parameter types and no thrown types in the given type element or null if no such method is found.
+     * Returns the non-private method with the given name, return type, parameter types and no thrown types in the given type element or null if no such method is found.
      */
     @Pure
-    public static @Nullable ExecutableElement getMethod(@Nonnull TypeElement typeElement, @Nonnull String methodName, @Nonnull Class<?> returnType, @Nonnull @NonNullableElements Class<?>... parameterTypes) {
+    public static @Nullable ExecutableElement getNonPrivateMethod(@Nonnull TypeElement typeElement, @Nonnull String methodName, @Nonnull Class<?> returnType, @Nonnull @NonNullableElements Class<?>... parameterTypes) {
         final @Nonnull DeclaredType surroundingType = (DeclaredType) typeElement.asType();
         for (@Nonnull ExecutableElement inheritedMethod : getAllMethods(typeElement)) {
-            final @Nonnull ExecutableType methodType = (ExecutableType) StaticProcessingEnvironment.getTypeUtils().asMemberOf(surroundingType, inheritedMethod);
-            if (inheritedMethod.getSimpleName().contentEquals(methodName) && inheritedMethod.getThrownTypes().isEmpty()) {
-                if (isRawlyAssignable(inheritedMethod.getReturnType(), returnType)) {
+            if (!inheritedMethod.getModifiers().contains(Modifier.PRIVATE) && inheritedMethod.getSimpleName().contentEquals(methodName) && inheritedMethod.getThrownTypes().isEmpty()) {
+                final @Nonnull ExecutableType methodType = (ExecutableType) StaticProcessingEnvironment.getTypeUtils().asMemberOf(surroundingType, inheritedMethod);
+                if (isRawSubtype(methodType.getReturnType(), returnType)) {
                     if (methodType.getParameterTypes().size() == parameterTypes.length) {
                         boolean isAssignable = true;
                         for (int i = 0; i < parameterTypes.length; i++) {
                             final @Nonnull TypeMirror parameterType = methodType.getParameterTypes().get(i);
-                            if (parameterType.getKind() == TypeKind.TYPEVAR || !parameterType.toString().equals(parameterTypes[i].getCanonicalName())) { isAssignable = false; }
+                            if (parameterType.getKind() == TypeKind.TYPEVAR || !correspond(parameterType, parameterTypes[i])) { isAssignable = false; }
                         }
                         if (isAssignable) { return inheritedMethod; }
                     }
@@ -705,11 +731,11 @@ public class ProcessingUtility {
     }
     
     /**
-     * Returns whether the given type element contains a method with the given name, return type, parameter types and no thrown types.
+     * Returns whether the given type element contains a non-private method with the given name, return type, parameter types and no thrown types.
      */
     @Pure
-    public static boolean hasMethod(@Nonnull TypeElement typeElement, @Nonnull String methodName, @Nonnull Class<?> returnType, @Nonnull @NonNullableElements Class<?>... parameterTypes) {
-        return getMethod(typeElement, methodName, returnType, parameterTypes) != null;
+    public static boolean hasNonPrivateMethod(@Nonnull TypeElement typeElement, @Nonnull String methodName, @Nonnull Class<?> returnType, @Nonnull @NonNullableElements Class<?>... parameterTypes) {
+        return getNonPrivateMethod(typeElement, methodName, returnType, parameterTypes) != null;
     }
     
     /* -------------------------------------------------- Default Constructor -------------------------------------------------- */

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.rootclass.RootClass;
 
@@ -12,6 +13,7 @@ import net.digitalid.utility.rootclass.RootClass;
  */
 public abstract class GenericClass<G extends GenericClass<G>> extends RootClass {
     
+    @Pure
     public <T> T test(@Nonnull T object) {
         return object;
     }
@@ -21,6 +23,7 @@ public abstract class GenericClass<G extends GenericClass<G>> extends RootClass 
         return null;
     }
     
+    @Impure
     public void setGenericField(@Nonnull G genericClass) {}
     
     @Pure
@@ -28,6 +31,7 @@ public abstract class GenericClass<G extends GenericClass<G>> extends RootClass 
         return null;
     }
     
+    @Pure
     public void addNumbers(List<? super Integer> list) {
         for (int i = 1; i <= 10; i++) {
             list.add(i);

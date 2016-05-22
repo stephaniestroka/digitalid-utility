@@ -34,7 +34,7 @@ import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.method.Chainable;
-import net.digitalid.utility.validation.annotations.type.Utility;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * The Builder Generator generates a builder class for a given type (through the type information). 
@@ -46,7 +46,7 @@ import net.digitalid.utility.validation.annotations.type.Utility;
  * to provide an entrance method to the builder and sets the appropriate field in the builder. If neither required not optional fields exist, a static 
  * get() method is generated, which returns the builder without calling any further methods.
  */
-@Utility
+@Mutable
 public class BuilderGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Type Information -------------------------------------------------- */

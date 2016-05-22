@@ -7,6 +7,7 @@ import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
@@ -35,6 +36,7 @@ class ManuallyGeneratedStudent extends Student {
         return name;
     }
     
+    @Impure
     @Override
     public void setName(@Nonnull @MaxSize(64) String name) {
         Require.that(name != null).orThrow("The name may not be null.");
