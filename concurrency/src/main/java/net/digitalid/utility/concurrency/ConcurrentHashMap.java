@@ -1,4 +1,4 @@
-package net.ditialid.utility.concurrency;
+package net.digitalid.utility.concurrency;
 
 import java.util.Map;
 
