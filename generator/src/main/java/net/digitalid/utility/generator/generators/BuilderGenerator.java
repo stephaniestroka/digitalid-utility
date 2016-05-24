@@ -45,6 +45,18 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * A static method of one of the required fields, or an optional field if no required fields exist, is created
  * to provide an entrance method to the builder and sets the appropriate field in the builder. If neither required not optional fields exist, a static 
  * get() method is generated, which returns the builder without calling any further methods.
+ * 
+ * TODO: Clean up the following legacy remarks (the conversion point is no longer true and one of the biggest advantage seems to be that the constructor can be generated and accessed through the builder without exposing the subclass).
+ * 
+ * Advantages of builder pattern:
+ * - Better handling of optional and default values.
+ * - Callers fail if the order of getters with same return type is changed in the source code.
+ * - The builder class serves as a meta-information-object about the fields (and their names) of the source class. (This can be used to generate @GenericType(Student.class) annotations.)
+ * 
+ * Questions:
+ * - Enforce certain parameters with intermediary classes (e.g. StudentWithoutID) that miss the create/build-method? Disadvantage of such an approach: The order of parameters would be enforced.
+ *   (Either create a new object for each provided parameter or generate an interface for each intermediary step and return the same object as an instance of the particular interface.)
+ * - What if the type of the getter and the field are not exactly the same (for example, expose only ReadOnlyType but store a FreezableType for internal operations).
  */
 @Mutable
 public class BuilderGenerator extends JavaFileGenerator {

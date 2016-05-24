@@ -1,9 +1,7 @@
-package net.digitalid.utility.generator.test;
+package net.digitalid.utility.generator.archive;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.generator.classes.SimpleClass;
-import net.digitalid.utility.generator.classes.SimpleClassBuilder;
 import net.digitalid.utility.testing.CustomTest;
 
 import org.junit.Test;
@@ -13,7 +11,7 @@ import static net.digitalid.utility.testing.CustomAssert.*;
 /**
  * Tests the instantiation of the generated subclass of {@link SimpleClass}.
  */
-public class SimpleClassGenerationTest extends CustomTest {
+public class SimpleClassTest extends CustomTest {
     
     @Test
     public void shouldInstantiateObjectWithNumber() throws Exception {

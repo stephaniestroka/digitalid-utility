@@ -6,20 +6,21 @@ import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
+import org.junit.Assert;
 import org.junit.BeforeClass;
 
 /**
  * This class sets the output file of the logger.
  */
 @Stateless
-public abstract class LoggerSetup {
+public abstract class LoggerSetup extends Assert {
     
     /**
      * Sets the output file of the logger.
      */
     @Impure
     @BeforeClass
-    public static void setUpLogging() {
+    public static void initializeLogger() {
         Logger.logger.set(FileLogger.with("target/test-logs/test.log"));
         Level.threshold.set(Level.VERBOSE);
     }

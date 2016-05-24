@@ -7,12 +7,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import net.digitalid.utility.generator.generators.SubclassGenerator;
+import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 
 /**
- * Marks a class such that the {@link SubclassGenerator subclass generator} generates a subclass for this class.
+ * Marks a class such that the {@link SubclassGenerator subclass generator} generates a subclass for the annotated class.
+ * 
+ * @see GenerateBuilder
+ * @see GenerateConverter
  */
 @Documented
-@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface GenerateSubclass {
-}
+@Retention(RetentionPolicy.RUNTIME)
+@TypeValidator(GenerateAnnotationValidator.class)
+public @interface GenerateSubclass {}

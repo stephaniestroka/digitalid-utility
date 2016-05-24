@@ -10,8 +10,6 @@ import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
-import org.junit.Assert;
-
 /**
  * This class makes it easier to test (generated) contracts.
  */
@@ -23,11 +21,11 @@ public abstract class ContractTest extends CustomTest {
         try {
             consumer.consume(positive);
         } catch (@Nonnull PreconditionViolationException exception) {
-            Assert.fail("The positive sample " + Quotes.inSingle(positive) + " should not fail.");
+            fail("The positive sample " + Quotes.inSingle(positive) + " should not fail.");
         }
         try {
             consumer.consume(negative); 
-            Assert.fail("The negative sample " + Quotes.inSingle(negative) + " should fail.");
+            fail("The negative sample " + Quotes.inSingle(negative) + " should fail.");
         } catch (@Nonnull PreconditionViolationException exception) {}
     }
     
@@ -38,7 +36,7 @@ public abstract class ContractTest extends CustomTest {
             try {
                 consumer.consume(positive);
             } catch (@Nonnull PreconditionViolationException exception) {
-                Assert.fail("The positive sample " + Quotes.inSingle(positive) + " should not fail.");
+                fail("The positive sample " + Quotes.inSingle(positive) + " should not fail.");
             }
         }
     }
@@ -49,7 +47,7 @@ public abstract class ContractTest extends CustomTest {
         for (T negative : negatives) {
             try {
                 consumer.consume(negative);
-                Assert.fail("The negative sample " + Quotes.inSingle(negative) + " should fail.");
+                fail("The negative sample " + Quotes.inSingle(negative) + " should fail.");
             } catch (@Nonnull PreconditionViolationException exception) {}
         }
     }

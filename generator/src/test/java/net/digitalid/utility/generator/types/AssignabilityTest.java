@@ -1,4 +1,4 @@
-package net.digitalid.utility.generator;
+package net.digitalid.utility.generator.types;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -10,7 +10,7 @@ import net.digitalid.utility.validation.annotations.testing.UnassignableTo;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 @Immutable
-public abstract class Assignability {
+public abstract class AssignabilityTest {
     
     /* -------------------------------------------------- Objects -------------------------------------------------- */
     

@@ -13,6 +13,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
@@ -59,8 +60,13 @@ public @interface ReadOnly {
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             for (@Nonnull ExecutableElement method : ProcessingUtility.getAllMethods((TypeElement) element)) {
-                if (ProcessingUtility.isDeclaredInDigitalIDLibrary(method) && !method.getModifiers().contains(Modifier.STATIC) && !ProcessingUtility.hasAnnotation(method, Pure.class)) {
-                    errorLogger.log("The read-only type $ may only contain non-static methods that are pure.", SourcePosition.of(method), element);
+                if (ProcessingUtility.isDeclaredInDigitalIDLibrary(method) && !ProcessingUtility.hasAnnotation(method, Pure.class)) {
+                    errorLogger.log("The read-only type $ may only contain pure methods.", SourcePosition.of(method), element);
+                }
+            }
+            for (@Nonnull VariableElement field : ProcessingUtility.getAllFields((TypeElement) element)) {
+                if (ProcessingUtility.isDeclaredInDigitalIDLibrary(field) && !field.getModifiers().contains(Modifier.FINAL)) {
+                    errorLogger.log("The read-only type $ may only contain final fields.", SourcePosition.of(field), element);
                 }
             }
         }

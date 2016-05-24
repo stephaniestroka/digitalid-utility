@@ -1,4 +1,4 @@
-package net.digitalid.utility.generator.classes;
+package net.digitalid.utility.generator.archive;
 
 import java.util.List;
 

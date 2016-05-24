@@ -1,18 +1,19 @@
-package net.digitalid.utility.generator.classes;
+package net.digitalid.utility.generator.values;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
-import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.validation.annotations.getter.Derive;
 
-/**
- *
- */
 @GenerateBuilder
 @GenerateSubclass
-public abstract class ComparableClass extends RootClass implements Comparable<ComparableClass> {
+public abstract class DeriveTest {
     
     @Pure
-    public abstract Integer getNumber();
+    public abstract int getValue();
+    
+    @Pure
+    @Derive("2 * value")
+    public abstract int getDoubleValue();
     
 }

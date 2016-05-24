@@ -1,4 +1,4 @@
-package net.digitalid.utility.generator;
+package net.digitalid.utility.generator.types;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -10,7 +10,7 @@ import net.digitalid.utility.validation.annotations.testing.SubtypeOf;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 @Immutable
-public abstract class Subtyping {
+public abstract class SubtypingTest {
     
     /* -------------------------------------------------- Objects -------------------------------------------------- */
     

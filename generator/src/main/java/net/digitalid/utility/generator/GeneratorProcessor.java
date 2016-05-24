@@ -57,6 +57,12 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * Setters on immutable objects could return a new object with the changed value.
  * Setters could/should be made chainable by returning this.
  * Delegate all interface methods to an instance (e.g. stored in a field).
+ * 
+ * Potential improvements:
+ * - If the class is not public, the builder and its method should also not be public.
+ * - Also validate nested classes. Maybe even allow to generate from static nested classes. (No!)
+ * - Allow interceptors to generate the implementation of abstract methods.
+ * - @GenerateBuilder without a @GenerateSubclass should not be allowed on interfaces.
  */
 @Mutable
 @SupportedOptions({"release"})
@@ -104,7 +110,7 @@ public class GeneratorProcessor extends CustomProcessor {
         for (@Nonnull Element rootElement : roundEnvironment.getRootElements()) {
             if (rootElement.getKind() == ElementKind.CLASS || rootElement.getKind() == ElementKind.INTERFACE) {
                 // TODO: In order to just generate a builder, the class can actually be final.
-                if (!rootElement.getModifiers().contains(Modifier.FINAL) && !rootElement.getSimpleName().toString().endsWith("Test") && !rootElement.getSimpleName().toString().equals("ConverterAnnotations")) {
+                if (!rootElement.getModifiers().contains(Modifier.FINAL)) {
                     ProcessingLog.debugging("Generate the classes for " + Quotes.inSingle(rootElement.getSimpleName()));
                     final long start = System.currentTimeMillis();
                     final boolean generated = generateClasses((TypeElement) rootElement, (DeclaredType) rootElement.asType());

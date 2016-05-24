@@ -7,12 +7,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import net.digitalid.utility.generator.generators.ConverterGenerator;
+import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 
 /**
- * Marks a class such that the {@link ConverterGenerator converter generator} generates a converter for this class.
+ * Marks a class such that the {@link ConverterGenerator converter generator} generates a converter for the annotated class.
+ * 
+ * @see GenerateBuilder
+ * @see GenerateSubclass
  */
 @Documented
-@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface GenerateConverter {
-}
+@Retention(RetentionPolicy.RUNTIME)
+@TypeValidator(GenerateAnnotationValidator.class)
+public @interface GenerateConverter {}

@@ -155,6 +155,12 @@ public interface ElementInformation extends RootInterface {
     public @Nonnull FiniteIterable<@Nonnull AnnotationMirror> getAnnotations();
     
     /**
+     * Returns whether the represented {@link #getElement() element} has the annotation with the given canonical name.
+     */
+    @Pure
+    public boolean hasAnnotation(@Nonnull String canonicalName);
+    
+    /**
      * Returns whether the represented {@link #getElement() element} has the given annotation.
      */
     @Pure

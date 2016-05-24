@@ -83,8 +83,14 @@ public abstract class ElementInformationImplementation implements ElementInforma
     
     @Pure
     @Override
+    public boolean hasAnnotation(@Nonnull String canonicalName) {
+        return annotationsMap.containsKey(canonicalName);
+    }
+    
+    @Pure
+    @Override
     public boolean hasAnnotation(@Nonnull Class<? extends Annotation> annotationType) {
-        return annotationsMap.containsKey(annotationType.getCanonicalName());
+        return hasAnnotation(annotationType.getCanonicalName());
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */

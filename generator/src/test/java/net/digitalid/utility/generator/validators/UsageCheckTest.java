@@ -1,4 +1,4 @@
-package net.digitalid.utility.generator;
+package net.digitalid.utility.generator.validators;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
+import net.digitalid.utility.generator.annotations.generators.GenerateAnnotationValidator;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
@@ -28,7 +29,6 @@ import net.digitalid.utility.validation.annotations.value.Validated;
 abstract class IncorrectFunctionalUsageClass {}
 
 @IncorrectUsage(Functional.Validator.class)
-@SuppressWarnings("MultipleTopLevelClassesInFile")
 interface IncorrectFunctionalUsageInterfaceWithNoAbstractMethod {
     
     @Pure
@@ -37,7 +37,6 @@ interface IncorrectFunctionalUsageInterfaceWithNoAbstractMethod {
 }
 
 @IncorrectUsage(Functional.Validator.class)
-@SuppressWarnings("MultipleTopLevelClassesInFile")
 interface IncorrectFunctionalUsageInterfaceWithSeveralAbstractMethods {
     
     @Pure
@@ -51,29 +50,40 @@ interface IncorrectFunctionalUsageInterfaceWithSeveralAbstractMethods {
 /* -------------------------------------------------- Immutable -------------------------------------------------- */
 
 @IncorrectUsage(Immutable.Validator.class)
-@SuppressWarnings("MultipleTopLevelClassesInFile")
-abstract class IncorrectImmutableUsage extends RootClass {
+abstract class IncorrectImmutableUsageWithImpureMethod extends RootClass {
     
     @Impure
     public void method() {}
+    
+}
+
+@IncorrectUsage(Immutable.Validator.class)
+abstract class IncorrectImmutableUsageWithNonFinalField extends RootClass {
+    
+    private int field;
     
 }
 
 /* -------------------------------------------------- ReadOnly -------------------------------------------------- */
 
 @IncorrectUsage(ReadOnly.Validator.class)
-@SuppressWarnings("MultipleTopLevelClassesInFile")
-abstract class IncorrectReadOnlyUsage extends RootClass {
+abstract class IncorrectReadOnlyUsageWithImpureMethod extends RootClass {
     
     @Impure
     public void method() {}
     
 }
 
+@IncorrectUsage(ReadOnly.Validator.class)
+abstract class IncorrectReadOnlyUsageWithNonFinalField extends RootClass {
+    
+    private int field;
+    
+}
+
 /* -------------------------------------------------- Stateless -------------------------------------------------- */
 
 @IncorrectUsage(Stateless.Validator.class)
-@SuppressWarnings("MultipleTopLevelClassesInFile")
 abstract class IncorrectStatelessUsage extends RootClass {
     
     private int value;
@@ -83,11 +93,9 @@ abstract class IncorrectStatelessUsage extends RootClass {
 /* -------------------------------------------------- Utility -------------------------------------------------- */
 
 @IncorrectUsage(Utility.Validator.class)
-@SuppressWarnings("MultipleTopLevelClassesInFile")
 class IncorrectUtilityUsageNonAbstractClass {}
 
 @IncorrectUsage(Utility.Validator.class)
-@SuppressWarnings("MultipleTopLevelClassesInFile")
 abstract class IncorrectUtilityUsageNonStaticField extends RootClass {
     
     private int value;
@@ -95,7 +103,6 @@ abstract class IncorrectUtilityUsageNonStaticField extends RootClass {
 }
 
 @IncorrectUsage(Utility.Validator.class)
-@SuppressWarnings("MultipleTopLevelClassesInFile")
 abstract class IncorrectUtilityUsageNonStaticMethod extends RootClass {
     
     @Pure
@@ -105,7 +112,6 @@ abstract class IncorrectUtilityUsageNonStaticMethod extends RootClass {
 
 /* -------------------------------------------------- Target Type -------------------------------------------------- */
 
-@SuppressWarnings("MultipleTopLevelClassesInFile")
 abstract class IncorrectTargetTypes extends RootClass {
     
     @Pure
@@ -117,7 +123,6 @@ abstract class IncorrectTargetTypes extends RootClass {
 
 /* -------------------------------------------------- Receiver Type -------------------------------------------------- */
 
-@SuppressWarnings("MultipleTopLevelClassesInFile")
 abstract class IncorrectReceiverTypes extends RootClass {
     
     @Pure
@@ -132,7 +137,6 @@ abstract class IncorrectReceiverTypes extends RootClass {
 
 /* -------------------------------------------------- Index -------------------------------------------------- */
 
-@SuppressWarnings("MultipleTopLevelClassesInFile")
 abstract class IncorrectIndexUsage extends RootClass {
     
     @Pure
@@ -147,7 +151,6 @@ abstract class IncorrectIndexUsage extends RootClass {
 
 /* -------------------------------------------------- Ordering -------------------------------------------------- */
 
-@SuppressWarnings("MultipleTopLevelClassesInFile")
 abstract class IncorrectOrderingUsage extends RootClass {
     
     @Pure
@@ -157,7 +160,6 @@ abstract class IncorrectOrderingUsage extends RootClass {
 
 /* -------------------------------------------------- Validated -------------------------------------------------- */
 
-@SuppressWarnings("MultipleTopLevelClassesInFile")
 abstract class IncorrectValidatedUsage extends RootClass {
     
     @Pure
@@ -168,14 +170,21 @@ abstract class IncorrectValidatedUsage extends RootClass {
 /* -------------------------------------------------- Freezable -------------------------------------------------- */
 
 @IncorrectUsage(Freezable.Validator.class)
-@SuppressWarnings("MultipleTopLevelClassesInFile")
 abstract class IncorrectFreezableUsageNotImplementingFreezableInterface extends RootClass {}
 
 @IncorrectUsage(Freezable.Validator.class)
-@SuppressWarnings("MultipleTopLevelClassesInFile")
 interface IncorrectFreezableUsageImpureMethodWithoutNonFrozenRecipient extends FreezableInterface {
     
     @Impure
     public void method();
+    
+}
+
+/* -------------------------------------------------- Generate Annotations -------------------------------------------------- */
+
+abstract class IncorrectGenerateUsage extends RootClass {
+    
+    @IncorrectUsage(GenerateAnnotationValidator.class)
+    static class NestedClass {}
     
 }

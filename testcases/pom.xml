@@ -23,7 +23,7 @@
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-testing</artifactId>
             <version>${project.version}</version>
-			<scope>test</scope>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     

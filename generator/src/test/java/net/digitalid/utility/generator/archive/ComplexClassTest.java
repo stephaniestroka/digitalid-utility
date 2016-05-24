@@ -1,14 +1,11 @@
-package net.digitalid.utility.generator.test;
+package net.digitalid.utility.generator.archive;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.generator.classes.ComplexClass;
-import net.digitalid.utility.generator.classes.ComplexClassBuilder;
-import net.digitalid.utility.generator.classes.SimpleClass;
-import net.digitalid.utility.generator.classes.SimpleClassBuilder;
+import net.digitalid.utility.annotations.method.Pure;
 
 import org.junit.Test;
 
@@ -17,8 +14,9 @@ import static net.digitalid.utility.testing.CustomAssert.*;
 /**
  * 
  */
-public class ComplexClassGenerationTest {
+public class ComplexClassTest {
     
+    @Pure
     public ComplexClassBuilder.@Nonnull InnerComplexClassBuilder prepareBuilder() {
         final @Nonnull SimpleClass simpleClass = SimpleClassBuilder.withNumber(1).build();
         final @Nonnull String[] arrayOfStrings = new String[] { "first", "second", "third" };
