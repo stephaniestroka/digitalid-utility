@@ -13,17 +13,25 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.annotations.meta.Interceptor;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
+import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 
 /**
- * This annotation indicates that every call to the annotated method is logged.
+ * This annotation indicates that every call to the annotated method is logged with the given level.
  */
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Interceptor(Logged.Interceptor.class)
 public @interface Logged {
+    
+    /* -------------------------------------------------- Value -------------------------------------------------- */
+    
+    /**
+     * Returns the level at which the method call is logged.
+     */
+    @Nonnull Level value() default Level.VERBOSE;
     
     /* -------------------------------------------------- Interceptor -------------------------------------------------- */
     

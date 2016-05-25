@@ -16,10 +16,30 @@ import net.digitalid.utility.validation.annotations.type.Utility;
 @Utility
 public final class Log {
     
+    /* -------------------------------------------------- Fatal -------------------------------------------------- */
+    
+    /**
+     * Logs the given message and throwable as a fatal error that prevents the thread or process from continuing.
+     * Each dollar sign in the message is replaced with the corresponding argument.
+     */
+    @Impure
+    public static void fatal(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
+        Logger.log(Level.FATAL, message, throwable);
+    }
+    
+    /**
+     * Logs the given message as a fatal error that prevents the thread or process from continuing.
+     * Each dollar sign in the message is replaced with the corresponding argument.
+     */
+    @Impure
+    public static void fatal(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
+        Logger.log(Level.FATAL, message, null);
+    }
+    
     /* -------------------------------------------------- Error -------------------------------------------------- */
     
     /**
-     * Logs the given message and throwable as an error.
+     * Logs the given message and throwable as an error from which the application can possibly recover.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
@@ -28,7 +48,7 @@ public final class Log {
     }
     
     /**
-     * Logs the given message as an error.
+     * Logs the given message as an error from which the application can possibly recover.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
@@ -39,7 +59,7 @@ public final class Log {
     /* -------------------------------------------------- Warning -------------------------------------------------- */
     
     /**
-     * Logs the given message and throwable as a warning.
+     * Logs the given message and throwable as a warning that indicate potential problems in the program.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
@@ -48,7 +68,7 @@ public final class Log {
     }
     
     /**
-     * Logs the given message as a warning.
+     * Logs the given message as a warning that indicate potential problems in the program.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
@@ -59,7 +79,7 @@ public final class Log {
     /* -------------------------------------------------- Information -------------------------------------------------- */
     
     /**
-     * Logs the given message and throwable as information.
+     * Logs the given message and throwable to inform about important runtime events.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
@@ -68,7 +88,7 @@ public final class Log {
     }
     
     /**
-     * Logs the given message as information.
+     * Logs the given message to inform about important runtime events.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
@@ -79,7 +99,7 @@ public final class Log {
     /* -------------------------------------------------- Debugging -------------------------------------------------- */
     
     /**
-     * Logs the given message and throwable for debugging.
+     * Logs the given message and throwable to help developers locate bugs in the code.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
@@ -88,7 +108,7 @@ public final class Log {
     }
     
     /**
-     * Logs the given message for debugging.
+     * Logs the given message to help developers locate bugs in the code.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
@@ -99,7 +119,7 @@ public final class Log {
     /* -------------------------------------------------- Verbose -------------------------------------------------- */
     
     /**
-     * Logs the given message and throwable only in verbose mode.
+     * Logs the given message and throwable to make it easier to trace the execution of the program.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
@@ -108,7 +128,7 @@ public final class Log {
     }
     
     /**
-     * Logs the given message only in verbose mode.
+     * Logs the given message to make it easier to trace the execution of the program.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure

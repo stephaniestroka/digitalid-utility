@@ -19,34 +19,39 @@ public enum Level {
     /* -------------------------------------------------- Constants -------------------------------------------------- */
     
     /**
-     * The level for verbose.
+     * The level for verbose messages that make it easier to trace program execution.
      */
     VERBOSE(0),
     
     /**
-     * The level for debugging.
+     * The level for debugging messages that help developers locate bugs in the code.
      */
     DEBUGGING(1),
     
     /**
-     * The level for information.
+     * The level for information messages that inform about important runtime events.
      */
     INFORMATION(2),
     
     /**
-     * The level for warnings.
+     * The level for warning messages that indicate potential problems in the program.
      */
     WARNING(3),
     
     /**
-     * The level for errors.
+     * The level for error messages about malfunctions from which the application can possibly recover.
      */
     ERROR(4),
     
     /**
-     * The level for off.
+     * The level for fatal messages about malfunctions that prevent a thread or process from continuing.
      */
-    OFF(5);
+    FATAL(5),
+    
+    /**
+     * The level to turn logging off.
+     */
+    OFF(6);
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
