@@ -44,7 +44,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * - Make an implementation that uses rule objects to implement the two mentioned methods.
  * - Extend this implementation so that the rules are loaded (and reloaded) from a configuration file.
  * - The format of the configuration file might be something like 'Level-Threshold:Caller-Prefix:Thread-Prefix:Message-Regex', where every part is optional (yet the preceding colons have to be all there).
- * - The default for the level threshold is 'information' and the last rule used is always "an empty line" (i.e. everything at and above 'information' is logged if no previous rule matches).
+ * - The default for the level threshold is 'off' and the last rule used is always "an empty line" (i.e. one of the previous rules has to match in order for a message to be logged).
  * - Log the Java runtime and the OS version at the beginning of each log-file (or whenever the logger is initialized?).
  * - Store a configuration file in a 'config' folder next to 'src' and 'target' in each project for both testing (verbose for current project) and annotation processing (empty, i.e. information). (Git should ignore these config files.)
  */
