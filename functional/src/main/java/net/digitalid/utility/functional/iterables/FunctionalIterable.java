@@ -114,11 +114,16 @@ public interface FunctionalIterable<E> extends Iterable<E> {
     /* -------------------------------------------------- Filtering -------------------------------------------------- */
     
     /**
-     * Returns the elements of this iterable filtered by the given predicate.
-     * The returned iterable contains all the elements of this iterable that satisfy the given predicate.
+     * Returns the elements of this iterable that satisfy the given predicate.
      */
     @Pure
     public @Nonnull FunctionalIterable<E> filter(@Nonnull Predicate<? super E> predicate);
+    
+    /**
+     * Returns the elements of this iterable that do not satisfy the given predicate.
+     */
+    @Pure
+    public @Nonnull FunctionalIterable<E> filterNot(@Nonnull Predicate<? super E> predicate);
     
     /**
      * Returns the elements of this iterable without the null values.

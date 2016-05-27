@@ -16,6 +16,8 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.ImmutableMap;
 import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
+import net.digitalid.utility.logging.filter.LevelBasedLoggingFilter;
+import net.digitalid.utility.logging.filter.LoggingFilter;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
@@ -41,7 +43,7 @@ public abstract class ProcessingLog {
         Require.that(name != null).orThrow("The name may not be null.");
         
         Logger.logger.set(FileLogger.with("target/processor-logs/" + name + ".log"));
-        Level.threshold.set(Level.INFORMATION);
+        LoggingFilter.filter.set(LevelBasedLoggingFilter.with(Level.INFORMATION)); // TODO: Chose a configuration-based filter instead.
         Caller.index.set(6);
     }
     

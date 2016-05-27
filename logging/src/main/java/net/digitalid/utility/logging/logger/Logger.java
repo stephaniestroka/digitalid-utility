@@ -11,6 +11,7 @@ import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.Version;
+import net.digitalid.utility.logging.filter.LoggingFilter;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Mutable;
@@ -64,25 +65,29 @@ public abstract class Logger {
     /**
      * Stores the logger which is used for logging.
      */
-    public static final @Nonnull Configuration<Logger> logger = Configuration.<Logger>with(StandardOutputLogger.withNoArguments()).addDependency(Caller.index).addDependency(Version.string);
+    public static final @Nonnull Configuration<Logger> logger = Configuration.<Logger>with(StandardOutputLogger.withNoArguments()).addDependency(LoggingFilter.filter).addDependency(Caller.index).addDependency(Version.string);
     
     /* -------------------------------------------------- Logging -------------------------------------------------- */
     
     /**
-     * Logs the given message with the given level, caller and throwable.
+     * Logs the given message with the given level, caller, thread and throwable.
      */
-    protected abstract void log(@Nonnull Level level, @Nonnull String caller, @Nonnull String message, @Nullable Throwable throwable);
+    protected abstract void log(@Nonnull Level level, @Nonnull String caller, @Nonnull String thread, @Nonnull String message, @Nullable Throwable throwable);
     
     /**
-     * Logs the given message and throwable if the given level is greater or equal to the configured level.
+     * Logs the given message and throwable if the configured filter accepts them.
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
     public static void log(@Nonnull Level level, @Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
-        if (level.getValue() >= Level.threshold.get().getValue()) {
+        final @Nonnull LoggingFilter filter = LoggingFilter.filter.get();
+        if (filter.isPotentiallyLogged(level)) {
+            final @Nonnull String caller = Caller.get();
+            final @Nonnull String thread = Thread.currentThread().getName();
             final @Nonnull String originalMessage = message.toString();
             final boolean addNoPeriod = originalMessage.endsWith(".") || originalMessage.endsWith(":") || originalMessage.endsWith("\n");
-            logger.get().log(level, Caller.get(), Strings.format(originalMessage, arguments) + (addNoPeriod ? "" : "."), throwable);
+            final @Nonnull String formattedMessage = Strings.format(originalMessage, arguments) + (addNoPeriod ? "" : ".");
+            if (filter.isLogged(level, caller, thread, thread, throwable)) { logger.get().log(level, caller, thread, formattedMessage, throwable); }
         }
     }
     

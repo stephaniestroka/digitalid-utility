@@ -3,8 +3,6 @@ package net.digitalid.utility.logging;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.configuration.Configuration;
-import net.digitalid.utility.logging.logger.Logger;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -60,6 +58,7 @@ public enum Level {
     /**
      * Returns the byte representation of this level.
      */
+    @Pure
     public byte getValue() {
         return value;
     }
@@ -77,12 +76,5 @@ public enum Level {
     public @Nonnull String toString() {
         return Strings.uppercaseFirstCharacter(name().toLowerCase());
     }
-    
-    /* -------------------------------------------------- Configuration -------------------------------------------------- */
-    
-    /**
-     * Stores the level above (and including) which the messages are logged.
-     */
-    public static final @Nonnull Configuration<Level> threshold = Configuration.with(INFORMATION).addDependency(Logger.logger);
     
 }

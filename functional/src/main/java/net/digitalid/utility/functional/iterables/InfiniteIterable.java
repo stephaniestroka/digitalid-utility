@@ -84,6 +84,12 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
+    public default @Nonnull InfiniteIterable<E> filterNot(@Nonnull Predicate<? super E> predicate) {
+        return filter(predicate.negate());
+    }
+    
+    @Pure
+    @Override
     public default @Nonnull InfiniteIterable<E> filterNulls() {
         return filter(element -> element != null);
     }

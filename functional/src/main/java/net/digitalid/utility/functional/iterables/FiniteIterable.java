@@ -90,6 +90,12 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
     
     @Pure
     @Override
+    public default @Nonnull FiniteIterable<E> filterNot(@Nonnull Predicate<? super E> predicate) {
+        return filter(predicate.negate());
+    }
+    
+    @Pure
+    @Override
     public default @Nonnull FiniteIterable<E> filterNulls() {
         return filter(element -> element != null);
     }
