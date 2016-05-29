@@ -8,8 +8,10 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.conversion.converter.LeafConverter;
+import net.digitalid.utility.conversion.converter.ResultSet;
 import net.digitalid.utility.conversion.converter.ValueCollector;
 
+// TODO: implement
 /**
  *
  */
@@ -20,6 +22,10 @@ public class IntegerConverter implements LeafConverter<BigInteger> {
     @Override
     public void convert(@NonCaptured @Unmodified BigInteger object, @NonCaptured @Modified ValueCollector valueCollector) {
         
+    }
+    
+    @Nonnull @Override public BigInteger recover(@NonCaptured ResultSet resultSet) {
+        return null;
     }
     
 }

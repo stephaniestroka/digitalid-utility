@@ -1,8 +1,11 @@
 package net.digitalid.utility.contracts.exceptions;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.exceptions.InternalException;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -17,7 +20,7 @@ public class ContractViolationException extends InternalException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ContractViolationException(@Nullable String message, @Nullable Object... arguments) {
+    protected ContractViolationException(@Nullable String message, @Captured @Nonnull @NullableElements Object... arguments) {
         super(message, arguments);
     }
     

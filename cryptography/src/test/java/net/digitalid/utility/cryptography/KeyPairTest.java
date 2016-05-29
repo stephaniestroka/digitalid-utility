@@ -2,6 +2,7 @@ package net.digitalid.utility.cryptography;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.cryptography.key.KeyPair;
 import net.digitalid.utility.cryptography.key.PrivateKey;
 import net.digitalid.utility.cryptography.key.PublicKey;
@@ -11,7 +12,6 @@ import net.digitalid.utility.testing.CustomTest;
 import net.digitalid.utility.time.Time;
 import net.digitalid.utility.time.TimeBuilder;
 
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -20,8 +20,9 @@ public class KeyPairTest extends CustomTest {
     /**
      * Sets the length of the cryptographic parameters.
      */
+    @Impure
     @BeforeClass
-    public static void setUpParameters() {
+    public static void initializeParameters() {
         Parameters.FACTOR.set(128);
         Parameters.RANDOM_EXPONENT.set(64);
         Parameters.CREDENTIAL_EXPONENT.set(64);
@@ -40,7 +41,7 @@ public class KeyPairTest extends CustomTest {
         final @Nonnull PublicKey publicKey = keyPair.getPublicKey();
         Log.information("Key Pair Generation: " + time.ago().getValue() + " ms");
         
-        Assert.assertTrue(publicKey.verifySubgroupProof());
+        assertTrue(publicKey.verifySubgroupProof());
         
         for (int i = 0; i < 10; i++) {
             Log.information("Starting with another round:");
@@ -49,10 +50,10 @@ public class KeyPairTest extends CustomTest {
             final @Nonnull Element c = m.pow(publicKey.getE());
             Log.information("Encryption (only algorithm): " + time.ago().getValue() + " ms");
             time = TimeBuilder.get().build();
-            Assert.assertEquals(c.pow(privateKey.getD()), m);
+            assertEquals(c.pow(privateKey.getD()), m);
             Log.information("Decryption (slow algorithm): " + time.ago().getValue() + " ms");
             time = TimeBuilder.get().build();
-            Assert.assertEquals(privateKey.powD(c), m);
+            assertEquals(privateKey.powD(c), m);
             Log.information("Decryption (fast algorithm): " + time.ago().getValue() + " ms");
         }
     }

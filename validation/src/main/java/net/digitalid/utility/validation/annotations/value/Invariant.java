@@ -15,7 +15,6 @@ import javax.lang.model.element.Element;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.immutable.ImmutableSet;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
@@ -52,19 +51,7 @@ public @interface Invariant {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends ValueAnnotationValidator {
-        
-        private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.<Class<?>>with();
-        
-        @Pure
-        @Override
-        public @Nonnull ImmutableSet<@Nonnull Class<?>> getTargetTypes() {
-            return targetTypes;
-        }
-        
-        @Pure
-        @Override
-        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {}
+    public static class Validator implements ValueAnnotationValidator {
         
         @Pure
         @Override

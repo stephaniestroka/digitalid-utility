@@ -124,6 +124,7 @@ public abstract class FreezableArray<E> extends RootClass implements ReadOnlyArr
     
     @Impure
     @Override
+    @NonFrozenRecipient
     @TODO(task = "Generate this implementation.", date = "2016-04-06", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.MIDDLE)
     public @Chainable @Nonnull @Frozen ReadOnlyArray<E> freeze() {
         this.frozen = true;

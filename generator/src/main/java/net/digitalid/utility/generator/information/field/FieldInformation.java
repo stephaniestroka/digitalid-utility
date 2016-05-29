@@ -8,7 +8,7 @@ import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
-import net.digitalid.utility.processor.generator.JavaFileGenerator;
+import net.digitalid.utility.processing.utility.TypeImporter;
 
 /**
  * This type collects the relevant information about a field for generating a {@link SubclassGenerator subclass} and {@link BuilderGenerator builder}.
@@ -50,10 +50,11 @@ public interface FieldInformation extends ElementInformation, VariableElementInf
     
     /* -------------------------------------------------- Field Type -------------------------------------------------- */
     
-    public @Nonnull String getFieldType(@Nonnull JavaFileGenerator javaFileGenerator);
+    public @Nonnull String getFieldType(@Nonnull TypeImporter typeImporter);
     
     /* -------------------------------------------------- Is Array -------------------------------------------------- */
     
+    @Pure
     public boolean isArray();
     
     public @Nonnull TypeMirror getComponentType();

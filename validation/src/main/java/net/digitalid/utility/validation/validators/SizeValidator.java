@@ -5,11 +5,12 @@ import java.util.Collection;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.type.TypeKind;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.immutable.ImmutableSet;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.interfaces.Countable;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
@@ -23,15 +24,15 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * @see net.digitalid.utility.validation.annotations.size
  */
 @Stateless
-public abstract class SizeValidator extends ValueAnnotationValidator {
+public abstract class SizeValidator implements ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.with(Collection.class, Countable.class, Object[].class, CharSequence.class);
+    private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(CharSequence.class, Collection.class, Countable.class, Object[].class, boolean[].class, char[].class, byte[].class, short[].class, int[].class, long[].class, float[].class, double[].class);
     
     @Pure
     @Override
-    public @Nonnull ImmutableSet<@Nonnull Class<?>> getTargetTypes() {
+    public @Nonnull FiniteIterable<@Nonnull Class<?>> getTargetTypes() {
         return targetTypes;
     }
     
@@ -63,11 +64,10 @@ public abstract class SizeValidator extends ValueAnnotationValidator {
     @Pure
     @Override
     public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-        // TODO: isAssignable() does not yet work for arrays.
-        if (ProcessingUtility.isArray(element)) {
-            return generateContract("# == null || #.length " + getSizeComparison(), "The length of the # has to be " + getMessageCondition() + " but was $.", element, annotationMirror, ".length");
-        } else if (ProcessingUtility.isAssignable(element, CharSequence.class)) {
+        if (ProcessingUtility.isRawSubtype(element, CharSequence.class)) {
             return generateContract("# == null || #.length() " + getSizeComparison(), "The length of the # has to be " + getMessageCondition() + " but was $.", element, annotationMirror, ".length()");
+        } else if (ProcessingUtility.getType(element).getKind() == TypeKind.ARRAY) {
+            return generateContract("# == null || #.length " + getSizeComparison(), "The length of the # has to be " + getMessageCondition() + " but was $.", element, annotationMirror, ".length");
         } else {
             return generateContract("# == null || #.size() " + getSizeComparison(), "The size of the # has to be " + getMessageCondition() + " but was $.", element, annotationMirror, ".size()");
         }

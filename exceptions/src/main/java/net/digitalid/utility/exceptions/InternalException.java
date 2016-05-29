@@ -7,6 +7,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -36,13 +37,13 @@ public abstract class InternalException extends RuntimeException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected InternalException(@Nullable String message, @Nullable Exception cause, @Captured @Nullable Object... arguments) {
+    protected InternalException(@Nullable String message, @Nullable Exception cause, @Captured @Nonnull @NullableElements Object... arguments) {
         super(message == null ? "An internal exception occurred." : Strings.format(message, arguments), cause);
         
         this.arguments = ImmutableList.with(arguments);
     }
     
-    protected InternalException(@Nullable String message, @Captured @Nullable Object... arguments) {
+    protected InternalException(@Nullable String message, @Captured @Nonnull @NullableElements Object... arguments) {
         this(message, null, arguments);
     }
     

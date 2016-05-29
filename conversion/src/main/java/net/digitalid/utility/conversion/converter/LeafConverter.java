@@ -16,7 +16,7 @@ public interface LeafConverter<T> {
     @Pure
     public void convert(@NonCaptured @Unmodified @Nonnull T object, @NonCaptured @Modified @Nonnull ValueCollector valueCollector);
     
-//    @Pure
-//    public @Capturable @Nonnull T recover(@Nonnull @NonCaptured ResultSet resultSet);
+    @Pure
+    public @Nonnull @Capturable T recover(@Nonnull @NonCaptured ResultSet resultSet);
     
 }

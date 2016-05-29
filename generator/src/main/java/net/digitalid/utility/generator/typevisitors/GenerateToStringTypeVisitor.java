@@ -43,7 +43,7 @@ public class GenerateToStringTypeVisitor extends SimpleTypeVisitor7<@Nonnull Str
     public @Nonnull String visitDeclared(@Nonnull DeclaredType type, @Nullable Pair<String, JavaFileGenerator> pair) {
         Require.that(pair.get0() != null).orThrow("The field access code is a required parameter and cannot be generated on the fly. Please call visit(TypeMirror, String) instead.");
         
-        if (ProcessingUtility.isAssignable(type, CharSequence.class)) {
+        if (ProcessingUtility.isRawSubtype(type, CharSequence.class)) {
             return pair.get1().importIfPossible(Quotes.class) + ".inDouble(" + pair.get0() + ")";
         } else {
             return "String.valueOf(" + pair.get0() + ")";

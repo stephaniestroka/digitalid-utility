@@ -77,6 +77,7 @@ public abstract class BackedFreezableCollection<E> extends RootClass implements 
     
     @Impure
     @Override
+    @NonFrozenRecipient
     public @Nonnull @Frozen ReadOnlyCollection<E> freeze() {
         freezable.freeze();
         return this;

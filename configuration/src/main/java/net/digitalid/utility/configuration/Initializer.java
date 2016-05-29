@@ -7,6 +7,7 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
@@ -21,12 +22,12 @@ public abstract class Initializer {
     /**
      * Creates and registers this initializer with the given target and dependencies.
      */
-    protected Initializer(@NonCaptured @Modified @Nonnull Configuration<?> target, @NonCaptured @Unmodified @Nonnull Configuration<?>... dependencies) {
+    protected Initializer(@NonCaptured @Modified @Nonnull Configuration<?> target, @NonCaptured @Unmodified @Nonnull @NonNullableElements Configuration<?>... dependencies) {
         Require.that(target != null).orThrow("The target may not be null.");
         Require.that(dependencies != null).orThrow("The dependencies may not be null.");
         
         target.addInitializer(this);
-        for (Configuration<?> dependency : dependencies) {
+        for (@Nonnull Configuration<?> dependency : dependencies) {
             Require.that(dependency != null).orThrow("Each dependency may not be null.");
             target.addDependency(dependency);
         }

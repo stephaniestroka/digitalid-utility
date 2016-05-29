@@ -4,17 +4,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.collaboration.annotations.TODO;
-import net.digitalid.utility.collaboration.enumerations.Author;
-import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
@@ -34,26 +30,12 @@ public abstract class OrderingValidator extends IterableValidator {
     
     @Pure
     @Override
-    @TODO(task = "Whether the type argument is comparable should be determined on the instantiated iterable type and not the declared type (which might no longer be generic).", date = "2016-04-29", author = Author.KASPAR_ETTER)
-    public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
-        super.checkUsage(element, annotationMirror);
+    public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
+        super.checkUsage(element, annotationMirror, errorLogger);
         
-        final @Nonnull TypeMirror type = ProcessingUtility.getType(element);
-        if (type.getKind() == TypeKind.ARRAY) {
-            final @Nonnull ArrayType arrayType = (ArrayType) type;
-            if (!ProcessingUtility.isAssignable(arrayType.getComponentType(), Comparable.class)) {
-                ProcessingLog.error("The annotation $ may only be used on arrays whose component type is comparable, which is not the case for $:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), arrayType.getComponentType());
-            }
-        } else if (type.getKind() == TypeKind.DECLARED) {
-            final @Nonnull DeclaredType declaredType = (DeclaredType) type;
-            if (declaredType.getTypeArguments().isEmpty()) {
-                ProcessingLog.error("The declared type does not have a generic type argument.", SourcePosition.of(element, annotationMirror));
-            }
-            if (!ProcessingUtility.isAssignable(declaredType.getTypeArguments().get(0), Comparable.class)) {
-                ProcessingLog.error("The annotation $ may only be used on iterables whose component type is comparable, but $ is not:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), declaredType.getTypeArguments().get(0));
-            }
-        } else {
-            ProcessingLog.error("The annotation $ may only be used on arrays or declared types:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
+        final @Nullable TypeMirror componentType = ProcessingUtility.getComponentType(element, errorLogger);
+        if (componentType != null && !componentType.getKind().isPrimitive() && !ProcessingUtility.isRawSubtype(componentType, Comparable.class)) {
+            errorLogger.log("The annotation $ may only be used on arrays and iterables whose component type is comparable, which is not the case for $:", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt(), componentType);
         }
     }
     
@@ -69,17 +51,16 @@ public abstract class OrderingValidator extends IterableValidator {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public static boolean validate(@Nullable Iterable<@Nullable ?> iterable, boolean strictly, boolean ascending) {
+    public static <T extends Comparable<? super T>> boolean validate(@NonCaptured @Unmodified @Nullable Iterable<@Nullable T> iterable, boolean strictly, boolean ascending) {
         if (iterable == null) { return true; }
-        @Nullable Object lastElement = null;
-        for (final @Nullable Object element : iterable) {
-            if (element == null) { continue; }
-            if (lastElement != null) {
-                if (element instanceof Comparable<?>) {
-                    if (((Comparable<Object>) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
+        @Nullable T lastElement = null;
+        for (@Nullable T element : iterable) {
+            if (element != null) {
+                if (lastElement != null) {
+                    if (element.compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
                 }
+                lastElement = element;
             }
-            lastElement = element;
         }
         return true;
     }
@@ -94,20 +75,191 @@ public abstract class OrderingValidator extends IterableValidator {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public static boolean validate(@Nullable @NullableElements Object[] array, boolean strictly, boolean ascending) {
+    public static <T extends Comparable<? super T>> boolean validate(@NonCaptured @Unmodified @Nullable @NullableElements T[] array, boolean strictly, boolean ascending) {
         if (array == null) { return true; }
-        @Nullable Object lastElement = null;
-        for (final @Nullable Object element : array) {
-            if (element == null) { continue; }
-            if (lastElement != null) {
-                if (element instanceof Comparable<?>) {
-                    if (((Comparable<Object>) element).compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
+        @Nullable T lastElement = null;
+        for (@Nullable T element : array) {
+            if (element != null) {
+                if (lastElement != null) {
+                    if (element.compareTo(lastElement) * (ascending ? 1 : -1) < (strictly ? 1 : 0)) { return false; }
                 }
+                lastElement = element;
             }
-            lastElement = element;
         }
         return true;
     }
+    
+    /**
+     * Returns whether the values in the given array are ordered.
+     * 
+     * @param strictly whether the ordering is strict (i.e. without equal values).
+     * @param ascending whether the ordering is ascending (true) or descending (false).
+     * 
+     * @return {@code true} if the values in the array are ordered, {@code false} otherwise.
+     */
+    @Pure
+    public static boolean validate(@NonCaptured @Unmodified @Nullable boolean[] array, boolean strictly, boolean ascending) {
+        if (array == null || array.length < 2) { return true; }
+        else if (strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1]) { return false; } } }
+        else if (!strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] && !array[i]) { return false; } } }
+        else if (strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(!array[i - 1]) { return false; } } }
+        else if (!strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(!array[i - 1] && array[i]) { return false; } } }
+        return true;
+    }
+    
+    /**
+     * Returns whether the values in the given array are ordered.
+     * 
+     * @param strictly whether the ordering is strict (i.e. without equal values).
+     * @param ascending whether the ordering is ascending (true) or descending (false).
+     * 
+     * @return {@code true} if the values in the array are ordered, {@code false} otherwise.
+     */
+    @Pure
+    public static boolean validate(@NonCaptured @Unmodified @Nullable char[] array, boolean strictly, boolean ascending) {
+        if (array == null || array.length < 2) { return true; }
+        else if (strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] >= array[i]) { return false; } } }
+        else if (!strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] > array[i]) { return false; } } }
+        else if (strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] <= array[i]) { return false; } } }
+        else if (!strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] < array[i]) { return false; } } }
+        return true;
+    }
+    
+    /**
+     * Returns whether the values in the given array are ordered.
+     * 
+     * @param strictly whether the ordering is strict (i.e. without equal values).
+     * @param ascending whether the ordering is ascending (true) or descending (false).
+     * 
+     * @return {@code true} if the values in the array are ordered, {@code false} otherwise.
+     */
+    @Pure
+    public static boolean validate(@NonCaptured @Unmodified @Nullable byte[] array, boolean strictly, boolean ascending) {
+        if (array == null || array.length < 2) { return true; }
+        else if (strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] >= array[i]) { return false; } } }
+        else if (!strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] > array[i]) { return false; } } }
+        else if (strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] <= array[i]) { return false; } } }
+        else if (!strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] < array[i]) { return false; } } }
+        return true;
+    }
+    
+    /**
+     * Returns whether the values in the given array are ordered.
+     * 
+     * @param strictly whether the ordering is strict (i.e. without equal values).
+     * @param ascending whether the ordering is ascending (true) or descending (false).
+     * 
+     * @return {@code true} if the values in the array are ordered, {@code false} otherwise.
+     */
+    @Pure
+    public static boolean validate(@NonCaptured @Unmodified @Nullable short[] array, boolean strictly, boolean ascending) {
+        if (array == null || array.length < 2) { return true; }
+        else if (strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] >= array[i]) { return false; } } }
+        else if (!strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] > array[i]) { return false; } } }
+        else if (strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] <= array[i]) { return false; } } }
+        else if (!strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] < array[i]) { return false; } } }
+        return true;
+    }
+    
+    /**
+     * Returns whether the values in the given array are ordered.
+     * 
+     * @param strictly whether the ordering is strict (i.e. without equal values).
+     * @param ascending whether the ordering is ascending (true) or descending (false).
+     * 
+     * @return {@code true} if the values in the array are ordered, {@code false} otherwise.
+     */
+    @Pure
+    public static boolean validate(@NonCaptured @Unmodified @Nullable int[] array, boolean strictly, boolean ascending) {
+        if (array == null || array.length < 2) { return true; }
+        else if (strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] >= array[i]) { return false; } } }
+        else if (!strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] > array[i]) { return false; } } }
+        else if (strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] <= array[i]) { return false; } } }
+        else if (!strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] < array[i]) { return false; } } }
+        return true;
+    }
+    
+    /**
+     * Returns whether the values in the given array are ordered.
+     * 
+     * @param strictly whether the ordering is strict (i.e. without equal values).
+     * @param ascending whether the ordering is ascending (true) or descending (false).
+     * 
+     * @return {@code true} if the values in the array are ordered, {@code false} otherwise.
+     */
+    @Pure
+    public static boolean validate(@NonCaptured @Unmodified @Nullable long[] array, boolean strictly, boolean ascending) {
+        if (array == null || array.length < 2) { return true; }
+        else if (strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] >= array[i]) { return false; } } }
+        else if (!strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] > array[i]) { return false; } } }
+        else if (strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] <= array[i]) { return false; } } }
+        else if (!strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] < array[i]) { return false; } } }
+        return true;
+    }
+    
+    /**
+     * Returns whether the values in the given array are ordered.
+     * 
+     * @param strictly whether the ordering is strict (i.e. without equal values).
+     * @param ascending whether the ordering is ascending (true) or descending (false).
+     * 
+     * @return {@code true} if the values in the array are ordered, {@code false} otherwise.
+     */
+    @Pure
+    public static boolean validate(@NonCaptured @Unmodified @Nullable float[] array, boolean strictly, boolean ascending) {
+        if (array == null || array.length < 2) { return true; }
+        else if (strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] >= array[i]) { return false; } } }
+        else if (!strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] > array[i]) { return false; } } }
+        else if (strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] <= array[i]) { return false; } } }
+        else if (!strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] < array[i]) { return false; } } }
+        return true;
+    }
+    
+    /**
+     * Returns whether the values in the given array are ordered.
+     * 
+     * @param strictly whether the ordering is strict (i.e. without equal values).
+     * @param ascending whether the ordering is ascending (true) or descending (false).
+     * 
+     * @return {@code true} if the values in the array are ordered, {@code false} otherwise.
+     */
+    @Pure
+    public static boolean validate(@NonCaptured @Unmodified @Nullable double[] array, boolean strictly, boolean ascending) {
+        if (array == null || array.length < 2) { return true; }
+        else if (strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] >= array[i]) { return false; } } }
+        else if (!strictly && ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] > array[i]) { return false; } } }
+        else if (strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] <= array[i]) { return false; } } }
+        else if (!strictly && !ascending) { for (int i = 1; i < array.length; i++) { if(array[i - 1] < array[i]) { return false; } } }
+        return true;
+    }
+    
+    /*
+    
+    // Other implementations for arrays with primitive component types are:
+    
+    @Pure
+    public static boolean validate(@NonCaptured @Unmodified @Nullable int[] array, boolean strictly, boolean ascending) {
+        if (array == null || array.length < 2) { return true; }
+        int lastValue = array[0];
+        final int factor = ascending ? 1 : -1;
+        for (int i = 1; i < array.length; i++) {
+            final int nextValue = array[i];
+            if (lastValue * factor >= nextValue * factor && (strictly || lastValue != nextValue)) { return false; }
+            lastValue = nextValue;
+        }
+        return true;
+    }
+    
+    @Pure
+    public static boolean validate(@NonCaptured @Unmodified @Nullable int[] array, boolean strictly, boolean ascending) {
+        if (array == null) { return true; }
+        for (int i = 1; i < array.length; i++) {
+            if (array[i - 1] * (ascending ? 1 : -1) >= array[i] * (ascending ? 1 : -1) && (strictly || array[i - 1] != array[i])) { return false; }
+        }
+        return true;
+    }
+    
+    */
     
     /* -------------------------------------------------- Abstract Methods -------------------------------------------------- */
     

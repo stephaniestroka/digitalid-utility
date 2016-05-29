@@ -124,6 +124,7 @@ public abstract class FreezableHashSet<E> extends HashSet<E> implements Freezabl
     
     @Impure
     @Override
+    @NonFrozenRecipient
     public @Nonnull @Frozen ReadOnlySet<E> freeze() {
         this.frozen = true;
         return this;

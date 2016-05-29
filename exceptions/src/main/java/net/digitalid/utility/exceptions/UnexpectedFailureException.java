@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -14,7 +15,7 @@ public class UnexpectedFailureException extends InternalException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected UnexpectedFailureException(@Nullable String message, @Nullable Exception cause, @Nullable Object... arguments) {
+    protected UnexpectedFailureException(@Nullable String message, @Nullable Exception cause, @Nonnull @NullableElements Object... arguments) {
         super(message, cause, arguments);
     }
     
@@ -23,7 +24,7 @@ public class UnexpectedFailureException extends InternalException {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Pure
-    public static @Nonnull UnexpectedFailureException with(@Nullable String message, @Nullable Exception cause, @Nullable Object... arguments) {
+    public static @Nonnull UnexpectedFailureException with(@Nullable String message, @Nullable Exception cause, @Nonnull @NullableElements Object... arguments) {
         return new UnexpectedFailureException(message, cause, arguments);
     }
     
@@ -32,7 +33,7 @@ public class UnexpectedFailureException extends InternalException {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Pure
-    public static @Nonnull UnexpectedFailureException with(@Nullable String message, @Nullable Object... arguments) {
+    public static @Nonnull UnexpectedFailureException with(@Nullable String message, @Nonnull @NullableElements Object... arguments) {
         return new UnexpectedFailureException(message, null, arguments);
     }
     

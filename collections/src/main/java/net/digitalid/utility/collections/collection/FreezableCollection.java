@@ -15,7 +15,9 @@ import net.digitalid.utility.collections.iterable.FreezableIterable;
 import net.digitalid.utility.collections.list.FreezableList;
 import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.freezable.FreezableInterface;
+import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
+import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
@@ -27,13 +29,14 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * @see FreezableList
  * @see FreezableSet
  */
-@ReadOnly(ReadOnlyCollection.class)
+@Freezable(ReadOnlyCollection.class)
 public interface FreezableCollection<E> extends ReadOnlyCollection<E>, Collection<E>, FreezableIterable<E> {
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     @Impure
     @Override
+    @NonFrozenRecipient
     public @Chainable @Nonnull @Frozen ReadOnlyCollection<E> freeze();
     
     /* -------------------------------------------------- Conflicts -------------------------------------------------- */

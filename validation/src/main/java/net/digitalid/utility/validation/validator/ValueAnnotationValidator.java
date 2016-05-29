@@ -6,8 +6,10 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.immutable.ImmutableSet;
-import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
@@ -19,28 +21,27 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  * @see ValueValidator
  */
 @Stateless
-public abstract class ValueAnnotationValidator extends AnnotationHandler implements ContractGenerator {
+public interface ValueAnnotationValidator extends AnnotationHandler, ContractGenerator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
+    
+    public static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(Object.class, boolean.class, char.class, byte.class, short.class, int.class, long.class, float.class, double.class);
     
     /**
      * Returns the types of values to which the surrounding annotation can be applied.
      */
     @Pure
-    public abstract @Nonnull ImmutableSet<Class<?>> getTargetTypes();
+    public default @Nonnull FiniteIterable<@Nonnull Class<?>> getTargetTypes() {
+        return targetTypes;
+    }
     
     /* -------------------------------------------------- Usage Check -------------------------------------------------- */
     
     @Pure
     @Override
-    public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
-        boolean elementAssignableToTargetType = false;
-        for (@Nonnull Class<?> targetType : getTargetTypes()) {
-            ProcessingLog.debugging("Checking whether element $ is assignable to targetType $", element, targetType);
-            if (ProcessingUtility.isAssignable(element, targetType)) { elementAssignableToTargetType = true; }
-        }
-        if (!elementAssignableToTargetType) {
-            ProcessingLog.error("The element $ is not assignable to a target type of $.", SourcePosition.of(element, annotationMirror), element, getAnnotationNameWithLeadingAt());
+    public default void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
+        if (getTargetTypes().matchNone(targetType -> ProcessingUtility.isRawSubtype(element, targetType))) {
+            errorLogger.log("The element $ does not belong to a subtype of a target type of $.", SourcePosition.of(element, annotationMirror), element, getAnnotationNameWithLeadingAt());
         }
     }
     

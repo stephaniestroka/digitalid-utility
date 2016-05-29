@@ -15,7 +15,8 @@ import javax.lang.model.element.TypeElement;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.immutable.ImmutableSet;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
@@ -48,13 +49,13 @@ public @interface NestingOf {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends ValueAnnotationValidator {
+    public static class Validator implements ValueAnnotationValidator {
         
-        private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.with(Class.class, TypeElement.class);
+        private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(Class.class, TypeElement.class);
         
         @Pure
         @Override
-        public @Nonnull ImmutableSet<@Nonnull Class<?>> getTargetTypes() {
+        public @Nonnull FiniteIterable<@Nonnull Class<?>> getTargetTypes() {
             return targetTypes;
         }
         
@@ -62,7 +63,7 @@ public @interface NestingOf {
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
             final @Nonnull StringBuilder condition = new StringBuilder("# == null");
-            for (@Nonnull NestingKind kind : element.getAnnotation(NestingOf.class).value()) {
+            for (@Nonnull NestingKind kind : ProcessingUtility.getEnums(ProcessingUtility.getAnnotationValue(annotationMirror), NestingKind.class)) {
                 condition.append(" || ").append(NestingKindValidator.getCondition(element, kind, typeImporter));
             }
             return Contract.with(condition.toString(), "The # has to be null or have one of the specified nesting kinds but was $.", element);

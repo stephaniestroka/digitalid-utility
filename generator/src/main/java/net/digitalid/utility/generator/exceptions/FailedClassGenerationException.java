@@ -18,16 +18,16 @@ public class FailedClassGenerationException extends InternalException {
         return sourcePosition;
     }
     
-    protected FailedClassGenerationException(@Nonnull String message, @Nullable SourcePosition sourcePosition, @Nullable Exception cause, @Nullable @NullableElements Object... arguments) {
+    protected FailedClassGenerationException(@Nonnull String message, @Nullable SourcePosition sourcePosition, @Nullable Exception cause, @Nonnull @NullableElements Object... arguments) {
         super(message, cause, arguments);
         this.sourcePosition = sourcePosition;
     }
     
-    public static FailedClassGenerationException with(@Nonnull String message, @Nonnull SourcePosition sourcePosition, @Nullable String... arguments) {
+    public static FailedClassGenerationException with(@Nonnull String message, @Nonnull SourcePosition sourcePosition, @Nonnull @NullableElements String... arguments) {
         return new FailedClassGenerationException(message, sourcePosition, null, arguments);
     }
     
-    public static FailedClassGenerationException with(@Nonnull String message, @Nullable String... arguments) {
+    public static FailedClassGenerationException with(@Nonnull String message, @Nonnull @NullableElements String... arguments) {
         return new FailedClassGenerationException(message, null, null, arguments);
     }
     

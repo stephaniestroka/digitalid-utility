@@ -15,7 +15,7 @@ import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 
 @TODO(task = "The inheritance is wrong. MethodAnnotationValidator was intended for method preconditions, not for interceptors. The first two methods can then also be removed.", date = "2016-05-16", author = Author.KASPAR_ETTER)
-public abstract class MethodInterceptor extends MethodAnnotationValidator {
+public abstract class MethodInterceptor implements MethodAnnotationValidator {
     
     @Override
     public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {

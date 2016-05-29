@@ -105,6 +105,7 @@ public abstract class FreezableLinkedList<E> extends LinkedList<E> implements Fr
     
     @Impure
     @Override
+    @NonFrozenRecipient
     public @Nonnull @Frozen ReadOnlyList<E> freeze() {
         this.frozen = true;
         return this;

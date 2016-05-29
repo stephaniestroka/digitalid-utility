@@ -10,6 +10,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
 import net.digitalid.utility.fixes.Quotes;
+import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
 import net.digitalid.utility.rootclass.RootClass;
@@ -49,7 +50,7 @@ public abstract class FileGenerator extends RootClass {
      */
     @Pure
     protected void requireNotWritten() {
-        Require.that(!written).orThrow("The generated file $ has already been written.", this);
+        Require.that(!written).orThrow("The generated file $ has already been written.", getName());
     }
     
     /* -------------------------------------------------- Writing -------------------------------------------------- */
@@ -73,11 +74,12 @@ public abstract class FileGenerator extends RootClass {
         try {
             writeOnce();
         } catch (@Nonnull IOException exception) {
-            ProcessingLog.error("A problem occurred while generating the file " + this + ": " + exception);
+            ProcessingLog.error("A problem occurred while generating the file $.", getName());
+            Log.error("Problem:", exception);
             return false;
         }
         
-        ProcessingLog.information("Generated the file " + this);
+        ProcessingLog.information("Generated the file $.", getName());
         this.written = true;
         return true;
     }

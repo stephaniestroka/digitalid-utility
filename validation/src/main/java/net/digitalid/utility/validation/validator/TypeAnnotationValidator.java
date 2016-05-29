@@ -9,4 +9,4 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  * @see TypeValidator
  */
 @Stateless
-public abstract class TypeAnnotationValidator extends AnnotationHandler {}
+public interface TypeAnnotationValidator extends AnnotationHandler {}

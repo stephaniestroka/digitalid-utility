@@ -65,6 +65,7 @@ public abstract class BackedFreezableList<E> extends BackedFreezableCollection<E
     
     @Impure
     @Override
+    @NonFrozenRecipient
     public @Nonnull @Frozen ReadOnlyList<E> freeze() {
         super.freeze();
         return this;

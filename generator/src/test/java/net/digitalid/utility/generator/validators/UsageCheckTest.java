@@ -1,0 +1,190 @@
+package net.digitalid.utility.generator.validators;
+
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
+import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.freezable.FreezableInterface;
+import net.digitalid.utility.freezable.annotations.Freezable;
+import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
+import net.digitalid.utility.generator.annotations.generators.GenerateAnnotationValidator;
+import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.validation.annotations.index.Index;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.validation.annotations.order.Ascending;
+import net.digitalid.utility.validation.annotations.size.EmptyOrSingleRecipient;
+import net.digitalid.utility.validation.annotations.testing.IncorrectUsage;
+import net.digitalid.utility.validation.annotations.type.Functional;
+import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.annotations.type.ReadOnly;
+import net.digitalid.utility.validation.annotations.type.Stateless;
+import net.digitalid.utility.validation.annotations.type.Utility;
+import net.digitalid.utility.validation.annotations.value.Validated;
+
+/* -------------------------------------------------- Functional -------------------------------------------------- */
+
+@IncorrectUsage(Functional.Validator.class)
+abstract class IncorrectFunctionalUsageClass {}
+
+@IncorrectUsage(Functional.Validator.class)
+interface IncorrectFunctionalUsageInterfaceWithNoAbstractMethod {
+    
+    @Pure
+    public default void method() {}
+    
+}
+
+@IncorrectUsage(Functional.Validator.class)
+interface IncorrectFunctionalUsageInterfaceWithSeveralAbstractMethods {
+    
+    @Pure
+    public void method1();
+    
+    @Pure
+    public void method2();
+    
+}
+
+/* -------------------------------------------------- Immutable -------------------------------------------------- */
+
+@IncorrectUsage(Immutable.Validator.class)
+abstract class IncorrectImmutableUsageWithImpureMethod extends RootClass {
+    
+    @Impure
+    public void method() {}
+    
+}
+
+@IncorrectUsage(Immutable.Validator.class)
+abstract class IncorrectImmutableUsageWithNonFinalField extends RootClass {
+    
+    private int field;
+    
+}
+
+/* -------------------------------------------------- ReadOnly -------------------------------------------------- */
+
+@IncorrectUsage(ReadOnly.Validator.class)
+abstract class IncorrectReadOnlyUsageWithImpureMethod extends RootClass {
+    
+    @Impure
+    public void method() {}
+    
+}
+
+@IncorrectUsage(ReadOnly.Validator.class)
+abstract class IncorrectReadOnlyUsageWithNonFinalField extends RootClass {
+    
+    private int field;
+    
+}
+
+/* -------------------------------------------------- Stateless -------------------------------------------------- */
+
+@IncorrectUsage(Stateless.Validator.class)
+abstract class IncorrectStatelessUsage extends RootClass {
+    
+    private int value;
+    
+}
+
+/* -------------------------------------------------- Utility -------------------------------------------------- */
+
+@IncorrectUsage(Utility.Validator.class)
+class IncorrectUtilityUsageNonAbstractClass {}
+
+@IncorrectUsage(Utility.Validator.class)
+abstract class IncorrectUtilityUsageNonStaticField extends RootClass {
+    
+    private int value;
+    
+}
+
+@IncorrectUsage(Utility.Validator.class)
+abstract class IncorrectUtilityUsageNonStaticMethod extends RootClass {
+    
+    @Pure
+    public void method() {}
+    
+}
+
+/* -------------------------------------------------- Target Type -------------------------------------------------- */
+
+abstract class IncorrectTargetTypes extends RootClass {
+    
+    @Pure
+    public @IncorrectUsage(Nonnull.Validator.class) int method(@IncorrectUsage(Ascending.Validator.class) Comparable<String> comparable) {
+        return 0;
+    }
+    
+}
+
+/* -------------------------------------------------- Receiver Type -------------------------------------------------- */
+
+abstract class IncorrectReceiverTypes extends RootClass {
+    
+    @Pure
+    @IncorrectUsage(NonFrozenRecipient.Validator.class)
+    public void method1() {}
+    
+    @Pure
+    @IncorrectUsage(EmptyOrSingleRecipient.Validator.class)
+    public void method2() {}
+    
+}
+
+/* -------------------------------------------------- Index -------------------------------------------------- */
+
+abstract class IncorrectIndexUsage extends RootClass {
+    
+    @Pure
+    private @NonNegative int size() {
+        return 0;
+    }
+    
+    @Pure
+    public void method(@IncorrectUsage(Index.Validator.class) int index) {}
+    
+}
+
+/* -------------------------------------------------- Ordering -------------------------------------------------- */
+
+abstract class IncorrectOrderingUsage extends RootClass {
+    
+    @Pure
+    public void method(@IncorrectUsage(Ascending.Validator.class) List<Object> argument) {}
+    
+}
+
+/* -------------------------------------------------- Validated -------------------------------------------------- */
+
+abstract class IncorrectValidatedUsage extends RootClass {
+    
+    @Pure
+    public void method(@IncorrectUsage(Validated.Validator.class) String string) {}
+    
+}
+
+/* -------------------------------------------------- Freezable -------------------------------------------------- */
+
+@IncorrectUsage(Freezable.Validator.class)
+abstract class IncorrectFreezableUsageNotImplementingFreezableInterface extends RootClass {}
+
+@IncorrectUsage(Freezable.Validator.class)
+interface IncorrectFreezableUsageImpureMethodWithoutNonFrozenRecipient extends FreezableInterface {
+    
+    @Impure
+    public void method();
+    
+}
+
+/* -------------------------------------------------- Generate Annotations -------------------------------------------------- */
+
+abstract class IncorrectGenerateUsage extends RootClass {
+    
+    @IncorrectUsage(GenerateAnnotationValidator.class)
+    static class NestedClass {}
+    
+}

@@ -18,10 +18,8 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
-import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
@@ -78,7 +76,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      */
     @Pure
     @SafeVarargs
-    public static <E> @Nonnull FiniteIterable<E> of(@Referenced @Unmodified @Captured E... elements) {
+    public static <E> @Nonnull FiniteIterable<E> of(@Referenced @Unmodified @Nonnull E... elements) {
         return () -> ReadOnlyArrayIterator.with(elements);
     }
     
@@ -92,7 +90,13 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
     
     @Pure
     @Override
-    public default @Nonnull FunctionalIterable<E> filterNulls() {
+    public default @Nonnull FiniteIterable<E> filterNot(@Nonnull Predicate<? super E> predicate) {
+        return filter(predicate.negate());
+    }
+    
+    @Pure
+    @Override
+    public default @Nonnull FiniteIterable<E> filterNulls() {
         return filter(element -> element != null);
     }
     
@@ -358,7 +362,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
     /**
      * Performs the given action for each element of this iterable and returns this iterable.
      */
-    @Impure
+    @Pure
     @Chainable
     public default FiniteIterable<E> doForEach(@NonCaptured @Modified @Nonnull Consumer<? super E> action) {
         for (E element : this) { action.consume(element); }

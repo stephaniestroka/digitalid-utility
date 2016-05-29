@@ -33,6 +33,7 @@ import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.getter.Derive;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.type.Immutable;
+import net.digitalid.utility.validation.processing.AnnotationHandlerUtility;
 
 /**
  * This type collects the relevant information about a type for generating a {@link SubclassGenerator subclass}, {@link BuilderGenerator builder} and {@link ConverterGenerator converter}.
@@ -198,7 +199,12 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     protected TypeInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
         super(typeElement, typeElement.asType(), containingType);
         
-        final @Unmodifiable @Nonnull FiniteIterable<@Nonnull MethodInformation> methodInformation = InformationFilter.getMethodInformation(typeElement, containingType);
+        // Make the usage checks of the type annotations:
+        AnnotationHandlerUtility.getTypeValidators(typeElement);
+        
+        // TODO: Enforce that every type has an @Immutable, @Stateless, @Utility and the like annotation?
+        
+        final @Nonnull FiniteIterable<@Nonnull MethodInformation> methodInformation = InformationFilter.getMethodInformation(typeElement, containingType);
         
         this.abstractGetters = methodInformation.filter((method) -> method.isGetter() && method.isAbstract()).toMap(MethodInformation::getFieldName);
     

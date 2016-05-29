@@ -6,6 +6,7 @@ import javax.lang.model.element.Element;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.processing.utility.TypeImporter;
+import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
 
 /**
@@ -14,6 +15,7 @@ import net.digitalid.utility.validation.contract.Contract;
  * @see MethodAnnotationValidator
  * @see ValueAnnotationValidator
  */
+@Stateless
 public interface ContractGenerator {
     
     /* -------------------------------------------------- Contract Generation -------------------------------------------------- */
@@ -24,6 +26,8 @@ public interface ContractGenerator {
      * The type importer can be used to import referenced types.
      */
     @Pure
-    public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter);
+    public default @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+        return Contract.with("true", "The universe got hacked if true is no longer true.");
+    }
     
 }

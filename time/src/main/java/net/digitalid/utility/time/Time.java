@@ -6,6 +6,8 @@ import java.util.Date;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.interfaces.LongNumerical;
@@ -298,7 +300,8 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
     /**
      * Appends the given value with the given unit to the given string if the value is not zero.
      */
-    private void append(@Nonnull StringBuilder string, long value, @Nonnull String unit) {
+    @Pure
+    private void append(@NonCaptured @Modified @Nonnull StringBuilder string, long value, @Nonnull String unit) {
         if (value != 0) {
             if (string.length() > 0) { string.append(", "); }
             string.append(value).append(" ").append(unit);

@@ -15,7 +15,9 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.meta.TypeValidator;
@@ -42,14 +44,14 @@ public @interface Stateless {
      * This class checks the use of the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends TypeAnnotationValidator {
+    public static class Validator implements TypeAnnotationValidator {
         
         @Pure
         @Override
-        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
+        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             for (@Nonnull VariableElement field : ProcessingUtility.getAllFields((TypeElement) element)) {
                 if (!field.getModifiers().contains(Modifier.STATIC)) {
-                    ProcessingLog.error("The stateless type $ may not have non-static fields.", SourcePosition.of(field), element);
+                    errorLogger.log("The stateless type $ may only have static fields.", SourcePosition.of(field), element);
                 }
             }
         }

@@ -99,10 +99,10 @@ public class RotatingFileLogger extends FileLogger {
     @Impure
     @Override
     @SuppressWarnings("deprecation")
-    protected synchronized void log(@Nonnull Level level, @Nonnull String caller, @Nonnull String message, @Nullable Throwable throwable) {
+    protected synchronized void log(@Nonnull Level level, @Nonnull String caller, @Nonnull String thread, @Nonnull String message, @Nullable Throwable throwable) {
         final Date date = new Date();
         if (date.getDate() != this.currentDate.getDate()) { rotate(); }
-        super.log(level, caller, message, throwable);
+        super.log(level, caller, thread, message, throwable);
     }
     
     /* -------------------------------------------------- Initialization -------------------------------------------------- */

@@ -7,9 +7,11 @@ import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.conversion.converter.CustomField;
 import net.digitalid.utility.conversion.converter.NodeConverter;
+import net.digitalid.utility.conversion.converter.ResultSet;
 import net.digitalid.utility.conversion.converter.ValueCollector;
 import net.digitalid.utility.immutable.ImmutableList;
 
+// TODO: implement
 /**
  *
  */
@@ -33,6 +35,10 @@ public class TupleConverter implements NodeConverter<Object> {
     @Override
     public void convert(@NonCaptured @Unmodified Object object, @NonCaptured @Modified ValueCollector valueCollector) {
         
+    }
+    
+    @Nonnull @Override public Object recover(@NonCaptured ResultSet resultSet) {
+        return null;
     }
     
 }

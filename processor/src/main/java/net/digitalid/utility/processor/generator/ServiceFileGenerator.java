@@ -69,7 +69,7 @@ public class ServiceFileGenerator extends FileGenerator {
     protected ServiceFileGenerator(@Nonnull Class<?> service) {
         this.service = service;
         this.serviceMirror = StaticProcessingEnvironment.getElementUtils().getTypeElement(service.getCanonicalName()).asType();
-        ProcessingLog.verbose("Created the service loader file for the service " + Quotes.inSingle(service.getName()));
+        ProcessingLog.verbose("Generating the service loader file for the service $.", service.getName());
     }
     
     /**

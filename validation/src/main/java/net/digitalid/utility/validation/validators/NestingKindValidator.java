@@ -9,7 +9,7 @@ import javax.lang.model.element.TypeElement;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.immutable.ImmutableSet;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -22,15 +22,15 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * @see net.digitalid.utility.validation.annotations.type.nesting
  */
 @Stateless
-public abstract class NestingKindValidator extends ValueAnnotationValidator {
+public abstract class NestingKindValidator implements ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.with(Class.class, TypeElement.class);
+    private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(Class.class, TypeElement.class);
     
     @Pure
     @Override
-    public @Nonnull ImmutableSet<@Nonnull Class<?>> getTargetTypes() {
+    public @Nonnull FiniteIterable<@Nonnull Class<?>> getTargetTypes() {
         return targetTypes;
     }
     
@@ -49,7 +49,7 @@ public abstract class NestingKindValidator extends ValueAnnotationValidator {
      */
     @Pure
     public static @Nonnull String getCondition(@Nonnull Element element, @Nonnull NestingKind kind, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-        if (ProcessingUtility.isAssignable(element, Class.class)) {
+        if (ProcessingUtility.isRawSubtype(element, Class.class)) {
             switch (kind) {
                 case ANONYMOUS: return "#.isAnonymousClass()";
                 case LOCAL: return "#.isLocalClass()";

@@ -8,7 +8,7 @@ import javax.lang.model.element.ElementKind;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.immutable.ImmutableSet;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -21,15 +21,15 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * @see net.digitalid.utility.validation.annotations.type.kind
  */
 @Stateless
-public abstract class ElementKindValidator extends ValueAnnotationValidator {
+public abstract class ElementKindValidator implements ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.with(Class.class, Element.class);
+    private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(Class.class, Element.class);
     
     @Pure
     @Override
-    public @Nonnull ImmutableSet<@Nonnull Class<?>> getTargetTypes() {
+    public @Nonnull FiniteIterable<@Nonnull Class<?>> getTargetTypes() {
         return targetTypes;
     }
     
@@ -48,10 +48,10 @@ public abstract class ElementKindValidator extends ValueAnnotationValidator {
      */
     @Pure
     public static @Nonnull String getCondition(@Nonnull Element element, @Nonnull ElementKind kind, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-        if (ProcessingUtility.isAssignable(element, Class.class)) {
+        if (ProcessingUtility.isRawSubtype(element, Class.class)) {
             switch (kind) {
-                case CLASS: return "!#.isInterface() && !#.isEnum() && !#.isAnnotation()";
-                case INTERFACE: return "#.isInterface()";
+                case CLASS: return "!#.isInterface() && !#.isEnum()";
+                case INTERFACE: return "#.isInterface() && !#.isAnnotation()";
                 case ENUM: return "#.isEnum()";
                 case ANNOTATION_TYPE: return "#.isAnnotation()";
                 default: return "false";

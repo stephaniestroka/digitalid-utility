@@ -94,6 +94,7 @@ public abstract class FreezableHashMap<K, V> extends HashMap<K, V> implements Fr
     
     @Impure
     @Override
+    @NonFrozenRecipient
     public @Chainable @Nonnull @Frozen ReadOnlyMap<K,V> freeze() {
         this.frozen = true;
         return this;

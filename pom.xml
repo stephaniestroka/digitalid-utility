@@ -49,6 +49,7 @@
         <module>exceptions</module>
         <module>contracts</module>
         <module>configuration</module>
+        <module>file</module>
         <module>logging</module>
         <module>testing</module>
         <module>processing</module>
@@ -63,7 +64,6 @@
         <module>directory</module>
         <module>conversion</module>
         <module>generator</module>
-        <module>testcases</module>
         <module>collections</module>
         <module>group</module>
         <module>math</module>
@@ -74,11 +74,13 @@
     </modules>
     
     <dependencies>
+        <!-- Activate this dependency as soon as needed:
         <dependency>
             <groupId>com.google.j2objc</groupId>
             <artifactId>j2objc-annotations</artifactId>
             <version>0.9.8</version>
         </dependency>
+        -->
         <!-- Add this dependency wherever you have testcases:
         <dependency>
             <groupId>net.digitalid.utility</groupId>

@@ -4,7 +4,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.contracts.exceptions.InvariantViolationException;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -41,7 +43,7 @@ public final class Validate extends Constraint {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Pure
-    public void orThrow(@Nullable String message, @Nullable Object... arguments) throws InvariantViolationException {
+    public void orThrow(@Nullable String message, @Captured @Nonnull @NullableElements Object... arguments) throws InvariantViolationException {
         if (isViolated()) { throw InvariantViolationException.with(message, arguments); }
     }
     

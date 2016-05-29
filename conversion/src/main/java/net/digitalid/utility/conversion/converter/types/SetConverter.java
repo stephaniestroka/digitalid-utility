@@ -10,9 +10,11 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.conversion.converter.CustomField;
 import net.digitalid.utility.conversion.converter.LeafConverter;
 import net.digitalid.utility.conversion.converter.NodeConverter;
+import net.digitalid.utility.conversion.converter.ResultSet;
 import net.digitalid.utility.conversion.converter.ValueCollector;
 import net.digitalid.utility.immutable.ImmutableList;
 
+// TODO: implement
 /**
  *
  */
@@ -26,6 +28,10 @@ public class SetConverter<T extends Collection<?>> implements NodeConverter<T> {
     @Override
     public void convert(@NonCaptured @Unmodified T object, @NonCaptured @Modified ValueCollector valueCollector) {
         
+    }
+    
+    @Nonnull @Override public T recover(@NonCaptured ResultSet resultSet) {
+        return null;
     }
     
     private @Nonnull LeafConverter<?> converter;

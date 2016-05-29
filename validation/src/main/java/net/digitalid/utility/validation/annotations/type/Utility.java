@@ -10,14 +10,16 @@ import java.lang.annotation.Target;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
-import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
 
@@ -42,14 +44,17 @@ public @interface Utility {
      * This class checks the use of the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends TypeAnnotationValidator {
+    public static class Validator implements TypeAnnotationValidator {
         
         @Pure
         @Override
-        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
-            for (@Nonnull Element member : StaticProcessingEnvironment.getElementUtils().getAllMembers((TypeElement) element)) {
-                if (ProcessingUtility.isDeclaredInDigitalIDLibrary(member) && !member.getModifiers().contains(Modifier.STATIC)) {
-                    ProcessingLog.error("The utility type $ may only have static fields and methods.", SourcePosition.of(member), element);
+        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
+            if (!element.getModifiers().contains(Modifier.ABSTRACT)) {
+                errorLogger.log("By convention, the utility type $ has to be abstract.", SourcePosition.of(element), element);
+            }
+            for (@Nonnull Element member : ProcessingUtility.getAllMembers((TypeElement) element)) {
+                if (ProcessingUtility.isDeclaredInDigitalIDLibrary(member) && member.getKind() != ElementKind.CONSTRUCTOR && !member.getModifiers().contains(Modifier.STATIC)) {
+                    errorLogger.log("The utility type $ may only have static fields and methods.", SourcePosition.of(member), element);
                 }
             }
         }

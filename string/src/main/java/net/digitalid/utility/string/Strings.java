@@ -15,6 +15,9 @@ import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.immutable.ImmutableMap;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
+import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.type.Utility;
@@ -31,7 +34,7 @@ public class Strings {
      * Formats the given message by replacing each given symbol with the corresponding argument surrounded by the given quotes.
      */
     @Pure
-    public static @Nonnull String format(@Nonnull CharSequence message, char symbol, @Nullable Quotes quotes, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static @Nonnull String format(@Nonnull CharSequence message, char symbol, @Nullable Quotes quotes, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         final @Nonnull StringBuilder string = new StringBuilder(message);
         int stringIndex = 0;
         int argumentIndex = 0;
@@ -63,7 +66,7 @@ public class Strings {
      * Formats the given message by replacing each dollar sign with the corresponding argument surrounded by the given quotes.
      */
     @Pure
-    public static @Nonnull String format(@Nonnull CharSequence message, @Nullable Quotes quotes, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static @Nonnull String format(@Nonnull CharSequence message, @Nullable Quotes quotes, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         return format(message, '$', quotes, arguments);
     }
     
@@ -71,18 +74,18 @@ public class Strings {
      * Formats the given message by replacing each dollar sign with the corresponding argument in single quotes.
      */
     @Pure
-    public static @Nonnull String format(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static @Nonnull String format(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         return format(message, '$', Quotes.SINGLE, arguments);
     }
     
     /* -------------------------------------------------- String Case -------------------------------------------------- */
     
     /**
-     * Returns the given string with the first letter of each word in uppercase.
+     * Returns the given string with the first letter of each word in uppercase or propagates null.
      */
     @Pure
-    public static @Nonnull String capitalizeFirstLetters(@Nonnull String string) {
-        if (string.isEmpty()) {
+    public static String capitalizeFirstLetters(String string) {
+        if (string == null || string.isEmpty()) {
             return string;
         } else {
             final @Nonnull StringBuilder result = new StringBuilder(string);
@@ -96,10 +99,11 @@ public class Strings {
     }
     
     /**
-     * Returns the given string in camel case in lower case with spaces.
+     * Returns the given string in camel case in lower case with spaces or propagates null.
      */
     @Pure
-    public static @Nonnull String decamelize(@Nonnull String string) {
+    public static String decamelize(String string) {
+        if (string == null) { return null; }
         final @Nonnull StringBuilder result = new StringBuilder(string);
         for (int index = 0; index < result.length(); index++) {
             if (Character.isUpperCase(result.charAt(index))) {
@@ -111,19 +115,19 @@ public class Strings {
     }
     
     /**
-     * Returns the given string with the first character in lower case.
+     * Returns the given string with the first character in lower case or propagates null.
      */
     @Pure
-    public static @Nonnull String lowercaseFirstCharacter(@Nonnull String string) {
-        return string.isEmpty() ? "" : string.substring(0, 1).toLowerCase() + string.substring(1);
+    public static String lowercaseFirstCharacter(String string) {
+        return string == null || string.isEmpty() ? string : string.substring(0, 1).toLowerCase() + string.substring(1);
     }
     
     /**
-     * Returns the given string with the first character in upper case.
+     * Returns the given string with the first character in upper case or propagates null.
      */
     @Pure
-    public static @Nonnull String uppercaseFirstCharacter(@Nonnull String string) {
-        return string.isEmpty() ? "" : string.substring(0, 1).toUpperCase() + string.substring(1);
+    public static String uppercaseFirstCharacter(String string) {
+        return string == null || string.isEmpty() ? string : string.substring(0, 1).toUpperCase() + string.substring(1);
     }
     
     /* -------------------------------------------------- Substrings -------------------------------------------------- */
@@ -145,13 +149,40 @@ public class Strings {
         return index >= 0 ? string.substring(0, index) : string;
     }
     
+    /* -------------------------------------------------- Repetitions -------------------------------------------------- */
+    
+    /**
+     * Returns the given string repeated the given number of times or propagates null.
+     */
+    @Pure
+    public static String repeat(String string, @NonNegative int count) {
+        if (string == null) { return null; }
+        final @Nonnull StringBuilder result = new StringBuilder(count * string.length());
+        for (int i = 0; i < count; i++) {
+            result.append(string);
+        }
+        return result.toString();
+    }
+    
+    /**
+     * Returns the given character repeated the given number of times.
+     */
+    @Pure
+    public static @Nonnull String repeat(char character, @NonNegative int count) {
+        final @Nonnull char[] result = new char[count];
+        for (int i = 0; i < count; i++) {
+            result[i] = character;
+        }
+        return new String(result);
+    }
+    
     /* -------------------------------------------------- Prefixes -------------------------------------------------- */
     
     /**
      * Returns the longest common prefix of the given strings.
      */
     @Pure
-    public static @Nonnull String longestCommonPrefix(@NonCaptured @Unmodified @Nonnull String... strings) {
+    public static @Nonnull String longestCommonPrefix(@NonCaptured @Unmodified @Nonnull @NonNullableElements String... strings) {
         if (strings.length == 0) { return ""; }
         @Nonnull String prefix = strings[0];
         string: for (int s = 1; s < strings.length; s++) {
@@ -172,7 +203,7 @@ public class Strings {
      * Returns whether the given word starts with any of the given prefixes.
      */
     @Pure
-    public static boolean startsWithAny(@Nonnull String word, @NonCaptured @Unmodified @Nonnull String... prefixes) {
+    public static boolean startsWithAny(@Nonnull String word, @NonCaptured @Unmodified @Nonnull @NonNullableElements String... prefixes) {
         for (@Nonnull String prefix : prefixes) {
             if (word.startsWith(prefix)) { return true; }
         }
@@ -194,8 +225,9 @@ public class Strings {
      * Returns a string representation of the given object.
      */
     @Pure
-    public static @Nonnull String toString(@NonCaptured @Unmodified @Nonnull Object object) {
-        return object.getClass().getSimpleName() + FiniteIterable.of(object.getClass().getDeclaredFields()).map(field -> field.getName() + ": " + Quotes.inCode(getFieldValueOrErrorMessage(field, object))).join(Brackets.ROUND);
+    public static @Nonnull String toString(@NonCaptured @Unmodified @Nullable Object object) {
+        if (object == null) { return "null"; }
+        else { return object.getClass().getSimpleName() + FiniteIterable.of(object.getClass().getDeclaredFields()).map(field -> field.getName() + ": " + Quotes.inCode(getFieldValueOrErrorMessage(field, object))).join(Brackets.ROUND); }
     }
     
     /* -------------------------------------------------- Cardinal Numbers -------------------------------------------------- */
@@ -247,11 +279,11 @@ public class Strings {
     private static final @Nonnull ImmutableMap<@Nonnull String, @Nonnull String> rules = ImmutableMap.with("a", "ae").with("an", "en").with("ch", "ches").with("ex", "ices").with("f", "ves").with("fe", "ves").with("is", "es").with("ix", "ices").with("s", "ses").with("sh", "shes").with("um", "a").with("x", "xes").with("y", "ies").build();
     
     /**
-     * Forms the plural of the given word in singular based on simple heuristics.
+     * Forms the plural of the given word in singular based on simple heuristics or propagates null.
      */
     @Pure
-    public static @Nonnull String pluralize(@Nonnull String word) {
-        if (word.isEmpty()) {
+    public static String pluralize(String word) {
+        if (word == null || word.isEmpty()) {
             return word;
         } else {
             if (word.contains("oo") && !word.equals("book")) { return word.replace("oo", "ee"); }
@@ -268,18 +300,18 @@ public class Strings {
      * Prepends the given word in singular with the given number (written-out if smaller than 13) and forms the plural if the number is not one.
      */
     @Pure
-    public static @Nonnull String prependWithNumberAndPluralize(int number, @Nonnull String word) {
+    public static @Nonnull String prependWithNumberAndPluralize(int number, @Nonnull @NonEmpty String word) {
         return getCardinal(number) + " " + (number == 1 ? word : pluralize(word));
     }
     
     /* -------------------------------------------------- Indefinite Article -------------------------------------------------- */
     
     /**
-     * Prepends the given word with the appropriate indefinite article in upper or lower case based on a simple heuristic.
+     * Prepends the given word with the appropriate indefinite article in upper or lower case based on a simple heuristic or propagates null.
      */
     @Pure
-    public static @Nonnull String prependWithIndefiniteArticle(@Nonnull String word, boolean uppercase) {
-        if (word.isEmpty()) {
+    public static @Nonnull String prependWithIndefiniteArticle(String word, boolean uppercase) {
+        if (word == null || word.isEmpty()) {
             return word;
         } else {
             final @Nonnull String a = (uppercase ? "A" : "a") + " " + word, an = (uppercase ? "An" : "an") + " " + word;
@@ -297,10 +329,10 @@ public class Strings {
     }
     
     /**
-     * Prepends the given word with the appropriate indefinite article written all lowercase.
+     * Prepends the given word with the appropriate indefinite article written all lowercase or propagates null.
      */
     @Pure
-    public static @Nonnull String prependWithIndefiniteArticle(@Nonnull String word) {
+    public static String prependWithIndefiniteArticle(String word) {
         return Strings.prependWithIndefiniteArticle(word, false);
     }
     

@@ -63,9 +63,9 @@ public abstract class PrintStreamLogger extends Logger {
     
     @Impure
     @Override
-    protected synchronized void log(@Nonnull Level level, @Nonnull String caller, @Nonnull String message, @Nullable Throwable throwable) {
+    protected synchronized void log(@Nonnull Level level, @Nonnull String caller, @Nonnull String thread, @Nonnull String message, @Nullable Throwable throwable) {
         final @Nonnull String version = Version.string.get();
-        printStream.println(timeFormat.get().format(new Date()) + (version.isEmpty() ? "" : " in " + version) + " [" + Thread.currentThread().getName() + "] (" + level + ") <" + caller + ">: " + message);
+        printStream.println(timeFormat.get().format(new Date()) + (version.isEmpty() ? "" : " in " + version) + " [" + thread + "] (" + level + ") <" + caller + ">: " + message);
         if (throwable != null) {
             printStream.println();
             throwable.printStackTrace(printStream);

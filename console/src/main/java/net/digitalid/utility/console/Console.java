@@ -25,7 +25,7 @@ import net.digitalid.utility.validation.annotations.type.Utility;
  */
 @Utility
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
-public final class Console {
+public abstract class Console {
     
     /* -------------------------------------------------- Writing -------------------------------------------------- */
     

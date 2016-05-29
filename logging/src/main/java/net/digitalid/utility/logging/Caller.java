@@ -27,9 +27,7 @@ public class Caller {
     @Pure
     public static @Nonnull String get(int index) {
         final @Nonnull StackTraceElement element = Thread.currentThread().getStackTrace()[index];
-        final @Nonnull String className = element.getClassName();
-        final int lineNumber = element.getLineNumber();
-        return className.substring(className.lastIndexOf('.') + 1) + "." + element.getMethodName() + (lineNumber > 0 ? ":" + lineNumber : "");
+        return element.getClassName() + "." + element.getMethodName() + ":" + element.getLineNumber();
     }
     
     /**

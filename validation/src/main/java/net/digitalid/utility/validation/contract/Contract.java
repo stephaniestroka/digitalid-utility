@@ -1,9 +1,5 @@
 package net.digitalid.utility.validation.contract;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
@@ -11,10 +7,12 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.state.Unmodifiable;
+import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.contracts.exceptions.ContractViolationException;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.validator.ContractGenerator;
@@ -54,29 +52,29 @@ public class Contract {
     
     /* -------------------------------------------------- Arguments -------------------------------------------------- */
     
-    private final @Unmodifiable @Nonnull List<@Nonnull String> arguments;
+    private final @Nonnull FiniteIterable<@Nonnull String> arguments;
     
     /**
      * Returns the arguments with which the {@link #getMessage() message} is {@link Strings#format(java.lang.CharSequence, java.lang.Object...) formatted}.
      */
     @Pure
-    public @Unmodifiable @Nonnull List<@Nonnull String> getArguments() {
+    public @Nonnull FiniteIterable<@Nonnull String> getArguments() {
         return arguments;
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected Contract(@Nonnull @JavaExpression String condition, @Nonnull String message, @Nonnull String... arguments) {
+    protected Contract(@Nonnull @JavaExpression String condition, @Nonnull String message, @Captured @Nonnull @NonNullableElements String... arguments) {
         this.condition = condition;
         this.message = message;
-        this.arguments = Collections.unmodifiableList(Arrays.asList(arguments));
+        this.arguments = FiniteIterable.of(arguments);
     }
     
     /**
      * Returns an object that wraps the given {@link #getCondition() condition}, {@link #getMessage() message} and {@link #getArguments() arguments}.
      */
     @Pure
-    public static @Nonnull Contract with(@Nonnull @JavaExpression String condition, @Nonnull String message, @Nonnull String... arguments) {
+    public static @Nonnull Contract with(@Nonnull @JavaExpression String condition, @Nonnull String message, @Captured @Nonnull @NonNullableElements String... arguments) {
         return new Contract(condition, message, arguments);
     }
     

@@ -16,17 +16,22 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.ImmutableMap;
 import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
+import net.digitalid.utility.logging.filter.LevelBasedLoggingFilter;
+import net.digitalid.utility.logging.filter.LoggingFilter;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
  * This class makes it easier to log messages during annotation processing.
+ * If you need to call {@link #log(net.digitalid.utility.logging.Level, java.lang.CharSequence, net.digitalid.utility.processing.logging.SourcePosition, java.lang.Object...)}
+ * directly in order to have a correct {@link Caller#index}, you can extend this class.
  */
 @Utility
-public class ProcessingLog {
+public abstract class ProcessingLog {
     
     /* -------------------------------------------------- Setup -------------------------------------------------- */
     
@@ -38,7 +43,7 @@ public class ProcessingLog {
         Require.that(name != null).orThrow("The name may not be null.");
         
         Logger.logger.set(FileLogger.with("target/processor-logs/" + name + ".log"));
-        Level.threshold.set(Level.INFORMATION);
+        LoggingFilter.filter.set(LevelBasedLoggingFilter.with(Level.INFORMATION)); // TODO: Chose a configuration-based filter instead.
         Caller.index.set(6);
     }
     
@@ -56,7 +61,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    private static void log(@Nonnull Level level, @Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    protected static void log(@Nonnull Level level, @Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         Require.that(level != null).orThrow("The level may not be null.");
         Require.that(message != null).orThrow("The message may not be null.");
         
@@ -81,7 +86,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void error(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void error(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         log(Level.ERROR, message, position, arguments);
     }
     
@@ -90,7 +95,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void error(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void error(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         log(Level.ERROR, message, null, arguments);
     }
     
@@ -101,7 +106,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void warning(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void warning(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         log(Level.WARNING, message, position, arguments);
     }
     
@@ -110,7 +115,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void warning(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void warning(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         log(Level.WARNING, message, null, arguments);
     }
     
@@ -121,7 +126,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void information(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void information(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         log(Level.INFORMATION, message, position, arguments);
     }
     
@@ -130,7 +135,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void information(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void information(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         log(Level.INFORMATION, message, null, arguments);
     }
     
@@ -141,7 +146,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void debugging(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void debugging(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         log(Level.DEBUGGING, message, position, arguments);
     }
     
@@ -150,7 +155,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void debugging(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void debugging(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         log(Level.DEBUGGING, message, null, arguments);
     }
     
@@ -161,7 +166,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void verbose(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void verbose(@Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         log(Level.VERBOSE, message, position, arguments);
     }
     
@@ -170,7 +175,7 @@ public class ProcessingLog {
      * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void verbose(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nullable Object... arguments) {
+    public static void verbose(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         log(Level.VERBOSE, message, null, arguments);
     }
     

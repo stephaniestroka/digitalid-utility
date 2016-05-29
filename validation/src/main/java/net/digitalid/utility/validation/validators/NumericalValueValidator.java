@@ -9,7 +9,7 @@ import javax.lang.model.element.Element;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.immutable.ImmutableSet;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.interfaces.BigIntegerNumerical;
 import net.digitalid.utility.interfaces.LongNumerical;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
@@ -26,15 +26,15 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * @see ValueRelativeNumericalValueValidator
  */
 @Stateless
-public abstract class NumericalValueValidator extends ValueAnnotationValidator {
+public abstract class NumericalValueValidator implements ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableSet<@Nonnull Class<?>> targetTypes = ImmutableSet.with(byte.class, short.class, int.class, long.class, float.class, double.class, BigInteger.class, LongNumerical.class, BigIntegerNumerical.class);
+    private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(byte.class, short.class, int.class, long.class, float.class, double.class, BigInteger.class, LongNumerical.class, BigIntegerNumerical.class);
     
     @Pure
     @Override
-    public @Nonnull ImmutableSet<@Nonnull Class<?>> getTargetTypes() {
+    public @Nonnull FiniteIterable<@Nonnull Class<?>> getTargetTypes() {
         return targetTypes;
     }
     
@@ -51,11 +51,11 @@ public abstract class NumericalValueValidator extends ValueAnnotationValidator {
     @Pure
     @Override
     public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-        if (ProcessingUtility.isAssignable(element, BigIntegerNumerical.class)) {
+        if (ProcessingUtility.isRawSubtype(element, BigIntegerNumerical.class)) {
             return Contract.with("# == null || #.getValue().compareTo(" + typeImporter.importIfPossible(BigInteger.class) + ".ZERO) " + getComparisonOperator() + " 0", "The # has to be null or " + getDecamelizedAnnotationName().replace(" ", "-") + " but was $.", element);
-        } else if (ProcessingUtility.isAssignable(element, BigInteger.class)) {
+        } else if (ProcessingUtility.isRawSubtype(element, BigInteger.class)) {
             return Contract.with("# == null || #.compareTo(" + typeImporter.importIfPossible(BigInteger.class) + ".ZERO) " + getComparisonOperator() + " 0", "The # has to be null or " + getDecamelizedAnnotationName().replace(" ", "-") + " but was $.", element);
-        } else if (ProcessingUtility.isAssignable(element, LongNumerical.class)) {
+        } else if (ProcessingUtility.isRawSubtype(element, LongNumerical.class)) {
             return Contract.with("# == null || #.getValue() " + getComparisonOperator() + " 0", "The # has to be " + getDecamelizedAnnotationName().replace(" ", "-") + " but was $.", element);
         } else {
             return Contract.with("# " + getComparisonOperator() + " 0", "The # has to be " + getDecamelizedAnnotationName().replace(" ", "-") + " but was $.", element);

@@ -15,7 +15,9 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.meta.TypeValidator;
@@ -37,26 +39,27 @@ public @interface Functional {
      * This class checks the use of the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends TypeAnnotationValidator {
+    public static class Validator implements TypeAnnotationValidator {
         
         @Pure
         @Override
-        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror) {
+        public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             if (element.getKind() != ElementKind.INTERFACE) {
-                ProcessingLog.error("Only an interface can be functional.", SourcePosition.of(element));
-            }
-            boolean found = false;
-            for (@Nonnull ExecutableElement method : ProcessingUtility.getAllMethods((TypeElement) element)) {
-                if (method.getModifiers().contains(Modifier.ABSTRACT)) {
-                    if (found) {
-                        ProcessingLog.error("The functional interface $ may have only one abstract method.", SourcePosition.of(method), element);
-                    } else {
-                        found = true;
+                errorLogger.log("Only an interface can be functional.", SourcePosition.of(element, annotationMirror));
+            } else {
+                boolean found = false;
+                for (@Nonnull ExecutableElement method : ProcessingUtility.getAllMethods((TypeElement) element)) {
+                    if (method.getModifiers().contains(Modifier.ABSTRACT)) {
+                        if (found) {
+                            errorLogger.log("The functional interface $ may have only one abstract method.", SourcePosition.of(method), element);
+                        } else {
+                            found = true;
+                        }
                     }
                 }
-            }
-            if (!found) {
-                ProcessingLog.error("The functional interface $ must have an abstract method.", SourcePosition.of(element), element);
+                if (!found) {
+                    errorLogger.log("The functional interface $ has to have an abstract method.", SourcePosition.of(element), element);
+                }
             }
         }
         

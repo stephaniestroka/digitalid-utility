@@ -49,10 +49,12 @@ public enum CustomType {
     
     BINARY(typeMirror -> (typeMirror.toString().equals(byte[].class.getCanonicalName()) || typeMirror.toString().equals(Byte[].class.getCanonicalName())) && (typeMirror.getAnnotation(MaxSize.class) == null || typeMirror.getAnnotation(MaxSize.class).value() > 256), BinaryConverter.class.getName()),
     
-    // TODO: Consider ReadOnlyList and co.
-    LIST(typeMirror -> ProcessingUtility.isAssignable(typeMirror, List.class) || ProcessingUtility.isAssignable(typeMirror, Set.class), ListConverter.class.getName()),
+    SET(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, Set.class), SetConverter.class.getName()),
     
-    TUPLE(typeMirror -> ProcessingUtility.isAssignable(typeMirror, Tuple.class), TupleConverter.class.getName());
+    // TODO: Consider ReadOnlyList and co.
+    LIST(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, List.class), ListConverter.class.getName()),
+    
+    TUPLE(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, Tuple.class), TupleConverter.class.getName());
     
     private final @Nonnull Predicate<TypeMirror> predicate;
     

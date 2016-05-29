@@ -62,7 +62,7 @@ public class ImmutableList<E> extends ArrayList<E> implements CollectionIterable
      */
     @Pure
     @SafeVarargs
-    public static <E> ImmutableList<E> with(@Captured E... elements) {
+    public static <E> ImmutableList<E> with(@NonCaptured @Unmodified E... elements) {
         return elements == null ? null : new ImmutableList<>(Arrays.asList(elements));
     }
     
