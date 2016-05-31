@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,6 +47,13 @@ public abstract class PrintStreamLogger extends Logger {
         Require.that(printStream != null).orThrow("The print stream may not be null.");
         
         this.printStream = printStream;
+        
+        final @Nonnull Properties properties = System.getProperties();
+        printStream.println();
+        printStream.println(properties.getProperty("java.runtime.name") + " " + properties.getProperty("java.runtime.version"));
+        printStream.println(properties.getProperty("java.vm.name") + " " + properties.getProperty("java.vm.version"));
+        printStream.println(properties.getProperty("os.name") + " " + properties.getProperty("os.version") + " on " + properties.getProperty("os.arch"));
+        printStream.println();
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
@@ -54,9 +62,7 @@ public abstract class PrintStreamLogger extends Logger {
      * Creates a print stream logger that logs the messages to the given print stream.
      */
     protected PrintStreamLogger(@Captured @Nonnull PrintStream printStream) {
-        Require.that(printStream != null).orThrow("The print stream may not be null.");
-        
-        this.printStream = printStream;
+        setPrintStream(printStream);
     }
     
     /* -------------------------------------------------- Logging -------------------------------------------------- */

@@ -39,7 +39,7 @@ public abstract class ProcessingLog {
      * Sets the output file of the logger to the given name.
      */
     @Impure
-    public static void setUp(@Nonnull String name) {
+    public static void initialize(@Nonnull String name) {
         Require.that(name != null).orThrow("The name may not be null.");
         
         Logger.logger.set(FileLogger.with("target/processor-logs/" + name + ".log"));

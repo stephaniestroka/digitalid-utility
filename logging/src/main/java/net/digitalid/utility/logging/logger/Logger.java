@@ -87,7 +87,7 @@ public abstract class Logger {
             final @Nonnull String originalMessage = message.toString();
             final boolean addNoPeriod = originalMessage.endsWith(".") || originalMessage.endsWith(":") || originalMessage.endsWith("\n");
             final @Nonnull String formattedMessage = Strings.format(originalMessage, arguments) + (addNoPeriod ? "" : ".");
-            if (filter.isLogged(level, caller, thread, thread, throwable)) { logger.get().log(level, caller, thread, formattedMessage, throwable); }
+            if (filter.isLogged(level, caller, thread, formattedMessage, throwable)) { logger.get().log(level, caller, thread, formattedMessage, throwable); }
         }
     }
     

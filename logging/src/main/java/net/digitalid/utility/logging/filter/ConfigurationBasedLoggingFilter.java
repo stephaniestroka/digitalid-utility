@@ -9,7 +9,6 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
-import net.digitalid.utility.file.Files;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
@@ -37,7 +36,8 @@ public class ConfigurationBasedLoggingFilter extends RuleBasedLoggingFilter {
      */
     @Impure
     public void reload() {
-        setRules(Files.getNonEmptyTrimmedLines(file).map(LoggingRule::parse));
+        // TODO
+//        setRules(Files.getNonCommentNonEmptyTrimmedLines(file).map(LoggingRule::parse));
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */

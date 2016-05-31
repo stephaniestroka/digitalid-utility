@@ -3,10 +3,10 @@ package net.digitalid.utility.functional.interfaces;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.functional.failable.FailableConsumer;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -15,15 +15,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  */
 @Mutable
 @Functional
-public interface Consumer<T> {
-    
-    /* -------------------------------------------------- Consumption -------------------------------------------------- */
-    
-    /**
-     * Consumes the given object.
-     */
-    @Impure
-    public void consume(@Captured T object);
+public interface Consumer<T> extends FailableConsumer<T, RuntimeException> {
     
     /* -------------------------------------------------- Composition -------------------------------------------------- */
     
@@ -53,13 +45,29 @@ public interface Consumer<T> {
     
     /* -------------------------------------------------- Conversion -------------------------------------------------- */
     
-    /**
-     * Returns this consumer as a unary function that always returns null.
-     * This method may only be called if this consumer is side-effect-free.
-     */
     @Pure
+    @Override
     public default @Nonnull UnaryFunction<T, @Nullable Void> asFunction() {
         return object -> { consume(object); return null; };
     }
+    
+    /* -------------------------------------------------- Synchronization -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public default @Nonnull Consumer<T> synchronize() {
+        return object -> {
+            synchronized (this) {
+                consume(object);
+            }
+        };
+    }
+    
+    /* -------------------------------------------------- Constants -------------------------------------------------- */
+    
+    /**
+     * Stores a consumer that does nothing.
+     */
+    public static final @Nonnull Consumer<@Nullable Object> DO_NOTHING = object -> {};
     
 }

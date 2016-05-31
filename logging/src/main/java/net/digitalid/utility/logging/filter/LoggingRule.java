@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.logging.Level;
+import net.digitalid.utility.logging.exceptions.InvalidConfigurationException;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -82,7 +83,7 @@ public class LoggingRule {
      * Parses the given line and returns the corresponding rule.
      */
     @Pure
-    public static @Nonnull LoggingRule parse(@Nonnull String line) /* throws InvalidConfigurationException */ {
+    public static @Nonnull LoggingRule parse(@Nonnull String line) throws InvalidConfigurationException {
         // TODO:
         return new LoggingRule(Level.INFORMATION, null, null, null);
     }

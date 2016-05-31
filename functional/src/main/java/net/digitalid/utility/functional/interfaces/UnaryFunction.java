@@ -1,10 +1,13 @@
 package net.digitalid.utility.functional.interfaces;
 
+import java.util.Map;
+
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.ownership.NonCaptured;
-import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.functional.failable.FailableUnaryFunction;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -13,16 +16,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  */
 @Immutable
 @Functional
-public interface UnaryFunction<I, O> {
-    
-    /* -------------------------------------------------- Evaluation -------------------------------------------------- */
-    
-    /**
-     * Evaluates this function for the given object.
-     * All implementations of this method have to be side-effect-free.
-     */
-    @Pure
-    public O evaluate(@NonCaptured @Unmodified I object);
+public interface UnaryFunction<I, O> extends FailableUnaryFunction<I, O, RuntimeException> {
     
     /* -------------------------------------------------- Composition -------------------------------------------------- */
     
@@ -44,20 +38,50 @@ public interface UnaryFunction<I, O> {
     
     /* -------------------------------------------------- Null Handling -------------------------------------------------- */
     
+    @Pure
+    @Override
+    public default @Nonnull UnaryFunction<@Nullable I, O> replaceNull(@Captured O defaultValue) {
+        return object -> object != null ? evaluate(object) : defaultValue;
+    }
+    
+    @Pure
+    @Override
+    public default @Nonnull UnaryFunction<@Nullable I, @Nullable O> propagateNull() {
+        return replaceNull(null);
+    }
+    
+    /* -------------------------------------------------- Mappings -------------------------------------------------- */
+    
     /**
-     * Returns a new function based on this function that propagates null instead of evaluating it.
+     * Returns a function that looks up the result in the given map or returns the given default value if the input is not found in the map.
      */
     @Pure
-    public default @Nonnull UnaryFunction<I, O> propagateNull() {
-        return object -> object != null ? evaluate(object) : null;
+    public static <K, V> @Nonnull UnaryFunction<K, V> with(@Nonnull Map<? super K, ? extends V> map, V defaultValue) {
+        return key -> {
+            if (map.containsKey(key)) {
+                return map.get(key);
+            } else {
+                return defaultValue;
+            }
+        };
     }
     
     /**
-     * Returns a new function based on this function that returns the given default value for null.
+     * Returns a function that looks up the result in the given map or returns null if the input is not found in the map.
      */
     @Pure
-    public default @Nonnull UnaryFunction<I, O> replaceNull(@Nonnull O defaultValue) {
-        return object -> object != null ? evaluate(object) : defaultValue;
+    public static <K, V> @Nonnull UnaryFunction<K, @Nullable V> with(@Nonnull Map<? super K, ? extends V> map) {
+        return with(map, null);
+    }
+    
+    /* -------------------------------------------------- Constant -------------------------------------------------- */
+    
+    /**
+     * Returns a function that always returns the given object.
+     */
+    @Pure
+    public static <O> @Nonnull UnaryFunction<@Nullable Object, O> constant(@Captured O object) {
+        return input -> object;
     }
     
 }

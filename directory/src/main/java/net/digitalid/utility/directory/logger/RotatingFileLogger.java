@@ -18,7 +18,6 @@ import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
-import net.digitalid.utility.logging.logger.PrintStreamLogger;
 import net.digitalid.utility.logging.logger.StandardOutputLogger;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -103,7 +102,7 @@ public class RotatingFileLogger extends FileLogger {
     protected synchronized void log(@Nonnull Level level, @Nonnull String caller, @Nonnull String thread, @Nonnull String message, @Nullable Throwable throwable) {
         final Date date = new Date();
         if (date.getDate() != this.currentDate.getDate()) { rotate(); }
-        PrintStreamLogger.super.log(level, caller, thread, message, throwable);
+        super.log(level, caller, thread, message, throwable);
     }
     
     /* -------------------------------------------------- Initialization -------------------------------------------------- */

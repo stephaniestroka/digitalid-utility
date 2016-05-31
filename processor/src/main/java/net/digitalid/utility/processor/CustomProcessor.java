@@ -118,7 +118,7 @@ public abstract class CustomProcessor implements Processor {
     @Impure
     @Override
     public final boolean process(@NonCaptured @Unmodified @Nonnull Set<@Nonnull ? extends TypeElement> typeElements, @Nonnull RoundEnvironment roundEnvironment) {
-        ProcessingLog.setUp(getClass().getSimpleName());
+        ProcessingLog.initialize(getClass().getSimpleName());
         
         if (round == 0) {
             final @Nonnull String projectName = getProjectName(roundEnvironment);
