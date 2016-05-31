@@ -8,6 +8,8 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.functional.interfaces.Consumer;
+import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.size.Size;
 
@@ -131,13 +133,13 @@ public interface ValueCollector {
      */
     public void setBinaryStream(@Nonnull InputStream stream, int length);
     
-    public <T> void setArray(@Nonnull T[] value, Class<T> componentType);
+    public <T> void setArray(@Nonnull T[] value, Consumer<T> entityCollector);
     
-    public <T> void setList(@Nonnull List<T> value, Class<T> genericType);
+    public <T> void setList(@Nonnull List<T> value, Consumer<T> entityCollector);
     
-    public <T> void setSet(@Nonnull Set<T> value, Class<T> genericType);
+    public <T> void setSet(@Nonnull Set<T> value, Consumer<T> entityCollector);
     
-    public <K, V> void setMap(@Nonnull Map<K, V> value, Class<K> genericTypeKey, Class<V> genericTypeValue);
+    public <K, V> void setMap(@Nonnull Map<K, V> value, Consumer<K> genericTypeKey, Consumer<V> genericTypeValue);
     
     /* -------------------------------------------------- Null -------------------------------------------------- */
     

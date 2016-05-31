@@ -1,8 +1,10 @@
 package net.digitalid.utility.generator.archive;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
@@ -26,6 +28,9 @@ public abstract class ComplexClass extends RootClass {
     
     @Pure
     public abstract @Nonnull List<Integer> getListOfIntegers();
+    
+    @Pure
+    public abstract @Nullable Set<SimpleClass> getSetOfSimpleClass();
     
     @Pure
     public abstract @Nonnull String[] getArrayOfStrings();

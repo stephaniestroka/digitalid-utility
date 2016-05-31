@@ -7,9 +7,11 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
@@ -19,6 +21,7 @@ import net.digitalid.utility.conversion.converter.ResultSet;
 import net.digitalid.utility.conversion.converter.ValueCollector;
 import net.digitalid.utility.conversion.converter.types.CustomType;
 import net.digitalid.utility.conversion.converter.types.ListConverter;
+import net.digitalid.utility.conversion.converter.types.SetConverter;
 import net.digitalid.utility.conversion.converter.types.TupleConverter;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.fixes.Brackets;
@@ -49,6 +52,45 @@ public class ConverterGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Value Collector -------------------------------------------------- */
     
+    /**
+     * Returns a generated statement that adds the field value to the value collector.
+     */
+    private @Nonnull String generateValueCollectorCall(@Nonnull String fieldAccess, @Nonnull TypeMirror fieldType, boolean isArray) {
+        if (isArray) {
+            TypeMirror componentType = ((Type.ArrayType) fieldType).getComponentType();
+            if (componentType instanceof Type.AnnotatedType) {
+                componentType = ((Type.AnnotatedType) componentType).unannotatedType();
+            }
+            return "valueCollector.setArray(" + fieldAccess + ", (entry) -> " + generateValueCollectorCall("entry", componentType, componentType.getKind() == TypeKind.ARRAY) + ")";
+        } else if (ProcessingUtility.isRawlyAssignable(fieldType, List.class)) {
+            DeclaredType declaredType = (DeclaredType) fieldType;
+            return "valueCollector.setList(" + fieldAccess + ", (entry) -> " + generateValueCollectorCall("entry", declaredType.getTypeArguments().get(0), declaredType.getTypeArguments().get(0).getKind() == TypeKind.ARRAY) + ")";
+        } else if (ProcessingUtility.isRawlyAssignable(fieldType, Set.class)) {
+            DeclaredType declaredType = (DeclaredType) fieldType;
+            return "valueCollector.setSet(" + fieldAccess + ", (entry) -> " + generateValueCollectorCall("entry", declaredType.getTypeArguments().get(0), declaredType.getTypeArguments().get(0).getKind() == TypeKind.ARRAY) + ")";
+        } else if (ProcessingUtility.isRawlyAssignable(fieldType, Map.class)) {
+            DeclaredType declaredType = (DeclaredType) fieldType;
+            return "valueCollector.setMap(" + fieldAccess + ", (entry) -> " + generateValueCollectorCall("entry", declaredType.getTypeArguments().get(0), declaredType.getTypeArguments().get(0).getKind() == TypeKind.ARRAY) + ")";
+        } else if (fieldType.toString().equals(byte.class.getCanonicalName()) || fieldType.toString().equals(Byte.class.getCanonicalName())) {
+            return "valueCollector.setInteger08(" + fieldAccess + ")";
+        } else if (fieldType.toString().equals(short.class.getCanonicalName()) || fieldType.toString().equals(Short.class.getCanonicalName())) {
+            return "valueCollector.setInteger16(" + fieldAccess + ")";
+        } else if (fieldType.toString().equals(int.class.getCanonicalName()) || fieldType.toString().equals(Integer.class.getCanonicalName())) {
+            return "valueCollector.setInteger32(" + fieldAccess + ")";
+        } else if (fieldType.toString().equals(long.class.getCanonicalName()) || fieldType.toString().equals(Long.class.getCanonicalName())) {
+            return "valueCollector.setInteger64(" + fieldAccess + ")";
+        } else if (fieldType.toString().equals(BigInteger.class.getCanonicalName())) {
+            return "valueCollector.setInteger(" + fieldAccess + ")";
+        } else if (fieldType.toString().equals(char.class.getCanonicalName()) || fieldType.toString().equals(Character.class.getCanonicalName())) {
+            return "valueCollector.setString01(" + fieldAccess + ")";
+        } else if (fieldType.toString().equals(String.class.getCanonicalName())) {
+            return "valueCollector.setString(" + fieldAccess + ")";
+        } else {
+            final @Nonnull String converterInstance = importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter") + ".INSTANCE";
+            return converterInstance + ".convert(" + fieldAccess + ", valueCollector)";
+        }
+    }
+    
     private void generateConvert() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
@@ -63,50 +105,56 @@ public class ConverterGenerator extends JavaFileGenerator {
             }
             final @Nonnull String fieldAccess = Strings.lowercaseFirstCharacter(typeInformation.getName()) + "." + field.getAccessCode();
             // TODO: handle annotated fields that have a type-to-type converter.
-            if (field.isArray()) {
-                TypeMirror componentType = ((Type.ArrayType) fieldType).getComponentType();
-                if (componentType instanceof Type.AnnotatedType) {
-                    componentType = ((Type.AnnotatedType) componentType).unannotatedType();
-                }
-                addStatement("valueCollector.setArray(" + fieldAccess + ", " + importIfPossible(componentType.toString()) + ".class)");
-            } else if (ProcessingUtility.isRawSubtype(fieldType, List.class)) {
-                DeclaredType declaredType = (DeclaredType) fieldType;
-                final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
-                addStatement("valueCollector.setList(" + fieldAccess + ", " + typeArgumentsAsClasses + ")");
-            } else if (ProcessingUtility.isRawSubtype(fieldType, Set.class)) {
-                DeclaredType declaredType = (DeclaredType) fieldType;
-                final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
-                addStatement("valueCollector.setSet(" + fieldAccess + ", " + typeArgumentsAsClasses + ")");
-            } else if (ProcessingUtility.isRawSubtype(fieldType, Map.class)) {
-                DeclaredType declaredType = (DeclaredType) fieldType;
-                final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
-                addStatement("valueCollector.setMap(" + fieldAccess + ", " + typeArgumentsAsClasses + ")");
-            } else if (fieldType.toString().equals(byte.class.getCanonicalName()) || fieldType.toString().equals(Byte.class.getCanonicalName())) {
-                addStatement("valueCollector.setInteger08(" + fieldAccess + ")");
-            } else if (fieldType.toString().equals(short.class.getCanonicalName()) || fieldType.toString().equals(Short.class.getCanonicalName())) {
-                addStatement("valueCollector.setInteger16(" + fieldAccess + ")");
-            } else if (fieldType.toString().equals(int.class.getCanonicalName()) || fieldType.toString().equals(Integer.class.getCanonicalName())) {
-                addStatement("valueCollector.setInteger32(" + fieldAccess + ")");
-            } else if (fieldType.toString().equals(long.class.getCanonicalName()) || fieldType.toString().equals(Long.class.getCanonicalName())) {
-                addStatement("valueCollector.setInteger64(" + fieldAccess + ")");
-            } else if (fieldType.toString().equals(BigInteger.class.getCanonicalName())) {
-                addStatement("valueCollector.setInteger(" + fieldAccess + ")");
-            } else if (fieldType.toString().equals(char.class.getCanonicalName()) || fieldType.toString().equals(Character.class.getCanonicalName())) {
-                addStatement("valueCollector.setString01(" + fieldAccess + ")");
-            } else if (fieldType.toString().equals(String.class.getCanonicalName())) {
-                addStatement("valueCollector.setString(" + fieldAccess + ")");
-            } else {
-                final @Nonnull String converterInstance = importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter") + ".INSTANCE";
-                addStatement(converterInstance + ".convert(" + fieldAccess + ", valueCollector)");
-            }
+            addStatement(generateValueCollectorCall(fieldAccess, fieldType, field.isArray()));
         }
         endMethod();
     }
     
     /* -------------------------------------------------- Recovery -------------------------------------------------- */
     
-    protected void generateRestoreMethod(@Nonnull String nameOfBuilder) {
-        beginMethod("public static " + nameOfBuilder + " restore(@" + importIfPossible(Nonnull.class) + " " + importIfPossible(ResultSet.class) + " resultSet)");
+    /**
+     * Returns a generated statement that adds the field value to the value collector.
+     */
+    private @Nonnull String generateResultSetCall(@Nonnull TypeMirror fieldType, boolean isArray) {
+        if (isArray) {
+            TypeMirror componentType = ((Type.ArrayType) fieldType).getComponentType();
+            if (componentType instanceof Type.AnnotatedType) {
+                componentType = ((Type.AnnotatedType) componentType).unannotatedType();
+            }
+            return "resultSet.getArray(() -> " + generateResultSetCall(componentType, componentType.getKind() == TypeKind.ARRAY) + ")";
+        } else if (ProcessingUtility.isRawlyAssignable(fieldType, List.class)) {
+            DeclaredType declaredType = (DeclaredType) fieldType;
+            return "resultSet.getList(() -> " + generateResultSetCall(declaredType.getTypeArguments().get(0), declaredType.getTypeArguments().get(0).getKind() == TypeKind.ARRAY) + ")";
+        } else if (ProcessingUtility.isRawlyAssignable(fieldType, Set.class)) {
+            DeclaredType declaredType = (DeclaredType) fieldType;
+            return "resultSet.getSet(() -> " + generateResultSetCall(declaredType.getTypeArguments().get(0), declaredType.getTypeArguments().get(0).getKind() == TypeKind.ARRAY) + ")";
+        } else if (ProcessingUtility.isRawlyAssignable(fieldType, Map.class)) {
+            DeclaredType declaredType = (DeclaredType) fieldType;
+            return "resultSet.getMap(() -> " + generateValueCollectorCall("entry", declaredType.getTypeArguments().get(0), declaredType.getTypeArguments().get(0).getKind() == TypeKind.ARRAY) + ")";
+        } else if (fieldType.toString().equals(byte.class.getCanonicalName()) || fieldType.toString().equals(Byte.class.getCanonicalName())) {
+            return "resultSet.getInteger08()";
+        } else if (fieldType.toString().equals(short.class.getCanonicalName()) || fieldType.toString().equals(Short.class.getCanonicalName())) {
+            return "resultSet.getInteger16()";
+        } else if (fieldType.toString().equals(int.class.getCanonicalName()) || fieldType.toString().equals(Integer.class.getCanonicalName())) {
+            return "resultSet.getInteger32()";
+        } else if (fieldType.toString().equals(long.class.getCanonicalName()) || fieldType.toString().equals(Long.class.getCanonicalName())) {
+            return "resultSet.getInteger64()";
+        } else if (fieldType.toString().equals(BigInteger.class.getCanonicalName())) {
+            return "resultSet.getInteger()";
+        } else if (fieldType.toString().equals(char.class.getCanonicalName()) || fieldType.toString().equals(Character.class.getCanonicalName())) {
+            return "resultSet.getString01()";
+        } else if (fieldType.toString().equals(String.class.getCanonicalName())) {
+            return "resultSet.getString()";
+        } else {
+            final @Nonnull String converterInstance = importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter") + ".INSTANCE";
+            return converterInstance + ".recover(resultSet)";
+        }
+    }
+    
+    protected void generateRestoreMethod() {
+        addAnnotation(Pure.class);
+        addAnnotation(Override.class);
+        beginMethod("public @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(Capturable.class) + " " + typeInformation.getName() + " recover(@" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " " + importIfPossible(ResultSet.class) + " resultSet)");
         final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
         final @Nonnull StringBuilder assignedParameters = new StringBuilder();
         for (@Nonnull FieldInformation field : representingFieldInformation) {
@@ -117,45 +165,11 @@ public class ConverterGenerator extends JavaFileGenerator {
                 fieldType = field.getType();
             }
             // TODO: handle annotated fields that have a type-to-type converter.
-            if (field.isArray()) {
-                Type.ArrayType arrayType = (Type.ArrayType) fieldType;
-                final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(arrayType.getComponentType()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getArray(" + typeArgumentsAsClasses + ")");
-            } else if (ProcessingUtility.isRawSubtype(fieldType, List.class)) {
-                DeclaredType declaredType = (DeclaredType) fieldType;
-                final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getList(" + typeArgumentsAsClasses + ")");
-            } else if (ProcessingUtility.isRawSubtype(fieldType, Set.class)) {
-                DeclaredType declaredType = (DeclaredType) fieldType;
-                final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getSet(" + typeArgumentsAsClasses + ")");
-            } else if (ProcessingUtility.isRawSubtype(fieldType, Map.class)) {
-                DeclaredType declaredType = (DeclaredType) fieldType;
-                final @Nonnull String typeArgumentsAsClasses = FiniteIterable.of(declaredType.getTypeArguments()).map(ProcessingUtility::getQualifiedName).map(string -> importIfPossible(string) + ".class").join();
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getMap(" + typeArgumentsAsClasses + ")");
-            } else if (fieldType.toString().equals(byte.class.getCanonicalName()) || fieldType.toString().equals(Byte.class.getCanonicalName())) {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getInteger08()");
-            } else if (fieldType.toString().equals(short.class.getCanonicalName()) || fieldType.toString().equals(Short.class.getCanonicalName())) {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getInteger16()");
-            } else if (fieldType.toString().equals(int.class.getCanonicalName()) || fieldType.toString().equals(Integer.class.getCanonicalName())) {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getInteger32()");
-            } else if (fieldType.toString().equals(long.class.getCanonicalName()) || fieldType.toString().equals(Long.class.getCanonicalName())) {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getInteger64()");
-            } else if (fieldType.toString().equals(BigInteger.class.getCanonicalName())) {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getInteger()");
-            } else if (fieldType.toString().equals(char.class.getCanonicalName()) || fieldType.toString().equals(Character.class.getCanonicalName())) {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getString01()");
-            } else if (fieldType.toString().equals(String.class.getCanonicalName())) {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = resultSet.getString()");
-            } else {
-                addStatement(field.getFieldType(this) + " " + field.getName() + " = " + importIfPossible(fieldType.toString()) + "Builder.restore(resultSet).build()");
-            }
+            addStatement(field.getFieldType(this) + " " + field.getName() + " = " + generateResultSetCall(fieldType, field.isArray()));
+    
             assignedParameters.append(".with").append(Strings.capitalizeFirstLetters(field.getName())).append("(").append(field.getName()).append(")");
         }
-        
-        // TODO: check if all constructor parameters are representative.
-    
-        addStatement("return new " + nameOfBuilder + "()" + assignedParameters);
+        addStatement("return " + typeInformation.getSimpleNameOfGeneratedBuilder() + assignedParameters.append(".build()"));
         endMethod();
     }
     
@@ -171,6 +185,9 @@ public class ConverterGenerator extends JavaFileGenerator {
         final @Nonnull CustomType customType = CustomType.of(representingFieldType);
         if (customType == CustomType.TUPLE) {
             return importIfPossible(TupleConverter.class) + ".of" + Brackets.inRound(importIfPossible(ProcessingUtility.getQualifiedName(representingFieldType) + "Converter") + ".INSTANCE");
+        } else if (customType == CustomType.SET) {
+            final @Nonnull TypeMirror componentType = ProcessingUtility.getComponentType(representingFieldType);
+            return importIfPossible(SetConverter.class) + ".of" + Brackets.inRound(getConverterName(componentType));
         } else if (customType == CustomType.LIST) {
             final @Nonnull TypeMirror componentType = ProcessingUtility.getComponentType(representingFieldType);
             return importIfPossible(ListConverter.class) + ".of" + Brackets.inRound(getConverterName(componentType));
@@ -211,7 +228,7 @@ public class ConverterGenerator extends JavaFileGenerator {
             generateInstanceField();
             generateFields();
             generateConvert();
-            // TODO: generate restore method
+            generateRestoreMethod();
             
             endClass();
         } catch (Exception e) {

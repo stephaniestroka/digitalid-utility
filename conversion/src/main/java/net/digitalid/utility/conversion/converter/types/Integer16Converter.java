@@ -6,8 +6,10 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.conversion.converter.LeafConverter;
+import net.digitalid.utility.conversion.converter.ResultSet;
 import net.digitalid.utility.conversion.converter.ValueCollector;
 
+// TODO: implement
 /**
  *
  */
@@ -18,6 +20,10 @@ public class Integer16Converter implements LeafConverter<Short> {
     @Override
     public void convert(@NonCaptured @Unmodified Short object, @NonCaptured @Modified ValueCollector valueCollector) {
         
+    }
+    
+    @Nonnull @Override public Short recover(@NonCaptured ResultSet resultSet) {
+        return null;
     }
     
 }

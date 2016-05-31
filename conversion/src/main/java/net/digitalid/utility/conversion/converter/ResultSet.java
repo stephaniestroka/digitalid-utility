@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.functional.interfaces.Producer;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.size.Size;
@@ -94,12 +95,12 @@ public interface ResultSet {
      */
     public @Nullable byte[] getBinary();
     
-    public <T> @Nonnull List<T> getList(@Nonnull UnaryFunction<?, T> function);
+    public <T> @Nonnull List<T> getList(@Nonnull Producer<T> function);
     
-    public <T> @Nonnull T[] getArray(@Nonnull UnaryFunction<?, T> function);
+    public <T> @Nonnull T[] getArray(@Nonnull Producer<T> function);
     
-    public <T> @Nonnull Set<T> getSet(@Nonnull UnaryFunction<?, T> function);
+    public <T> @Nonnull Set<T> getSet(@Nonnull Producer<T> function);
     
-    public <K, V> @Nonnull Map<K, V> getMap(@Nonnull UnaryFunction<?, K> keyFunction, @Nonnull UnaryFunction<?, V> valueFunction);
+    public <K, V> @Nonnull Map<K, V> getMap(@Nonnull Producer<K> keyFunction, @Nonnull Producer<V> valueFunction);
     
 }
