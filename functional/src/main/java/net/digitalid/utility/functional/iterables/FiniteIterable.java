@@ -27,11 +27,12 @@ import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.state.Modifiable;
 import net.digitalid.utility.fixes.Fixes;
+import net.digitalid.utility.functional.failable.FailableBinaryOperator;
+import net.digitalid.utility.functional.failable.FailableCollector;
+import net.digitalid.utility.functional.failable.FailableConsumer;
+import net.digitalid.utility.functional.failable.FailablePredicate;
+import net.digitalid.utility.functional.failable.FailableUnaryFunction;
 import net.digitalid.utility.functional.interfaces.BinaryOperator;
-import net.digitalid.utility.functional.interfaces.Collector;
-import net.digitalid.utility.functional.interfaces.Consumer;
-import net.digitalid.utility.functional.interfaces.Predicate;
-import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.functional.iterators.CombiningIterator;
 import net.digitalid.utility.functional.iterators.CyclingIterator;
 import net.digitalid.utility.functional.iterators.FilteringIterator;
@@ -84,13 +85,13 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
     
     @Pure
     @Override
-    public default @Nonnull FiniteIterable<E> filter(@Nonnull Predicate<? super E> predicate) {
+    public default @Nonnull FiniteIterable<E> filter(@Nonnull FailablePredicate<? super E, ?> predicate) {
         return () -> FilteringIterator.with(iterator(), predicate);
     }
     
     @Pure
     @Override
-    public default @Nonnull FiniteIterable<E> filterNot(@Nonnull Predicate<? super E> predicate) {
+    public default @Nonnull FiniteIterable<E> filterNot(@Nonnull FailablePredicate<? super E, ?> predicate) {
         return filter(predicate.negate());
     }
     
@@ -104,7 +105,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
     
     @Pure
     @Override
-    public default <F> @Nonnull FiniteIterable<F> map(@Nonnull UnaryFunction<? super E, ? extends F> function) {
+    public default <F> @Nonnull FiniteIterable<F> map(@Nonnull FailableUnaryFunction<? super E, ? extends F, ?> function) {
         return () -> MappingIterator.with(iterator(), function);
     }
     
@@ -364,7 +365,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      */
     @Pure
     @Chainable
-    public default FiniteIterable<E> doForEach(@NonCaptured @Modified @Nonnull Consumer<? super E> action) {
+    public default <X extends Exception> FiniteIterable<E> doForEach(@NonCaptured @Modified @Nonnull FailableConsumer<? super E, ? extends X> action) throws X {
         for (E element : this) { action.consume(element); }
         return this;
     }
@@ -423,7 +424,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the first element of this iterable that fulfills the given predicate or the given default element if no such element is found.
      */
     @Pure
-    public default @NonCapturable @Nullable E findFirst(@Nonnull Predicate<? super E> predicate, @NonCaptured @Unmodified E defaultElement) {
+    public default <X extends Exception> @NonCapturable @Nullable E findFirst(@Nonnull FailablePredicate<? super E, ? extends X> predicate, @NonCaptured @Unmodified E defaultElement) throws X {
         for (E element : this) {
             if (predicate.evaluate(element)) { return element; }
         }
@@ -434,7 +435,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the first element of this iterable that fulfills the given predicate or null if no such element is found.
      */
     @Pure
-    public default @NonCapturable @Nullable E findFirst(@Nonnull Predicate<? super E> predicate) {
+    public default <X extends Exception> @NonCapturable @Nullable E findFirst(@Nonnull FailablePredicate<? super E, ? extends X> predicate) throws X {
         return findFirst(predicate, null);
     }
     
@@ -442,7 +443,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the last element of this iterable that fulfills the given predicate or the given default element if no such element is found.
      */
     @Pure
-    public default @NonCapturable E findLast(@Nonnull Predicate<? super E> predicate, @NonCaptured @Unmodified E defaultElement) {
+    public default <X extends Exception> @NonCapturable E findLast(@Nonnull FailablePredicate<? super E, ? extends X> predicate, @NonCaptured @Unmodified E defaultElement) throws X {
         @Nullable E lastElement = defaultElement;
         for (E element : this) {
             if (predicate.evaluate(element)) { lastElement = element; }
@@ -454,7 +455,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the last element of this iterable that fulfills the given predicate or null if no such element is found.
      */
     @Pure
-    public default @NonCapturable @Nullable E findLast(@Nonnull Predicate<? super E> predicate) {
+    public default <X extends Exception> @NonCapturable @Nullable E findLast(@Nonnull FailablePredicate<? super E, ? extends X> predicate) throws X {
         return findLast(predicate, null);
     }
     
@@ -464,7 +465,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * @throws NoSuchElementException if no unique element is found in this iterable.
      */
     @Pure
-    public default @NonCapturable E findUnique(@Nonnull Predicate<? super E> predicate) {
+    public default <X extends Exception> @NonCapturable E findUnique(@Nonnull FailablePredicate<? super E, ? extends X> predicate) throws X {
         @Nullable E uniqueElement = null;
         boolean found = false;
         for (E element : this) {
@@ -487,7 +488,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns whether any elements of this iterable match the given predicate.
      */
     @Pure
-    public default boolean matchAny(@Nonnull Predicate<? super E> predicate) {
+    public default <X extends Exception> boolean matchAny(@Nonnull FailablePredicate<? super E, ? extends X> predicate) throws X {
         for (E element : this) {
             if (predicate.evaluate(element)) { return true; }
         }
@@ -498,7 +499,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns whether all elements of this iterable match the given predicate.
      */
     @Pure
-    public default boolean matchAll(@Nonnull Predicate<? super E> predicate) {
+    public default <X extends Exception> boolean matchAll(@Nonnull FailablePredicate<? super E, ? extends X> predicate) throws X {
         for (E element : this) {
             if (!predicate.evaluate(element)) { return false; }
         }
@@ -509,7 +510,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns whether no element of this iterable matches the given predicate.
      */
     @Pure
-    public default boolean matchNone(@Nonnull Predicate<? super E> predicate) {
+    public default <X extends Exception> boolean matchNone(@Nonnull FailablePredicate<? super E, ? extends X> predicate) throws X {
         return !matchAny(predicate);
     }
     
@@ -519,7 +520,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the value reduced by the given operator or the given element if this iterable is empty.
      */
     @Pure
-    public default @NonCapturable E reduce(@Nonnull BinaryOperator<E> operator, @NonCaptured @Unmodified E element) {
+    public default <X extends Exception> @NonCapturable E reduce(@Nonnull FailableBinaryOperator<E, ? extends X> operator, @NonCaptured @Unmodified E element) throws X {
         final @Nonnull Iterator<E> iterator = iterator();
         if (iterator.hasNext()) {
             E result = iterator.next();
@@ -536,7 +537,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the value reduced by the given operator or null if this iterable is empty.
      */
     @Pure
-    public default @NonCapturable @Nullable E reduce(@Nonnull BinaryOperator<E> operator) {
+    public default <X extends Exception> @NonCapturable @Nullable E reduce(@Nonnull FailableBinaryOperator<E, ? extends X> operator) throws X {
         return reduce(operator, null);
     }
     
@@ -546,7 +547,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the result of the given collector after consuming all elements of this iterable.
      */
     @Pure
-    public default @Capturable <R> R collect(@NonCaptured @Modified @Nonnull Collector<? super E, ? extends R> collector) {
+    public default @Capturable <R, X extends Exception, Y extends Exception> R collect(@NonCaptured @Modified @Nonnull FailableCollector<? super E, ? extends R, ? extends X, ? extends Y> collector) throws X, Y {
         for (E element : this) { collector.consume(element); }
         return collector.getResult();
     }
@@ -930,7 +931,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * {@link #groupBy(net.digitalid.utility.functional.interfaces.UnaryFunction)} instead.
      */
     @Pure
-    public default @Capturable <K> @Modifiable @Nonnull Map<K, E> toMap(@Nonnull UnaryFunction<? super E, ? extends K> function) {
+    public default @Capturable <K, X extends Exception> @Modifiable @Nonnull Map<K, E> toMap(@Nonnull FailableUnaryFunction<? super E, ? extends K, ? extends X> function) throws X {
         final @Nonnull Map<K, E> result = new LinkedHashMap<>();
         for (E element : this) {
             result.put(function.evaluate(element), element);
@@ -944,7 +945,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the elements of this iterable as a map grouped by the given function.
      */
     @Pure
-    public default @Capturable <K> @Modifiable @Nonnull Map<K, @Nonnull List<E>> groupBy(@Nonnull UnaryFunction<? super E, ? extends K> function) {
+    public default @Capturable <K, X extends Exception> @Modifiable @Nonnull Map<K, @Nonnull List<E>> groupBy(@Nonnull FailableUnaryFunction<? super E, ? extends K, ? extends X> function) throws X {
         final @Nonnull Map<K, List<E>> result = new LinkedHashMap<>(size());
         for (E element : this) {
             final K key = function.evaluate(element);

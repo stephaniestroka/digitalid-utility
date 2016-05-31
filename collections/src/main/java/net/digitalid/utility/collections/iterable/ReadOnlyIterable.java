@@ -15,7 +15,7 @@ import net.digitalid.utility.collections.set.FreezableLinkedHashSet;
 import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.freezable.ReadOnlyInterface;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.functional.interfaces.UnaryFunction;
+import net.digitalid.utility.functional.failable.FailableUnaryFunction;
 import net.digitalid.utility.functional.iterables.CollectionIterable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
@@ -66,7 +66,7 @@ public interface ReadOnlyIterable<E> extends CollectionIterable<E>, ReadOnlyInte
      * Returns the elements of this iterable as a freezable map with their key determined by the given function.
      */
     @Pure
-    public default @Capturable <K> @Nonnull @NonFrozen FreezableMap<K, E> toFreezableMap(@Nonnull UnaryFunction<? super E, ? extends K> function) {
+    public default @Capturable <K, X extends Exception> @Nonnull @NonFrozen FreezableMap<K, E> toFreezableMap(@Nonnull FailableUnaryFunction<? super E, ? extends K, ? extends X> function) throws X {
         final @Nonnull FreezableMap<K, E> result = FreezableLinkedHashMap.withDefaultCapacity();
         for (E element : this) {
             result.put(function.evaluate(element), element);

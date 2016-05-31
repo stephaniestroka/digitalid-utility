@@ -7,7 +7,7 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
 import net.digitalid.utility.fixes.Quotes;
-import net.digitalid.utility.functional.interfaces.Consumer;
+import net.digitalid.utility.functional.failable.FailableConsumer;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
@@ -17,7 +17,7 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
 public abstract class ContractTest extends CustomTest {
     
     @Pure
-    protected static <T> void test(@NonCaptured @Modified @Nonnull Consumer<? super T> consumer, T positive, T negative) {
+    protected static <T, X extends Exception> void test(@NonCaptured @Modified @Nonnull FailableConsumer<? super T, ? extends X> consumer, T positive, T negative) throws X {
         try {
             consumer.consume(positive);
         } catch (@Nonnull PreconditionViolationException exception) {
@@ -31,7 +31,7 @@ public abstract class ContractTest extends CustomTest {
     
     @Pure
     @SafeVarargs
-    protected static <T> void testPositives(@NonCaptured @Modified @Nonnull Consumer<? super T> consumer, @Nonnull T... positives) {
+    protected static <T, X extends Exception> void testPositives(@NonCaptured @Modified @Nonnull FailableConsumer<? super T, ? extends X> consumer, @Nonnull T... positives) throws X {
         for (T positive : positives) {
             try {
                 consumer.consume(positive);
@@ -43,7 +43,7 @@ public abstract class ContractTest extends CustomTest {
     
     @Pure
     @SafeVarargs
-    protected static <T> void testNegatives(@NonCaptured @Modified @Nonnull Consumer<? super T> consumer, @Nonnull T... negatives) {
+    protected static <T, X extends Exception> void testNegatives(@NonCaptured @Modified @Nonnull FailableConsumer<? super T, ? extends X> consumer, @Nonnull T... negatives) throws X {
         for (T negative : negatives) {
             try {
                 consumer.consume(negative);
