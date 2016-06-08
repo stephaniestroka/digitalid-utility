@@ -1,8 +1,10 @@
 package net.digitalid.utility.file;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
 
@@ -20,13 +22,13 @@ import net.digitalid.utility.validation.annotations.type.Utility;
 @Utility
 public class Files {
     
-    /* -------------------------------------------------- Lines -------------------------------------------------- */
+    /* -------------------------------------------------- Lines Reading -------------------------------------------------- */
     
     /**
-     * Returns the lines in the given file.
+     * Reads and returns the lines in the given file.
      */
     @Pure
-    public static @Nonnull FiniteIterable<@Nonnull String> getLines(@Nonnull File file) {
+    public static @Nonnull FiniteIterable<@Nonnull String> readLines(@Nonnull File file) {
         final @Nonnull LinkedList<@Nonnull String> lines = new LinkedList<>();
         try (@Nonnull BufferedReader reader = new BufferedReader(new FileReader(file))) {
             @Nullable String line;
@@ -40,27 +42,41 @@ public class Files {
     }
     
     /**
-     * Returns the trimmed lines in the given file.
+     * Reads and returns the trimmed lines in the given file.
      */
     @Pure
-    public static @Nonnull FiniteIterable<@Nonnull String> getTrimmedLines(@Nonnull File file) {
-        return getLines(file).map(String::trim);
+    public static @Nonnull FiniteIterable<@Nonnull String> readTrimmedLines(@Nonnull File file) {
+        return readLines(file).map(String::trim);
     }
     
     /**
-     * Returns the non-empty trimmed lines in the given file.
+     * Reads and returns the non-empty trimmed lines in the given file.
      */
     @Pure
-    public static @Nonnull FiniteIterable<@Nonnull String> getNonEmptyTrimmedLines(@Nonnull File file) {
-        return getTrimmedLines(file).filterNot(String::isEmpty);
+    public static @Nonnull FiniteIterable<@Nonnull String> readNonEmptyTrimmedLines(@Nonnull File file) {
+        return readTrimmedLines(file).filterNot(String::isEmpty);
     }
     
     /**
-     * Returns the non-comment non-empty trimmed lines in the given file.
+     * Reads and returns the non-comment non-empty trimmed lines in the given file.
      */
     @Pure
-    public static @Nonnull FiniteIterable<@Nonnull String> getNonCommentNonEmptyTrimmedLines(@Nonnull File file) {
-        return getNonEmptyTrimmedLines(file).filter(line -> !line.startsWith("#"));
+    public static @Nonnull FiniteIterable<@Nonnull String> readNonCommentNonEmptyTrimmedLines(@Nonnull File file) {
+        return readNonEmptyTrimmedLines(file).filter(line -> !line.startsWith("#"));
+    }
+    
+    /* -------------------------------------------------- Lines Writing -------------------------------------------------- */
+    
+    /**
+     * Writes the given lines to the given file.
+     */
+    @Pure
+    public static void write(@Nonnull FiniteIterable<@Nonnull String> lines, @Nonnull File file) {
+        try (@Nonnull BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            lines.doForEach(line -> { writer.write(line); writer.newLine(); });
+        } catch (@Nonnull IOException exception) {
+            throw UnexpectedFailureException.with(exception);
+        }
     }
     
 }

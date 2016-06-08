@@ -1,11 +1,17 @@
 package net.digitalid.utility.logging.filter;
 
+import java.util.Objects;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.exceptions.InvalidConfigurationException;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -79,16 +85,55 @@ public class LoggingRule {
         return new LoggingRule(threshold, callerPrefix, threadPrefix, messageRegex);
     }
     
+    /* -------------------------------------------------- Encoding and Decoding -------------------------------------------------- */
+    
     /**
-     * Parses the given line and returns the corresponding rule.
+     * Encodes this logging rule.
      */
     @Pure
-    public static @Nonnull LoggingRule parse(@Nonnull String line) throws InvalidConfigurationException {
-        // TODO:
-        return new LoggingRule(Level.INFORMATION, null, null, null);
+    public @Nonnull String encode() {
+        final @Nonnull StringBuilder result = new StringBuilder(threshold.toString());
+        if (callerPrefix != null || threadPrefix != null || messageRegex != null) {
+            result.append(";");
+            if (callerPrefix != null) { result.append(" ").append(callerPrefix); }
+            if (threadPrefix != null || messageRegex != null) {
+                result.append(";");
+                if (threadPrefix != null) { result.append(" ").append(threadPrefix); }
+                if (messageRegex != null) { result.append("; ").append(messageRegex); }
+            }
+        }
+        return result.toString();
     }
     
-    // TODO: Also implement toString() to store a rule in a file.
+    /**
+     * Returns the token with the given index or null if the array is not long enough or the token is empty.
+     */
+    @Pure
+    private static @Nullable String getNonEmpty(@NonCaptured @Unmodified @Nonnull @NonNullableElements String[] tokens, int index) {
+        if (tokens.length >= index) {
+            final @Nonnull String token = tokens[1].trim();
+            if (!token.isEmpty()) { return token; }
+        }
+        return null;
+    }
+    
+    /**
+     * Decodes the given line and returns the corresponding rule.
+     */
+    @Pure
+    public static @Nonnull LoggingRule decode(@Nonnull String line) throws InvalidConfigurationException {
+        final @Nonnull @NonNullableElements String[] tokens = line.split(";", 4);
+        final @Nonnull Level threshold;
+        try {
+            threshold = Level.valueOf(tokens[0].trim().toUpperCase());
+        } catch (@Nonnull IllegalArgumentException exception) {
+            throw InvalidConfigurationException.with("The token $ does not denote a level.", exception, tokens[0]);
+        }
+        final @Nullable String callerPrefix = getNonEmpty(tokens, 1);
+        final @Nullable String threadPrefix = getNonEmpty(tokens, 2);
+        final @Nullable String messageRegex = getNonEmpty(tokens, 3);
+        return new LoggingRule(threshold, callerPrefix, threadPrefix, messageRegex);
+    }
     
     /* -------------------------------------------------- Acceptance -------------------------------------------------- */
     
@@ -101,6 +146,34 @@ public class LoggingRule {
                 (callerPrefix == null || caller.startsWith(callerPrefix)) &&
                 (threadPrefix == null || thread.startsWith(threadPrefix)) &&
                 (messageRegex == null || message.matches(messageRegex));
+    }
+    
+    /* -------------------------------------------------- Object -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public boolean equals(@NonCaptured @Unmodified @Nullable Object object) {
+        if (object == this) { return true; }
+        if (object == null || !(object instanceof LoggingRule)) { return false; }
+        final @Nonnull LoggingRule that = (LoggingRule) object;
+        return this.threshold == that.threshold && Objects.equals(this.callerPrefix, that.callerPrefix) && Objects.equals(this.threadPrefix, that.threadPrefix) && Objects.equals(this.messageRegex, that.messageRegex);
+    }
+    
+    @Pure
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + threshold.hashCode();
+        hash = 83 * hash + Objects.hashCode(callerPrefix);
+        hash = 83 * hash + Objects.hashCode(threadPrefix);
+        hash = 83 * hash + Objects.hashCode(messageRegex);
+        return hash;
+    }
+    
+    @Pure
+    @Override
+    public @Nonnull String toString() {
+        return "LoggingRule(threshold: " + threshold + ", callerPrefix: " + Quotes.inCode(callerPrefix) + ", threadPrefix: " + Quotes.inCode(threadPrefix) + ", messageRegex: " + Quotes.inCode(messageRegex) + ")";
     }
     
 }

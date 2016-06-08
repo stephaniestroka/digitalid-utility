@@ -27,6 +27,7 @@ import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.state.Modifiable;
 import net.digitalid.utility.fixes.Fixes;
+import net.digitalid.utility.functional.exceptions.FailedIterationException;
 import net.digitalid.utility.functional.failable.FailableBinaryOperator;
 import net.digitalid.utility.functional.failable.FailableCollector;
 import net.digitalid.utility.functional.failable.FailableConsumer;
@@ -957,6 +958,22 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
             list.add(element);
         }
         return result;
+    }
+    
+    /* -------------------------------------------------- Evaluating -------------------------------------------------- */
+    
+    /**
+     * Iterates through the elements of this iterable and returns them as a new iterable.
+     * This method is useful to trigger any mapping and filtering exceptions and to cache the result.
+     */
+    @Pure
+    @SuppressWarnings("unchecked")
+    public default <X extends Exception> @Capturable @Nonnull FiniteIterable<E> evaluate() throws X {
+        try {
+            return FiniteIterable.of(toList());
+        } catch (@Nonnull FailedIterationException exception) {
+            throw (X) exception.getCause();
+        }
     }
     
 }

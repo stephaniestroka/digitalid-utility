@@ -11,7 +11,7 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * This filter accepts a message if any of its rules matches.
+ * This logging filter accepts a message if any of its rules matches.
  * 
  * @see ConfigurationBasedLoggingFilter
  */
