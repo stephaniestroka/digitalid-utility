@@ -16,7 +16,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 
 import net.digitalid.utility.annotations.state.Unmodifiable;
-import net.digitalid.utility.fixes.Brackets;
+import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.processing.utility.ProcessingUtility;

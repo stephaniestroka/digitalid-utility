@@ -26,7 +26,7 @@ import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.state.Modifiable;
-import net.digitalid.utility.fixes.Fixes;
+import net.digitalid.utility.circumfixes.Circumfix;
 import net.digitalid.utility.functional.exceptions.FailedIterationException;
 import net.digitalid.utility.functional.failable.FailableBinaryOperator;
 import net.digitalid.utility.functional.failable.FailableCollector;
@@ -814,7 +814,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the elements of this iterable joined by the given delimiter with the given fixes or the given empty string if this iterable is empty.
      */
     @Pure
-    public default @Nonnull String join(@Nullable Fixes fixes, @Nonnull CharSequence empty, @Nonnull CharSequence delimiter) {
+    public default @Nonnull String join(@Nullable Circumfix fixes, @Nonnull CharSequence empty, @Nonnull CharSequence delimiter) {
         if (fixes == null) { return join("", "", empty, delimiter); }
         else { return join(fixes.getPrefix(), fixes.getSuffix(), empty, delimiter); }
     }
@@ -823,7 +823,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the elements of this iterable joined by commas with the given fixes or the given empty string if this iterable is empty.
      */
     @Pure
-    public default @Nonnull String join(@Nullable Fixes fixes, @Nonnull CharSequence empty) {
+    public default @Nonnull String join(@Nullable Circumfix fixes, @Nonnull CharSequence empty) {
         return join(fixes, empty, ", ");
     }
     
@@ -831,7 +831,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the elements of this iterable joined by commas with the given fixes.
      */
     @Pure
-    public default @Nonnull String join(@Nullable Fixes fixes) {
+    public default @Nonnull String join(@Nullable Circumfix fixes) {
         return join(fixes, fixes != null ? fixes.getBoth() : "");
     }
     
@@ -840,7 +840,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      */
     @Pure
     public default @Nonnull String join(@Nonnull CharSequence delimiter) {
-        return join((Fixes) null, "", delimiter);
+        return join((Circumfix) null, "", delimiter);
     }
     
     /**
@@ -848,7 +848,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      */
     @Pure
     public default @Nonnull String join() {
-        return join((Fixes) null);
+        return join((Circumfix) null);
     }
     
     /* -------------------------------------------------- Exports -------------------------------------------------- */

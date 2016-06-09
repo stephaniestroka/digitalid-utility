@@ -5,8 +5,8 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
-import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.failable.FailableConsumer;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 

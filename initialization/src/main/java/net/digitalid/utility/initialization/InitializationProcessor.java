@@ -21,9 +21,9 @@ import javax.lang.model.type.TypeKind;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.Initializer;
-import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.initialization.annotations.Initialize;
 import net.digitalid.utility.processing.logging.ProcessingLog;

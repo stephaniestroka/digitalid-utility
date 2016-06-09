@@ -16,11 +16,6 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-configuration</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-file</artifactId>
             <version>${project.version}</version>
         </dependency>

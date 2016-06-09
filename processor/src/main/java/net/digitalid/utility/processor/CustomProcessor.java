@@ -1,5 +1,6 @@
 package net.digitalid.utility.processor;
 
+import java.io.FileNotFoundException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,10 +29,11 @@ import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.state.Unmodifiable;
-import net.digitalid.utility.fixes.Brackets;
-import net.digitalid.utility.fixes.Quotes;
+import net.digitalid.utility.circumfixes.Brackets;
+import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.logging.Log;
+import net.digitalid.utility.logging.exceptions.InvalidConfigurationException;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
@@ -118,7 +120,15 @@ public abstract class CustomProcessor implements Processor {
     @Impure
     @Override
     public final boolean process(@NonCaptured @Unmodified @Nonnull Set<@Nonnull ? extends TypeElement> typeElements, @Nonnull RoundEnvironment roundEnvironment) {
-        ProcessingLog.initialize(getClass().getSimpleName());
+        try {
+            ProcessingLog.initialize(getClass().getSimpleName());
+        } catch (@Nonnull InvalidConfigurationException exception) {
+            Log.error("The logging configuration is invalid:", exception);
+        } catch (@Nonnull FileNotFoundException exception) {
+            Log.error("Could not find the logging file:", exception); // TODO: Suppress this exception?
+        } catch (@Nonnull Exception exception) {
+            Log.error("What have I missed?", exception);
+        }
         
         if (round == 0) {
             final @Nonnull String projectName = getProjectName(roundEnvironment);

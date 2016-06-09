@@ -1,5 +1,6 @@
 package net.digitalid.utility.processing.logging;
 
+import java.io.FileNotFoundException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -11,13 +12,16 @@ import javax.tools.Diagnostic;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
-import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.file.Files;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.ImmutableMap;
 import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
-import net.digitalid.utility.logging.filter.LevelBasedLoggingFilter;
+import net.digitalid.utility.logging.Version;
+import net.digitalid.utility.logging.exceptions.InvalidConfigurationException;
+import net.digitalid.utility.logging.filter.ConfigurationBasedLoggingFilter;
 import net.digitalid.utility.logging.filter.LoggingFilter;
+import net.digitalid.utility.logging.filter.LoggingRule;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
@@ -36,15 +40,14 @@ public abstract class ProcessingLog {
     /* -------------------------------------------------- Setup -------------------------------------------------- */
     
     /**
-     * Sets the output file of the logger to the given name.
+     * Initializes the output file of the logger with the given name.
      */
     @Impure
-    public static void initialize(@Nonnull String name) {
-        Require.that(name != null).orThrow("The name may not be null.");
-        
-        Logger.logger.set(FileLogger.with("target/processor-logs/" + name + ".log"));
-        LoggingFilter.filter.set(LevelBasedLoggingFilter.with(Level.INFORMATION)); // TODO: Chose a configuration-based filter instead.
+    public static void initialize(@Nonnull String name) throws InvalidConfigurationException, FileNotFoundException {
         Caller.index.set(6);
+        Version.string.set("0.7");
+        LoggingFilter.filter.set(ConfigurationBasedLoggingFilter.with(Files.with("config/" + name + ".conf"), LoggingRule.with(Level.INFORMATION)));
+        Logger.logger.set(FileLogger.with(Files.with("target/processor-logs/" + name + ".log")));
     }
     
     /* -------------------------------------------------- Mapping -------------------------------------------------- */
@@ -62,9 +65,6 @@ public abstract class ProcessingLog {
      */
     @Impure
     protected static void log(@Nonnull Level level, @Nonnull CharSequence message, @Nullable SourcePosition position, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
-        Require.that(level != null).orThrow("The level may not be null.");
-        Require.that(message != null).orThrow("The message may not be null.");
-        
         Logger.log(level, message + (position != null ? " " + position : ""), null, arguments);
         if (level.getValue() >= Level.INFORMATION.getValue() && StaticProcessingEnvironment.environment.isSet()) {
             if (position == null) {
@@ -186,9 +186,6 @@ public abstract class ProcessingLog {
      */
     @Impure
     public static void annotatedElements(@Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
-        Require.that(annotations != null).orThrow("The annotations may not be null.");
-        Require.that(roundEnvironment != null).orThrow("The round environment may not be null.");
-        
         for (@Nonnull TypeElement annotation : annotations) {
             for (@Nonnull Element element : roundEnvironment.getElementsAnnotatedWith(annotation)) {
                 ProcessingLog.information("Found $ on", SourcePosition.of(element), "@" + annotation.getSimpleName());
@@ -201,8 +198,6 @@ public abstract class ProcessingLog {
      */
     @Impure
     public static void rootElements(@Nonnull RoundEnvironment roundEnvironment) {
-        Require.that(roundEnvironment != null).orThrow("The round environment may not be null.");
-        
         for (@Nonnull Element rootElement : roundEnvironment.getRootElements()) {
             ProcessingLog.information("Found the " + rootElement.getKind().toString().toLowerCase() + " $.", rootElement.asType());
         }

@@ -22,6 +22,21 @@ import net.digitalid.utility.validation.annotations.type.Utility;
 @Utility
 public class Files {
     
+    /* -------------------------------------------------- Parent Directories -------------------------------------------------- */
+    
+    /**
+     * This method returns the file with the given path and creates missing parent directories.
+     */
+    @Pure
+    public static @Nonnull File with(@Nonnull String path) {
+        final @Nonnull File file = new File(path);
+        final @Nullable File directory = file.getParentFile();
+        if (directory != null && !directory.exists() && !directory.mkdirs()) {
+            throw UnexpectedFailureException.with("Could not create the directory $.", directory.getPath());
+        }
+        return file;
+    }
+    
     /* -------------------------------------------------- Lines Reading -------------------------------------------------- */
     
     /**

@@ -3,11 +3,11 @@ package net.digitalid.utility.testing;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.collaboration.annotations.Review;
 import net.digitalid.utility.collaboration.annotations.TODO;
 import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.collaboration.enumerations.Priority;
-import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 
 import org.junit.Assert;

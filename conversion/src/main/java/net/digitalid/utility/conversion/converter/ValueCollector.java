@@ -9,7 +9,6 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.functional.interfaces.Consumer;
-import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.size.Size;
 

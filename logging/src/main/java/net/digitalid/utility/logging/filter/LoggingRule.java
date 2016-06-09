@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
-import net.digitalid.utility.fixes.Quotes;
+import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.exceptions.InvalidConfigurationException;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -68,6 +68,19 @@ public class LoggingRule {
         return messageRegex;
     }
     
+    /* -------------------------------------------------- Acceptance -------------------------------------------------- */
+    
+    /**
+     * Returns whether this rule accepts the given message with the given arguments.
+     */
+    @Pure
+    public boolean accepts(@Nonnull Level level, @Nonnull String caller, @Nonnull String thread, @Nonnull String message) {
+        return level.getValue() >= threshold.getValue() &&
+                (callerPrefix == null || caller.startsWith(callerPrefix)) &&
+                (threadPrefix == null || thread.startsWith(threadPrefix)) &&
+                (messageRegex == null || message.matches(messageRegex));
+    }
+    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     protected LoggingRule(@Nonnull Level threshold, @Nullable String callerPrefix, @Nullable String threadPrefix, @Nullable String messageRegex) {
@@ -83,6 +96,30 @@ public class LoggingRule {
     @Pure
     public static @Nonnull LoggingRule with(@Nonnull Level threshold, @Nullable String callerPrefix, @Nullable String threadPrefix, @Nullable String messageRegex) {
         return new LoggingRule(threshold, callerPrefix, threadPrefix, messageRegex);
+    }
+    
+    /**
+     * Returns a logging rule with the given threshold, caller prefix and thread prefix.
+     */
+    @Pure
+    public static @Nonnull LoggingRule with(@Nonnull Level threshold, @Nullable String callerPrefix, @Nullable String threadPrefix) {
+        return new LoggingRule(threshold, callerPrefix, threadPrefix, null);
+    }
+    
+    /**
+     * Returns a logging rule with the given threshold and caller prefix.
+     */
+    @Pure
+    public static @Nonnull LoggingRule with(@Nonnull Level threshold, @Nullable String callerPrefix) {
+        return new LoggingRule(threshold, callerPrefix, null, null);
+    }
+    
+    /**
+     * Returns a logging rule with the given threshold.
+     */
+    @Pure
+    public static @Nonnull LoggingRule with(@Nonnull Level threshold) {
+        return new LoggingRule(threshold, null, null, null);
     }
     
     /* -------------------------------------------------- Encoding and Decoding -------------------------------------------------- */
@@ -110,8 +147,8 @@ public class LoggingRule {
      */
     @Pure
     private static @Nullable String getNonEmpty(@NonCaptured @Unmodified @Nonnull @NonNullableElements String[] tokens, int index) {
-        if (tokens.length >= index) {
-            final @Nonnull String token = tokens[1].trim();
+        if (tokens.length > index) {
+            final @Nonnull String token = tokens[index].trim();
             if (!token.isEmpty()) { return token; }
         }
         return null;
@@ -133,19 +170,6 @@ public class LoggingRule {
         final @Nullable String threadPrefix = getNonEmpty(tokens, 2);
         final @Nullable String messageRegex = getNonEmpty(tokens, 3);
         return new LoggingRule(threshold, callerPrefix, threadPrefix, messageRegex);
-    }
-    
-    /* -------------------------------------------------- Acceptance -------------------------------------------------- */
-    
-    /**
-     * Returns whether this rule accepts the given message with the given arguments.
-     */
-    @Pure
-    public boolean accepts(@Nonnull Level level, @Nonnull String caller, @Nonnull String thread, @Nonnull String message) {
-        return level.getValue() >= threshold.getValue() &&
-                (callerPrefix == null || caller.startsWith(callerPrefix)) &&
-                (threadPrefix == null || thread.startsWith(threadPrefix)) &&
-                (messageRegex == null || message.matches(messageRegex));
     }
     
     /* -------------------------------------------------- Object -------------------------------------------------- */

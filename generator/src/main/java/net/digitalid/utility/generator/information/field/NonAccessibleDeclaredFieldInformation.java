@@ -6,7 +6,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.fixes.Quotes;
+import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 
 /**

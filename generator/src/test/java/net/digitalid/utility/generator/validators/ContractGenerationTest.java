@@ -59,7 +59,7 @@ import net.digitalid.utility.validation.annotations.size.Single;
 import net.digitalid.utility.validation.annotations.size.Size;
 import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
-import net.digitalid.utility.validation.annotations.string.Regex;
+import net.digitalid.utility.validation.annotations.substring.Regex;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;

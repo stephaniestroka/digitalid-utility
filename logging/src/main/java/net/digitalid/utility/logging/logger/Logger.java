@@ -54,7 +54,7 @@ public abstract class Logger {
     
     /* -------------------------------------------------- Initialization -------------------------------------------------- */
     
-    // TODO: Shouldn't this initialization be done with an @Initialize?
+    // TODO: Shouldn't this initialization be done with an @Initialize? (This does not yet exist down here in the dependency graph.)
     static {
         // NetBeans 8.1 crashes if you use type annotations on anonymous classes and lambda expressions!
         Thread.setDefaultUncaughtExceptionHandler((Thread thread, Throwable throwable) -> Log.error("The following issue caused this thread to terminate.", throwable));
