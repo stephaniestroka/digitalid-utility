@@ -46,8 +46,8 @@ public abstract class ProcessingLog {
     public static void initialize(@Nonnull String name) throws InvalidConfigurationException, FileNotFoundException {
         Caller.index.set(6);
         Version.string.set("0.7");
-        LoggingFilter.filter.set(ConfigurationBasedLoggingFilter.with(Files.with("config/" + name + ".conf"), LoggingRule.with(Level.INFORMATION)));
-        Logger.logger.set(FileLogger.with(Files.with("target/processor-logs/" + name + ".log")));
+        LoggingFilter.filter.set(ConfigurationBasedLoggingFilter.with(Files.relativeToWorkingDirectory("config/" + name + ".conf"), LoggingRule.with(Level.INFORMATION)));
+        Logger.logger.set(FileLogger.with(Files.relativeToWorkingDirectory("target/processor-logs/" + name + ".log")));
     }
     
     /* -------------------------------------------------- Mapping -------------------------------------------------- */

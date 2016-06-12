@@ -1,4 +1,4 @@
-package net.digitalid.utility.directory.logger;
+package net.digitalid.utility.logging.logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,13 +12,12 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
-import net.digitalid.utility.directory.FormerDirectory;
-import net.digitalid.utility.initialization.annotations.Initialize;
+import net.digitalid.utility.exceptions.UnexpectedFailureException;
+import net.digitalid.utility.file.Files;
 import net.digitalid.utility.logging.Level;
-import net.digitalid.utility.logging.Log;
-import net.digitalid.utility.logging.logger.FileLogger;
-import net.digitalid.utility.logging.logger.Logger;
-import net.digitalid.utility.logging.logger.StandardOutputLogger;
+import net.digitalid.utility.validation.annotations.file.existence.ExistentParent;
+import net.digitalid.utility.validation.annotations.file.kind.Normal;
+import net.digitalid.utility.validation.annotations.file.path.Absolute;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
@@ -32,7 +31,7 @@ public class RotatingFileLogger extends FileLogger {
     /**
      * Stores the date format of the file name.
      */
-    private static final @Nonnull ThreadLocal<DateFormat> fileFormat = new ThreadLocal<DateFormat>() {
+    private static final @Nonnull ThreadLocal<@Nonnull DateFormat> fileFormat = new ThreadLocal<DateFormat>() {
         @Override protected @Nonnull DateFormat initialValue() {
             return new SimpleDateFormat("yyyy-MM-dd");
         }
@@ -44,8 +43,8 @@ public class RotatingFileLogger extends FileLogger {
      * Returns the current file to log the messages to.
      */
     @Pure
-    private static @Nonnull File getCurrentFile() {
-        return new File(FormerDirectory.getLogsDirectory().getPath() + "/" + fileFormat.get().format(new Date()) + ".log");
+    private static @Nonnull @Absolute @Normal @ExistentParent File getCurrentFile() {
+        return Files.relativeToConfigurationDirectory("logs/" + fileFormat.get().format(new Date()) + ".log");
     }
     
     /* -------------------------------------------------- Current Date -------------------------------------------------- */
@@ -66,32 +65,32 @@ public class RotatingFileLogger extends FileLogger {
         try {
             setFile(getCurrentFile());
         } catch (@Nonnull FileNotFoundException exception) {
-            throw new RuntimeException("Could not open or create the log file '" + getCurrentFile().getAbsolutePath() + "'.", exception);
+            throw UnexpectedFailureException.with("Could not open or create the log file $.", exception, getCurrentFile().getAbsolutePath());
         }
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
-     * Creates a rotating file logger that logs the messages to the given non-nullable file.
+     * Creates a rotating file logger that logs the messages to files in the default directory.
      * 
-     * @throws FileNotFoundException if the given file cannot be opened or created.
+     * @throws FileNotFoundException if the current file cannot be opened or created.
      */
-    protected RotatingFileLogger(@Nonnull File file) throws FileNotFoundException {
-        super(file);
+    protected RotatingFileLogger() throws FileNotFoundException {
+        super(getCurrentFile());
         
         this.currentDate = new Date();
-        FormerDirectory.root.register((configuration, oldFile, newFile) -> rotate());
+        Files.directory.register((configuration, oldFile, newFile) -> rotate());
     }
     
     /**
-     * Returns a rotating file logger that logs the messages to the given non-nullable file.
+     * Returns a rotating file logger that logs the messages to files in the default directory.
      * 
      * @throws FileNotFoundException if the current file cannot be opened or created.
      */
     @Pure
     public static @Capturable @Nonnull RotatingFileLogger withDefaultDirectory() throws FileNotFoundException {
-        return new RotatingFileLogger(getCurrentFile());
+        return new RotatingFileLogger();
     }
     
     /* -------------------------------------------------- Logging -------------------------------------------------- */
@@ -103,22 +102,6 @@ public class RotatingFileLogger extends FileLogger {
         final Date date = new Date();
         if (date.getDate() != this.currentDate.getDate()) { rotate(); }
         super.log(level, caller, thread, message, throwable);
-    }
-    
-    /* -------------------------------------------------- Initialization -------------------------------------------------- */
-    
-    /**
-     * Initializes the logger with a rotating file logger.
-     */
-    @Impure
-    @Initialize(target = Logger.class, dependencies = {FormerDirectory.class})
-    public static void initialize() throws FileNotFoundException {
-        if (Logger.logger.get() instanceof StandardOutputLogger) {
-            Logger.logger.set(RotatingFileLogger.withDefaultDirectory());
-            Log.verbose("Replaced the default standard output logger with a rotating file logger.");
-        } else {
-            Log.verbose("Did not replace the non-default logger with a rotating file logger.");
-        }
     }
     
 }

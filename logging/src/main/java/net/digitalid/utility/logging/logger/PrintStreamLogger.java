@@ -46,6 +46,10 @@ public abstract class PrintStreamLogger extends Logger {
     protected void setPrintStream(@Captured @Nonnull PrintStream printStream) {
         Require.that(printStream != null).orThrow("The print stream may not be null.");
         
+        if (this.printStream != null) {
+            this.printStream.close();
+        }
+        
         this.printStream = printStream;
         
         final @Nonnull Properties properties = System.getProperties();

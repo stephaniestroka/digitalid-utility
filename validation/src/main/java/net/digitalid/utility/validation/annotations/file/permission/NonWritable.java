@@ -42,7 +42,7 @@ public @interface NonWritable {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == null || !#.canWrite()", "The # $ may not be writable.", element);
+            return Contract.with("# == null || !#.exists() || !#.canWrite()", "The # $ may not be writable.", element);
         }
         
     }

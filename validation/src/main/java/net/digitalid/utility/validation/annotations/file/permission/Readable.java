@@ -43,7 +43,7 @@ public @interface Readable {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == null || #.canRead()", "The # $ has to be readable.", element);
+            return Contract.with("# == null || !#.exists() || #.canRead()", "The # $ has to be readable.", element);
         }
         
     }

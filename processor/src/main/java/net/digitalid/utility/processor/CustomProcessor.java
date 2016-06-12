@@ -121,33 +121,32 @@ public abstract class CustomProcessor implements Processor {
     @Override
     public final boolean process(@NonCaptured @Unmodified @Nonnull Set<@Nonnull ? extends TypeElement> typeElements, @Nonnull RoundEnvironment roundEnvironment) {
         try {
-            ProcessingLog.initialize(getClass().getSimpleName());
-        } catch (@Nonnull InvalidConfigurationException exception) {
-            Log.error("The logging configuration is invalid:", exception);
-        } catch (@Nonnull FileNotFoundException exception) {
-            Log.error("Could not find the logging file:", exception); // TODO: Suppress this exception?
-        } catch (@Nonnull Exception exception) {
-            Log.error("What have I missed?", exception);
-        }
-        
-        if (round == 0) {
-            final @Nonnull String projectName = getProjectName(roundEnvironment);
-            ProcessingLog.information(getClass().getSimpleName() + " invoked" + (projectName.isEmpty() ? "" : " for project " + Quotes.inSingle(projectName)) + ":\n");
-        }
-        
-        final @Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations = FiniteIterable.of(typeElements);
-        if (round == 0 || !onlyInterestedInFirstRound) {
-            ProcessingLog.information("Process " + annotations.join(Brackets.SQUARE) + " in the " + Strings.getOrdinal(round + 1) + " round.");
             try {
-                process(annotations, roundEnvironment, round++);
-            } catch (@Nonnull Throwable throwable) {
-                Log.error("The compilation failed due to the following problem:", throwable);
-                throw throwable;
+                ProcessingLog.initialize(getClass().getSimpleName());
+            } catch (@Nonnull InvalidConfigurationException exception) {
+                Log.error("The logging configuration is invalid:", exception);
+            } catch (@Nonnull FileNotFoundException exception) {
+                Log.error("Could not find the logging file:", exception);
             }
-            ProcessingLog.information("Finish " + (consumeAnnotations(annotations, roundEnvironment) ? "with" : "without") + " claiming the annotations.\n" + (roundEnvironment.processingOver() || onlyInterestedInFirstRound ? "\n" : ""));
+            
+            if (round == 0) {
+                final @Nonnull String projectName = getProjectName(roundEnvironment);
+                ProcessingLog.information(getClass().getSimpleName() + " invoked" + (projectName.isEmpty() ? "" : " for project " + Quotes.inSingle(projectName)) + ":\n");
+            }
+            
+            final @Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations = FiniteIterable.of(typeElements);
+            final boolean annotationsConsumed = consumeAnnotations(annotations, roundEnvironment);
+            if (round == 0 || !onlyInterestedInFirstRound) {
+                ProcessingLog.information("Process " + annotations.join(Brackets.SQUARE) + " in the " + Strings.getOrdinal(round + 1) + " round.");
+                process(annotations, roundEnvironment, round++);
+                ProcessingLog.information("Finish " + (annotationsConsumed ? "with" : "without") + " claiming the annotations.\n" + (roundEnvironment.processingOver() || onlyInterestedInFirstRound ? "\n" : ""));
+            }
+            
+            return annotationsConsumed;
+        } catch (@Nonnull Throwable throwable) {
+            Log.error("The compilation failed due to the following problem:", throwable);
+            throw throwable;
         }
-        
-        return consumeAnnotations(annotations, roundEnvironment);
     }
     
     /* -------------------------------------------------- Annotations -------------------------------------------------- */

@@ -211,7 +211,7 @@ public class Configuration<P> {
     /**
      * Creates a configuration with the given nullable provider.
      */
-    protected Configuration(@Nonnull P provider) {
+    protected Configuration(@Nullable P provider) {
         this.provider = provider;
         
         final @Nonnull StackTraceElement element = Thread.currentThread().getStackTrace()[3];
