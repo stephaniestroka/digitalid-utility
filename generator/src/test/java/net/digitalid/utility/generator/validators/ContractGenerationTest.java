@@ -1,5 +1,7 @@
 package net.digitalid.utility.generator.validators;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 
@@ -11,6 +13,7 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
+import net.digitalid.utility.file.Files;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.ReadOnlyInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
@@ -24,11 +27,28 @@ import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.interfaces.BigIntegerNumerical;
 import net.digitalid.utility.interfaces.Countable;
 import net.digitalid.utility.interfaces.LongNumerical;
+import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.testing.ContractTest;
 import net.digitalid.utility.threading.annotations.MainThread;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.UniqueElements;
+import net.digitalid.utility.validation.annotations.file.existence.Existent;
+import net.digitalid.utility.validation.annotations.file.existence.ExistentParent;
+import net.digitalid.utility.validation.annotations.file.existence.NonExistent;
+import net.digitalid.utility.validation.annotations.file.existence.NonExistentParent;
+import net.digitalid.utility.validation.annotations.file.kind.Directory;
+import net.digitalid.utility.validation.annotations.file.kind.Normal;
+import net.digitalid.utility.validation.annotations.file.path.Absolute;
+import net.digitalid.utility.validation.annotations.file.path.Relative;
+import net.digitalid.utility.validation.annotations.file.permission.Executable;
+import net.digitalid.utility.validation.annotations.file.permission.NonExecutable;
+import net.digitalid.utility.validation.annotations.file.permission.NonReadable;
+import net.digitalid.utility.validation.annotations.file.permission.NonWritable;
+import net.digitalid.utility.validation.annotations.file.permission.Readable;
+import net.digitalid.utility.validation.annotations.file.permission.Writable;
+import net.digitalid.utility.validation.annotations.file.visibility.Hidden;
+import net.digitalid.utility.validation.annotations.file.visibility.Visible;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.index.IndexForInsertion;
 import net.digitalid.utility.validation.annotations.math.Negative;
@@ -88,7 +108,7 @@ interface BigIntegerValue extends BigIntegerNumerical<BigIntegerValue> {}
 
 @Mutable
 @GenerateSubclass
-public abstract class ContractGenerationTest extends ContractTest implements Countable, Validated.Value<String>, FreezableInterface {
+public class ContractGenerationTest extends ContractTest implements Countable, Validated.Value<String>, FreezableInterface {
     
     /* -------------------------------------------------- Instance -------------------------------------------------- */
     
@@ -191,6 +211,180 @@ public abstract class ContractGenerationTest extends ContractTest implements Cou
     @Test
     public void testUniqueInts() {
         test(INSTANCE::setUniqueIntArray, new int[] {1, 2}, new int[] {1, 1});
+    }
+    
+    /* -------------------------------------------------- File -------------------------------------------------- */
+    
+    private static final @Nonnull File testFile = Files.relativeToWorkingDirectory("target/test-files/file.txt");
+    
+    private static final @Nonnull File testDirectory = testFile.getParentFile();
+    
+    private static final @Nonnull File nonExistentFile = new File("target/test-files/directory/file.txt");
+    
+    private static final @Nonnull File nonExistentDirectory = new File("target/test-files/directory/subdirectory/");
+    
+    private static final @Nonnull File fullPermissions = Files.relativeToWorkingDirectory("target/test-files/full.sh");
+    
+    private static final @Nonnull File noPermissions = Files.relativeToWorkingDirectory("target/test-files/none.txt");
+    
+    private static final @Nonnull File hiddenFile = Files.relativeToWorkingDirectory("target/test-files/.hidden.txt");
+    
+    private static final @Nonnull File hiddenDirectory = Files.relativeToWorkingDirectory("target/test-files/.hidden/");
+    
+    static {
+        try {
+            testFile.createNewFile();
+            fullPermissions.createNewFile();
+            fullPermissions.setReadable(true);
+            fullPermissions.setWritable(true);
+            fullPermissions.setExecutable(true);
+            noPermissions.createNewFile();
+            noPermissions.setReadable(false);
+            noPermissions.setWritable(false);
+            noPermissions.setExecutable(false);
+            hiddenFile.createNewFile();
+            hiddenDirectory.mkdir();
+        } catch (@Nonnull IOException exception) {
+            Log.error("Could not create a file.", exception);
+        }
+    }
+    
+    @Impure
+    public void setExistent(@Existent File file) {}
+    
+    @Test
+    public void testExistent() {
+        testPositives(INSTANCE::setExistent, testFile, testDirectory);
+        testNegatives(INSTANCE::setExistent, nonExistentFile, nonExistentDirectory);
+    }
+    
+    @Impure
+    public void setExistentParent(@ExistentParent File file) {}
+    
+    @Test
+    public void testExistentParent() {
+        testPositives(INSTANCE::setExistentParent, testFile, testDirectory);
+        testNegatives(INSTANCE::setExistentParent, nonExistentFile, nonExistentDirectory);
+    }
+    
+    @Impure
+    public void setNonExistent(@NonExistent File file) {}
+    
+    @Test
+    public void testNonExistent() {
+        testPositives(INSTANCE::setNonExistent, nonExistentFile, nonExistentDirectory);
+        testNegatives(INSTANCE::setNonExistent, testFile, testDirectory);
+    }
+    
+    @Impure
+    public void setNonExistentParent(@NonExistentParent File file) {}
+    
+    @Test
+    public void testNonExistentParent() {
+        testPositives(INSTANCE::setNonExistentParent, nonExistentFile, nonExistentDirectory);
+        testNegatives(INSTANCE::setNonExistentParent, testFile, testDirectory);
+    }
+    
+    @Impure
+    public void setDirectory(@Directory File file) {}
+    
+    @Test
+    public void testDirectory() {
+        testPositives(INSTANCE::setDirectory, testDirectory, nonExistentDirectory);
+        testNegatives(INSTANCE::setDirectory, testFile);
+    }
+    
+    @Impure
+    public void setNormal(@Normal File file) {}
+    
+    @Test
+    public void testNormal() {
+        testPositives(INSTANCE::setNormal, testFile, nonExistentFile);
+        testNegatives(INSTANCE::setNormal, testDirectory);
+    }
+    
+    @Impure
+    public void setAbsolute(@Absolute File file) {}
+    
+    @Test
+    public void testAbsolute() {
+        testPositives(INSTANCE::setAbsolute, testFile, testDirectory);
+        testNegatives(INSTANCE::setAbsolute, nonExistentFile, nonExistentDirectory);
+    }
+    
+    @Impure
+    public void setRelative(@Relative File file) {}
+    
+    @Test
+    public void testRelative() {
+        testPositives(INSTANCE::setRelative, nonExistentFile, nonExistentDirectory);
+        testNegatives(INSTANCE::setRelative, testFile, testDirectory);
+    }
+    
+    @Impure
+    public void setExecutable(@Executable File file) {}
+    
+    @Test
+    public void testExecutable() {
+        test(INSTANCE::setExecutable, fullPermissions, noPermissions);
+    }
+    
+    @Impure
+    public void setNonExecutable(@NonExecutable File file) {}
+    
+    @Test
+    public void testNonExecutable() {
+        test(INSTANCE::setNonExecutable, noPermissions, fullPermissions);
+    }
+    
+    @Impure
+    public void setNonReadable(@NonReadable File file) {}
+    
+    @Test
+    public void testNonReadable() {
+        test(INSTANCE::setNonReadable, noPermissions, fullPermissions);
+    }
+    
+    @Impure
+    public void setNonWritable(@NonWritable File file) {}
+    
+    @Test
+    public void testNonWritable() {
+        test(INSTANCE::setNonWritable, noPermissions, fullPermissions);
+    }
+    
+    @Impure
+    public void setReadable(@Readable File file) {}
+    
+    @Test
+    public void testReadable() {
+        test(INSTANCE::setReadable, fullPermissions, noPermissions);
+    }
+    
+    @Impure
+    public void setWritable(@Writable File file) {}
+    
+    @Test
+    public void testWritable() {
+        test(INSTANCE::setWritable, fullPermissions, noPermissions);
+    }
+    
+    @Impure
+    public void setHidden(@Hidden File file) {}
+    
+    @Test
+    public void testHidden() {
+        testPositives(INSTANCE::setHidden, hiddenFile, hiddenDirectory);
+        testNegatives(INSTANCE::setHidden, testFile, testDirectory);
+    }
+    
+    @Impure
+    public void setVisible(@Visible File file) {}
+    
+    @Test
+    public void testVisible() {
+        testPositives(INSTANCE::setVisible, testFile, testDirectory);
+        testNegatives(INSTANCE::setVisible, hiddenFile, hiddenDirectory);
     }
     
     /* -------------------------------------------------- Index -------------------------------------------------- */

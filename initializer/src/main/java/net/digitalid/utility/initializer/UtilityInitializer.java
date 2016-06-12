@@ -1,11 +1,13 @@
 package net.digitalid.utility.initializer;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.configuration.Configuration;
+import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.file.Files;
 import net.digitalid.utility.initialization.annotations.Initialize;
 import net.digitalid.utility.logging.Level;
@@ -18,6 +20,8 @@ import net.digitalid.utility.logging.filter.LoggingRule;
 import net.digitalid.utility.logging.logger.Logger;
 import net.digitalid.utility.logging.logger.RotatingFileLogger;
 import net.digitalid.utility.logging.logger.StandardOutputLogger;
+import net.digitalid.utility.validation.annotations.file.existence.ExistentParent;
+import net.digitalid.utility.validation.annotations.file.path.Absolute;
 import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
@@ -50,8 +54,13 @@ public class UtilityInitializer {
     @Initialize(target = Files.class, dependencies = {UtilityInitializer.class})
     public static void initializeDirectory() {
         if (!Files.directory.isSet()) {
-            Files.directory.set(Files.relativeToWorkingDirectory(System.getProperty("user.home") + "/.digitalid/"));
-            Log.verbose("Set the configuration directory to '~/.digitalid/'.");
+            final @Nonnull @Absolute @ExistentParent File directory = Files.relativeToWorkingDirectory(System.getProperty("user.home") + "/.digitalid/");
+            if (directory.mkdir()) {
+                Files.directory.set(directory);
+                Log.verbose("Set the configuration directory to '~/.digitalid/'.");
+            } else {
+                throw UnexpectedFailureException.with("Could not create the directory '~/.digitalid/'.");
+            }
         } else {
             Log.verbose("Did not set the configuration directory to '~/.digitalid/' because it is already set to $.", Files.directory.get().getAbsolutePath());
         }

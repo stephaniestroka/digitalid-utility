@@ -42,7 +42,7 @@ public @interface Directory {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == null || #.isDirectory()", "The # $ has to be a directory.", element);
+            return Contract.with("# == null || !#.exists() || #.isDirectory()", "The # $ has to be a directory.", element);
         }
         
     }

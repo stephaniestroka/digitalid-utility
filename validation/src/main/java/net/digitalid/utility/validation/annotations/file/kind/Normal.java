@@ -42,7 +42,7 @@ public @interface Normal {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == null || #.isFile()", "The # $ has to be a normal file.", element);
+            return Contract.with("# == null || !#.exists() || #.isFile()", "The # $ has to be a normal file.", element);
         }
         
     }
