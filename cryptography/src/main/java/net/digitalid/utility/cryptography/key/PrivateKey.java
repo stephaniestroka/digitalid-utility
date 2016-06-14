@@ -13,7 +13,7 @@ import net.digitalid.utility.group.annotations.InGroup;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
 import net.digitalid.utility.math.GroupWithKnownOrder;
-import net.digitalid.utility.validation.annotations.getter.Derive;
+import net.digitalid.utility.validation.annotations.generation.Derive;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**

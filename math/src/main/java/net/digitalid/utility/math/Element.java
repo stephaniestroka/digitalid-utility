@@ -14,7 +14,7 @@ import net.digitalid.utility.group.GroupMember;
 import net.digitalid.utility.group.annotations.InSameGroup;
 import net.digitalid.utility.interfaces.BigIntegerNumerical;
 import net.digitalid.utility.rootclass.RootClass;
-import net.digitalid.utility.validation.annotations.getter.Normalize;
+import net.digitalid.utility.validation.annotations.generation.Normalize;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**

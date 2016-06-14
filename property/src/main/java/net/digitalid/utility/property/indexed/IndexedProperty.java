@@ -11,7 +11,7 @@ import net.digitalid.utility.collections.map.ReadOnlyMap;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.property.Property;
-import net.digitalid.utility.validation.annotations.getter.Default;
+import net.digitalid.utility.validation.annotations.generation.Default;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Validated;
 

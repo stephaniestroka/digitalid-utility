@@ -10,7 +10,7 @@ import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.rootclass.RootInterface;
-import net.digitalid.utility.validation.annotations.getter.Default;
+import net.digitalid.utility.validation.annotations.generation.Default;
 import net.digitalid.utility.validation.annotations.size.Size;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -36,14 +36,13 @@ public abstract class InitializationVector extends IvParameterSpec implements Ro
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected InitializationVector(@Nonnull @Size(16) byte[] bytes) {
+    protected InitializationVector(@Default(name = "RandomBytes", value = "InitializationVector.getRandomBytes()") @Nonnull @Size(16) byte[] bytes) {
         super(bytes);
     }
     
     /* -------------------------------------------------- Bytes -------------------------------------------------- */
     
     @Pure
-    @Default(name = "RandomBytes", value = "InitializationVector.getRandomBytes()")
     public @Capturable @Nonnull @Size(16) byte[] getBytes() {
         return super.getIV();
     }

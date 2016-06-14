@@ -1,6 +1,7 @@
 package net.digitalid.utility.validation.validator;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 
@@ -21,13 +22,11 @@ public interface ContractGenerator {
     /* -------------------------------------------------- Contract Generation -------------------------------------------------- */
     
     /**
-     * Generates the contract for the given element which is annotated with the given annotation mirror.
-     * The annotation mirror can be used to retrieve possible annotation values.
-     * The type importer can be used to import referenced types.
+     * Generates the contract for the given element which is annotated with the given annotation mirror or returns null if the annotation validator exists only to check the usage.
      */
     @Pure
-    public default @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
-        return Contract.with("true", "The universe got hacked if true is no longer true.");
+    public default @Nullable Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull TypeImporter typeImporter) {
+        return null;
     }
     
 }

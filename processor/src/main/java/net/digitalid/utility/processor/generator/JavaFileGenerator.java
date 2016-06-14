@@ -851,28 +851,30 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn()
-    protected void addContract(@Nonnull Class<? extends Constraint> contractType, @Nonnull Contract generatedContract) {
-        addStatement(importIfPossible(contractType) + ".that(" + generatedContract.getCondition() + ").orThrow(" + Quotes.inDouble(generatedContract.getMessage()) + (!generatedContract.getArguments().isEmpty() ? ", " + generatedContract.getArguments().join() : "") + ")");
+    protected void addContract(@Nonnull Class<? extends Constraint> contractType, @Nullable Contract generatedContract) {
+        if (generatedContract != null) {
+            addStatement(importIfPossible(contractType) + ".that(" + generatedContract.getCondition() + ").orThrow(" + Quotes.inDouble(generatedContract.getMessage()) + generatedContract.getArguments().join(", ", "", "") + ")");
+        }
     }
     
     @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn()
-    public void addPrecondition(@Nonnull Contract generatedContract) {
+    public void addPrecondition(@Nullable Contract generatedContract) {
         addContract(Require.class, generatedContract);
     }
     
     @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn()
-    public void addPostcondition(@Nonnull Contract generatedContract) {
+    public void addPostcondition(@Nullable Contract generatedContract) {
         addContract(Ensure.class, generatedContract);
     }
     
     @Impure
     @NonWrittenRecipient
     @OnlyPossibleIn()
-    public void addInvariant(@Nonnull Contract generatedContract) {
+    public void addInvariant(@Nullable Contract generatedContract) {
         addContract(Validate.class, generatedContract);
     }
     

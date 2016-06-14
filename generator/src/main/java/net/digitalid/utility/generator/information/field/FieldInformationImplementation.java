@@ -18,7 +18,7 @@ import net.digitalid.utility.generator.information.ElementInformationImplementat
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
-import net.digitalid.utility.validation.annotations.getter.Default;
+import net.digitalid.utility.validation.annotations.generation.Default;
 
 import com.sun.tools.javac.code.Type;
 
@@ -107,7 +107,7 @@ public abstract class FieldInformationImplementation extends ElementInformationI
     }
     
     @Pure
-    // TODO: Why is method not in the interface?
+    // TODO: Why is this method not in the interface?
     public boolean isIterable() {
         return ProcessingUtility.isRawSubtype(getType(), Iterable.class);
     }
@@ -124,6 +124,7 @@ public abstract class FieldInformationImplementation extends ElementInformationI
      * Returns true if the field is required, false otherwise.
      */
     public boolean isMandatory() {
+        // TODO: The underlying element can also be the getter and it shouldn't matter whether the getter is final!
         return !(this.hasDefaultValue() || this.hasAnnotation(Nullable.class) || !this.getModifiers().contains(Modifier.FINAL));
     }
     

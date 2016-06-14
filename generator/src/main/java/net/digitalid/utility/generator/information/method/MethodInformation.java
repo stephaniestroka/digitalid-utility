@@ -22,7 +22,6 @@ import net.digitalid.utility.collaboration.annotations.TODO;
 import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.conversion.annotations.Recover;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.annotations.meta.Interceptor;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
@@ -34,7 +33,8 @@ import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.string.Strings;
-import net.digitalid.utility.validation.annotations.getter.Default;
+import net.digitalid.utility.validation.annotations.generation.Default;
+import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.processing.AnnotationHandlerUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
@@ -93,6 +93,7 @@ public class MethodInformation extends ExecutableInformation {
      */
     @Pure
     public boolean isGetter() {
+        // TODO: Remove the static check (see ProcessingUtility#isGetter)?
         return !isStatic() && !isGeneric() && !throwsExceptions() && !hasParameters() && hasReturnType() && (getName().startsWith("get") || (getName().startsWith("is") || getName().startsWith("has")) && hasReturnType(boolean.class));
     }
     

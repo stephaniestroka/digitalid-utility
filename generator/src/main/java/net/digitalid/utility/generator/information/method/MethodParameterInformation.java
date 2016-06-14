@@ -14,7 +14,7 @@ import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
-import net.digitalid.utility.validation.annotations.getter.Default;
+import net.digitalid.utility.validation.annotations.generation.Default;
 
 import com.sun.tools.javac.code.Type;
 
