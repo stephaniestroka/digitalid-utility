@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.Properties;
 
 import javax.annotation.Nonnull;
 
@@ -54,7 +55,16 @@ public class FileLogger extends PrintStreamLogger {
      */
     @Impure
     protected void setFile(@Captured @Nonnull @Normal @Writable @ExistentParent File file) throws FileNotFoundException {
-        setPrintStream(new PrintStream(new FileOutputStream(file, true)));
+        final @Nonnull PrintStream printStream = new PrintStream(new FileOutputStream(file, true));
+        
+        final @Nonnull Properties properties = System.getProperties();
+        printStream.println();
+        printStream.println(properties.getProperty("java.runtime.name") + " " + properties.getProperty("java.runtime.version"));
+        printStream.println(properties.getProperty("java.vm.name") + " " + properties.getProperty("java.vm.version"));
+        printStream.println(properties.getProperty("os.name") + " " + properties.getProperty("os.version") + " on " + properties.getProperty("os.arch"));
+        printStream.println();
+        
+        setPrintStream(printStream);
     }
     
 }

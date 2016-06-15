@@ -4,7 +4,6 @@ import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Properties;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,7 +42,7 @@ public abstract class PrintStreamLogger extends Logger {
      * Sets the print stream to which the messages are printed.
      */
     @Impure
-    protected void setPrintStream(@Captured @Nonnull PrintStream printStream) {
+    protected synchronized void setPrintStream(@Captured @Nonnull PrintStream printStream) {
         Require.that(printStream != null).orThrow("The print stream may not be null.");
         
         if (this.printStream != null) {
@@ -51,13 +50,6 @@ public abstract class PrintStreamLogger extends Logger {
         }
         
         this.printStream = printStream;
-        
-        final @Nonnull Properties properties = System.getProperties();
-        printStream.println();
-        printStream.println(properties.getProperty("java.runtime.name") + " " + properties.getProperty("java.runtime.version"));
-        printStream.println(properties.getProperty("java.vm.name") + " " + properties.getProperty("java.vm.version"));
-        printStream.println(properties.getProperty("os.name") + " " + properties.getProperty("os.version") + " on " + properties.getProperty("os.arch"));
-        printStream.println();
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
