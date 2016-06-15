@@ -19,7 +19,6 @@ import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.processing.logging.ErrorLogger;
-import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
@@ -50,7 +49,6 @@ public @interface Caught {
         @Pure
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
-            // TODO: Yes it is! :-) // errorLogger.log("Is the usage even checked?", SourcePosition.of(element, annotationMirror));
             // TODO: Check that this annotation is only used on methods without a return type or reference type that is nullable.
         }
         
@@ -64,16 +62,12 @@ public @interface Caught {
         @Override
         // TODO: Why is the result variable and a default value passed here? The annotation mirror would be more useful...
         protected void implementInterceptorMethod(@Nonnull JavaFileGenerator javaFileGenerator, @Nonnull MethodInformation method, @Nonnull String statement, @Nullable String resultVariable, @Nullable String defaultValue) {
-            ProcessingLog.warning("1: " + javaFileGenerator.getCodeBlockStackAsString());
             javaFileGenerator.beginTry();
-            ProcessingLog.warning("2: " + javaFileGenerator.getCodeBlockStackAsString());
             javaFileGenerator.addStatement((method.hasReturnType() ? "return " : "") + statement);
             javaFileGenerator.endTryOrCatchBeginCatch(Exception.class); // TODO: Read this from the annotation mirror!
-            ProcessingLog.warning("3: " + javaFileGenerator.getCodeBlockStackAsString());
             javaFileGenerator.addStatement(javaFileGenerator.importIfPossible(Log.class) + ".error(\"A problem occurred.\", exception)");
             if (method.hasReturnType()) { javaFileGenerator.addStatement("return null"); }
             javaFileGenerator.endCatch();
-            ProcessingLog.warning("4: " + javaFileGenerator.getCodeBlockStackAsString());
         }
         
     }
