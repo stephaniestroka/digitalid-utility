@@ -10,14 +10,8 @@ import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 
-@TODO(task = "The inheritance is wrong. MethodAnnotationValidator was intended for method preconditions, not for interceptors. The first two methods can then also be removed.", date = "2016-05-16", author = Author.KASPAR_ETTER)
+@TODO(task = "The inheritance is wrong. MethodAnnotationValidator was intended for method preconditions, not for interceptors. The first two methods can then also be removed. [This part is done by now.]", date = "2016-05-16", author = Author.KASPAR_ETTER)
 public abstract class MethodInterceptor implements MethodAnnotationValidator {
-    
-    @Pure
-    @Override
-    public @Nonnull Class<?> getReceiverType() {
-        return Object.class;
-    }
     
     @Pure
     protected abstract @Nonnull String getPrefix();

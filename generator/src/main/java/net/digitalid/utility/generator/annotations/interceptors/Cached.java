@@ -16,6 +16,12 @@ import net.digitalid.utility.generator.generators.BuilderGenerator;
  * @see BuilderGenerator
  */
 @Documented
-@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Cached {}
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Cached {
+    
+    // TODO: Implement the method interceptor!
+    
+    // TODO: Implement a usage check so that this annotation can only be used on methods with a return type!
+    
+}

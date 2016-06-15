@@ -14,6 +14,9 @@ import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.validation.annotations.generation.Default;
+import net.digitalid.utility.validation.annotations.generation.Derive;
+import net.digitalid.utility.validation.annotations.generation.Normalize;
 import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
@@ -21,7 +24,9 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 /**
  * This class checks the usage of code generation annotations.
  * 
- * @see net.digitalid.utility.validation.annotations.generation
+ * @see Default
+ * @see Derive
+ * @see Normalize
  */
 @Stateless
 public class GenerationValidator implements ValueAnnotationValidator {
@@ -34,15 +39,15 @@ public class GenerationValidator implements ValueAnnotationValidator {
         if (element.getKind() == ElementKind.PARAMETER) {
             final @Nonnull Element enclosingElement = element.getEnclosingElement();
             if (!(enclosingElement.getKind() == ElementKind.CONSTRUCTOR && ProcessingUtility.getConstructors(ProcessingUtility.getSurroundingType(element)).isSingle() || ProcessingUtility.hasAnnotation(enclosingElement, Recover.class))) {
-                errorLogger.log("The annotation $ may only be used on parameters of a unique constructor or an executable annotated with '@Recover'.", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
+                errorLogger.log("The generation annotation may only be used on parameters of a unique constructor or an executable annotated with '@Recover'.", SourcePosition.of(element, annotationMirror));
             }
         } else if (element.getKind() == ElementKind.METHOD) {
             final @Nonnull ExecutableElement method = (ExecutableElement) element;
             if (!method.getModifiers().contains(Modifier.ABSTRACT) || !ProcessingUtility.isGetter(method)) {
-                errorLogger.log("The annotation $ may only be used on abstract getters.", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
+                errorLogger.log("The generation annotation may only be used on abstract getters.", SourcePosition.of(element, annotationMirror));
             }
         } else {
-            errorLogger.log("The annotation $ may only be used on parameters and methods.", SourcePosition.of(element, annotationMirror), getAnnotationNameWithLeadingAt());
+            errorLogger.log("The generation annotation may only be used on parameters and methods.", SourcePosition.of(element, annotationMirror));
         }
     }
     

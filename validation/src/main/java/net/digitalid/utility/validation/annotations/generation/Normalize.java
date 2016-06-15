@@ -10,7 +10,6 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
-import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.validators.GenerationValidator;
 
 /**
@@ -18,23 +17,13 @@ import net.digitalid.utility.validation.validators.GenerationValidator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@ValueValidator(Normalize.Validator.class)
+@ValueValidator(GenerationValidator.class)
 @Target({ElementType.PARAMETER, ElementType.METHOD})
 public @interface Normalize {
-    
-    /* -------------------------------------------------- Value -------------------------------------------------- */
     
     /**
      * Returns the expression with which the value is normalized.
      */
     @Nonnull @JavaExpression String value();
-    
-    /* -------------------------------------------------- Validator -------------------------------------------------- */
-    
-    /**
-     * This class checks the use of the surrounding annotation.
-     */
-    @Stateless
-    public static class Validator extends GenerationValidator {}
     
 }

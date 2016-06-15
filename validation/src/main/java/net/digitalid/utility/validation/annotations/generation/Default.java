@@ -10,7 +10,6 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
-import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.validators.GenerationValidator;
 
 /**
@@ -18,11 +17,9 @@ import net.digitalid.utility.validation.validators.GenerationValidator;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@ValueValidator(Default.Validator.class)
+@ValueValidator(GenerationValidator.class)
 @Target({ElementType.PARAMETER, ElementType.METHOD})
 public @interface Default {
-    
-    /* -------------------------------------------------- Values -------------------------------------------------- */
     
     /**
      * Returns the name that describes the default value.
@@ -33,13 +30,5 @@ public @interface Default {
      * Returns the default value as a Java expression.
      */
     @Nonnull @JavaExpression String value();
-    
-    /* -------------------------------------------------- Validator -------------------------------------------------- */
-    
-    /**
-     * This class checks the use of the surrounding annotation.
-     */
-    @Stateless
-    public static class Validator extends GenerationValidator {}
     
 }
