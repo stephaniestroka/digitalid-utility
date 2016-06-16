@@ -15,7 +15,6 @@ import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.state.Unmodifiable;
-import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.exceptions.ConformityViolation;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.functional.interfaces.Predicate;
@@ -37,6 +36,7 @@ import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.size.MinSize;
 
 /**
