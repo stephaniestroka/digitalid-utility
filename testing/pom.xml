@@ -16,20 +16,8 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-logging</artifactId>
+            <artifactId>utility-validation</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>net.digitalid.utility</groupId>
-                    <artifactId>utility-bootstrap</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-bootstrap</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
