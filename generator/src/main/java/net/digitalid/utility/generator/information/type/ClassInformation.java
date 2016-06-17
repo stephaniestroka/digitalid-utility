@@ -15,7 +15,6 @@ import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.state.Unmodifiable;
-import net.digitalid.utility.exceptions.ConformityViolation;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
@@ -205,7 +204,9 @@ public class ClassInformation extends TypeInformation {
         final @Nonnull String nameRegex = "(get|has|is)" + Strings.capitalizeFirstLetters(fieldName);
         final @Nullable MethodInformation methodInformation = methodsOfType.findFirst(MethodSignatureMatcher.of(nameRegex));
         if (methodInformation == null) {
-            throw ConformityViolation.with("Getter method for $ not found", fieldName);
+            // TODO: Thou shalt not throw exceptions during annotation processing!
+            throw UnexpectedFailureException.with("Getter method for $ not found", fieldName);
+//            throw ConformityViolation.with("Getter method for $ not found", fieldName);
         }
         return methodInformation;
     }
