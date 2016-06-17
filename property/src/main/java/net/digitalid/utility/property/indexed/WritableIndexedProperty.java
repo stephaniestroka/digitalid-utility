@@ -11,7 +11,7 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.collections.map.ReadOnlyMap;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.annotations.value.Validated;
+import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
  * This writable property stores indexed values.
@@ -30,7 +30,7 @@ public abstract class WritableIndexedProperty<K, V, R extends ReadOnlyMap<@Nonnu
      * @require !getMap().containsKey(key) : "The key may not already be used.";
      */
     @Impure
-    public abstract void add(@Captured @Nonnull K key, @Captured @Nonnull @Validated V value);
+    public abstract void add(@Captured @Nonnull K key, @Captured @Nonnull @Valid V value);
     
     /**
      * Removes the value indexed by the given key from this property.
@@ -41,7 +41,7 @@ public abstract class WritableIndexedProperty<K, V, R extends ReadOnlyMap<@Nonnu
      * @require getMap().containsKey(key) : "The key has to be used.";
      */
     @Impure
-    public abstract @Capturable @Nonnull @Validated V remove(@NonCaptured @Unmodified @Nonnull K key);
+    public abstract @Capturable @Nonnull @Valid V remove(@NonCaptured @Unmodified @Nonnull K key);
     
     /* -------------------------------------------------- Notifications -------------------------------------------------- */
     
@@ -52,7 +52,7 @@ public abstract class WritableIndexedProperty<K, V, R extends ReadOnlyMap<@Nonnu
      * @require value.equals(get(key)) : "The key now has to map to the value.";
      */
     @Pure
-    protected void notifyAdded(@NonCaptured @Unmodified @Nonnull K key, @NonCaptured @Unmodified @Nonnull @Validated V value) {
+    protected void notifyAdded(@NonCaptured @Unmodified @Nonnull K key, @NonCaptured @Unmodified @Nonnull @Valid V value) {
         Require.that(value.equals(get(key))).orThrow("The key $ now has to map to the value $.", key, value);
         
         if (hasObservers()) {
@@ -69,7 +69,7 @@ public abstract class WritableIndexedProperty<K, V, R extends ReadOnlyMap<@Nonnu
      * @require !value.equals(get(key)) : "The key may no longer map to the value.";
      */
     @Pure
-    protected void notifyRemoved(@NonCaptured @Unmodified @Nonnull K key, @NonCaptured @Unmodified @Nonnull @Validated V value) {
+    protected void notifyRemoved(@NonCaptured @Unmodified @Nonnull K key, @NonCaptured @Unmodified @Nonnull @Valid V value) {
         Require.that(!value.equals(get(key))).orThrow("The key $ may no longer map to the value $.", key, value);
         
         if (hasObservers()) {

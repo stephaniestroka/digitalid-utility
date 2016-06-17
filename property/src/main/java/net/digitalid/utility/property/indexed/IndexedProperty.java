@@ -13,7 +13,7 @@ import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.property.Property;
 import net.digitalid.utility.validation.annotations.generation.Default;
 import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.annotations.value.Validated;
+import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
  * This read-only property stores indexed values.
@@ -36,14 +36,14 @@ public abstract class IndexedProperty<K, V, R extends ReadOnlyMap<@Nonnull K, @N
          * 
          * @require getKeyValidator().evaluate(key) : "The key has to be valid.";
          */
-        public void added(@NonCaptured @Unmodified @Nonnull IndexedProperty<K, V, R> property, @NonCaptured @Unmodified @Nonnull K key, @NonCaptured @Unmodified @Nonnull @Validated V value);
+        public void added(@NonCaptured @Unmodified @Nonnull IndexedProperty<K, V, R> property, @NonCaptured @Unmodified @Nonnull K key, @NonCaptured @Unmodified @Nonnull @Valid V value);
         
         /**
          * This method is called on {@link Property#isRegistered(net.digitalid.utility.property.Property.Observer) registered} observers when an indexed value of the given property has been removed.
          * 
          * @require getKeyValidator().evaluate(key) : "The key has to be valid.";
          */
-        public void removed(@NonCaptured @Unmodified @Nonnull IndexedProperty<K, V, R> property, @NonCaptured @Unmodified @Nonnull K key, @NonCaptured @Unmodified @Nonnull @Validated V value);
+        public void removed(@NonCaptured @Unmodified @Nonnull IndexedProperty<K, V, R> property, @NonCaptured @Unmodified @Nonnull K key, @NonCaptured @Unmodified @Nonnull @Valid V value);
         
     }
     
@@ -64,7 +64,7 @@ public abstract class IndexedProperty<K, V, R extends ReadOnlyMap<@Nonnull K, @N
      * @require getKeyValidator().evaluate(key) : "The key has to be valid.";
      */
     @Pure
-    public abstract @NonCapturable @Nullable @Validated V get(@NonCaptured @Unmodified @Nonnull K key);
+    public abstract @NonCapturable @Nullable @Valid V get(@NonCaptured @Unmodified @Nonnull K key);
     
     /**
      * Returns a read-only view of the indexed values.

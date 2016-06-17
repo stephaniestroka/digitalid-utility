@@ -19,7 +19,7 @@ import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.generation.Default;
 import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.annotations.value.Validated;
+import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
  * This writable property stores indexed values in volatile memory.
@@ -54,7 +54,7 @@ public abstract class VolatileWritableIndexedProperty<K, V, R extends ReadOnlyMa
     
     @Pure
     @Override
-    public @NonCapturable @Nullable @Validated V get(@NonCaptured @Unmodified @Nonnull K key) {
+    public @NonCapturable @Nullable @Valid V get(@NonCaptured @Unmodified @Nonnull K key) {
         Require.that(getKeyValidator().evaluate(key)).orThrow("The key $ has to be valid.", key);
         
         return getMap().get(key);
@@ -64,7 +64,7 @@ public abstract class VolatileWritableIndexedProperty<K, V, R extends ReadOnlyMa
     
     @Impure
     @Override
-    public void add(@Captured @Nonnull K key, @Captured @Nonnull @Validated V value) {
+    public void add(@Captured @Nonnull K key, @Captured @Nonnull @Valid V value) {
         Require.that(getKeyValidator().evaluate(key)).orThrow("The key $ has to be valid.", key);
         Require.that(!getAll().containsKey(key)).orThrow("The key $ may not already be used.", key);
         
@@ -74,7 +74,7 @@ public abstract class VolatileWritableIndexedProperty<K, V, R extends ReadOnlyMa
     
     @Impure
     @Override
-    public @Capturable @Nonnull @Validated V remove(@NonCaptured @Unmodified @Nonnull K key) {
+    public @Capturable @Nonnull @Valid V remove(@NonCaptured @Unmodified @Nonnull K key) {
         Require.that(getKeyValidator().evaluate(key)).orThrow("The key $ has to be valid.", key);
         Require.that(getAll().containsKey(key)).orThrow("The key $ has to be used.", key);
         

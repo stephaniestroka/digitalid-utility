@@ -22,7 +22,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.annotations.type.Utility;
-import net.digitalid.utility.validation.annotations.value.Validated;
+import net.digitalid.utility.validation.annotations.value.Valid;
 import net.digitalid.utility.validation.validators.GenerationValidator;
 
 /* -------------------------------------------------- Functional -------------------------------------------------- */
@@ -231,7 +231,7 @@ abstract class IncorrectOrderingUsage extends RootClass {
 abstract class IncorrectValidatedUsage extends RootClass {
     
     @Pure
-    public void method(@IncorrectUsage(Validated.Validator.class) String string) {}
+    public void method(@IncorrectUsage(Valid.Validator.class) String string) {}
     
 }
 

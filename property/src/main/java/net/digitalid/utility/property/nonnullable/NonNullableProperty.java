@@ -9,7 +9,7 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.property.Property;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.annotations.value.Validated;
+import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
  * This read-only property stores a non-nullable value.
@@ -34,7 +34,7 @@ public abstract class NonNullableProperty<V> extends Property<V, NonNullableProp
          * @require !newValue.equals(oldValue) : "The new value may not be the same as the old value.";
          */
         @Impure
-        public void replaced(@NonCaptured @Unmodified @Nonnull NonNullableProperty<V> property, @NonCaptured @Unmodified @Nonnull @Validated V oldValue, @NonCaptured @Unmodified @Nonnull @Validated V newValue);
+        public void replaced(@NonCaptured @Unmodified @Nonnull NonNullableProperty<V> property, @NonCaptured @Unmodified @Nonnull @Valid V oldValue, @NonCaptured @Unmodified @Nonnull @Valid V newValue);
         
     }
     
@@ -44,6 +44,6 @@ public abstract class NonNullableProperty<V> extends Property<V, NonNullableProp
      * Returns the value of this non-nullable property.
      */
     @Pure
-    public abstract @Nonnull @Validated V get();
+    public abstract @Nonnull @Valid V get();
     
 }

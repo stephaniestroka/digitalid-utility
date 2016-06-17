@@ -11,7 +11,7 @@ import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.annotations.value.Validated;
+import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
  * This writable property stores a non-nullable value in volatile memory.
@@ -23,17 +23,17 @@ public abstract class VolatileWritableNonNullableProperty<V> extends WritableNon
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
-    private @Nonnull @Validated V value;
+    private @Nonnull @Valid V value;
     
     @Pure
     @Override
-    public @NonCapturable @Nonnull @Validated V get() {
+    public @NonCapturable @Nonnull @Valid V get() {
         return value;
     }
     
     @Impure
     @Override
-    public @Capturable @Nullable @Validated V set(@Captured @Nonnull @Validated V newValue) {
+    public @Capturable @Nullable @Valid V set(@Captured @Nonnull @Valid V newValue) {
         final @Nonnull V oldValue = this.value;
         this.value = newValue;
         
@@ -44,7 +44,7 @@ public abstract class VolatileWritableNonNullableProperty<V> extends WritableNon
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
-    protected VolatileWritableNonNullableProperty(@Captured @Nonnull @Validated V value) {
+    protected VolatileWritableNonNullableProperty(@Captured @Nonnull @Valid V value) {
         this.value = value;
     }
     
