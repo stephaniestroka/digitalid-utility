@@ -4,7 +4,7 @@
                              http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <artifactId>utility-generator</artifactId>
+    <artifactId>utility-parent</artifactId>
     <packaging>jar</packaging>
     
     <parent>
@@ -16,39 +16,33 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-processor</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-conversion</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-freezable</artifactId>
+            <artifactId>utility-system</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-threading</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-testing</artifactId>
+            <artifactId>utility-concurrency</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
-        <!-- TODO: Remove the following dependency!-->
         <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>tools</artifactId>
-            <version>1.7.0</version>
-            <scope>system</scope>
-            <optional>true</optional>
-            <systemPath>${java.home}/../lib/tools.jar</systemPath>
+            <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-initializer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-cryptography</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-console</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     

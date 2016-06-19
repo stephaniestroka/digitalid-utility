@@ -10,7 +10,7 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.annotations.value.Validated;
+import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
  * This writable property stores an extensible set of values.
@@ -28,7 +28,7 @@ public abstract class WritableExtensibleProperty<V, R extends ReadOnlySet<@Nonnu
      * @return whether the given value was not already stored.
      */
     @Impure
-    public abstract boolean add(@Captured @Nonnull @Validated V value);
+    public abstract boolean add(@Captured @Nonnull @Valid V value);
     
     /**
      * Removes the given value from the values of this property.
@@ -36,7 +36,7 @@ public abstract class WritableExtensibleProperty<V, R extends ReadOnlySet<@Nonnu
      * @return whether the given value was actually stored.
      */
     @Impure
-    public abstract boolean remove(@Captured @Nonnull @Validated V value);
+    public abstract boolean remove(@Captured @Nonnull @Valid V value);
     
     /* -------------------------------------------------- Notifications -------------------------------------------------- */
     
@@ -46,7 +46,7 @@ public abstract class WritableExtensibleProperty<V, R extends ReadOnlySet<@Nonnu
      * @require get().contains(value) : "This property has to contain the value.";
      */
     @Impure
-    protected void notifyAdded(@NonCaptured @Unmodified @Nonnull @Validated V value) {
+    protected void notifyAdded(@NonCaptured @Unmodified @Nonnull @Valid V value) {
         Require.that(get().contains(value)).orThrow("This property has to contain the value $ now.", value);
         
         if (hasObservers()) {
@@ -62,7 +62,7 @@ public abstract class WritableExtensibleProperty<V, R extends ReadOnlySet<@Nonnu
      * @require !get().contains(value) : "This property may no longer contain the value.";
      */
     @Pure
-    protected void notifyRemoved(@NonCaptured @Unmodified @Nonnull @Validated V value) {
+    protected void notifyRemoved(@NonCaptured @Unmodified @Nonnull @Valid V value) {
         Require.that(!get().contains(value)).orThrow("This property may no longer contain the value $.", value);
         
         if (hasObservers()) {

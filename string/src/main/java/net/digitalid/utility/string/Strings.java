@@ -85,17 +85,14 @@ public class Strings {
      */
     @Pure
     public static String capitalizeFirstLetters(String string) {
-        if (string == null || string.isEmpty()) {
-            return string;
-        } else {
-            final @Nonnull StringBuilder result = new StringBuilder(string);
-            int index = 0;
-            do {
-                result.replace(index, index + 1, result.substring(index, index + 1).toUpperCase());
-                index = result.indexOf(" ", index) + 1;
-            } while (index > 0 && index < result.length());
-            return result.toString();
-        }
+        if (string == null || string.isEmpty()) { return string; }
+        final @Nonnull StringBuilder result = new StringBuilder(string);
+        int index = 0;
+        do {
+            result.replace(index, index + 1, result.substring(index, index + 1).toUpperCase());
+            index = result.indexOf(" ", index) + 1;
+        } while (index > 0 && index < result.length());
+        return result.toString();
     }
     
     /**
@@ -103,7 +100,7 @@ public class Strings {
      */
     @Pure
     public static String decamelize(String string) {
-        if (string == null) { return null; }
+        if (string == null || string.isEmpty()) { return string; }
         final @Nonnull StringBuilder result = new StringBuilder(string);
         for (int index = 0; index < result.length(); index++) {
             if (Character.isUpperCase(result.charAt(index))) {
@@ -112,6 +109,15 @@ public class Strings {
             }
         }
         return result.toString();
+    }
+    
+    /**
+     * Returns the given string in snake case in lower case with spaces or propagates null.
+     */
+    @Pure
+    public static String desnake(String string) {
+        if (string == null || string.isEmpty()) { return string; }
+        return string.replace("_", " ").toLowerCase();
     }
     
     /**

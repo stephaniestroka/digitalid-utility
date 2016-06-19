@@ -17,7 +17,7 @@ import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.generation.Default;
 import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.annotations.value.Validated;
+import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
  * This writable property stores an extensible set of values in volatile memory.
@@ -50,7 +50,7 @@ public abstract class VolatileWritableExtensibleProperty<V, R extends ReadOnlySe
     
     @Impure
     @Override
-    public boolean add(@Captured @Nonnull @Validated V value) {
+    public boolean add(@Captured @Nonnull @Valid V value) {
         final boolean notAlreadyContained = getSet().add(value);
         if (notAlreadyContained) { notifyAdded(value); }
         return notAlreadyContained;
@@ -58,7 +58,7 @@ public abstract class VolatileWritableExtensibleProperty<V, R extends ReadOnlySe
     
     @Impure
     @Override
-    public boolean remove(@NonCaptured @Unmodified @Nonnull @Validated V value) {
+    public boolean remove(@NonCaptured @Unmodified @Nonnull @Valid V value) {
         final boolean contained = getSet().remove(value);
         if (contained) { notifyRemoved(value); }
         return contained;

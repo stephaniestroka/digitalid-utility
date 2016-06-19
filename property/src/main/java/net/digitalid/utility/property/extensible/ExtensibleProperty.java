@@ -11,7 +11,7 @@ import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.property.Property;
 import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.annotations.value.Validated;
+import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
  * This read-only property stores an extensible set of values.
@@ -33,13 +33,13 @@ public abstract class ExtensibleProperty<V, R extends ReadOnlySet<@Nonnull V>> e
          * This method is called on {@link Property#isRegistered(net.digitalid.utility.property.Property.Observer) registered} observers when a value of the given extensible property has been added.
          */
         @Impure
-        public void added(@NonCaptured @Unmodified @Nonnull ExtensibleProperty<V, R> property, @NonCaptured @Unmodified @Nonnull @Validated V value);
+        public void added(@NonCaptured @Unmodified @Nonnull ExtensibleProperty<V, R> property, @NonCaptured @Unmodified @Nonnull @Valid V value);
         
         /**
          * This method is called on {@link Property#isRegistered(net.digitalid.utility.property.Property.Observer) registered} observers when a value of the given extensible property has been removed.
          */
         @Impure
-        public void removed(@NonCaptured @Unmodified @Nonnull ExtensibleProperty<V, R> property, @NonCaptured @Unmodified @Nonnull @Validated V value);
+        public void removed(@NonCaptured @Unmodified @Nonnull ExtensibleProperty<V, R> property, @NonCaptured @Unmodified @Nonnull @Valid V value);
         
     }
     

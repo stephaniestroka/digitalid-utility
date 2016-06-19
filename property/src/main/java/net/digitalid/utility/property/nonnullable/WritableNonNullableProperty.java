@@ -11,7 +11,7 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.annotations.value.Validated;
+import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
  * This writable property stores a non-nullable value.
@@ -29,7 +29,7 @@ public abstract class WritableNonNullableProperty<V> extends NonNullableProperty
      * @return the old value of this property that got replaced by the given value.
      */
     @Impure
-    public abstract @Capturable @Nullable @Validated V set(@Captured @Nonnull @Validated V value);
+    public abstract @Capturable @Nullable @Valid V set(@Captured @Nonnull @Valid V value);
     
     /* -------------------------------------------------- Notification -------------------------------------------------- */
     
@@ -40,7 +40,7 @@ public abstract class WritableNonNullableProperty<V> extends NonNullableProperty
      * @require newValue.equals(get()) : "The new value has to be set for this property.";
      */
     @Pure
-    protected void notifyObservers(@NonCaptured @Unmodified @Nonnull @Validated V oldValue, @NonCaptured @Unmodified @Nonnull @Validated V newValue) {
+    protected void notifyObservers(@NonCaptured @Unmodified @Nonnull @Valid V oldValue, @NonCaptured @Unmodified @Nonnull @Valid V newValue) {
         Require.that(!newValue.equals(oldValue)).orThrow("The new value $ may not be the same as the old value $.", newValue, oldValue);
         Require.that(newValue.equals(get())).orThrow("The new value $ has to be set for this property.", newValue);
         

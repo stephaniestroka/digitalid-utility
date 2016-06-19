@@ -169,7 +169,7 @@ public class BuilderGenerator extends JavaFileGenerator {
             final @Nonnull Element annotationElement = annotationMirror.getAnnotationType().asElement();
             final @Nullable AnnotationValue annotationValue = ProcessingUtility.getAnnotationValue(annotationElement, Target.class);
             if (annotationElement != null) {
-                final com.sun.tools.javac.util.List<?> elementTypes = (com.sun.tools.javac.util.List<?>) annotationValue.getValue();
+                final List<?> elementTypes = (List<?>) annotationValue.getValue();
                 for (Object elementType : elementTypes) {
                     if (elementType == ElementType.FIELD || elementType == ElementType.TYPE_USE || elementType == ElementType.TYPE) {
                         annotationsSuitableForFields.add(annotationMirror);

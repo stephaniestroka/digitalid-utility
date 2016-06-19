@@ -94,7 +94,7 @@ import net.digitalid.utility.validation.annotations.type.nesting.MemberType;
 import net.digitalid.utility.validation.annotations.type.nesting.NestingOf;
 import net.digitalid.utility.validation.annotations.type.nesting.TopLevelType;
 import net.digitalid.utility.validation.annotations.value.Invariant;
-import net.digitalid.utility.validation.annotations.value.Validated;
+import net.digitalid.utility.validation.annotations.value.Valid;
 
 import org.junit.Test;
 
@@ -108,7 +108,7 @@ interface BigIntegerValue extends BigIntegerNumerical<BigIntegerValue> {}
 
 @Mutable
 @GenerateSubclass
-public class ContractGenerationTest extends ContractTest implements Countable, Validated.Value<String>, FreezableInterface {
+public class ContractGenerationTest extends ContractTest implements Countable, Valid.Value<String>, FreezableInterface {
     
     /* -------------------------------------------------- Instance -------------------------------------------------- */
     
@@ -996,7 +996,7 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     }
     
     @Impure
-    public void setValidated(@Validated String string) {}
+    public void setValidated(@Valid String string) {}
     
     @Test
     public void testValidated() {

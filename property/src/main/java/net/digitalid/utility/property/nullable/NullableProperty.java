@@ -11,7 +11,7 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.property.Property;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.annotations.value.Validated;
+import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
  * This read-only property stores a nullable value.
@@ -36,7 +36,7 @@ public abstract class NullableProperty<V> extends Property<V, NullableProperty.O
          * @require !Objects.equals(newValue, oldValue) : "The new value may not be the same as the old value.";
          */
         @Impure
-        public void replaced(@NonCaptured @Unmodified @Nonnull NullableProperty<V> property, @NonCaptured @Unmodified @Nullable @Validated V oldValue, @NonCaptured @Unmodified @Nullable @Validated V newValue);
+        public void replaced(@NonCaptured @Unmodified @Nonnull NullableProperty<V> property, @NonCaptured @Unmodified @Nullable @Valid V oldValue, @NonCaptured @Unmodified @Nullable @Valid V newValue);
         
     }
     
@@ -46,6 +46,6 @@ public abstract class NullableProperty<V> extends Property<V, NullableProperty.O
      * Returns the value of this nullable property.
      */
     @Pure
-    public abstract @NonCapturable @Nullable @Validated V get();
+    public abstract @NonCapturable @Nullable @Valid V get();
     
 }
