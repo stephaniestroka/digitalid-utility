@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.conversion.converter.Convertible;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateConverter;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
@@ -20,7 +19,7 @@ import net.digitalid.utility.rootclass.RootClass;
 @GenerateBuilder
 @GenerateSubclass
 @GenerateConverter
-public abstract class ComplexClass extends RootClass implements Convertible<ComplexClass> {
+public abstract class ComplexClass extends RootClass {
     
     public @Nonnull String text;
     
