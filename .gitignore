@@ -1,7 +1,5 @@
-*/utility-*.iml
-*/digitalid-utility-*.iml
-utility.iml
-digitalid-utility.iml
+*/config
 */target
-.idea/
 /target/
+.idea/
+*.iml

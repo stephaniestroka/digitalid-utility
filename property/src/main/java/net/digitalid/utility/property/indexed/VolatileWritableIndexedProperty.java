@@ -17,7 +17,7 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
-import net.digitalid.utility.validation.annotations.getter.Default;
+import net.digitalid.utility.validation.annotations.generation.Default;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Validated;
 

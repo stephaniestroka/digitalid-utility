@@ -1,19 +1,19 @@
 package net.digitalid.utility.logging.filter;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.file.Files;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.logging.exceptions.InvalidConfigurationException;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * Description.
+ * This logging filter loads its rules from a configuration file.
  */
 @Mutable
 public class ConfigurationBasedLoggingFilter extends RuleBasedLoggingFilter {
@@ -36,37 +36,34 @@ public class ConfigurationBasedLoggingFilter extends RuleBasedLoggingFilter {
      * Reloads the logging rules from the configuration file.
      */
     @Impure
-    public void reload() {
-        setRules(Files.getNonEmptyTrimmedLines(file).map(LoggingRule::parse));
+    public void reload() throws InvalidConfigurationException {
+        setRules(Files.readNonCommentNonEmptyTrimmedLines(file).map(LoggingRule::decode).evaluate());
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ConfigurationBasedLoggingFilter(@Nonnull File file) {
-        this.file = file;
+    /**
+     * Stores the comments at the beginning of each configuration file.
+     */
+    private final @Nonnull FiniteIterable<@Nonnull String> comments = FiniteIterable.of("# Only messages that match one of the following rules are logged.", "# There is one rule per line written in the following format:", "# Level-Threshold; Caller-Prefix; Thread-Prefix; Message-Regex", "# When skipping all subsequent tokens, the semicolons are optional.");
+    
+    protected ConfigurationBasedLoggingFilter(@Nonnull File file, @Nonnull @NonNullableElements LoggingRule... defaultRules) throws InvalidConfigurationException {
+        super(defaultRules);
         
-        if (!file.exists()) {
-            try (@Nonnull PrintWriter writer = new PrintWriter(file)) {
-                writer.println("# Only messages that match one of the following rules are logged.");
-                writer.println("# There is one rule per line written in the following format:");
-                writer.println("# Level-Threshold; Caller-Prefix; Thread-Prefix; Message-Regex");
-                writer.println("# When skipping all subsequent tokens, the semicolons are optional.");
-                writer.println("Information"); // TODO: Pass the default rules also to the constructor.
-            } catch (@Nonnull FileNotFoundException exception) {
-                throw UnexpectedFailureException.with(exception);
-            }
-            // TODO: Set the default rules here.
-        } else {
+        this.file = file;
+        if (file.exists()) {
             reload();
+        } else {
+            Files.write(comments.combine(getRules().map(LoggingRule::encode)), file);
         }
     }
     
     /**
-     * Returns a logging filter with the given configuration file.
+     * Returns a logging filter with the given configuration file and default rules.
      */
     @Pure
-    public static @Nonnull ConfigurationBasedLoggingFilter with(@Nonnull File file) {
-        return new ConfigurationBasedLoggingFilter(file);
+    public static @Nonnull ConfigurationBasedLoggingFilter with(@Nonnull File file, @Nonnull @NonNullableElements LoggingRule... defaultRules) throws InvalidConfigurationException {
+        return new ConfigurationBasedLoggingFilter(file, defaultRules);
     }
     
 }

@@ -1,11 +1,12 @@
 package net.digitalid.utility.functional.interfaces;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.ownership.NonCaptured;
-import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.functional.failable.FailablePredicate;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -14,16 +15,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  */
 @Immutable
 @Functional
-public interface Predicate<T> {
-    
-    /* -------------------------------------------------- Evaluation -------------------------------------------------- */
-    
-    /**
-     * Evaluates whether the given object satisfies this predicate.
-     * All implementations of this method have to be side-effect-free.
-     */
-    @Pure
-    public boolean evaluate(@NonCaptured @Unmodified T object);
+public interface Predicate<T> extends FailablePredicate<T, RuntimeException> {
     
     /* -------------------------------------------------- Conjunction -------------------------------------------------- */
     
@@ -39,12 +31,26 @@ public interface Predicate<T> {
      * Returns the conjunction of the given predicates.
      */
     @Pure
+    @SafeVarargs
+    public static <T> @Nonnull Predicate<T> and(@Nonnull @NonNullableElements Predicate<? super T>... predicates) {
+        return object -> {
+            for (@Nonnull Predicate<? super T> predicate : predicates) {
+                if (!predicate.evaluate(object)) { return false; }
+            }
+            return true;
+        };
+    }
+    
+    /**
+     * Returns the conjunction of the given predicates.
+     */
+    @Pure
     public static <T> @Nonnull Predicate<T> and(@Nonnull FiniteIterable<@Nonnull ? extends Predicate<? super T>> predicates) {
         return object -> {
-                for (@Nonnull Predicate<? super T> predicate : predicates) {
-                    if (!predicate.evaluate(object)) { return false; }
-                }
-                return true;
+            for (@Nonnull Predicate<? super T> predicate : predicates) {
+                if (!predicate.evaluate(object)) { return false; }
+            }
+            return true;
         };
     }
     
@@ -62,21 +68,33 @@ public interface Predicate<T> {
      * Returns the disjunction of the given predicates.
      */
     @Pure
+    @SafeVarargs
+    public static <T> @Nonnull Predicate<T> or(@Nonnull @NonNullableElements Predicate<? super T>... predicates) {
+        return object -> {
+            for (@Nonnull Predicate<? super T> predicate : predicates) {
+                if (predicate.evaluate(object)) { return true; }
+            }
+            return false;
+        };
+    }
+    
+    /**
+     * Returns the disjunction of the given predicates.
+     */
+    @Pure
     public static <T> @Nonnull Predicate<T> or(@Nonnull FiniteIterable<@Nonnull ? extends Predicate<? super T>> predicates) {
         return object -> {
-                for (@Nonnull Predicate<? super T> predicate : predicates) {
-                    if (predicate.evaluate(object)) { return true; }
-                }
-                return false;
+            for (@Nonnull Predicate<? super T> predicate : predicates) {
+                if (predicate.evaluate(object)) { return true; }
+            }
+            return false;
         };
     }
     
     /* -------------------------------------------------- Negation -------------------------------------------------- */
     
-    /**
-     * Returns the negation of this predicate.
-     */
     @Pure
+    @Override
     public default @Nonnull Predicate<T> negate() {
         return object -> !evaluate(object);
     }
@@ -93,29 +111,17 @@ public interface Predicate<T> {
     
     /* -------------------------------------------------- Conversion -------------------------------------------------- */
     
-    /**
-     * Returns this predicate as a unary function.
-     */
     @Pure
+    @Override
     public default @Nonnull UnaryFunction<T, @Nonnull Boolean> asFunction() {
         return object -> evaluate(object);
     }
     
     /* -------------------------------------------------- Null Handling -------------------------------------------------- */
     
-    /**
-     * Returns a new predicate based on this predicate that propagates null instead of evaluating it.
-     */
     @Pure
-    public default @Nonnull Predicate<T> propagateNull() {
-        return object -> object != null ? evaluate(object) : null;
-    }
-    
-    /**
-     * Returns a new predicate based on this predicate that returns the given default value for null.
-     */
-    @Pure
-    public default @Nonnull Predicate<T> replaceNull(boolean defaultValue) {
+    @Override
+    public default @Nonnull Predicate<@Nullable T> replaceNull(boolean defaultValue) {
         return object -> object != null ? evaluate(object) : defaultValue;
     }
     
@@ -124,11 +130,11 @@ public interface Predicate<T> {
     /**
      * Stores a predicate which always returns true.
      */
-    public static final @Nonnull Predicate<Object> ALWAYS_TRUE = object -> true;
+    public static final @Nonnull Predicate<@Nullable Object> ALWAYS_TRUE = object -> true;
     
     /**
      * Stores a predicate which always returns false.
      */
-    public static final @Nonnull Predicate<Object> ALWAYS_FALSE = object -> false;
+    public static final @Nonnull Predicate<@Nullable Object> ALWAYS_FALSE = object -> false;
     
 }

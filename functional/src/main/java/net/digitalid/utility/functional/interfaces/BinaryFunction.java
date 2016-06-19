@@ -1,11 +1,11 @@
 package net.digitalid.utility.functional.interfaces;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.ownership.NonCaptured;
-import net.digitalid.utility.annotations.parameter.Unmodified;
-import net.digitalid.utility.tuples.Pair;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.functional.failable.FailableBinaryFunction;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -14,24 +14,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  */
 @Immutable
 @Functional
-public interface BinaryFunction<I0, I1, O> {
-    
-    /* -------------------------------------------------- Evaluation -------------------------------------------------- */
-    
-    /**
-     * Evaluates this function for the given objects.
-     * All implementations of this method have to be side-effect-free.
-     */
-    @Pure
-    public O evaluate(@NonCaptured @Unmodified I0 object0, @NonCaptured @Unmodified I1 object1);
-    
-    /**
-     * Evaluates this function for the objects in the given pair.
-     */
-    @Pure
-    public default O evaluate(@Nonnull Pair<I0, I1> pair) {
-        return evaluate(pair.get0(), pair.get1());
-    }
+public interface BinaryFunction<I0, I1, O> extends FailableBinaryFunction<I0, I1, O, RuntimeException> {
     
     /* -------------------------------------------------- Composition -------------------------------------------------- */
     
@@ -53,20 +36,26 @@ public interface BinaryFunction<I0, I1, O> {
     
     /* -------------------------------------------------- Null Handling -------------------------------------------------- */
     
-    /**
-     * Returns a new function based on this function that propagates null instead of evaluating it.
-     */
     @Pure
-    public default @Nonnull BinaryFunction<I0, I1, O> propagateNull() {
-        return (object0, object1) -> object0 != null && object1 != null ? evaluate(object0, object1) : null;
+    @Override
+    public default @Nonnull BinaryFunction<@Nullable I0, @Nullable I1, O> replaceNull(@Captured O defaultValue) {
+        return (object0, object1) -> object0 != null && object1 != null ? evaluate(object0, object1) : defaultValue;
     }
     
+    @Pure
+    @Override
+    public default @Nonnull BinaryFunction<@Nullable I0, @Nullable I1, @Nullable O> propagateNull() {
+        return replaceNull(null);
+    }
+    
+    /* -------------------------------------------------- Constant -------------------------------------------------- */
+    
     /**
-     * Returns a new function based on this function that returns the given default value for null.
+     * Returns a binary function that always returns the given object.
      */
     @Pure
-    public default @Nonnull BinaryFunction<I0, I1, O> replaceNull(@Nonnull O defaultValue) {
-        return (object0, object1) -> object0 != null && object1 != null ? evaluate(object0, object1) : defaultValue;
+    public static <O> @Nonnull BinaryFunction<@Nullable Object, @Nullable Object, O> constant(@Captured O object) {
+        return (object0, object1) -> object;
     }
     
 }

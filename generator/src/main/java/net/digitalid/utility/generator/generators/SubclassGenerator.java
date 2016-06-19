@@ -11,10 +11,10 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.circumfixes.Brackets;
+import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
-import net.digitalid.utility.fixes.Brackets;
-import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.GeneratorProcessor;
 import net.digitalid.utility.generator.information.ElementInformation;
@@ -39,8 +39,8 @@ import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.tuples.Quartet;
 import net.digitalid.utility.tuples.Triplet;
-import net.digitalid.utility.validation.annotations.getter.Derive;
-import net.digitalid.utility.validation.annotations.getter.Normalize;
+import net.digitalid.utility.validation.annotations.generation.Derive;
+import net.digitalid.utility.validation.annotations.generation.Normalize;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.processing.AnnotationHandlerUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
@@ -330,7 +330,7 @@ public class SubclassGenerator extends JavaFileGenerator {
     }
     
     /**
-     * Generates a compare to method. This method should be implemented by the super class if the
+     * Generates a compare-to method. This method should be implemented by the super class if the
      * comparison algorithm is more complex and if the fields of the type do not implement Comparable.
      */
     protected void generateCompareToMethod() {

@@ -13,7 +13,7 @@ import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
-import net.digitalid.utility.fixes.Brackets;
+import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;

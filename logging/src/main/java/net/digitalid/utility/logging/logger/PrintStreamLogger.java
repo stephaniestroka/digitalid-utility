@@ -42,8 +42,12 @@ public abstract class PrintStreamLogger extends Logger {
      * Sets the print stream to which the messages are printed.
      */
     @Impure
-    protected void setPrintStream(@Captured @Nonnull PrintStream printStream) {
+    protected synchronized void setPrintStream(@Captured @Nonnull PrintStream printStream) {
         Require.that(printStream != null).orThrow("The print stream may not be null.");
+        
+        if (this.printStream != null) {
+            this.printStream.close();
+        }
         
         this.printStream = printStream;
     }
@@ -54,9 +58,7 @@ public abstract class PrintStreamLogger extends Logger {
      * Creates a print stream logger that logs the messages to the given print stream.
      */
     protected PrintStreamLogger(@Captured @Nonnull PrintStream printStream) {
-        Require.that(printStream != null).orThrow("The print stream may not be null.");
-        
-        this.printStream = printStream;
+        setPrintStream(printStream);
     }
     
     /* -------------------------------------------------- Logging -------------------------------------------------- */

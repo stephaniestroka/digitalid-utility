@@ -29,8 +29,8 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.fixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.ImmutableMap;
 import net.digitalid.utility.processing.annotations.LogsErrorWhenReturningNull;
@@ -414,9 +414,9 @@ public class ProcessingUtility {
      * Returns the given annotation entry as a string.
      */
     @Pure
-    private static @Nonnull String getAnnotationEntryAsString(@NonCaptured @Unmodified Map.@Nonnull Entry<@Nonnull ? extends ExecutableElement, @Nonnull ? extends AnnotationValue> annotationEntry, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
+    private static @Nonnull String getAnnotationEntryAsString(@NonCaptured @Unmodified Map.@Nonnull Entry<@Nonnull ? extends ExecutableElement, @Nonnull ? extends AnnotationValue> annotationEntry, @NonCaptured @Modified @Nonnull TypeImporter typeImporter, boolean isUniqueEntry) {
         final @Nonnull String methodName = annotationEntry.getKey().getSimpleName().toString();
-        return (methodName.equals("value") ? "" : methodName + " = ") + getAnnotationValueAsString(annotationEntry.getValue(), typeImporter);
+        return (isUniqueEntry && methodName.equals("value") ? "" : methodName + " = ") + getAnnotationValueAsString(annotationEntry.getValue(), typeImporter);
     }
     
     /**
@@ -424,7 +424,8 @@ public class ProcessingUtility {
      */
     @Pure
     public static @Nonnull String getAnnotationAsString(@Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-        return "@" + typeImporter.importIfPossible(annotationMirror.getAnnotationType()) + FiniteIterable.of(annotationMirror.getElementValues().entrySet()).map(annotationEntry -> getAnnotationEntryAsString(annotationEntry, typeImporter)).join(Brackets.ROUND, "");
+        final boolean isUniqueEntry = annotationMirror.getElementValues().size() == 1;
+        return "@" + typeImporter.importIfPossible(annotationMirror.getAnnotationType()) + FiniteIterable.of(annotationMirror.getElementValues().entrySet()).map(annotationEntry -> getAnnotationEntryAsString(annotationEntry, typeImporter, isUniqueEntry)).join(Brackets.ROUND, "");
     }
     
     /**
@@ -511,6 +512,35 @@ public class ProcessingUtility {
     @Pure
     public static boolean isRawSubtype(@Nonnull Element element, @Nonnull Class<?> type) {
         return ProcessingUtility.isRawSubtype(getType(element), type);
+    }
+    
+    /* -------------------------------------------------- Getters and Setters -------------------------------------------------- */
+    
+    /**
+     * Returns whether the given method is a (potentially static) getter.
+     */
+    @Pure
+    public static boolean isGetter(@Nonnull ExecutableElement method) {
+        final @Nonnull String name = method.getSimpleName().toString();
+        return method.getKind() == ElementKind.METHOD &&
+                method.getTypeParameters().isEmpty() &&
+                method.getThrownTypes().isEmpty() &&
+                method.getParameters().isEmpty() &&
+                method.getReturnType().getKind() != TypeKind.VOID &&
+                (name.startsWith("get") || (name.startsWith("is") || name.startsWith("has")) && isRawlyAssignable(method.getReturnType(), boolean.class));
+    }
+    
+    /**
+     * Returns whether the given method is a (potentially static) setter.
+     */
+    @Pure
+    public boolean isSetter(@Nonnull ExecutableElement method) {
+        return method.getKind() == ElementKind.METHOD &&
+                method.getTypeParameters().isEmpty() &&
+                method.getThrownTypes().isEmpty() &&
+                method.getParameters().size() == 1 &&
+                method.getReturnType().getKind() == TypeKind.VOID &&
+                method.getSimpleName().toString().startsWith("set");
     }
     
     /* -------------------------------------------------- Type Visitors -------------------------------------------------- */

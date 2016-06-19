@@ -8,7 +8,7 @@ import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- * This filter accepts all messages at and above the given threshold.
+ * This logging filter accepts all messages at and above the given threshold.
  */
 @Immutable
 public class LevelBasedLoggingFilter extends LoggingFilter {

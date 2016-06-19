@@ -8,8 +8,9 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
-import net.digitalid.utility.functional.interfaces.Predicate;
-import net.digitalid.utility.functional.interfaces.UnaryFunction;
+import net.digitalid.utility.functional.exceptions.FailedIterationException;
+import net.digitalid.utility.functional.failable.FailablePredicate;
+import net.digitalid.utility.functional.failable.FailableUnaryFunction;
 import net.digitalid.utility.functional.iterators.PruningIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
 import net.digitalid.utility.functional.iterators.ZippingIterator;
@@ -115,15 +116,17 @@ public interface FunctionalIterable<E> extends Iterable<E> {
     
     /**
      * Returns the elements of this iterable that satisfy the given predicate.
+     * Iterating over the returned iterable can throw a {@link FailedIterationException}.
      */
     @Pure
-    public @Nonnull FunctionalIterable<E> filter(@Nonnull Predicate<? super E> predicate);
+    public @Nonnull FunctionalIterable<E> filter(@Nonnull FailablePredicate<? super E, ?> predicate);
     
     /**
      * Returns the elements of this iterable that do not satisfy the given predicate.
+     * Iterating over the returned iterable can throw a {@link FailedIterationException}.
      */
     @Pure
-    public @Nonnull FunctionalIterable<E> filterNot(@Nonnull Predicate<? super E> predicate);
+    public @Nonnull FunctionalIterable<E> filterNot(@Nonnull FailablePredicate<? super E, ?> predicate);
     
     /**
      * Returns the elements of this iterable without the null values.
@@ -135,9 +138,10 @@ public interface FunctionalIterable<E> extends Iterable<E> {
     
     /**
      * Returns the elements of this iterable mapped by the given function.
+     * Iterating over the returned iterable can throw a {@link FailedIterationException}.
      */
     @Pure
-    public <F> @Nonnull FunctionalIterable<F> map(@Nonnull UnaryFunction<? super E, ? extends F> function);
+    public <F> @Nonnull FunctionalIterable<F> map(@Nonnull FailableUnaryFunction<? super E, ? extends F, ?> function);
     
     /* -------------------------------------------------- Instance -------------------------------------------------- */
     

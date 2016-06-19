@@ -13,7 +13,7 @@ import javax.lang.model.element.Element;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.fixes.Quotes;
+import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.MethodValidator;

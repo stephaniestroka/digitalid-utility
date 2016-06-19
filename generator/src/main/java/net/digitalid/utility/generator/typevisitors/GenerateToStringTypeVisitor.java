@@ -11,8 +11,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleTypeVisitor7;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.tuples.Pair;

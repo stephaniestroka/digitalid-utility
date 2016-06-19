@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.fixes.Brackets;
+import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.functional.interfaces.Collector;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.tuples.Quartet;

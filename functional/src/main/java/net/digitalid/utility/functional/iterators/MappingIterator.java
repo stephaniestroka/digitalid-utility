@@ -8,7 +8,8 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
-import net.digitalid.utility.functional.interfaces.UnaryFunction;
+import net.digitalid.utility.functional.exceptions.FailedIterationException;
+import net.digitalid.utility.functional.failable.FailableUnaryFunction;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
@@ -19,11 +20,11 @@ public class MappingIterator<O, I> extends SingleIteratorBasedIterator<O, I> {
     
     /* -------------------------------------------------- Predicate -------------------------------------------------- */
     
-    protected final @Nonnull UnaryFunction<? super I, ? extends O> function;
+    protected final @Nonnull FailableUnaryFunction<? super I, ? extends O, ?> function;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected MappingIterator(@Captured @Nonnull Iterator<I> primaryIterator, @Nonnull UnaryFunction<? super I, ? extends O> function) {
+    protected MappingIterator(@Captured @Nonnull Iterator<I> primaryIterator, @Nonnull FailableUnaryFunction<? super I, ? extends O, ?> function) {
         super(primaryIterator);
         
         this.function = function;
@@ -33,7 +34,7 @@ public class MappingIterator<O, I> extends SingleIteratorBasedIterator<O, I> {
      * Returns a new mapping iterator that iterates over the elements of the given iterator mapped by the given function.
      */
     @Pure
-    public static <O, I> @Capturable @Nonnull MappingIterator<O, I> with(@Captured @Nonnull Iterator<I> iterator, @Nonnull UnaryFunction<? super I, ? extends O> function) {
+    public static <O, I> @Capturable @Nonnull MappingIterator<O, I> with(@Captured @Nonnull Iterator<I> iterator, @Nonnull FailableUnaryFunction<? super I, ? extends O, ?> function) {
         return new MappingIterator<>(iterator, function);
     }
     
@@ -48,7 +49,11 @@ public class MappingIterator<O, I> extends SingleIteratorBasedIterator<O, I> {
     @Impure
     @Override
     public O next() {
-        return function.evaluate(primaryIterator.next());
+        try {
+            return function.evaluate(primaryIterator.next());
+        } catch (@Nonnull Exception exception) {
+            throw FailedIterationException.with(exception);
+        }
     }
     
 }

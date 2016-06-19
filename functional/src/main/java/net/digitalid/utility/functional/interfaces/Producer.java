@@ -5,7 +5,8 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.functional.failable.FailableProducer;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -14,15 +15,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  */
 @Mutable
 @Functional
-public interface Producer<T> {
-    
-    /* -------------------------------------------------- Production -------------------------------------------------- */
-    
-    /**
-     * Produces a result.
-     */
-    @Impure
-    public @Capturable T produce();
+public interface Producer<T> extends FailableProducer<T, RuntimeException> {
     
     /* -------------------------------------------------- Composition -------------------------------------------------- */
     
@@ -30,19 +23,63 @@ public interface Producer<T> {
      * Returns the composition of this producer followed by the given function.
      */
     @Pure
-    public default <O> @Nonnull Producer<O> after(@Nonnull UnaryFunction<? super T, ? extends O> function) {
+    public default <O> @Nonnull Producer<O> before(@Nonnull UnaryFunction<? super T, ? extends O> function) {
         return () -> function.evaluate(produce());
     }
     
     /* -------------------------------------------------- Conversion -------------------------------------------------- */
     
-    /**
-     * Returns this producer as a unary function that ignores its input.
-     * This method may only be called if this producer is side-effect-free.
-     */
     @Pure
+    @Override
     public default @Nonnull UnaryFunction<@Nullable Object, T> asFunction() {
         return object -> produce();
+    }
+    
+    /* -------------------------------------------------- Synchronization -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public default @Nonnull Producer<T> synchronize() {
+        return () -> {
+            synchronized (this) {
+                return produce();
+            }
+        };
+    }
+    
+    /* -------------------------------------------------- Memoization -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public default @Nonnull Producer<T> memoize(long duration) {
+        return new Producer<T>() {
+            
+            private T cachedObject = null;
+            
+            private long lastProduction = 0;
+            
+            @Impure
+            @Override
+            public T produce() {
+                final long currentTime = System.currentTimeMillis();
+                if (lastProduction == 0 || lastProduction + duration < currentTime) {
+                    this.cachedObject = Producer.this.produce();
+                    this.lastProduction = currentTime;
+                }
+                return cachedObject;
+            }
+            
+        };
+    }
+    
+    /* -------------------------------------------------- Constant -------------------------------------------------- */
+    
+    /**
+     * Returns a producer that always produces the given object.
+     */
+    @Pure
+    public static <T> @Nonnull Producer<T> constant(@Captured T object) {
+        return () -> object;
     }
     
 }

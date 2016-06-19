@@ -3,6 +3,7 @@ package net.digitalid.utility.logging.exceptions;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.exceptions.InternalException;
 import net.digitalid.utility.immutable.ImmutableList;
@@ -29,6 +30,7 @@ public abstract class ExternalException extends Exception {
      * 
      * @see Strings#format(java.lang.CharSequence, java.lang.Object...)
      */
+    @Pure
     public @Nonnull ImmutableList<@Nullable Object> getArguments() {
         return arguments;
     }

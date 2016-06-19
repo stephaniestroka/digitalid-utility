@@ -5,10 +5,11 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
-import net.digitalid.utility.functional.interfaces.Predicate;
+import net.digitalid.utility.functional.failable.FailablePredicate;
+import net.digitalid.utility.functional.failable.FailableProducer;
+import net.digitalid.utility.functional.failable.FailableUnaryFunction;
+import net.digitalid.utility.functional.failable.FailableUnaryOperator;
 import net.digitalid.utility.functional.interfaces.Producer;
-import net.digitalid.utility.functional.interfaces.UnaryFunction;
-import net.digitalid.utility.functional.interfaces.UnaryOperator;
 import net.digitalid.utility.functional.iterators.FilteringIterator;
 import net.digitalid.utility.functional.iterators.FlatteningIterator;
 import net.digitalid.utility.functional.iterators.GeneratingIterator;
@@ -44,7 +45,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
      * Returns a new infinite iterable that iterates over the sequence produced by the given operator from the given first element.
      */
     @Pure
-    public static <E> @Nonnull InfiniteIterable<E> iterate(@Captured E firstElement, @Nonnull UnaryOperator<E> unaryOperator) {
+    public static <E> @Nonnull InfiniteIterable<E> iterate(@Captured E firstElement, @Nonnull FailableUnaryOperator<E, ?> unaryOperator) {
         return () -> IteratingIterator.with(firstElement, unaryOperator);
     }
     
@@ -54,7 +55,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
      * {@link #get(int)} are no longer side-effect free and calling them repeatedly leads to unexpected results.
      */
     @Pure
-    public static <E> @Nonnull InfiniteIterable<E> generate(@Captured @Nonnull Producer<? extends Producer<? extends E>> producer) {
+    public static <E> @Nonnull InfiniteIterable<E> generate(@Captured @Nonnull Producer<? extends FailableProducer<? extends E, ?>> producer) {
         return () -> GeneratingIterator.with(producer.produce());
     }
     
@@ -78,13 +79,13 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default @Nonnull InfiniteIterable<E> filter(@Nonnull Predicate<? super E> predicate) {
+    public default @Nonnull InfiniteIterable<E> filter(@Nonnull FailablePredicate<? super E, ?> predicate) {
         return () -> FilteringIterator.with(iterator(), predicate);
     }
     
     @Pure
     @Override
-    public default @Nonnull InfiniteIterable<E> filterNot(@Nonnull Predicate<? super E> predicate) {
+    public default @Nonnull InfiniteIterable<E> filterNot(@Nonnull FailablePredicate<? super E, ?> predicate) {
         return filter(predicate.negate());
     }
     
@@ -98,7 +99,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default <F> @Nonnull InfiniteIterable<F> map(@Nonnull UnaryFunction<? super E, ? extends F> function) {
+    public default <F> @Nonnull InfiniteIterable<F> map(@Nonnull FailableUnaryFunction<? super E, ? extends F, ?> function) {
         return () -> MappingIterator.with(iterator(), function);
     }
     

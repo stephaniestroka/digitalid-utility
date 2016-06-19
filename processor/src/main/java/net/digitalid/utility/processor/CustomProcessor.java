@@ -1,5 +1,6 @@
 package net.digitalid.utility.processor;
 
+import java.io.FileNotFoundException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,10 +29,11 @@ import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.state.Unmodifiable;
-import net.digitalid.utility.fixes.Brackets;
-import net.digitalid.utility.fixes.Quotes;
+import net.digitalid.utility.circumfixes.Brackets;
+import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.logging.Log;
+import net.digitalid.utility.logging.exceptions.InvalidConfigurationException;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
@@ -118,26 +120,33 @@ public abstract class CustomProcessor implements Processor {
     @Impure
     @Override
     public final boolean process(@NonCaptured @Unmodified @Nonnull Set<@Nonnull ? extends TypeElement> typeElements, @Nonnull RoundEnvironment roundEnvironment) {
-        ProcessingLog.setUp(getClass().getSimpleName());
-        
-        if (round == 0) {
-            final @Nonnull String projectName = getProjectName(roundEnvironment);
-            ProcessingLog.information(getClass().getSimpleName() + " invoked" + (projectName.isEmpty() ? "" : " for project " + Quotes.inSingle(projectName)) + ":\n");
-        }
-        
-        final @Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations = FiniteIterable.of(typeElements);
-        if (round == 0 || !onlyInterestedInFirstRound) {
-            ProcessingLog.information("Process " + annotations.join(Brackets.SQUARE) + " in the " + Strings.getOrdinal(round + 1) + " round.");
+        try {
             try {
-                process(annotations, roundEnvironment, round++);
-            } catch (@Nonnull Throwable throwable) {
-                Log.error("The compilation failed due to the following problem:", throwable);
-                throw throwable;
+                ProcessingLog.initialize(getClass().getSimpleName());
+            } catch (@Nonnull InvalidConfigurationException exception) {
+                Log.error("The logging configuration is invalid:", exception);
+            } catch (@Nonnull FileNotFoundException exception) {
+                Log.error("Could not find the logging file:", exception);
             }
-            ProcessingLog.information("Finish " + (consumeAnnotations(annotations, roundEnvironment) ? "with" : "without") + " claiming the annotations.\n" + (roundEnvironment.processingOver() || onlyInterestedInFirstRound ? "\n" : ""));
+            
+            if (round == 0) {
+                final @Nonnull String projectName = getProjectName(roundEnvironment);
+                ProcessingLog.information(getClass().getSimpleName() + " invoked" + (projectName.isEmpty() ? "" : " for project " + Quotes.inSingle(projectName)) + ":\n");
+            }
+            
+            final @Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations = FiniteIterable.of(typeElements);
+            final boolean annotationsConsumed = consumeAnnotations(annotations, roundEnvironment);
+            if (round == 0 || !onlyInterestedInFirstRound) {
+                ProcessingLog.information("Process " + annotations.join(Brackets.SQUARE) + " in the " + Strings.getOrdinal(round + 1) + " round.");
+                process(annotations, roundEnvironment, round++);
+                ProcessingLog.information("Finish " + (annotationsConsumed ? "with" : "without") + " claiming the annotations.\n" + (roundEnvironment.processingOver() || onlyInterestedInFirstRound ? "\n" : ""));
+            }
+            
+            return annotationsConsumed;
+        } catch (@Nonnull Throwable throwable) {
+            Log.error("The compilation failed due to the following problem:", throwable);
+            throw throwable;
         }
-        
-        return consumeAnnotations(annotations, roundEnvironment);
     }
     
     /* -------------------------------------------------- Annotations -------------------------------------------------- */

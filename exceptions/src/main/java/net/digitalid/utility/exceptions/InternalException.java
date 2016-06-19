@@ -47,4 +47,8 @@ public abstract class InternalException extends RuntimeException {
         this(message, null, arguments);
     }
     
+    protected InternalException(@Nullable Exception cause) {
+        this(null, cause);
+    }
+    
 }

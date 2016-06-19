@@ -40,7 +40,7 @@
         <module>collaboration</module>
         <module>annotations</module>
         <module>interfaces</module>
-        <module>fixes</module>
+        <module>circumfixes</module>
         <module>tuples</module>
         <module>functional</module>
         <module>concurrency</module>
@@ -61,7 +61,7 @@
         <module>freezable</module>
         <module>processor</module>
         <module>initialization</module>
-        <module>directory</module>
+        <module>initializer</module>
         <module>conversion</module>
         <module>generator</module>
         <module>collections</module>

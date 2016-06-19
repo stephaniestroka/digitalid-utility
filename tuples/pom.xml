@@ -21,7 +21,7 @@
         </dependency>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-fixes</artifactId>
+            <artifactId>utility-circumfixes</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

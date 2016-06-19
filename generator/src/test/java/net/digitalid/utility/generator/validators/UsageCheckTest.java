@@ -11,6 +11,7 @@ import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.generator.annotations.generators.GenerateAnnotationValidator;
 import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.order.Ascending;
@@ -22,6 +23,7 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.annotations.type.Utility;
 import net.digitalid.utility.validation.annotations.value.Validated;
+import net.digitalid.utility.validation.validators.GenerationValidator;
 
 /* -------------------------------------------------- Functional -------------------------------------------------- */
 
@@ -132,6 +134,72 @@ abstract class IncorrectReceiverTypes extends RootClass {
     @Pure
     @IncorrectUsage(EmptyOrSingleRecipient.Validator.class)
     public void method2() {}
+    
+}
+
+/* -------------------------------------------------- Generation -------------------------------------------------- */
+
+class IncorrectGenerationUsage {
+    
+    IncorrectGenerationUsage(@IncorrectUsage(GenerationValidator.class) int value) {}
+    
+    IncorrectGenerationUsage() {}
+    
+    @Pure
+    public void method(@IncorrectUsage(GenerationValidator.class) int value) {}
+    
+    @Pure
+    @IncorrectUsage(GenerationValidator.class)
+    public void method() {}
+    
+    @Pure
+    @IncorrectUsage(GenerationValidator.class)
+    public int getValue() {
+        return 0;
+    }
+    
+}
+
+class IncorrectRecoverUsageWithNonStaticMethod {
+    
+    @Pure
+    @IncorrectUsage(Recover.Validator.class)
+    public IncorrectRecoverUsageWithNonStaticMethod create() {
+        return null;
+    }
+    
+}
+
+class IncorrectRecoverUsageWithWrongReturnType {
+    
+    @Pure
+    @IncorrectUsage(Recover.Validator.class)
+    public static Object create() {
+        return null;
+    }
+    
+}
+
+class IncorrectRecoverUsageWithSingleConstructor {
+    
+    @IncorrectUsage(Recover.Validator.class)
+    protected IncorrectRecoverUsageWithSingleConstructor() {}
+    
+}
+
+class IncorrectRecoverUsageWithOtherRecover {
+    
+    @Pure
+    @IncorrectUsage(Recover.Validator.class)
+    public static IncorrectRecoverUsageWithOtherRecover create() {
+        return null;
+    }
+    
+    @Pure
+    @Recover
+    public static IncorrectRecoverUsageWithOtherRecover other() {
+        return null;
+    }
     
 }
 

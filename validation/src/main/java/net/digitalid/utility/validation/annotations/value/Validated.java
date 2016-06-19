@@ -18,7 +18,7 @@ import net.digitalid.utility.processing.logging.ErrorLogger;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
-import net.digitalid.utility.validation.annotations.getter.Default;
+import net.digitalid.utility.validation.annotations.generation.Default;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Stateless;

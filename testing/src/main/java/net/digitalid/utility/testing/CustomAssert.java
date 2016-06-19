@@ -3,10 +3,11 @@ package net.digitalid.utility.testing;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.collaboration.annotations.Review;
+import net.digitalid.utility.collaboration.annotations.TODO;
 import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.collaboration.enumerations.Priority;
-import net.digitalid.utility.fixes.Quotes;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 
 import org.junit.Assert;
@@ -19,6 +20,7 @@ import static org.hamcrest.core.IsNull.*;
  * Provides a set of custom assert methods that make testing easier and produces clear error messages.
  */
 @Review(date = "2016-04-05", author = Author.KASPAR_ETTER, assignee = Author.KASPAR_ETTER, priority = Priority.MIDDLE)
+@TODO(task = "Replace the UnaryFunction with the FailableUnaryFunction.", date = "2016-05-31", author = Author.KASPAR_ETTER)
 public abstract class CustomAssert {
     
     /* -------------------------------------------------- ExpectationEvaluator -------------------------------------------------- */

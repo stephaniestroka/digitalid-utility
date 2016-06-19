@@ -30,7 +30,7 @@ import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.tuples.Pair;
-import net.digitalid.utility.validation.annotations.getter.Derive;
+import net.digitalid.utility.validation.annotations.generation.Derive;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.processing.AnnotationHandlerUtility;
