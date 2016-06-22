@@ -24,6 +24,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.SimpleTypeVisitor7;
+import javax.lang.model.util.SimpleTypeVisitor8;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
@@ -549,7 +550,7 @@ public class ProcessingUtility {
      * This type visitor returns the qualified name of the given type without generic parameters.
      */
     @Stateless
-    public static class QualifiedNameTypeVisitor extends SimpleTypeVisitor7<@Nonnull String, @Nullable Void> {
+    public static class QualifiedNameTypeVisitor extends SimpleTypeVisitor8<@Nonnull String, @Nullable Void> {
         
         protected QualifiedNameTypeVisitor() {}
         

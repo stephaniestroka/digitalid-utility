@@ -14,6 +14,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
@@ -71,30 +72,8 @@ public abstract class FieldInformationImplementation extends ElementInformationI
     
     public @Nonnull String getFieldType(@Nonnull TypeImporter typeImporter) {
         final @Nonnull StringBuilder returnTypeAsString = new StringBuilder();
-        if (getType() instanceof Type.AnnotatedType) {
-            final Type.AnnotatedType annotatedType = (Type.AnnotatedType) getType();
-            for (AnnotationMirror annotationMirror : annotatedType.getAnnotationMirrors()) {
-                returnTypeAsString.append("@").append(typeImporter.importIfPossible(annotationMirror.getAnnotationType()));
-                if (annotationMirror.getElementValues().size() > 0) {
-                    returnTypeAsString.append("(");
-                    boolean first = true;
-                    for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> elementValue : annotationMirror.getElementValues().entrySet()) {
-                        if (first) { first = false; } else { returnTypeAsString.append(", "); }
-                        final @Nonnull String nameOfKey = elementValue.getKey().getSimpleName().toString();
-                        if (!nameOfKey.equals("value")) {
-                            returnTypeAsString.append(nameOfKey).append(" = ").append(elementValue.getValue());
-                        } else {
-                            returnTypeAsString.append(elementValue.getValue());
-                        }
-                    }
-                    returnTypeAsString.append(")");
-                }
-                returnTypeAsString.append(" ");
-            }
-            returnTypeAsString.append(typeImporter.importIfPossible(annotatedType.unannotatedType()));
-        } else {
-            returnTypeAsString.append(typeImporter.importIfPossible(getType()));
-        }
+        returnTypeAsString.append(ProcessingUtility.getAnnotationsAsString(FiniteIterable.of(getType().getAnnotationMirrors()), typeImporter));
+        returnTypeAsString.append(typeImporter.importIfPossible(getType()));
         return returnTypeAsString.toString();
     }
     

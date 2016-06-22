@@ -1,38 +1,28 @@
 package net.digitalid.utility.generator.generators;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 
-import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
-import net.digitalid.utility.generator.information.type.ClassInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
-import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
-import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -68,33 +58,6 @@ public class BuilderGenerator extends JavaFileGenerator {
      */
     private final @Nonnull TypeInformation typeInformation;
     
-    /* -------------------------------------------------- Constructor Parameters -------------------------------------------------- */
-    
-    /**
-     * Return parameters required for the construction of the class.
-     */
-    public @Nonnull FiniteIterable<VariableElementInformation> getConstructorParameters() {
-        final @Nonnull FiniteIterable<VariableElementInformation> constructorParameters;
-        if (typeInformation instanceof ClassInformation) {
-            final ClassInformation classInformation = (ClassInformation) typeInformation;
-            @Unmodifiable @Nonnull final FiniteIterable<@Nonnull ConstructorInformation> constructors = classInformation.getConstructors();
-            @Nonnull ConstructorInformation constructorInformation;
-            if (constructors.size() > 1) {
-                try {
-                    constructorInformation = constructors.findUnique(constructor -> constructor.hasAnnotation(Recover.class));
-                } catch (NoSuchElementException e) {
-                    throw FailedClassGenerationException.with("Multiple constructors found, but non is marked with @Recover.", SourcePosition.of(typeInformation.getElement()));
-                }
-            } else {
-                constructorInformation = constructors.getFirst();
-            }
-            constructorParameters = constructorInformation.getParameters().map(parameter -> (VariableElementInformation) parameter).combine(typeInformation.generatedRepresentingFieldInformation);
-        } else {
-            constructorParameters = typeInformation.generatedRepresentingFieldInformation.map(field -> field);
-        }
-        return constructorParameters;
-    }
-    
     /* -------------------------------------------------- Required Fields Builder -------------------------------------------------- */
     
     /**
@@ -129,7 +92,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      */
     // TODO: improve exception handling
     private @Nonnull @NonNullableElements FiniteIterable<VariableElementInformation> getRequiredFields() {
-        return getConstructorParameters().filter(VariableElementInformation::isMandatory);
+        return typeInformation.getConstructorParameters().filter(VariableElementInformation::isMandatory);
     }
     
     /**
@@ -137,8 +100,7 @@ public class BuilderGenerator extends JavaFileGenerator {
      */
     private void addSetterForField(@Nonnull ElementInformation field, @Nonnull String returnType, @Nonnull String returnedInstance) {
         final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
-        final @Nonnull String annotationsAsString = ProcessingUtility.getAnnotationsAsString(field.getAnnotations(), this);
-        beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + returnType + " " + methodName + "(" + annotationsAsString + importIfPossible(field.getType()) + " " + field.getName() + ")");
+        beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + returnType + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")");
         addStatement("return new " + returnedInstance + "()." + methodName + "(" + field.getName() + ")");
         endMethod();
     }
@@ -162,29 +124,6 @@ public class BuilderGenerator extends JavaFileGenerator {
         return listOfInterfaces;
     }
     
-    // TODO: needs testing
-    private @Nonnull FiniteIterable<@Nonnull AnnotationMirror> getFieldAnnotations(@Nonnull VariableElementInformation field) {
-        final List<AnnotationMirror> annotationsSuitableForFields = new ArrayList<>();
-        for (@Nonnull AnnotationMirror annotationMirror : field.getAnnotations()) {
-            final @Nonnull Element annotationElement = annotationMirror.getAnnotationType().asElement();
-            final @Nullable AnnotationValue annotationValue = ProcessingUtility.getAnnotationValue(annotationElement, Target.class);
-            if (annotationElement != null) {
-                final List<?> elementTypes = (List<?>) annotationValue.getValue();
-                for (Object elementType : elementTypes) {
-                    if (elementType == ElementType.FIELD || elementType == ElementType.TYPE_USE || elementType == ElementType.TYPE) {
-                        annotationsSuitableForFields.add(annotationMirror);
-                        continue;
-                    }
-                }
-            } else {
-                ProcessingLog.information("No @Target annotation found");
-                annotationsSuitableForFields.add(annotationMirror);
-            }
-        }
-        ProcessingLog.verbose("Suitable field annotations are $", annotationsSuitableForFields);
-        return FiniteIterable.of(annotationsSuitableForFields);
-    }
-    
     /**
      * Creates a builder that collects all fields and provides a build() method, which returns an instance of the type that the builder builds.
      */
@@ -195,18 +134,16 @@ public class BuilderGenerator extends JavaFileGenerator {
         final @Nonnull FiniteIterable<@Nonnull TypeVariable> typeArguments = typeInformation.getTypeArguments();
         beginClass("public static class " + nameOfBuilder + importWithBounds(typeArguments) + (interfacesForRequiredFields.isEmpty() ? "" : " implements " + FiniteIterable.of(interfacesForRequiredFields).join() + typeArguments.join(Brackets.POINTY, "")));
         
-        for (@Nonnull VariableElementInformation field : getConstructorParameters()) {
+        for (@Nonnull VariableElementInformation field : typeInformation.getConstructorParameters()) {
             field.getAnnotations();
             addSection(Strings.capitalizeFirstLetters(Strings.decamelize(field.getName())));
-            final @Nonnull String fieldAnnotationsAsString = ProcessingUtility.getAnnotationsAsString(getFieldAnnotations(field), this);
-            addField("private " + fieldAnnotationsAsString + importIfPossible(field.getType()) + " " + field.getName() + " = " + field.getDefaultValue());
+            addField("private " + importIfPossible(field.getType()) + " " + field.getName() + " = " + field.getDefaultValue());
             final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
             if (field.isMandatory()) {
                 addAnnotation(Override.class);
             }
-            final @Nonnull String parameterAnnotationsAsString = ProcessingUtility.getAnnotationsAsString(field.getAnnotations(), this);
             addAnnotation(Chainable.class);
-            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + nameOfBuilder + " " + methodName + "(" + parameterAnnotationsAsString + importIfPossible(field.getType()) + " " + field.getName() + ")");
+            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + nameOfBuilder + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")");
             addStatement("this." + field.getName() + " = " + field.getName());
             addStatement("return this");
             endMethod();
@@ -226,7 +163,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         }
         beginMethod("public " + typeInformation.getName() + " build()" + (throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()));
         
-        final @Nonnull FiniteIterable<VariableElementInformation> constructorParameters = getConstructorParameters();
+        final @Nonnull FiniteIterable<VariableElementInformation> constructorParameters = typeInformation.getConstructorParameters();
         
         final @Nonnull String nameOfConstructor;
         if (typeInformation.hasAnnotation(GenerateSubclass.class)) {
@@ -261,7 +198,7 @@ public class BuilderGenerator extends JavaFileGenerator {
             }
             addSetterForField(entryField, secondInterface, nameOfBuilder);
         } else {
-            for (@Nonnull ElementInformation optionalField : getConstructorParameters()) {
+            for (@Nonnull ElementInformation optionalField : typeInformation.getConstructorParameters()) {
                 addSetterForField(optionalField, nameOfBuilder, nameOfBuilder);
             }
             beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + nameOfBuilder + " get()");

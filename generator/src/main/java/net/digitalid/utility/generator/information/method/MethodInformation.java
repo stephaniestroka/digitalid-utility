@@ -312,16 +312,22 @@ public class MethodInformation extends ExecutableInformation {
         return returnTypeAnnotationsAsString;
     }
     
-    public @Nullable String getReturnType(@Nonnull TypeImporter typeImporter) {
+    public @Nullable TypeMirror getReturnType() {
         if (!hasReturnType()) {
             return null;
         }
         final @Nonnull TypeMirror typeMirror = StaticProcessingEnvironment.getTypeUtils().asMemberOf(getContainingType(), getElement());
         Require.that(typeMirror instanceof ExecutableType).orThrow("Expected ExecutableType, but got $", getContainingType());
-        
-        final @Nonnull ExecutableType executableType = (ExecutableType) typeMirror;
-        final @Nonnull TypeMirror returnType = executableType.getReturnType();
     
+        final @Nonnull ExecutableType executableType = (ExecutableType) typeMirror;
+        return executableType.getReturnType();
+    }
+    
+    public @Nullable String getReturnType(@Nonnull TypeImporter typeImporter) {
+        final @Nullable TypeMirror returnType = getReturnType();
+        if (returnType == null) {
+            return null;
+        }
         final @Nonnull StringBuilder returnTypeAsString = new StringBuilder();
         if (returnType instanceof Type.AnnotatedType) {
             final Type.AnnotatedType annotatedType = (Type.AnnotatedType) returnType;

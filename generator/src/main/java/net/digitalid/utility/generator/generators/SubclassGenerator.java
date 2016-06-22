@@ -34,6 +34,7 @@ import net.digitalid.utility.generator.typevisitors.GenerateComparisonTypeVisito
 import net.digitalid.utility.generator.typevisitors.GenerateHashCodeTypeVisitor;
 import net.digitalid.utility.generator.typevisitors.GenerateToStringTypeVisitor;
 import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Pair;
@@ -101,7 +102,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         for (@Nonnull GeneratedFieldInformation field : generatedFieldInformation) {
             ProcessingLog.verbose("Generating the field $.", field.getName());
             addSection(Strings.capitalizeFirstLetters(Strings.decamelize(field.getName())));
-            addField("private " + (field.isMutable() ? "" : "final ") + field.getFieldType(this) + " " + field.getName());
+            addField("private " + (field.isMutable() ? "" : "final ") + importIfPossible(field.getType()) + " " + field.getName());
             
             @Nullable Normalize normalize = null;
             {

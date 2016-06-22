@@ -23,6 +23,7 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.GeneratorProcessor;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
+import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
@@ -50,36 +51,32 @@ public class ConverterGenerator extends JavaFileGenerator {
      * Returns a generated call to the value collector from the given type and field access strings.
      */
     private @Nonnull String getValueCollectorStatement(@Nonnull String typeAsString, @Nonnull String fieldAccess) {
-        return getValueCollectorStatement(typeAsString, fieldAccess, null);
+        return getValueCollectorStatement(typeAsString, fieldAccess, null, null);
     }
     
     /**
      * Returns a generated call to the value collector from the given type and field access strings and the optionally given value collector call for composite types.
      */
-    private @Nonnull String getValueCollectorStatement(@Nonnull String typeAsString, @Nonnull String fieldAccess, @Nullable String valueCollectorCall) {
+    private @Nonnull String getValueCollectorStatement(@Nonnull String typeAsString, @Nonnull String fieldAccess, @Nullable String valueCollectorCall, @Nullable String iterableItemName) {
+        Require.that(valueCollectorCall == null && iterableItemName == null || valueCollectorCall != null && iterableItemName != null).orThrow("The parameters valueCollectorCall and iterableItemName must either both be null or non-null.");
         if (fieldAccess.equals("null") && valueCollectorCall == null) {
             return "valueCollector.setNull()";
         }
-        return "valueCollector.set" + typeAsString + "(" + fieldAccess + (valueCollectorCall == null ? "" : ", (entry) -> " + valueCollectorCall) + ")";
+        return "valueCollector.set" + typeAsString + "(" + fieldAccess + (valueCollectorCall == null ? "" : ", (" + iterableItemName + ") -> " + valueCollectorCall) + ")";
     }
     
     /**
      * Returns a generated statement that adds the field value to the value collector.
      */
-    private @Nonnull String generateValueCollectorCall(@Nonnull String fieldAccess, @Nonnull TypeMirror fieldType) {
+    private @Nonnull String generateValueCollectorCall(@Nonnull String fieldAccess, @Nonnull TypeMirror fieldType, int round) {
         final @Nonnull CustomType customType = CustomType.of(fieldType);
         final @Nonnull String customTypeName = Strings.capitalizeFirstLetters(customType.getTypeName().toLowerCase());
         
         if (customType.isCompositeType()) {
             final @Nullable TypeMirror componentType = ProcessingUtility.getComponentType(fieldType);
             Require.that(componentType != null).orThrow("The field type is not an array or list");
-            final @Nonnull String entryName;
-            if (fieldAccess.equals("null")) {
-                entryName = "null";
-            } else {
-                entryName = "entry";
-            }
-            return getValueCollectorStatement(customTypeName, fieldAccess, generateValueCollectorCall(entryName, componentType));
+            final @Nonnull String entryName = "entry" + round;
+            return getValueCollectorStatement(customTypeName, fieldAccess, generateValueCollectorCall(fieldAccess.equals("null") ? "null" : entryName, componentType, ++round), entryName);
         } else if (customType.isObjectType()) {
             final @Nonnull String converterInstance = importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter") + ".INSTANCE";
             return converterInstance + ".convert(" + fieldAccess + ", valueCollector)";
@@ -98,12 +95,12 @@ public class ConverterGenerator extends JavaFileGenerator {
         final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
         beginIf(Strings.lowercaseFirstCharacter(typeInformation.getName()) + " == null");
         for (@Nonnull FieldInformation field : representingFieldInformation) {
-            addStatement(generateValueCollectorCall("null", field.getType()));
+            addStatement(generateValueCollectorCall("null", field.getType(), 1));
         }
         endIfBeginElse();
         for (@Nonnull FieldInformation field : representingFieldInformation) {
             final @Nonnull String fieldAccess = Strings.lowercaseFirstCharacter(typeInformation.getName()) + "." + field.getAccessCode();
-            addStatement(generateValueCollectorCall(fieldAccess, field.getType()));
+            addStatement(generateValueCollectorCall(fieldAccess, field.getType(), 1));
         }
         endElse();
         endMethod();
@@ -135,12 +132,27 @@ public class ConverterGenerator extends JavaFileGenerator {
         if (customType.isCompositeType()) {
             final @Nullable TypeMirror componentType = ProcessingUtility.getComponentType(fieldType);
             Require.that(componentType != null).orThrow("The field type is not an array or list");
-            return getSelectionResultStatement(customTypeName, generateSelectionResultCall(componentType));
+            return getAssignmentPrefix(fieldType) + getSelectionResultStatement(customTypeName, generateSelectionResultCall(componentType)) + getAssignmentPostfix(fieldType);
         } else if (customType.isObjectType()) {
             final @Nonnull String converterInstance = importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter") + ".INSTANCE";
             return converterInstance + ".recover(selectionResult)";
         } else {
             return getSelectionResultStatement(customTypeName);
+        }
+    }
+    
+    private @Nonnull String getAssignmentPrefix(@Nonnull TypeMirror fieldType) {
+        if (CustomType.of(fieldType).isCompositeType() && ProcessingUtility.getQualifiedName(fieldType).startsWith("net.digitalid.utility.collections.")) {
+            return ProcessingUtility.getSimpleName(fieldType) + ".withElementsOf(";
+        }
+        return "";
+    }
+    
+    private @Nonnull String getAssignmentPostfix(@Nonnull TypeMirror fieldType) {
+        if (CustomType.of(fieldType).isCompositeType() && ProcessingUtility.getQualifiedName(fieldType).startsWith("net.digitalid.utility.collections.")) {
+            return ")";
+        } else {
+            return "";
         }
     }
     
@@ -153,10 +165,14 @@ public class ConverterGenerator extends JavaFileGenerator {
         beginMethod("public @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(Capturable.class) + " " + typeInformation.getName() + " recover(@" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " " + importIfPossible(SelectionResult.class) + " selectionResult)");
         final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
         final @Nonnull StringBuilder assignedParameters = new StringBuilder();
-        for (@Nonnull FieldInformation field : representingFieldInformation) {
-            addStatement(field.getFieldType(this) + " " + field.getName() + " = " + generateSelectionResultCall(field.getType()));
-    
-            assignedParameters.append(".with").append(Strings.capitalizeFirstLetters(field.getName())).append("(").append(field.getName()).append(")");
+        if (!representingFieldInformation.isEmpty()) {
+            for (@Nonnull VariableElementInformation constructorParameter : typeInformation.getConstructorParameters()) {
+                addStatement(importIfPossible(constructorParameter.getType()) + " " + constructorParameter.getName() + " = " + generateSelectionResultCall(constructorParameter.getType()));
+                
+                assignedParameters.append(".with").append(Strings.capitalizeFirstLetters(constructorParameter.getName())).append("(").append(constructorParameter.getName()).append(")");
+            }
+        } else {
+            assignedParameters.append(".get()");
         }
         addStatement("return " + typeInformation.getSimpleNameOfGeneratedBuilder() + assignedParameters.append(".build()"));
         endMethod();
@@ -201,10 +217,20 @@ public class ConverterGenerator extends JavaFileGenerator {
                 fieldsString.append(", ");
             }
             representingField.getName();
-            
-            fieldsString.append(importIfPossible(CustomField.class) + ".with(" + getTypeName(representingField.getType()) + ", " + Quotes.inDouble(representingField.getName()) + ", null)");
+            fieldsString.append(importIfPossible(CustomField.class) + ".with(" + getTypeName(representingField.getType()) + ", " + Quotes.inDouble(representingField.getName()) + ", ImmutableList.with(" +  typeInformation.getName() + ".class.getField(" + Quotes.inDouble(representingField.getName()) + ").getAnnotations()))");
         }
-        addField("private static " + importIfPossible(ImmutableList.class) + "<" + importIfPossible(CustomField.class) + "> fields = " + importIfPossible(ImmutableList.class) + ".with(" + fieldsString + ")");
+        addField("private static " + importIfPossible(ImmutableList.class) + "<" + importIfPossible(CustomField.class) + "> fields");
+        beginBlock(true);
+        if (typeInformation.getRepresentingFieldInformation().size() > 0) {
+            beginTry();
+        }
+        addStatement("fields = " + importIfPossible(ImmutableList.class) + ".with(" + fieldsString + ")");
+        if (typeInformation.getRepresentingFieldInformation().size() > 0) {
+            endTryOrCatchBeginCatch(NoSuchFieldException.class);
+            addComment("Ignoring, because we know that the fields exist during compile time.");
+            endCatch();
+        }
+        endBlock();
     }
     
     /**

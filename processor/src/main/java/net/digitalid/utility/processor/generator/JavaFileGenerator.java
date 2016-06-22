@@ -210,6 +210,8 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Type Visitor -------------------------------------------------- */
     
+    private final @Nonnull JavaFileGenerator javaFileGenerator = this;
+    
     /**
      * This type visitor imports the given type mirror with its generic parameters if their simple names are not yet mapped to different types.
      */
@@ -221,7 +223,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         @Pure
         @Override
         public @Nonnull String visitDeclared(@Nonnull DeclaredType type, @Nullable Void none) {
-            return importIfPossible(type.asElement()) + FiniteIterable.of(type.getTypeArguments()).map(this::visit).join(Brackets.POINTY, "");
+            return ProcessingUtility.getAnnotationsAsString(FiniteIterable.of(type.getAnnotationMirrors()), javaFileGenerator) + importIfPossible(type.asElement()) + FiniteIterable.of(type.getTypeArguments()).map(this::visit).join(Brackets.POINTY, "");
         }
         
         @Pure
@@ -285,7 +287,8 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @Override
     @NonWrittenRecipient
     public @Nonnull String importIfPossible(@Nonnull TypeMirror typeMirror) {
-        return importingTypeVisitor.visit(typeMirror);
+        final @Nonnull String annotationsAsString = ProcessingUtility.getAnnotationsAsString(FiniteIterable.of(typeMirror.getAnnotationMirrors()), this);
+        return annotationsAsString + importingTypeVisitor.visit(typeMirror);
     }
     
     @Impure

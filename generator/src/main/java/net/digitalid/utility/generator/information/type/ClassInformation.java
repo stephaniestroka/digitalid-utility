@@ -1,6 +1,7 @@
 package net.digitalid.utility.generator.information.type;
 
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -18,6 +19,7 @@ import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.ConverterGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
@@ -30,7 +32,9 @@ import net.digitalid.utility.generator.information.filter.MethodSignatureMatcher
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.method.MethodParameterInformation;
+import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.string.Strings;
@@ -182,6 +186,27 @@ public class ClassInformation extends TypeInformation {
         return representingFieldInformation;
     }
     
+    /* -------------------------------------------------- Constructor Parameter -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public @Nonnull FiniteIterable<VariableElementInformation> getConstructorParameters() {
+        final @Nonnull FiniteIterable<VariableElementInformation> constructorParameters;
+        @Unmodifiable @Nonnull final FiniteIterable<@Nonnull ConstructorInformation> constructors = getConstructors();
+        @Nonnull ConstructorInformation constructorInformation;
+        if (constructors.size() > 1) {
+            try {
+                constructorInformation = constructors.findUnique(constructor -> constructor.hasAnnotation(Recover.class));
+            } catch (NoSuchElementException e) {
+                throw FailedClassGenerationException.with("Multiple constructors found, but non is marked with @Recover.", SourcePosition.of(getElement()));
+            }
+        } else {
+            constructorInformation = constructors.getFirst();
+        }
+        constructorParameters = constructorInformation.getParameters().map(parameter -> (VariableElementInformation) parameter).combine(generatedRepresentingFieldInformation);
+        return constructorParameters;
+    }
+    
     /* -------------------------------------------------- Directly Accessible Field Information -------------------------------------------------- */
     
     /**
@@ -214,9 +239,13 @@ public class ClassInformation extends TypeInformation {
     /**
      * Returns true iff a getter method was found in a list of methods of a type for a given field.
      */
-    private static boolean hasGetter(@Nonnull String fieldName, @Nonnull FiniteIterable<@Nonnull MethodInformation> methodsOfType) {
+    private static boolean hasGetter(@Nonnull String fieldName, @Nonnull TypeMirror fieldType, @Nonnull FiniteIterable<@Nonnull MethodInformation> methodsOfType) {
         final @Nonnull String nameRegex = "(get|has|is)" + Strings.capitalizeFirstLetters(fieldName);
         final @Nullable MethodInformation methodInformation = methodsOfType.findFirst(MethodSignatureMatcher.of(nameRegex));
+        if (methodInformation != null) {
+            @Nullable TypeMirror returnType = methodInformation.getReturnType();
+            return returnType.equals(fieldType);
+        }
         return methodInformation != null;
     }
     
@@ -235,7 +264,7 @@ public class ClassInformation extends TypeInformation {
     private static @Nonnull FiniteIterable<@Nonnull NonDirectlyAccessibleDeclaredFieldInformation> getNonDirectlyAccessibleFieldInformation(@Nonnull FiniteIterable<@Nonnull VariableElement> fields, @Nonnull FiniteIterable<@Nonnull MethodInformation> methodInformation, @Nonnull DeclaredType containingType) {
         return fields.filter(field -> (
                 field.getModifiers().contains(Modifier.PRIVATE) &&
-                        hasGetter(field.getSimpleName().toString(), methodInformation)
+                        hasGetter(field.getSimpleName().toString(), field.asType(), methodInformation)
         )).map(field ->
                 NonDirectlyAccessibleDeclaredFieldInformation.of(field, containingType, getGetterOf(field.getSimpleName().toString(), methodInformation), getSetterOf(field.getSimpleName().toString(), ProcessingUtility.getQualifiedName(field.asType()), methodInformation))
         );
@@ -272,7 +301,7 @@ public class ClassInformation extends TypeInformation {
         ProcessingLog.debugging("Fields: $", fields.join());
         return fields.filter(field -> (
                 field.getModifiers().contains(Modifier.PRIVATE) &&
-                        !hasGetter(field.getSimpleName().toString(), methodInformation)
+                        !hasGetter(field.getSimpleName().toString(), field.asType(), methodInformation)
         )).map(field ->
                 NonAccessibleDeclaredFieldInformation.of(field, containingType)
         );

@@ -14,6 +14,7 @@ import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
+import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 
 /**
  * This type collects the relevant information about an interface for generating a {@link SubclassGenerator subclass}, {@link BuilderGenerator builder} and {@link ConverterGenerator converter}.
@@ -42,6 +43,14 @@ public class InterfaceInformation extends TypeInformation {
     @Override
     public @Nonnull FiniteIterable<@Nonnull FieldInformation> getAccessibleFieldInformation() {
         return getFieldInformation();
+    }
+    
+    /* -------------------------------------------------- Constructor Parameters -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public @Nonnull FiniteIterable<VariableElementInformation> getConstructorParameters() {
+        return generatedRepresentingFieldInformation.map(field -> field);
     }
     
     /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */

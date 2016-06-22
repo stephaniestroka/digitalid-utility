@@ -27,6 +27,7 @@ import net.digitalid.utility.generator.information.filter.InformationFilter;
 import net.digitalid.utility.generator.information.filter.MethodSignatureMatcher;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
+import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.tuples.Pair;
@@ -52,6 +53,14 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      */
     @Pure
     public abstract @Nonnull @NonEmpty FiniteIterable<ConstructorInformation> getConstructors();
+    
+    /* -------------------------------------------------- Constructor Parameters -------------------------------------------------- */
+    
+    /**
+     * Return parameters required for the construction of the class.
+     */
+    @Pure
+    public abstract @Nonnull FiniteIterable<VariableElementInformation> getConstructorParameters();
     
     /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
     
