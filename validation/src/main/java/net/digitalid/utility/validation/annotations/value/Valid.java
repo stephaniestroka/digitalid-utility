@@ -82,9 +82,9 @@ public @interface Valid {
             if (ProcessingUtility.isRawSubtype(surroundingType, Valid.Value.class)) {
                 return Contract.with("# == null || getValueValidator().evaluate(#)", "The # has to be null or valid but was $.", element);
             } else if (!ProcessingUtility.getType(element).getKind().isPrimitive()) {
-                return Contract.with("# == null || isValid(#)", "The # has to be null or valid but was $.", element);
+                return Contract.with("# == null || " + typeImporter.importIfPossible(ProcessingUtility.getSurroundingType(element)) + ".isValid(#)", "The # has to be null or valid but was $.", element);
             } else {
-                return Contract.with("isValid(#)", "The # has to be valid but was $.", element);
+                return Contract.with(typeImporter.importIfPossible(ProcessingUtility.getSurroundingType(element)) + ".isValid(#)", "The # has to be valid but was $.", element);
             }
         }
         
