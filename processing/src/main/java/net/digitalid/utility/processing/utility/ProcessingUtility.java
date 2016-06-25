@@ -2,9 +2,11 @@ package net.digitalid.utility.processing.utility;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -23,7 +25,7 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.SimpleTypeVisitor7;
+import javax.lang.model.util.AbstractAnnotationValueVisitor8;
 import javax.lang.model.util.SimpleTypeVisitor8;
 
 import net.digitalid.utility.annotations.method.Pure;
@@ -31,6 +33,7 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.circumfixes.Brackets;
+import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.ImmutableMap;
@@ -227,6 +230,99 @@ public class ProcessingUtility {
     
     /* -------------------------------------------------- Annotation Values -------------------------------------------------- */
     
+    @Stateless
+    public static class AnnotationValueVisitor extends AbstractAnnotationValueVisitor8<String, TypeImporter> {
+        
+        @Pure
+        @Override
+        public String visitEnumConstant(VariableElement c, TypeImporter typeImporter) {
+            return typeImporter.importStaticallyIfPossible(ProcessingUtility.getQualifiedName(c.asType()) + "." + c.getSimpleName());
+        }
+        
+        @Pure
+        @Override
+        public String visitAnnotation(AnnotationMirror annotationMirror, TypeImporter typeImporter) {
+            return typeImporter.importIfPossible(ProcessingUtility.getQualifiedName(annotationMirror));
+        }
+        
+        @Pure
+        @Override
+        public String visitArray(List<? extends AnnotationValue> list, TypeImporter typeImporter) {
+            return Brackets.inCurly(FiniteIterable.of(list).map(annotationValue -> visit(annotationValue, typeImporter)).join(", "));
+        }
+        
+        @Pure
+        @Override
+        public String visitBoolean(boolean b, TypeImporter typeImporter) {
+            return Objects.toString(b);
+        }
+        
+        @Pure
+        @Override
+        public String visitByte(byte b, TypeImporter typeImporter) {
+            return Objects.toString(b);
+        }
+        
+        @Pure
+        @Override
+        public String visitChar(char c, TypeImporter typeImporter) {
+            return Quotes.inSingle(Objects.toString(c));
+        }
+        
+        @Pure
+        @Override
+        public String visitDouble(double v, TypeImporter typeImporter) {
+            return Objects.toString(v) + "d";
+        }
+        
+        @Pure
+        @Override
+        public String visitFloat(float v, TypeImporter typeImporter) {
+            return Objects.toString(v) + "f";
+        }
+        
+        @Pure
+        @Override
+        public String visitInt(int i, TypeImporter typeImporter) {
+            return Objects.toString(i);
+        }
+        
+        @Pure
+        @Override
+        public String visitLong(long l, TypeImporter typeImporter) {
+            return Objects.toString(l) + "L";
+        }
+        
+        @Pure
+        @Override
+        public String visitShort(short i, TypeImporter typeImporter) {
+            return "(short)" + Objects.toString(i);
+        }
+    
+        @Pure
+        @Override 
+        public String visitString(String s, TypeImporter typeImporter) {
+            return Quotes.inDouble(s);
+        }
+        
+        @Pure
+        @Override public String visitType(TypeMirror t, TypeImporter typeImporter) {
+            return typeImporter.importIfPossible(ProcessingUtility.getQualifiedName(t)) + ".class";
+        }
+    
+        // TODO: extend for type and arrays.
+    }
+    
+    private static final @Nonnull AnnotationValueVisitor ANNOTATION_VALUE_VISITOR = new AnnotationValueVisitor();
+    
+    /**
+     * Returns the qualified name of the given annotation value.
+     */
+    @Pure
+    public static @Nonnull String getAnnotationValueAsString(@Nonnull AnnotationValue annotationValue, @Nonnull TypeImporter typeImporter) {
+        return ANNOTATION_VALUE_VISITOR.visit(annotationValue, typeImporter);
+    }
+    
     /**
      * Returns the annotation value for the given method name of the given annotation mirror or null if not found.
      */
@@ -249,6 +345,19 @@ public class ProcessingUtility {
     @LogsErrorWhenReturningNull
     public static @Nullable AnnotationValue getAnnotationValue(@Nonnull AnnotationMirror annotationMirror) {
         return getAnnotationValue(annotationMirror, "value");
+    }
+    
+    /**
+     * Returns the annotation values for all methods of the given annotation mirror.
+     */
+    @Pure
+    @LogsErrorWhenReturningNull
+    public static @Nonnull Map<@Nonnull String, @Nonnull AnnotationValue> getAnnotationValues(@Nonnull AnnotationMirror annotationMirror) {
+        final @Nonnull Map<@Nonnull String, @Nonnull AnnotationValue> annotationValues = new HashMap<>();
+        for (Map.@Nonnull Entry<@Nonnull ? extends ExecutableElement, @Nonnull ? extends AnnotationValue> annotationEntry : StaticProcessingEnvironment.getElementUtils().getElementValuesWithDefaults(annotationMirror).entrySet()) {
+            annotationValues.put(annotationEntry.getKey().getSimpleName().toString(), annotationEntry.getValue());
+        }
+        return annotationValues;
     }
     
     /**
@@ -398,18 +507,18 @@ public class ProcessingUtility {
     
     /* -------------------------------------------------- Annotation Strings -------------------------------------------------- */
     
-    /**
-     * Returns the given annotation value as a string.
-     */
-    @Pure
-    private static @Nonnull String getAnnotationValueAsString(@Nonnull AnnotationValue annotationValue, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-        final @Nonnull Object object = annotationValue.getValue();
-        if (object instanceof TypeMirror) {
-            return typeImporter.importIfPossible((TypeMirror) object) + ".class";
-        } else {
-            return annotationValue.toString();
-        }
-    }
+//    /**
+//     * Returns the given annotation value as a string.
+//     */
+//    @Pure
+//    private static @Nonnull String getAnnotationValueAsString(@Nonnull AnnotationValue annotationValue, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
+//        final @Nonnull Object object = annotationValue.getValue();
+//        if (object instanceof TypeMirror) {
+//            return typeImporter.importIfPossible((TypeMirror) object) + ".class";
+//        } else {
+//            return annotationValue.toString();
+//        }
+//    }
     
     /**
      * Returns the given annotation entry as a string.

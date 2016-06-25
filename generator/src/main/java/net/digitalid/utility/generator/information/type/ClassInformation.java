@@ -1,6 +1,8 @@
 package net.digitalid.utility.generator.information.type;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -164,11 +166,11 @@ public class ClassInformation extends TypeInformation {
      * Finds and returns a subset of the accessible field information that maps to the parameters of the constructors.
      */
     private @Nonnull FiniteIterable<@Nonnull FieldInformation> extractRepresentingFieldInformation() {
-        final @Nonnull Set<FieldInformation> representingFieldInformation = new HashSet<>();
+        final @Nonnull List<FieldInformation> representingFieldInformation = new ArrayList<>();
         for (@Nonnull ConstructorInformation constructor : constructors) {
             @Nonnull final FiniteIterable<MethodParameterInformation> parameters = constructor.getParameters();
             for (@Nonnull MethodParameterInformation parameter : parameters) {
-                if (parameter.getMatchingField() != null && parameter.getMatchingField().isAccessible()) {
+                if (parameter.getMatchingField() != null && parameter.getMatchingField().isAccessible() && !representingFieldInformation.contains(parameter.getMatchingField())) {
                     representingFieldInformation.add(parameter.getMatchingField());
                 }
             }
@@ -298,7 +300,7 @@ public class ClassInformation extends TypeInformation {
      * Retrieves declared field information objects for fields in a type.
      */
     private static @Nonnull FiniteIterable<@Nonnull NonAccessibleDeclaredFieldInformation> getNonAccessibleFieldInformation(@Nonnull FiniteIterable<@Nonnull VariableElement> fields, @Nonnull FiniteIterable<@Nonnull MethodInformation> methodInformation, @Nonnull DeclaredType containingType) {
-        ProcessingLog.debugging("Fields: $", fields.join());
+        ProcessingLog.information("Fields: $", fields.join());
         return fields.filter(field -> (
                 field.getModifiers().contains(Modifier.PRIVATE) &&
                         !hasGetter(field.getSimpleName().toString(), field.asType(), methodInformation)

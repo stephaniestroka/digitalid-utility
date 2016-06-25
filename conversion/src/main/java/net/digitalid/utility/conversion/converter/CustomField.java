@@ -51,13 +51,13 @@ public class CustomField {
     /**
      * An immutable list of annotations of the field.
      */
-    private final @Nonnull ImmutableList<@Nonnull Annotation> annotations;
+    private final @Nonnull ImmutableList<@Nonnull CustomAnnotation> annotations;
     
     /**
      * Returns an immutable list of annotations of the field.
      */
     @Pure
-    public @Nonnull ImmutableList<@Nonnull Annotation> getAnnotations() {
+    public @Nonnull ImmutableList<@Nonnull CustomAnnotation> getAnnotations() {
         return annotations;
     }
     
@@ -66,8 +66,8 @@ public class CustomField {
      */
     @Pure
     public <A extends Annotation> boolean isAnnotatedWith(@Nonnull Class<A> annotationType) {
-        for (@Nonnull Annotation annotation : annotations) {
-            if (annotationType.isInstance(annotation)) {
+        for (@Nonnull CustomAnnotation annotation : annotations) {
+            if (annotationType.isAssignableFrom(annotation.getAnnotationType())) {
                 return true;
             }
         }
@@ -80,12 +80,12 @@ public class CustomField {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public @Nonnull <A extends Annotation> A getAnnotation(@Nonnull Class<A> annotationType) {
+    public <A extends Annotation> @Nonnull CustomAnnotation getAnnotation(@Nonnull Class<A> annotationType) {
         Require.that(isAnnotatedWith(annotationType)).orThrow("Field $ is not annotated with $", name, annotationType);
     
-        for (@Nonnull Annotation annotation : annotations) {
-            if (annotationType.isInstance(annotation)) {
-                return (A) annotation;
+        for (@Nonnull CustomAnnotation annotation : annotations) {
+            if (annotationType.isAssignableFrom(annotation.getAnnotationType())) {
+                return annotation;
             }
         }
         throw UnexpectedFailureException.with("Field $ is not annotated with $", name, annotationType);
@@ -96,7 +96,7 @@ public class CustomField {
     /**
      * Creates a new instance of custom field for a given custom type, name and list of field annotations.
      */
-    private CustomField(@Nonnull CustomType customType, @Nonnull String name, @Nonnull ImmutableList<@Nonnull Annotation> annotations) {
+    private CustomField(@Nonnull CustomType customType, @Nonnull String name, @Nonnull ImmutableList<@Nonnull CustomAnnotation> annotations) {
         this.customType = customType;
         this.name = name;
         this.annotations = annotations;
@@ -105,7 +105,7 @@ public class CustomField {
     /**
      * Returns a new instance of custom field for a given custom type, name and list of field annotations.
      */
-    public static @Nonnull CustomField with(@Nonnull CustomType customType, @Nonnull String name, @Nonnull ImmutableList<@Nonnull Annotation> annotations) {
+    public static @Nonnull CustomField with(@Nonnull CustomType customType, @Nonnull String name, @Nonnull ImmutableList<@Nonnull CustomAnnotation> annotations) {
         return new CustomField(customType, name, annotations);
     }
     

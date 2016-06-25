@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
-import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.annotations.reference.NonRawRecipient;
 import net.digitalid.utility.conversion.converter.Converter;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
@@ -28,36 +28,25 @@ public class CustomType {
     /**
      * A custom type that holds a composite type.
      */
-    public static class CustomCompositeType extends CustomType {
+    public static class IterableType extends CustomType {
     
         /**
          * Creates a custom type.
          */
-        private CustomCompositeType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName) {
+        private IterableType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName) {
             super(predicate, typeName);
         }
     
         /**
-         * The composite type.
+         * Creates a new instance of a composite type with the given custom type.
          */
-        private @Nullable CustomType compositeType;
-    
-        /**
-         * Returns the composite type.
-         */
-        public @Nonnull CustomType getCompositeType() {
-            Require.that(compositeType != null).orThrow("Expected non-null composite type for $", getTypeName());
-            return compositeType;
+        @NonRawRecipient
+        public @Nonnull IterableType of(@Nonnull CustomType compositeType) {
+            return new CompositeType(super.predicate, super.typeName, compositeType);
         }
     
-        /**
-         * Sets the composite type.
-         */
-        public @Nonnull CustomCompositeType of(@Nonnull CustomType compositeType) {
-            this.compositeType = compositeType;
-            return this;
-        }
-    
+        /* -------------------------------------------------- Composite Type -------------------------------------------------- */
+        
         /**
          * Returns true, because the type is a composite type.
          */
@@ -68,40 +57,47 @@ public class CustomType {
         
     }
     
-    /* -------------------------------------------------- Object Type Subclass -------------------------------------------------- */
+    public static class CompositeType extends IterableType {
+    
+        /**
+         * The composite type.
+         */
+        private final @Nonnull CustomType compositeType;
+    
+        /**
+         * Returns the composite type.
+         */
+        public @Nonnull CustomType getCompositeType() {
+            return compositeType;
+        }
+    
+        private CompositeType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName, @Nonnull CustomType compositeType) {
+            super(predicate, typeName);
+            this.compositeType = compositeType;
+        }
+        
+    }
+    
+    /* -------------------------------------------------- TupleType Subclass -------------------------------------------------- */
     
     /**
      * A custom type that is non-primitive.
      */
-    public static class CustomObjectType extends CustomType {
-    
+    public static class TupleType extends CustomType {
+        
         /**
-         * Creates a custom type.
+         * Creates a tuple type.
          */
-        private CustomObjectType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName) {
+        private TupleType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName) {
             super(predicate, typeName);
         }
     
         /**
-         * The object converter.
+         * Creates a new instance of a custom converter type with the given converter.
          */
-        private @Nullable Converter<?> converter;
-    
-        /**
-         * Returns the object converter.
-         */
-        public @Nonnull Converter<?> getConverter() {
-            Require.that(converter != null).orThrow("Expected non-null converter in object type $", getTypeName());
-            
-            return converter;
-        }
-    
-        /**
-         * Sets the converter for the non-primitive custom type.
-         */
-        public CustomObjectType of(@Nonnull Converter<?> converter) {
-            this.converter = converter;
-            return this;
+        @NonRawRecipient
+        public @Nonnull CustomConverterType of(@Nonnull Converter<?> converter) {
+            return new CustomConverterType(super.predicate, super.typeName, converter);
         }
     
         /**
@@ -112,6 +108,29 @@ public class CustomType {
             return true;
         }
         
+    }
+    
+    public static class CustomConverterType extends TupleType {
+    
+        /**
+         * The object converter.
+         */
+        private final @Nonnull Converter<?> converter;
+    
+        /**
+         * Returns the object converter.
+         */
+        public @Nonnull Converter<?> getConverter() {
+            return converter;
+        }
+    
+        /**
+         * Creates a new custom converter type.
+         */
+        private CustomConverterType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName, @Nonnull Converter<?> converter) {
+            super(predicate, typeName);
+            this.converter = converter;
+        }
     }
     
     /* -------------------------------------------------- Static Instances -------------------------------------------------- */
@@ -144,14 +163,14 @@ public class CustomType {
     
     public static final CustomType BINARY = new CustomType(typeMirror -> (ProcessingUtility.isRawlyAssignable(typeMirror, byte[].class) || ProcessingUtility.isRawlyAssignable(typeMirror, Byte[].class)) && (typeMirror.getAnnotation(MaxSize.class) == null || typeMirror.getAnnotation(MaxSize.class).value() > 256), "BINARY");
     
-    public static final CustomCompositeType SET = new CustomCompositeType(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, Set.class), "SET");
+    public static final IterableType SET = new IterableType(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, Set.class), "SET");
     
     // TODO: Consider ReadOnlyList and co.
-    public static final CustomCompositeType LIST = new CustomCompositeType(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, List.class), "LIST");
+    public static final IterableType LIST = new IterableType(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, List.class), "LIST");
     
-    public static final CustomCompositeType ARRAY = new CustomCompositeType(typeMirror -> typeMirror.getKind() == TypeKind.ARRAY, "ARRAY");
+    public static final IterableType ARRAY = new IterableType(typeMirror -> typeMirror.getKind() == TypeKind.ARRAY, "ARRAY");
     
-    public static final CustomObjectType TUPLE = new CustomObjectType(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, Tuple.class), "TUPLE");
+    public static final TupleType TUPLE = new TupleType(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, Tuple.class), "TUPLE");
     
     /**
      * A list of custom types that are statically defined in this class.
@@ -183,14 +202,14 @@ public class CustomType {
     /* -------------------------------------------------- Custom Type Checks -------------------------------------------------- */
     
     /**
-     * Always returns false, unless the custom type is a {@link CustomCompositeType}.
+     * Always returns false, unless the custom type is a {@link IterableType}.
      */
     public boolean isCompositeType() {
         return false;
     }
     
     /**
-     * Always returns false, unless the custom type is a {@link CustomObjectType}.
+     * Always returns false, unless the custom type is a {@link TupleType}.
      */
     public boolean isObjectType() {
         return false;

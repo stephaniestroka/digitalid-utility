@@ -81,6 +81,7 @@ public class InterfaceInformation extends TypeInformation {
     /**
      * Returns a class information object of the given type typeElement and containing type.
      */
+    @Pure
     public static @Nonnull InterfaceInformation of(@Nonnull TypeElement element, @Nonnull DeclaredType containingType) {
         return new InterfaceInformation(element, containingType);
     }

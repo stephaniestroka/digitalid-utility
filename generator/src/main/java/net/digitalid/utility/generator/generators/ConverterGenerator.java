@@ -1,7 +1,14 @@
 package net.digitalid.utility.generator.generators;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
@@ -13,6 +20,7 @@ import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.conversion.converter.Converter;
+import net.digitalid.utility.conversion.converter.CustomAnnotation;
 import net.digitalid.utility.conversion.converter.CustomField;
 import net.digitalid.utility.conversion.converter.Declaration;
 import net.digitalid.utility.conversion.converter.SelectionResult;
@@ -25,6 +33,7 @@ import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.immutable.ImmutableList;
+import net.digitalid.utility.immutable.ImmutableMap;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
@@ -212,24 +221,44 @@ public class ConverterGenerator extends JavaFileGenerator {
      */
     private void generateFields() {
         final @Nonnull StringBuilder fieldsString = new StringBuilder();
+        final @Nonnull List<@Nonnull String> statements = new ArrayList<>();
         for (@Nonnull FieldInformation representingField : typeInformation.getRepresentingFieldInformation()) {
+            final @Nonnull StringBuilder customAnnotations = new StringBuilder();
+            final @Nonnull FiniteIterable<@Nonnull AnnotationMirror> annotations = representingField.getAnnotations();
+            final @Nonnull String fieldName = representingField.getName();
+            for (@Nonnull AnnotationMirror annotation : annotations) {
+                final @Nonnull String annotationName = annotation.getAnnotationType().asElement().getSimpleName().toString();
+                final @Nonnull String qualifiedAnnotationName = ProcessingUtility.getQualifiedName(annotation.getAnnotationType());
+                final @Nonnull String annotationValuesMap = fieldName  + Strings.capitalizeFirstLetters(annotationName);
+                if (customAnnotations.length() != 0) {
+                    customAnnotations.append(", ");
+                }
+                customAnnotations.append(importIfPossible(CustomAnnotation.class) + ".with" + Brackets.inRound(importIfPossible(qualifiedAnnotationName) + ".class, " + importIfPossible(ImmutableMap.class) + ".with" + Brackets.inRound(annotationValuesMap)));
+                statements.add(importIfPossible(Map.class) + Brackets.inPointy("@" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + ",@" + importIfPossible(Nullable.class) + " " + importIfPossible(Object.class)) + " " + annotationValuesMap + " = new " + importIfPossible(HashMap.class) + Brackets.inPointy("") + Brackets.inRound(""));
+                final @Nonnull Map<@Nonnull String, @Nonnull AnnotationValue> annotationValues = ProcessingUtility.getAnnotationValues(annotation);
+                for (Map.Entry<@Nonnull String, @Nonnull AnnotationValue> entry : annotationValues.entrySet()) {
+                    @Nonnull String printValue = ProcessingUtility.getAnnotationValueAsString(entry.getValue(), this);
+                    if (printValue.startsWith("{") && printValue.contains(".class")) {
+                        final @Nonnull String nameOfVariable = annotationValuesMap + Strings.capitalizeFirstLetters(entry.getKey()) + "Classes";
+                        statements.add("Class[] " + nameOfVariable + " = " + printValue);
+                        statements.add(annotationValuesMap + ".put" + Brackets.inRound(Quotes.inDouble(entry.getKey()) + ", " + nameOfVariable));
+                    } else {
+                        statements.add(annotationValuesMap + ".put" + Brackets.inRound(Quotes.inDouble(entry.getKey()) + ", " + printValue));
+                    }
+                }
+            }
             if (fieldsString.length() != 0) {
                 fieldsString.append(", ");
             }
-            representingField.getName();
-            fieldsString.append(importIfPossible(CustomField.class) + ".with(" + getTypeName(representingField.getType()) + ", " + Quotes.inDouble(representingField.getName()) + ", ImmutableList.with(" +  typeInformation.getName() + ".class.getField(" + Quotes.inDouble(representingField.getName()) + ").getAnnotations()))");
+            fieldsString.append(importIfPossible(CustomField.class) + ".with(" + getTypeName(representingField.getType()) + ", " + Quotes.inDouble(fieldName) + ", ImmutableList.with(" + customAnnotations.toString() + "))");
         }
         addField("private static " + importIfPossible(ImmutableList.class) + "<" + importIfPossible(CustomField.class) + "> fields");
         beginBlock(true);
-        if (typeInformation.getRepresentingFieldInformation().size() > 0) {
-            beginTry();
+        for (@Nonnull String statement : statements) {
+            addStatement(statement);
         }
+        addEmptyLine();
         addStatement("fields = " + importIfPossible(ImmutableList.class) + ".with(" + fieldsString + ")");
-        if (typeInformation.getRepresentingFieldInformation().size() > 0) {
-            endTryOrCatchBeginCatch(NoSuchFieldException.class);
-            addComment("Ignoring, because we know that the fields exist during compile time.");
-            endCatch();
-        }
         endBlock();
     }
     

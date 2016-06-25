@@ -9,6 +9,8 @@ import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleTypeVisitor7;
 
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.tuples.Triplet;
@@ -18,8 +20,9 @@ import net.digitalid.utility.tuples.Triplet;
  */
 public class GenerateHashCodeTypeVisitor extends SimpleTypeVisitor7<@Nonnull Object, @Nullable Triplet<@Nonnull String, @Nonnull JavaFileGenerator, @Nonnull String>> {
     
+    @Pure
     @Override
-    protected @Nullable Object defaultAction(@Nonnull TypeMirror e, @Nullable Triplet<@Nonnull String, @Nonnull JavaFileGenerator, @Nonnull String> triplet) {
+    protected @Nullable Object defaultAction(@Nonnull TypeMirror e, @Nullable @Modified Triplet<@Nonnull String, @Nonnull JavaFileGenerator, @Nonnull String> triplet) {
         Require.that(triplet != null).orThrow("The java file generator is a required parameter and cannot be generated on the fly. Please call visit(TypeMirror, Triplet<String, JavaFileGenerator, String>) instead.");
         assert triplet != null;
     
@@ -31,8 +34,9 @@ public class GenerateHashCodeTypeVisitor extends SimpleTypeVisitor7<@Nonnull Obj
         return null;
     }
     
+    @Pure
     @Override 
-    public Object visitArray(@Nonnull ArrayType t, @Nullable Triplet<@Nonnull String, @Nonnull JavaFileGenerator, @Nonnull String> triplet) {
+    public Object visitArray(@Nonnull ArrayType t, @Nullable @Modified Triplet<@Nonnull String, @Nonnull JavaFileGenerator, @Nonnull String> triplet) {
         Require.that(triplet != null).orThrow("The java file generator is a required parameter and cannot be generated on the fly. Please call visit(TypeMirror, Triplet<String, JavaFileGenerator, String>) instead.");
         assert triplet != null;
         

@@ -12,6 +12,7 @@ import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateConverter;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.validation.annotations.size.MaxSize;
 
 /**
  *
@@ -21,7 +22,7 @@ import net.digitalid.utility.rootclass.RootClass;
 @GenerateConverter
 public abstract class ComplexClass extends RootClass {
     
-    public @Nonnull String text;
+    public @Nonnull @MaxSize(256) String text;
     
     @Pure
     public abstract @Nonnull SimpleClass getSimpleClass();
