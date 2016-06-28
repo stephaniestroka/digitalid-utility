@@ -33,6 +33,8 @@ import net.digitalid.utility.testing.ContractTest;
 import net.digitalid.utility.threading.annotations.MainThread;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.UniqueElements;
+import net.digitalid.utility.validation.annotations.equality.Equal;
+import net.digitalid.utility.validation.annotations.equality.NonEqual;
 import net.digitalid.utility.validation.annotations.file.existence.Existent;
 import net.digitalid.utility.validation.annotations.file.existence.ExistentParent;
 import net.digitalid.utility.validation.annotations.file.existence.NonExistent;
@@ -211,6 +213,40 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     @Test
     public void testUniqueInts() {
         test(INSTANCE::setUniqueIntArray, new int[] {1, 2}, new int[] {1, 1});
+    }
+    
+    /* -------------------------------------------------- Equality -------------------------------------------------- */
+    
+    @Impure
+    public void setEqualString(@Equal("hello") String string) {}
+    
+    @Test
+    public void testEqualString() {
+        test(INSTANCE::setEqualString, "hello", "world");
+    }
+    
+    @Impure
+    public void setNonEqualString(@NonEqual("world") String string) {}
+    
+    @Test
+    public void testNonEqualString() {
+        test(INSTANCE::setNonEqualString, "hello", "world");
+    }
+    
+    @Impure
+    public void setEqualInt(@Equal("8") int value) {}
+    
+    @Test
+    public void testEqualInt() {
+        test(INSTANCE::setEqualInt, 8, 9);
+    }
+    
+    @Impure
+    public void setNonEqualInt(@NonEqual("9") int value) {}
+    
+    @Test
+    public void testNonEqualInt() {
+        test(INSTANCE::setNonEqualInt, 8, 9);
     }
     
     /* -------------------------------------------------- File -------------------------------------------------- */
