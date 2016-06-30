@@ -16,4 +16,28 @@ public interface Countable {
     @Pure
     public @NonNegative int size();
     
+    /**
+     * Returns whether this countable is empty.
+     */
+    @Pure
+    public default boolean isEmpty() {
+        return size() == 0;
+    }
+    
+    /**
+     * Returns whether this countable is single.
+     */
+    @Pure
+    public default boolean isSingle() {
+        return size() == 1;
+    }
+    
+    /**
+     * Returns whether this countable is empty or single.
+     */
+    @Pure
+    public default boolean isEmptyOrSingle() {
+        return isEmpty() || isSingle();
+    }
+    
 }

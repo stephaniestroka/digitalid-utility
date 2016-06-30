@@ -67,7 +67,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * Returns whether this iterable has the given number of elements.
      */
     @Pure
-    public default boolean isSize(@NonNegative int number) {
+    public default boolean hasSize(@NonNegative int number) {
         return size(number + 1) == number;
     }
     
@@ -76,7 +76,15 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      */
     @Pure
     public default boolean isSingle() {
-        return isSize(1);
+        return hasSize(1);
+    }
+    
+    /**
+     * Returns whether this iterable is empty or single.
+     */
+    @Pure
+    public default boolean isEmptyOrSingle() {
+        return hasSize(1);
     }
     
     /**

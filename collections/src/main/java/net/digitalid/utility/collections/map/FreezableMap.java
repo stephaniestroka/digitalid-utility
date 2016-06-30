@@ -31,6 +31,12 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
 @Freezable(ReadOnlyMap.class)
 public interface FreezableMap<K, V> extends ReadOnlyMap<K, V>, Map<K, V>, FreezableInterface {
     
+    /* -------------------------------------------------- Conflict -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public boolean isEmpty();
+    
     /* -------------------------------------------------- Freezable -------------------------------------------------- */
     
     @Impure
