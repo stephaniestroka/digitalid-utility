@@ -24,7 +24,7 @@ import net.digitalid.utility.validation.validators.FileValidator;
 /**
  * This annotation indicates that the annotated {@link File file} is {@link File#canRead() readable}.
  * 
- * @see NonReadable
+ * @see Unreadable
  */
 @Documented
 @Target(ElementType.TYPE_USE)

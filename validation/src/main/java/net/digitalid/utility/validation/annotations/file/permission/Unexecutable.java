@@ -28,8 +28,8 @@ import net.digitalid.utility.validation.validators.FileValidator;
 @Documented
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
-@ValueValidator(NonExecutable.Validator.class)
-public @interface NonExecutable {
+@ValueValidator(Unexecutable.Validator.class)
+public @interface Unexecutable {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
     

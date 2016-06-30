@@ -1,5 +1,6 @@
-package net.digitalid.utility.validation.annotations.equality;
+package net.digitalid.utility.validation.annotations.file.permission;
 
+import java.io.File;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -13,30 +14,22 @@ import javax.lang.model.element.Element;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
+import net.digitalid.utility.validation.validators.FileValidator;
 
 /**
- * This annotation indicates that the string version of the annotated object does not equal the given string.
+ * This annotation indicates that the annotated {@link File file} is not {@link File#canWrite() writable}.
  * 
- * @see Equal
+ * @see Writable
  */
 @Documented
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
-@ValueValidator(NonEqual.Validator.class)
-public @interface NonEqual {
-    
-    /* -------------------------------------------------- Value -------------------------------------------------- */
-    
-    /**
-     * Returns the string which the string version of the annotated object does not equal.
-     */
-    @Nonnull String value();
+@ValueValidator(Unwritable.Validator.class)
+public @interface Unwritable {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
     
@@ -44,12 +37,12 @@ public @interface NonEqual {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Validator implements ValueAnnotationValidator {
+    public static class Validator extends FileValidator {
         
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with((ProcessingUtility.getType(element).getKind().isPrimitive() ? "" : "# == null || ") + "!String.valueOf(#).equals(\"@\")", "The # may not equal '@' but was $.", element, annotationMirror);
+            return Contract.with("# == null || !#.exists() || !#.canWrite()", "The # $ may not be writable.", element);
         }
         
     }

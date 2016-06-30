@@ -23,7 +23,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 /**
  * This annotation indicates that the string version of the annotated object equals the given string.
  * 
- * @see NonEqual
+ * @see Unequal
  */
 @Documented
 @Target(ElementType.TYPE_USE)

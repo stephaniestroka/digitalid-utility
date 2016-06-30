@@ -34,7 +34,7 @@ import net.digitalid.utility.threading.annotations.MainThread;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.UniqueElements;
 import net.digitalid.utility.validation.annotations.equality.Equal;
-import net.digitalid.utility.validation.annotations.equality.NonEqual;
+import net.digitalid.utility.validation.annotations.equality.Unequal;
 import net.digitalid.utility.validation.annotations.file.existence.Existent;
 import net.digitalid.utility.validation.annotations.file.existence.ExistentParent;
 import net.digitalid.utility.validation.annotations.file.existence.NonExistent;
@@ -44,9 +44,9 @@ import net.digitalid.utility.validation.annotations.file.kind.Normal;
 import net.digitalid.utility.validation.annotations.file.path.Absolute;
 import net.digitalid.utility.validation.annotations.file.path.Relative;
 import net.digitalid.utility.validation.annotations.file.permission.Executable;
-import net.digitalid.utility.validation.annotations.file.permission.NonExecutable;
-import net.digitalid.utility.validation.annotations.file.permission.NonReadable;
-import net.digitalid.utility.validation.annotations.file.permission.NonWritable;
+import net.digitalid.utility.validation.annotations.file.permission.Unexecutable;
+import net.digitalid.utility.validation.annotations.file.permission.Unreadable;
+import net.digitalid.utility.validation.annotations.file.permission.Unwritable;
 import net.digitalid.utility.validation.annotations.file.permission.Readable;
 import net.digitalid.utility.validation.annotations.file.permission.Writable;
 import net.digitalid.utility.validation.annotations.file.visibility.Hidden;
@@ -226,7 +226,7 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     }
     
     @Impure
-    public void setNonEqualString(@NonEqual("world") String string) {}
+    public void setNonEqualString(@Unequal("world") String string) {}
     
     @Test
     public void testNonEqualString() {
@@ -242,7 +242,7 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     }
     
     @Impure
-    public void setNonEqualInt(@NonEqual("9") int value) {}
+    public void setNonEqualInt(@Unequal("9") int value) {}
     
     @Test
     public void testNonEqualInt() {
@@ -366,7 +366,7 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     }
     
     @Impure
-    public void setNonExecutable(@NonExecutable File file) {}
+    public void setNonExecutable(@Unexecutable File file) {}
     
     @Test
     public void testNonExecutable() {
@@ -374,7 +374,7 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     }
     
     @Impure
-    public void setNonReadable(@NonReadable File file) {}
+    public void setNonReadable(@Unreadable File file) {}
     
     @Test
     public void testNonReadable() {
@@ -382,7 +382,7 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     }
     
     @Impure
-    public void setNonWritable(@NonWritable File file) {}
+    public void setNonWritable(@Unwritable File file) {}
     
     @Test
     public void testNonWritable() {

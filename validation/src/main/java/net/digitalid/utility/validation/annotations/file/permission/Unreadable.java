@@ -29,8 +29,8 @@ import net.digitalid.utility.validation.validators.FileValidator;
 @Documented
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
-@ValueValidator(NonReadable.Validator.class)
-public @interface NonReadable {
+@ValueValidator(Unreadable.Validator.class)
+public @interface Unreadable {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
     
