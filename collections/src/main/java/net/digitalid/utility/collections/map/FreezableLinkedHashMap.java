@@ -168,16 +168,6 @@ public abstract class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> i
     @Impure
     @Override
     @NonFrozenRecipient
-    public @NonCapturable @Nonnull V putIfAbsentOrNullElseReturnPresent(@Captured K key, @Captured @Nonnull V value) {
-        final @Nullable V oldValue = get(key);
-        if (oldValue != null) { return oldValue; }
-        put(key, value);
-        return value;
-    }
-    
-    @Impure
-    @Override
-    @NonFrozenRecipient
     public @Capturable @Nullable V remove(@NonCaptured @Unmodified @Nullable Object object) {
         return super.remove(object);
     }

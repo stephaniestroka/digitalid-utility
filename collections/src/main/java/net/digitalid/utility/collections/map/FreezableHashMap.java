@@ -147,16 +147,6 @@ public abstract class FreezableHashMap<K, V> extends HashMap<K, V> implements Fr
     @Impure
     @Override
     @NonFrozenRecipient
-    public @NonCapturable @Nonnull V putIfAbsentOrNullElseReturnPresent(@Captured K key, @Captured @Nonnull V value) {
-        final @Nullable V oldValue = get(key);
-        if (oldValue != null) { return oldValue; }
-        put(key, value);
-        return value;
-    }
-    
-    @Impure
-    @Override
-    @NonFrozenRecipient
     public @Capturable @Nullable V remove(@NonCaptured @Unmodified @Nullable Object object) {
         return super.remove(object);
     }
