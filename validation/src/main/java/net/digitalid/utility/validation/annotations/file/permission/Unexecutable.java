@@ -42,7 +42,7 @@ public @interface Unexecutable {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == null || !#.exists() || !#.canExecute()", "The # $ may not be executable.", element);
+            return Contract.with("# == null || !#.exists() || System.getProperty(\"os.name\").startsWith(\"Windows\") || !#.canExecute()", "The # $ may not be executable.", element);
         }
         
     }

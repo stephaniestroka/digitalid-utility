@@ -42,7 +42,7 @@ public @interface Executable {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == null || !#.exists() || #.canExecute()", "The # $ has to be executable.", element);
+            return Contract.with("# == null || !#.exists() || System.getProperty(\"os.name\").startsWith(\"Windows\") || #.canExecute()", "The # $ has to be executable.", element);
         }
         
     }

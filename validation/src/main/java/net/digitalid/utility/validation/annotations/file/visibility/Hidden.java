@@ -42,7 +42,7 @@ public @interface Hidden {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == null || #.isHidden()", "The # $ has to be hidden.", element);
+            return Contract.with("# == null || System.getProperty(\"os.name\").startsWith(\"Windows\") || #.isHidden()", "The # $ has to be hidden.", element);
         }
         
     }

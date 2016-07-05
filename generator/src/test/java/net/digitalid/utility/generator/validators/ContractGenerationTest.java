@@ -366,27 +366,27 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     }
     
     @Impure
-    public void setNonExecutable(@Unexecutable File file) {}
+    public void setUnexecutable(@Unexecutable File file) {}
     
     @Test
-    public void testNonExecutable() {
-        test(INSTANCE::setNonExecutable, noPermissions, fullPermissions);
+    public void testUnexecutable() {
+        test(INSTANCE::setUnexecutable, noPermissions, fullPermissions);
     }
     
     @Impure
-    public void setNonReadable(@Unreadable File file) {}
+    public void setUnreadable(@Unreadable File file) {}
     
     @Test
-    public void testNonReadable() {
-        test(INSTANCE::setNonReadable, noPermissions, fullPermissions);
+    public void testUnreadable() {
+        test(INSTANCE::setUnreadable, noPermissions, fullPermissions);
     }
     
     @Impure
-    public void setNonWritable(@Unwritable File file) {}
+    public void setUnwritable(@Unwritable File file) {}
     
     @Test
-    public void testNonWritable() {
-        test(INSTANCE::setNonWritable, noPermissions, fullPermissions);
+    public void testUnwritable() {
+        test(INSTANCE::setUnwritable, noPermissions, fullPermissions);
     }
     
     @Impure
