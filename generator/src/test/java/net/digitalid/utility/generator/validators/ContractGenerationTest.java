@@ -12,6 +12,8 @@ import javax.lang.model.element.NestingKind;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
 import net.digitalid.utility.file.Files;
 import net.digitalid.utility.freezable.FreezableInterface;
@@ -20,6 +22,7 @@ import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
+import net.digitalid.utility.functional.failable.FailableConsumer;
 import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
@@ -99,6 +102,8 @@ import net.digitalid.utility.validation.annotations.value.Invariant;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
 import org.junit.Test;
+
+import static org.junit.Assert.fail;
 
 @Immutable
 @GenerateSubclass
@@ -357,12 +362,20 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
         testNegatives(INSTANCE::setRelative, testFile, testDirectory);
     }
     
+    @Pure
+    protected static <T, X extends Exception> void testWithNegativeSampleIgnoredOnWindows(@NonCaptured @Modified @Nonnull FailableConsumer<? super T, ? extends X> consumer, T positive, T negative) throws X {
+        testPositives(consumer, positive);
+        if (!System.getProperty("os.name").startsWith("Windows")) {
+            testNegatives(consumer, negative);
+        }
+    }
+    
     @Impure
     public void setExecutable(@Executable File file) {}
     
     @Test
     public void testExecutable() {
-        test(INSTANCE::setExecutable, fullPermissions, noPermissions);
+        testWithNegativeSampleIgnoredOnWindows(INSTANCE::setExecutable, fullPermissions, noPermissions);
     }
     
     @Impure
@@ -370,7 +383,7 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     
     @Test
     public void testUnexecutable() {
-        test(INSTANCE::setUnexecutable, noPermissions, fullPermissions);
+        testWithNegativeSampleIgnoredOnWindows(INSTANCE::setUnexecutable, noPermissions, fullPermissions);
     }
     
     @Impure
@@ -378,7 +391,7 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     
     @Test
     public void testUnreadable() {
-        test(INSTANCE::setUnreadable, noPermissions, fullPermissions);
+        testWithNegativeSampleIgnoredOnWindows(INSTANCE::setUnreadable, noPermissions, fullPermissions);
     }
     
     @Impure
@@ -394,7 +407,7 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     
     @Test
     public void testReadable() {
-        test(INSTANCE::setReadable, fullPermissions, noPermissions);
+        testWithNegativeSampleIgnoredOnWindows(INSTANCE::setReadable, fullPermissions, noPermissions);
     }
     
     @Impure
@@ -411,7 +424,9 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     @Test
     public void testHidden() {
         testPositives(INSTANCE::setHidden, hiddenFile, hiddenDirectory);
-        testNegatives(INSTANCE::setHidden, testFile, testDirectory);
+        if (!System.getProperty("os.name").startsWith("Windows")) {
+            testNegatives(INSTANCE::setHidden, testFile, testDirectory);
+        }
     }
     
     @Impure
@@ -420,7 +435,9 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     @Test
     public void testVisible() {
         testPositives(INSTANCE::setVisible, testFile, testDirectory);
-        testNegatives(INSTANCE::setVisible, hiddenFile, hiddenDirectory);
+        if (!System.getProperty("os.name").startsWith("Windows")) {
+            testNegatives(INSTANCE::setVisible, hiddenFile, hiddenDirectory);
+        }
     }
     
     /* -------------------------------------------------- Index -------------------------------------------------- */
