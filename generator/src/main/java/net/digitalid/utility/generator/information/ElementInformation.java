@@ -65,7 +65,7 @@ public interface ElementInformation extends RootInterface {
     /* -------------------------------------------------- Package -------------------------------------------------- */
     
     /**
-     * Returns the name of the {@link #getPackageElement() package} in which the represented {@link #getElement() element} is declared.
+     * Returns the name of the package in which the represented {@link #getElement() element} is declared.
      */
     @Pure
     public default @Nonnull String getQualifiedPackageName() {

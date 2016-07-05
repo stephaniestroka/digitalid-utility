@@ -11,6 +11,7 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.Initializer;
 import net.digitalid.utility.configuration.exceptions.InitializationException;
+import net.digitalid.utility.initialization.InitializationProcessor;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 
 /**

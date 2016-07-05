@@ -947,7 +947,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
     /**
      * Returns the elements of this iterable as a map with their key determined by the given function.
      * Elements that are mapped to the same key overwrite each other. If this is not desired, use
-     * {@link #groupBy(net.digitalid.utility.functional.interfaces.UnaryFunction)} instead.
+     * {@link #groupBy(net.digitalid.utility.functional.failable.FailableUnaryFunction)} instead.
      */
     @Pure
     public default @Capturable <K, X extends Exception> @Modifiable @Nonnull Map<K, E> toMap(@Nonnull FailableUnaryFunction<? super E, ? extends K, ? extends X> function) throws X {
