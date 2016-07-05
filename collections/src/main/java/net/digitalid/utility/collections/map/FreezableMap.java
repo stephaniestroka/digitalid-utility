@@ -69,7 +69,7 @@ public interface FreezableMap<K, V> extends ReadOnlyMap<K, V>, Map<K, V>, Freeza
     @Impure
     @NonFrozenRecipient
     public default void putAll(@Nonnull ReadOnlyMap<? extends K, ? extends V> map) {
-        map.entrySet().forEach(entry -> put(entry.getKey(), entry.getValue()));
+        map.entrySet().doForEach(entry -> put(entry.getKey(), entry.getValue()));
     }
     
     /**
