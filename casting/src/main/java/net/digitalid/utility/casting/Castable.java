@@ -21,7 +21,7 @@ public interface Castable {
      * @throws InvalidClassCastException if this object cannot be cast to the given target class.
      */
     @Pure
-    public default <T> @Chainable @Nonnull T castTo(@Nonnull Class<T> targetClass) throws InvalidClassCastException {
+    public default @Chainable <T> @Nonnull T castTo(@Nonnull Class<T> targetClass) throws InvalidClassCastException {
         if (targetClass.isInstance(this)) { return targetClass.cast(this); }
         else { throw InvalidClassCastException.get(this, targetClass); }
     }
