@@ -74,7 +74,7 @@ public interface FailableProducer<T, X extends Exception> {
      * Returns the composition of the given producer and function with a flexible exception type.
      */
     @Pure
-    public static <T, O, X extends Exception> @Capturable @Nonnull FailableProducer<O, X> compose(@Captured @Nonnull FailableProducer<? extends T, ? extends X> producer, @Nonnull FailableUnaryFunction<? super T, ? extends O, ? extends X> function) {
+    public static @Capturable <T, O, X extends Exception> @Nonnull FailableProducer<O, X> compose(@Captured @Nonnull FailableProducer<? extends T, ? extends X> producer, @Nonnull FailableUnaryFunction<? super T, ? extends O, ? extends X> function) {
         return () -> function.evaluate(producer.produce());
     }
     

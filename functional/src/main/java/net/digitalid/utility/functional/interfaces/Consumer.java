@@ -39,7 +39,7 @@ public interface Consumer<T> extends FailableConsumer<T, RuntimeException> {
      * Returns the composition of the given function followed by this consumer.
      */
     @Pure
-    public default <I> @Capturable @Nonnull Consumer<I> after(@Nonnull UnaryFunction<? super I, ? extends T> function) {
+    public default @Capturable <I> @Nonnull Consumer<I> after(@Nonnull UnaryFunction<? super I, ? extends T> function) {
         return object -> consume(function.evaluate(object));
     }
     

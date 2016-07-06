@@ -30,7 +30,7 @@ public class GeneratingIterator<E> extends InfiniteIterator<E> {
      * Returns a new generating iterator that generates an infinite number of elements with the given producer.
      */
     @Pure
-    public static <E> @Capturable @Nonnull GeneratingIterator<E> with(@Captured @Nonnull FailableProducer<? extends E, ?> producer) {
+    public static @Capturable <E> @Nonnull GeneratingIterator<E> with(@Captured @Nonnull FailableProducer<? extends E, ?> producer) {
         return new GeneratingIterator<>(producer);
     }
     

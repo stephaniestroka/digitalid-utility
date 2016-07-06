@@ -40,7 +40,7 @@ public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHash
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(int, float, int)
      */
     @Pure
-    public static <K, V> @Capturable @Nonnull ConcurrentHashMap<K, V> get(@NonNegative int initialCapacity, @Positive float loadFactor, @Positive int concurrencyLevel) {
+    public static @Capturable <K, V> @Nonnull ConcurrentHashMap<K, V> get(@NonNegative int initialCapacity, @Positive float loadFactor, @Positive int concurrencyLevel) {
         return new ConcurrentHashMap<>(initialCapacity, loadFactor, concurrencyLevel);
     }
     
@@ -48,7 +48,7 @@ public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHash
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(int, float)
      */
     @Pure
-    public static <K, V> @Capturable @Nonnull ConcurrentHashMap<K, V> get(@NonNegative int initialCapacity, @Positive float loadFactor) {
+    public static @Capturable <K, V> @Nonnull ConcurrentHashMap<K, V> get(@NonNegative int initialCapacity, @Positive float loadFactor) {
         return get(initialCapacity, loadFactor, 16);
     }
     
@@ -56,7 +56,7 @@ public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHash
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(int)
      */
     @Pure
-    public static <K, V> @Capturable @Nonnull ConcurrentHashMap<K, V> get(@NonNegative int initialCapacity) {
+    public static @Capturable <K, V> @Nonnull ConcurrentHashMap<K, V> get(@NonNegative int initialCapacity) {
         return get(initialCapacity, 0.75f);
     }
     
@@ -64,7 +64,7 @@ public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHash
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap()
      */
     @Pure
-    public static <K, V> @Capturable @Nonnull ConcurrentHashMap<K, V> get() {
+    public static @Capturable <K, V> @Nonnull ConcurrentHashMap<K, V> get() {
         return get(16);
     }
     
@@ -79,7 +79,7 @@ public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHash
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(java.util.Map)
      */
     @Pure
-    public static <K, V> @Capturable @Nonnull ConcurrentHashMap<K, V> getNonNullable(@NonCaptured @Unmodified @Nonnull Map<? extends K, ? extends V> map) {
+    public static @Capturable <K, V> @Nonnull ConcurrentHashMap<K, V> getNonNullable(@NonCaptured @Unmodified @Nonnull Map<? extends K, ? extends V> map) {
         return new ConcurrentHashMap<>(map);
     }
     
@@ -87,7 +87,7 @@ public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHash
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(java.util.Map)
      */
     @Pure
-    public static <K, V> @Capturable @Nullable ConcurrentHashMap<K, V> getNullable(@NonCaptured @Unmodified @Nullable Map<? extends K, ? extends V> map) {
+    public static @Capturable <K, V> @Nullable ConcurrentHashMap<K, V> getNullable(@NonCaptured @Unmodified @Nullable Map<? extends K, ? extends V> map) {
         return map == null ? null : getNonNullable(map);
     }
     

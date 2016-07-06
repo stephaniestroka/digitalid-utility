@@ -35,7 +35,7 @@ public class ReversingIterator<E> extends ReadOnlyIterator<E> {
      */
     @Pure
     @SafeVarargs
-    public static <E> @Capturable @Nonnull ReversingIterator<E> with(@Referenced @Unmodified @Nonnull E... elements) {
+    public static @Capturable <E> @Nonnull ReversingIterator<E> with(@Referenced @Unmodified @Nonnull E... elements) {
         return new ReversingIterator<>(elements);
     }
     

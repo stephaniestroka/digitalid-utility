@@ -29,7 +29,7 @@ public class RepeatingIterator<E> extends InfiniteIterator<E> {
      * Returns a new repeating iterator that repeats the given element infinitely.
      */
     @Pure
-    public static <E> @Capturable @Nonnull RepeatingIterator<E> with(@Captured E element) {
+    public static @Capturable <E> @Nonnull RepeatingIterator<E> with(@Captured E element) {
         return new RepeatingIterator<>(element);
     }
     

@@ -33,7 +33,7 @@ public class ZippingIterator<I0, I1> extends DoubleIteratorBasedIterator<@Nonnul
      * Returns a new zipping iterator that iterates over the elements of the given iterators in pairs, extending the shorter or truncating the longer iterator depending on the given flag.
      */
     @Pure
-    public static <I0, I1> @Capturable @Nonnull ZippingIterator<I0, I1> with(@Captured @Nonnull Iterator<? extends I0> primaryIterator, @Captured @Nonnull Iterator<? extends I1> secondaryIterator, boolean shortest) {
+    public static @Capturable <I0, I1> @Nonnull ZippingIterator<I0, I1> with(@Captured @Nonnull Iterator<? extends I0> primaryIterator, @Captured @Nonnull Iterator<? extends I1> secondaryIterator, boolean shortest) {
         return new ZippingIterator<>(primaryIterator, secondaryIterator, shortest);
     }
     

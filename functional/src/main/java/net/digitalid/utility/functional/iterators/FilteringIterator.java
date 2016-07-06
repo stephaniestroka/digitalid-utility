@@ -37,7 +37,7 @@ public class FilteringIterator<E> extends SingleIteratorBasedIterator<E, E> {
      * Returns a new filtering iterator that iterates over the elements of the given iterator that fulfill the given predicate.
      */
     @Pure
-    public static <E> @Capturable @Nonnull FilteringIterator<E> with(@Captured @Nonnull Iterator<? extends E> iterator, @Nonnull FailablePredicate<? super E, ?> predicate) {
+    public static @Capturable <E> @Nonnull FilteringIterator<E> with(@Captured @Nonnull Iterator<? extends E> iterator, @Nonnull FailablePredicate<? super E, ?> predicate) {
         return new FilteringIterator<>(iterator, predicate);
     }
     

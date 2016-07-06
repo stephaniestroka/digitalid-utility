@@ -425,7 +425,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the first element of this iterable that fulfills the given predicate or the given default element if no such element is found.
      */
     @Pure
-    public default <X extends Exception> @NonCapturable @Nullable E findFirst(@Nonnull FailablePredicate<? super E, ? extends X> predicate, @NonCaptured @Unmodified E defaultElement) throws X {
+    public default @NonCapturable <X extends Exception> @Nullable E findFirst(@Nonnull FailablePredicate<? super E, ? extends X> predicate, @NonCaptured @Unmodified E defaultElement) throws X {
         for (E element : this) {
             if (predicate.evaluate(element)) { return element; }
         }
@@ -436,7 +436,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the first element of this iterable that fulfills the given predicate or null if no such element is found.
      */
     @Pure
-    public default <X extends Exception> @NonCapturable @Nullable E findFirst(@Nonnull FailablePredicate<? super E, ? extends X> predicate) throws X {
+    public default @NonCapturable <X extends Exception> @Nullable E findFirst(@Nonnull FailablePredicate<? super E, ? extends X> predicate) throws X {
         return findFirst(predicate, null);
     }
     
@@ -444,7 +444,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the last element of this iterable that fulfills the given predicate or the given default element if no such element is found.
      */
     @Pure
-    public default <X extends Exception> @NonCapturable E findLast(@Nonnull FailablePredicate<? super E, ? extends X> predicate, @NonCaptured @Unmodified E defaultElement) throws X {
+    public default @NonCapturable <X extends Exception> E findLast(@Nonnull FailablePredicate<? super E, ? extends X> predicate, @NonCaptured @Unmodified E defaultElement) throws X {
         @Nullable E lastElement = defaultElement;
         for (E element : this) {
             if (predicate.evaluate(element)) { lastElement = element; }
@@ -456,7 +456,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the last element of this iterable that fulfills the given predicate or null if no such element is found.
      */
     @Pure
-    public default <X extends Exception> @NonCapturable @Nullable E findLast(@Nonnull FailablePredicate<? super E, ? extends X> predicate) throws X {
+    public default @NonCapturable <X extends Exception> @Nullable E findLast(@Nonnull FailablePredicate<? super E, ? extends X> predicate) throws X {
         return findLast(predicate, null);
     }
     
@@ -466,7 +466,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * @throws NoSuchElementException if no unique element is found in this iterable.
      */
     @Pure
-    public default <X extends Exception> @NonCapturable E findUnique(@Nonnull FailablePredicate<? super E, ? extends X> predicate) throws X {
+    public default @NonCapturable <X extends Exception> E findUnique(@Nonnull FailablePredicate<? super E, ? extends X> predicate) throws X {
         @Nullable E uniqueElement = null;
         boolean found = false;
         for (E element : this) {
@@ -521,7 +521,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the value reduced by the given operator or the given element if this iterable is empty.
      */
     @Pure
-    public default <X extends Exception> @NonCapturable E reduce(@Nonnull FailableBinaryOperator<E, ? extends X> operator, @NonCaptured @Unmodified E element) throws X {
+    public default @NonCapturable <X extends Exception> E reduce(@Nonnull FailableBinaryOperator<E, ? extends X> operator, @NonCaptured @Unmodified E element) throws X {
         final @Nonnull Iterator<E> iterator = iterator();
         if (iterator.hasNext()) {
             E result = iterator.next();
@@ -538,7 +538,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Returns the value reduced by the given operator or null if this iterable is empty.
      */
     @Pure
-    public default <X extends Exception> @NonCapturable @Nullable E reduce(@Nonnull FailableBinaryOperator<E, ? extends X> operator) throws X {
+    public default @NonCapturable <X extends Exception> @Nullable E reduce(@Nonnull FailableBinaryOperator<E, ? extends X> operator) throws X {
         return reduce(operator, null);
     }
     
@@ -968,7 +968,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      */
     @Pure
     @SuppressWarnings("unchecked")
-    public default <X extends Exception> @Capturable @Nonnull FiniteIterable<E> evaluate() throws X {
+    public default @Capturable <X extends Exception> @Nonnull FiniteIterable<E> evaluate() throws X {
         try {
             return FiniteIterable.of(toList());
         } catch (@Nonnull FailedIterationException exception) {

@@ -85,7 +85,7 @@ public class ReadOnlyEntrySet<K, V> implements Set<Map.@Nonnull Entry<K, V>>, Co
     @Pure
     @Override
     @SuppressWarnings("SuspiciousToArrayCall")
-    public <T> @Capturable @Nonnull T[] toArray(@NonCaptured @Modified @Nonnull T[] array) {
+    public @Capturable <T> @Nonnull T[] toArray(@NonCaptured @Modified @Nonnull T[] array) {
         return set.toArray(array);
     }
     

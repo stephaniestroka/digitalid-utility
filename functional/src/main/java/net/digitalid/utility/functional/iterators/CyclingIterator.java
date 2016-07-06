@@ -33,7 +33,7 @@ public class CyclingIterator<E> extends ReadOnlyIterator<E> {
      * Returns a new cycling iterator that iterates over the elements of the given iterable indefinitely.
      */
     @Pure
-    public static <E> @Capturable @Nonnull CyclingIterator<E> with(@Nonnull FiniteIterable<? extends E> iterable) {
+    public static @Capturable <E> @Nonnull CyclingIterator<E> with(@Nonnull FiniteIterable<? extends E> iterable) {
         return new CyclingIterator<>(iterable);
     }
     

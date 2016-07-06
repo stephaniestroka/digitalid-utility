@@ -31,7 +31,7 @@ public class ReadOnlyIterableIterator<E> extends ReadOnlyIterator<E> {
      * Returns a read-only iterable iterator that captures the given iterator.
      */
     @Pure
-    public static <E> @Capturable @Nonnull ReadOnlyIterableIterator<E> with(@Captured @Nonnull Iterator<? extends E> iterator) {
+    public static @Capturable <E> @Nonnull ReadOnlyIterableIterator<E> with(@Captured @Nonnull Iterator<? extends E> iterator) {
         return new ReadOnlyIterableIterator<>(iterator);
     }
     

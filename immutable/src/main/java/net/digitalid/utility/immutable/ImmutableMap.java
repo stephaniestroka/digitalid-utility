@@ -121,7 +121,7 @@ public class ImmutableMap<K, V> extends LinkedHashMap<K, V> {
      * Returns an immutable map builder with the given key-value pair.
      */
     @Pure
-    public static <K, V> @Capturable @Nonnull ImmutableMapBuilder<K, V> with(@Captured K key, @Captured V value) {
+    public static @Capturable <K, V> @Nonnull ImmutableMapBuilder<K, V> with(@Captured K key, @Captured V value) {
         return new ImmutableMapBuilder<K, V>().with(key, value);
     }
     

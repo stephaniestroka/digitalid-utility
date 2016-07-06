@@ -34,7 +34,7 @@ public class MappingIterator<O, I> extends SingleIteratorBasedIterator<O, I> {
      * Returns a new mapping iterator that iterates over the elements of the given iterator mapped by the given function.
      */
     @Pure
-    public static <O, I> @Capturable @Nonnull MappingIterator<O, I> with(@Captured @Nonnull Iterator<I> iterator, @Nonnull FailableUnaryFunction<? super I, ? extends O, ?> function) {
+    public static @Capturable <O, I> @Nonnull MappingIterator<O, I> with(@Captured @Nonnull Iterator<I> iterator, @Nonnull FailableUnaryFunction<? super I, ? extends O, ?> function) {
         return new MappingIterator<>(iterator, function);
     }
     

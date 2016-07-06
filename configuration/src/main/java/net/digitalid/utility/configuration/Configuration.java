@@ -226,7 +226,7 @@ public class Configuration<P> {
      * Returns a configuration with the given provider.
      */
     @Impure
-    public static <P> @NonCapturable @Nonnull Configuration<P> with(@Nonnull P provider) {
+    public static @NonCapturable <P> @Nonnull Configuration<P> with(@Nonnull P provider) {
         Require.that(provider != null).orThrow("The provider may not be null.");
         
         return new Configuration<>(provider);
@@ -236,7 +236,7 @@ public class Configuration<P> {
      * Returns a configuration whose provider still needs to be set.
      */
     @Impure
-    public static <P> @NonCapturable @Nonnull Configuration<P> withUnknownProvider() {
+    public static @NonCapturable <P> @Nonnull Configuration<P> withUnknownProvider() {
         return new Configuration<>(null);
     }
     

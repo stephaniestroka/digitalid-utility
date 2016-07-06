@@ -155,7 +155,7 @@ public abstract class CustomProcessor implements Processor {
      * Converts the given array to an unmodifiable set.
      */
     @Pure
-    protected <T> @Capturable @Unmodifiable @Nonnull Set<@Nonnull T> convertArrayToUnmodifiableSet(@NonCaptured @Unmodified @Nonnull @NonNullableElements T[] array) {
+    protected @Capturable <T> @Unmodifiable @Nonnull Set<@Nonnull T> convertArrayToUnmodifiableSet(@NonCaptured @Unmodified @Nonnull @NonNullableElements T[] array) {
         final @Nonnull @NonNullableElements Set<T> set = new HashSet<>(array.length);
         for (@Nonnull T s : array) { set.add(s); }
         return Collections.unmodifiableSet(set);

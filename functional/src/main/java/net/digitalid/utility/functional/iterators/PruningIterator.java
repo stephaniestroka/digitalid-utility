@@ -40,7 +40,7 @@ public class PruningIterator<E> extends SingleIteratorBasedIterator<E, E> {
      * Returns a new pruning iterator that iterates over the elements of the given iterator from the given start index to but not including the given end index.
      */
     @Pure
-    public static <E> @Capturable @Nonnull PruningIterator<E> with(@Captured @Nonnull Iterator<? extends E> iterator, @NonNegative int startIndex, @Positive int endIndex) {
+    public static @Capturable <E> @Nonnull PruningIterator<E> with(@Captured @Nonnull Iterator<? extends E> iterator, @NonNegative int startIndex, @Positive int endIndex) {
         return new PruningIterator<>(iterator, startIndex, endIndex);
     }
     

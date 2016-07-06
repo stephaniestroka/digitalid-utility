@@ -55,7 +55,7 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
      * @see ConcurrentHashMap#ConcurrentHashMap(int, float, int)
      */
     @Pure
-    public static <E> @Capturable @Nonnull ConcurrentHashSet<E> get(@NonNegative int initialCapacity, @Positive float loadFactor, @Positive int concurrencyLevel) {
+    public static @Capturable <E> @Nonnull ConcurrentHashSet<E> get(@NonNegative int initialCapacity, @Positive float loadFactor, @Positive int concurrencyLevel) {
         return new ConcurrentHashSet<>(initialCapacity, loadFactor, concurrencyLevel);
     }
     
@@ -63,7 +63,7 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
      * @see ConcurrentHashMap#get(int, float)
      */
     @Pure
-    public static <E> @Capturable @Nonnull ConcurrentHashSet<E> get(@NonNegative int initialCapacity, @Positive float loadFactor) {
+    public static @Capturable <E> @Nonnull ConcurrentHashSet<E> get(@NonNegative int initialCapacity, @Positive float loadFactor) {
         return get(initialCapacity, loadFactor, 16);
     }
     
@@ -71,7 +71,7 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
      * @see ConcurrentHashMap#get(int)
      */
     @Pure
-    public static <E> @Capturable @Nonnull ConcurrentHashSet<E> get(@NonNegative int initialCapacity) {
+    public static @Capturable <E> @Nonnull ConcurrentHashSet<E> get(@NonNegative int initialCapacity) {
         return get(initialCapacity, 0.75f);
     }
     
@@ -79,7 +79,7 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
      * @see ConcurrentHashMap#get()
      */
     @Pure
-    public static <E> @Capturable @Nonnull ConcurrentHashSet<E> get() {
+    public static @Capturable <E> @Nonnull ConcurrentHashSet<E> get() {
         return get(16);
     }
     
@@ -96,7 +96,7 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
      * @see ConcurrentHashMap#ConcurrentHashMap(java.util.Map)
      */
     @Pure
-    public static <E> @Capturable @Nonnull ConcurrentHashSet<E> getNonNullable(@NonCaptured @Unmodified @Nonnull Set<? extends E> set) {
+    public static @Capturable <E> @Nonnull ConcurrentHashSet<E> getNonNullable(@NonCaptured @Unmodified @Nonnull Set<? extends E> set) {
         return new ConcurrentHashSet<>(set);
     }
     
@@ -104,7 +104,7 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
      * @see ConcurrentHashMap#ConcurrentHashMap(java.util.Map)
      */
     @Pure
-    public static <E> @Capturable @Nullable ConcurrentHashSet<E> getNullable(@NonCaptured @Unmodified @Nullable Set<? extends E> set) {
+    public static @Capturable <E> @Nullable ConcurrentHashSet<E> getNullable(@NonCaptured @Unmodified @Nullable Set<? extends E> set) {
         return set == null ? null : getNonNullable(set);
     }
     
@@ -143,7 +143,7 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSe
     @Pure
     @Override
     @SuppressWarnings("SuspiciousToArrayCall")
-    public <T> @Capturable @Nonnull T[] toArray(@NonCaptured @Modified @Nonnull T[] array) {
+    public @Capturable <T> @Nonnull T[] toArray(@NonCaptured @Modified @Nonnull T[] array) {
         return set.toArray(array);
     }
     

@@ -58,7 +58,7 @@ public interface FailableConsumer<T, X extends Exception> {
      * Returns the composition of the given consumers with a flexible exception type.
      */
     @Pure
-    public static <T, X extends Exception> @Capturable @Nonnull FailableConsumer<T, X> compose(@Captured @Nonnull FailableConsumer<? super T, ? extends X> consumer0, @Captured @Nonnull FailableConsumer<? super T, ? extends X> consumer1) {
+    public static @Capturable <T, X extends Exception> @Nonnull FailableConsumer<T, X> compose(@Captured @Nonnull FailableConsumer<? super T, ? extends X> consumer0, @Captured @Nonnull FailableConsumer<? super T, ? extends X> consumer1) {
         return object -> { consumer0.consume(object); consumer1.consume(object); };
     }
     
@@ -69,7 +69,7 @@ public interface FailableConsumer<T, X extends Exception> {
      * @see #compose(net.digitalid.utility.functional.failable.FailableConsumer, net.digitalid.utility.functional.failable.FailableConsumer)
      */
     @Pure
-    public default <S extends T> @Capturable @Nonnull FailableConsumer<S, X> before(@Captured @Nonnull FailableConsumer<? super S, ? extends X> consumer) {
+    public default @Capturable <S extends T> @Nonnull FailableConsumer<S, X> before(@Captured @Nonnull FailableConsumer<? super S, ? extends X> consumer) {
         return object -> { consume(object); consumer.consume(object); };
     }
     
@@ -80,7 +80,7 @@ public interface FailableConsumer<T, X extends Exception> {
      * @see #compose(net.digitalid.utility.functional.failable.FailableConsumer, net.digitalid.utility.functional.failable.FailableConsumer)
      */
     @Pure
-    public default <S extends T> @Capturable @Nonnull FailableConsumer<S, X> after(@Captured @Nonnull FailableConsumer<? super S, ? extends X> consumer) {
+    public default @Capturable <S extends T> @Nonnull FailableConsumer<S, X> after(@Captured @Nonnull FailableConsumer<? super S, ? extends X> consumer) {
         return object -> { consumer.consume(object); consume(object); };
     }
     
@@ -89,7 +89,7 @@ public interface FailableConsumer<T, X extends Exception> {
      * Unfortunately, it is not possible to make the exception type flexible as well.
      */
     @Pure
-    public default <I> @Capturable @Nonnull FailableConsumer<I, X> after(@Nonnull FailableUnaryFunction<? super I, ? extends T, ? extends X> function) {
+    public default @Capturable <I> @Nonnull FailableConsumer<I, X> after(@Nonnull FailableUnaryFunction<? super I, ? extends T, ? extends X> function) {
         return object -> consume(function.evaluate(object));
     }
     

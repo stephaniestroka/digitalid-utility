@@ -33,7 +33,7 @@ public class IteratingIterator<E> extends InfiniteIterator<E> {
      * Returns a new iterating iterator that iterates over the sequence produced by the given operator from the given first element.
      */
     @Pure
-    public static <E> @Capturable @Nonnull IteratingIterator<E> with(@Captured E firstElement, @Nonnull FailableUnaryOperator<E, ?> unaryOperator) {
+    public static @Capturable <E> @Nonnull IteratingIterator<E> with(@Captured E firstElement, @Nonnull FailableUnaryOperator<E, ?> unaryOperator) {
         return new IteratingIterator<>(firstElement, unaryOperator);
     }
     

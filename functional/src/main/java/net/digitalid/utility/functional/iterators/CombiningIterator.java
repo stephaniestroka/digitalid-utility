@@ -27,7 +27,7 @@ public class CombiningIterator<E> extends DoubleIteratorBasedIterator<E, E, E> {
      * Returns a new combining iterator that iterates first over the elements of the first iterator and then over the elements of the second iterator.
      */
     @Pure
-    public static <E> @Capturable @Nonnull CombiningIterator<E> with(@Captured @Nonnull Iterator<? extends E> primaryIterator, @Captured @Nonnull Iterator<? extends E> secondaryIterator) {
+    public static @Capturable <E> @Nonnull CombiningIterator<E> with(@Captured @Nonnull Iterator<? extends E> primaryIterator, @Captured @Nonnull Iterator<? extends E> secondaryIterator) {
         return new CombiningIterator<>(primaryIterator, secondaryIterator);
     }
     

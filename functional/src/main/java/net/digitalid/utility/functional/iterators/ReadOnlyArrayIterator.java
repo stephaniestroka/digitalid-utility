@@ -35,7 +35,7 @@ public class ReadOnlyArrayIterator<E> extends ReadOnlyIterator<E> {
      */
     @Pure
     @SafeVarargs
-    public static <E> @Capturable @Nonnull ReadOnlyArrayIterator<E> with(@Referenced @Unmodified @Nonnull E... elements) {
+    public static @Capturable <E> @Nonnull ReadOnlyArrayIterator<E> with(@Referenced @Unmodified @Nonnull E... elements) {
         return new ReadOnlyArrayIterator<>(elements);
     }
     

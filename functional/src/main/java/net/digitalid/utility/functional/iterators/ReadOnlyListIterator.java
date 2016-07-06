@@ -35,7 +35,7 @@ public class ReadOnlyListIterator<E> extends ReadOnlyIterableIterator<E> impleme
      * Returns a read-only list iterator that captures the given list iterator.
      */
     @Pure
-    public static <E> @Capturable @Nonnull ReadOnlyListIterator<E> with(@Captured @Nonnull ListIterator<? extends E> iterator) {
+    public static @Capturable <E> @Nonnull ReadOnlyListIterator<E> with(@Captured @Nonnull ListIterator<? extends E> iterator) {
         return new ReadOnlyListIterator<>(iterator);
     }
     
