@@ -21,7 +21,7 @@ public interface Converter<T> {
     public void declare(@Nonnull @Modified @NonCaptured Declaration declaration);
     
     @Pure
-    public void convert(@NonCaptured @Unmodified @Nullable T object, @NonCaptured @Modified @Nonnull ValueCollector valueCollector);
+    public <R> void convert(@NonCaptured @Unmodified @Nullable T object, @NonCaptured @Modified @Nonnull ValueCollector<R> valueCollector);
     
     @Pure
     public @Nonnull @Capturable T recover(@NonCaptured @Nonnull SelectionResult selectionResult);
