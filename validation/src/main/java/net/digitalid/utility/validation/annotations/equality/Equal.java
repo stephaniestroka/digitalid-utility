@@ -1,6 +1,5 @@
-package net.digitalid.utility.validation.annotations.file.visibility;
+package net.digitalid.utility.validation.annotations.equality;
 
-import java.io.File;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,22 +13,30 @@ import javax.lang.model.element.Element;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.validators.FileValidator;
+import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
- * This annotation indicates that the annotated {@link File file} is {@link File#isHidden() hidden}.
+ * This annotation indicates that the string version of the annotated object equals the given string.
  * 
- * @see Visible
+ * @see Unequal
  */
 @Documented
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
-@ValueValidator(Hidden.Validator.class)
-public @interface Hidden {
+@ValueValidator(Equal.Validator.class)
+public @interface Equal {
+    
+    /* -------------------------------------------------- Value -------------------------------------------------- */
+    
+    /**
+     * Returns the string which the string version of the annotated object equals.
+     */
+    @Nonnull String value();
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
     
@@ -37,12 +44,12 @@ public @interface Hidden {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends FileValidator {
+    public static class Validator implements ValueAnnotationValidator {
         
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == null || System.getProperty(\"os.name\").startsWith(\"Windows\") || #.isHidden()", "The # $ has to be hidden.", element);
+            return Contract.with((ProcessingUtility.getType(element).getKind().isPrimitive() ? "" : "# == null || ") + "String.valueOf(#).equals(\"@\")", "The # has to equal '@' but was $.", element, annotationMirror);
         }
         
     }

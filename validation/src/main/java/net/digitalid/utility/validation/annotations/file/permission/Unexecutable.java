@@ -21,15 +21,15 @@ import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.validators.FileValidator;
 
 /**
- * This annotation indicates that the annotated {@link File file} is not {@link File#canWrite() writable}.
+ * This annotation indicates that the annotated {@link File file} is not {@link File#canExecute() executable}.
  * 
- * @see Writable
+ * @see Executable
  */
 @Documented
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
-@ValueValidator(NonWritable.Validator.class)
-public @interface NonWritable {
+@ValueValidator(Unexecutable.Validator.class)
+public @interface Unexecutable {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
     
@@ -42,7 +42,7 @@ public @interface NonWritable {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == null || !#.exists() || !#.canWrite()", "The # $ may not be writable.", element);
+            return Contract.with("# == null || !#.exists() || System.getProperty(\"os.name\").startsWith(\"Windows\") || !#.canExecute()", "The # $ may not be executable.", element);
         }
         
     }

@@ -24,7 +24,7 @@ import net.digitalid.utility.validation.validators.FileValidator;
 /**
  * This annotation indicates that the annotated {@link File file} is {@link File#canRead() readable}.
  * 
- * @see NonReadable
+ * @see Unreadable
  */
 @Documented
 @Target(ElementType.TYPE_USE)
@@ -43,7 +43,7 @@ public @interface Readable {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == null || !#.exists() || #.canRead()", "The # $ has to be readable.", element);
+            return Contract.with("# == null || !#.exists() || System.getProperty(\"os.name\").startsWith(\"Windows\") || #.canRead()", "The # $ has to be readable.", element);
         }
         
     }

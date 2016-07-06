@@ -82,6 +82,35 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
         return () -> ReadOnlyArrayIterator.with(elements);
     }
     
+    /* -------------------------------------------------- Size -------------------------------------------------- */
+    
+    /**
+     * Returns the size of this iterable.
+     */
+    @Pure
+    @Override
+    public default @NonNegative int size() {
+        return size(Integer.MAX_VALUE);
+    }
+    
+    @Pure
+    @Override
+    public default boolean isEmpty() {
+        return FunctionalIterable.super.isEmpty();
+    }
+    
+    @Pure
+    @Override
+    public default boolean isSingle() {
+        return FunctionalIterable.super.isSingle();
+    }
+    
+    @Pure
+    @Override
+    public default boolean isEmptyOrSingle() {
+        return FunctionalIterable.super.isEmptyOrSingle();
+    }
+    
     /* -------------------------------------------------- Filtering -------------------------------------------------- */
     
     @Pure
@@ -175,17 +204,6 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
             if (!Objects.equals(thisIterator.next(), thatIterator.next())) { return false; }
         }
         return !thisIterator.hasNext() && !thatIterator.hasNext();
-    }
-    
-    /* -------------------------------------------------- Size -------------------------------------------------- */
-    
-    /**
-     * Returns the size of this iterable.
-     */
-    @Pure
-    @Override
-    public default @NonNegative int size() {
-        return size(Integer.MAX_VALUE);
     }
     
     /* -------------------------------------------------- Element -------------------------------------------------- */
@@ -929,7 +947,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
     /**
      * Returns the elements of this iterable as a map with their key determined by the given function.
      * Elements that are mapped to the same key overwrite each other. If this is not desired, use
-     * {@link #groupBy(net.digitalid.utility.functional.interfaces.UnaryFunction)} instead.
+     * {@link #groupBy(net.digitalid.utility.functional.failable.FailableUnaryFunction)} instead.
      */
     @Pure
     public default @Capturable <K, X extends Exception> @Modifiable @Nonnull Map<K, E> toMap(@Nonnull FailableUnaryFunction<? super E, ? extends K, ? extends X> function) throws X {

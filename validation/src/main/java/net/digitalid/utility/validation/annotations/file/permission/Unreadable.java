@@ -15,21 +15,22 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.processing.utility.TypeImporter;
+import net.digitalid.utility.validation.annotations.file.permission.Readable;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.validators.FileValidator;
 
 /**
- * This annotation indicates that the annotated {@link File file} is not {@link File#canExecute() executable}.
+ * This annotation indicates that the annotated {@link File file} is not {@link File#canRead() readable}.
  * 
- * @see Executable
+ * @see Readable
  */
 @Documented
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
-@ValueValidator(NonExecutable.Validator.class)
-public @interface NonExecutable {
+@ValueValidator(Unreadable.Validator.class)
+public @interface Unreadable {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
     
@@ -42,7 +43,7 @@ public @interface NonExecutable {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == null || !#.exists() || !#.canExecute()", "The # $ may not be executable.", element);
+            return Contract.with("# == null || !#.exists() || System.getProperty(\"os.name\").startsWith(\"Windows\") || !#.canRead()", "The # $ may not be readable.", element);
         }
         
     }

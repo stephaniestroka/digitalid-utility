@@ -15,22 +15,21 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.processing.utility.TypeImporter;
-import net.digitalid.utility.validation.annotations.file.permission.Readable;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.validators.FileValidator;
 
 /**
- * This annotation indicates that the annotated {@link File file} is not {@link File#canRead() readable}.
+ * This annotation indicates that the annotated {@link File file} is not {@link File#canWrite() writable}.
  * 
- * @see Readable
+ * @see Writable
  */
 @Documented
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
-@ValueValidator(NonReadable.Validator.class)
-public @interface NonReadable {
+@ValueValidator(Unwritable.Validator.class)
+public @interface Unwritable {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
     
@@ -43,7 +42,7 @@ public @interface NonReadable {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == null || !#.exists() || !#.canRead()", "The # $ may not be readable.", element);
+            return Contract.with("# == null || !#.exists() || !#.canWrite()", "The # $ may not be writable.", element);
         }
         
     }

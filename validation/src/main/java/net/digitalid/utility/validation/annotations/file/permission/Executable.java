@@ -23,7 +23,7 @@ import net.digitalid.utility.validation.validators.FileValidator;
 /**
  * This annotation indicates that the annotated {@link File file} is {@link File#canExecute() executable}.
  * 
- * @see NonExecutable
+ * @see Unexecutable
  */
 @Documented
 @Target(ElementType.TYPE_USE)
@@ -42,7 +42,7 @@ public @interface Executable {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with("# == null || !#.exists() || #.canExecute()", "The # $ has to be executable.", element);
+            return Contract.with("# == null || !#.exists() || System.getProperty(\"os.name\").startsWith(\"Windows\") || #.canExecute()", "The # $ has to be executable.", element);
         }
         
     }

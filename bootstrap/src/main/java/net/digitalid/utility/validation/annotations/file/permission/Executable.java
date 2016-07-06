@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * This annotation indicates that the annotated {@link File file} is {@link File#canExecute() executable}.
  * 
- * @see NonExecutable
+ * @see Unexecutable
  */
 @Documented
 @Target(ElementType.TYPE_USE)

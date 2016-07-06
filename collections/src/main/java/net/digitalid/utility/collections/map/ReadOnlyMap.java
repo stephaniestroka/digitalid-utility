@@ -15,7 +15,7 @@ import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.freezable.ReadOnlyInterface;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.immutable.entry.ReadOnlyEntrySet;
-import net.digitalid.utility.validation.annotations.math.NonNegative;
+import net.digitalid.utility.interfaces.Countable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
@@ -24,21 +24,9 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
 @ReadOnly(FreezableMap.class)
-public interface ReadOnlyMap<K, V> extends ReadOnlyInterface {
+public interface ReadOnlyMap<K, V> extends ReadOnlyInterface, Countable {
     
     /* -------------------------------------------------- Map -------------------------------------------------- */
-    
-    /**
-     * @see Map#size()
-     */
-    @Pure
-    public @NonNegative int size();
-    
-    /**
-     * @see Map#isEmpty()
-     */
-    @Pure
-    public boolean isEmpty();
     
     /**
      * @see Map#containsKey(java.lang.Object)

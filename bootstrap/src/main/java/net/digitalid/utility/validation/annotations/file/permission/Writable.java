@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * This annotation indicates that the annotated {@link File file} is {@link File#canWrite() writable}.
  * 
- * @see NonWritable
+ * @see Unwritable
  */
 @Documented
 @Target(ElementType.TYPE_USE)

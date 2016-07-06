@@ -15,4 +15,4 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface NonExecutable {}
+public @interface Unexecutable {}

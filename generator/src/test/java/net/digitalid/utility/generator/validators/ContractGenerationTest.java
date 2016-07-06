@@ -12,6 +12,8 @@ import javax.lang.model.element.NestingKind;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
 import net.digitalid.utility.file.Files;
 import net.digitalid.utility.freezable.FreezableInterface;
@@ -20,6 +22,7 @@ import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
+import net.digitalid.utility.functional.failable.FailableConsumer;
 import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
@@ -33,6 +36,8 @@ import net.digitalid.utility.testing.ContractTest;
 import net.digitalid.utility.threading.annotations.MainThread;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.elements.UniqueElements;
+import net.digitalid.utility.validation.annotations.equality.Equal;
+import net.digitalid.utility.validation.annotations.equality.Unequal;
 import net.digitalid.utility.validation.annotations.file.existence.Existent;
 import net.digitalid.utility.validation.annotations.file.existence.ExistentParent;
 import net.digitalid.utility.validation.annotations.file.existence.NonExistent;
@@ -42,10 +47,10 @@ import net.digitalid.utility.validation.annotations.file.kind.Normal;
 import net.digitalid.utility.validation.annotations.file.path.Absolute;
 import net.digitalid.utility.validation.annotations.file.path.Relative;
 import net.digitalid.utility.validation.annotations.file.permission.Executable;
-import net.digitalid.utility.validation.annotations.file.permission.NonExecutable;
-import net.digitalid.utility.validation.annotations.file.permission.NonReadable;
-import net.digitalid.utility.validation.annotations.file.permission.NonWritable;
 import net.digitalid.utility.validation.annotations.file.permission.Readable;
+import net.digitalid.utility.validation.annotations.file.permission.Unexecutable;
+import net.digitalid.utility.validation.annotations.file.permission.Unreadable;
+import net.digitalid.utility.validation.annotations.file.permission.Unwritable;
 import net.digitalid.utility.validation.annotations.file.permission.Writable;
 import net.digitalid.utility.validation.annotations.file.visibility.Hidden;
 import net.digitalid.utility.validation.annotations.file.visibility.Visible;
@@ -97,6 +102,8 @@ import net.digitalid.utility.validation.annotations.value.Invariant;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
 import org.junit.Test;
+
+import static org.junit.Assert.fail;
 
 @Immutable
 @GenerateSubclass
@@ -213,6 +220,40 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
         test(INSTANCE::setUniqueIntArray, new int[] {1, 2}, new int[] {1, 1});
     }
     
+    /* -------------------------------------------------- Equality -------------------------------------------------- */
+    
+    @Impure
+    public void setEqualString(@Equal("hello") String string) {}
+    
+    @Test
+    public void testEqualString() {
+        test(INSTANCE::setEqualString, "hello", "world");
+    }
+    
+    @Impure
+    public void setNonEqualString(@Unequal("world") String string) {}
+    
+    @Test
+    public void testNonEqualString() {
+        test(INSTANCE::setNonEqualString, "hello", "world");
+    }
+    
+    @Impure
+    public void setEqualInt(@Equal("8") int value) {}
+    
+    @Test
+    public void testEqualInt() {
+        test(INSTANCE::setEqualInt, 8, 9);
+    }
+    
+    @Impure
+    public void setNonEqualInt(@Unequal("9") int value) {}
+    
+    @Test
+    public void testNonEqualInt() {
+        test(INSTANCE::setNonEqualInt, 8, 9);
+    }
+    
     /* -------------------------------------------------- File -------------------------------------------------- */
     
     private static final @Nonnull File testFile = Files.relativeToWorkingDirectory("target/test-files/file.txt");
@@ -321,36 +362,44 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
         testNegatives(INSTANCE::setRelative, testFile, testDirectory);
     }
     
+    @Pure
+    protected static <T, X extends Exception> void testWithNegativeSampleIgnoredOnWindows(@NonCaptured @Modified @Nonnull FailableConsumer<? super T, ? extends X> consumer, T positive, T negative) throws X {
+        testPositives(consumer, positive);
+        if (!System.getProperty("os.name").startsWith("Windows")) {
+            testNegatives(consumer, negative);
+        }
+    }
+    
     @Impure
     public void setExecutable(@Executable File file) {}
     
     @Test
     public void testExecutable() {
-        test(INSTANCE::setExecutable, fullPermissions, noPermissions);
+        testWithNegativeSampleIgnoredOnWindows(INSTANCE::setExecutable, fullPermissions, noPermissions);
     }
     
     @Impure
-    public void setNonExecutable(@NonExecutable File file) {}
+    public void setUnexecutable(@Unexecutable File file) {}
     
     @Test
-    public void testNonExecutable() {
-        test(INSTANCE::setNonExecutable, noPermissions, fullPermissions);
+    public void testUnexecutable() {
+        testWithNegativeSampleIgnoredOnWindows(INSTANCE::setUnexecutable, noPermissions, fullPermissions);
     }
     
     @Impure
-    public void setNonReadable(@NonReadable File file) {}
+    public void setUnreadable(@Unreadable File file) {}
     
     @Test
-    public void testNonReadable() {
-        test(INSTANCE::setNonReadable, noPermissions, fullPermissions);
+    public void testUnreadable() {
+        testWithNegativeSampleIgnoredOnWindows(INSTANCE::setUnreadable, noPermissions, fullPermissions);
     }
     
     @Impure
-    public void setNonWritable(@NonWritable File file) {}
+    public void setUnwritable(@Unwritable File file) {}
     
     @Test
-    public void testNonWritable() {
-        test(INSTANCE::setNonWritable, noPermissions, fullPermissions);
+    public void testUnwritable() {
+        test(INSTANCE::setUnwritable, noPermissions, fullPermissions);
     }
     
     @Impure
@@ -358,7 +407,7 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     
     @Test
     public void testReadable() {
-        test(INSTANCE::setReadable, fullPermissions, noPermissions);
+        testWithNegativeSampleIgnoredOnWindows(INSTANCE::setReadable, fullPermissions, noPermissions);
     }
     
     @Impure
@@ -375,7 +424,9 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     @Test
     public void testHidden() {
         testPositives(INSTANCE::setHidden, hiddenFile, hiddenDirectory);
-        testNegatives(INSTANCE::setHidden, testFile, testDirectory);
+        if (!System.getProperty("os.name").startsWith("Windows")) {
+            testNegatives(INSTANCE::setHidden, testFile, testDirectory);
+        }
     }
     
     @Impure
@@ -384,7 +435,9 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     @Test
     public void testVisible() {
         testPositives(INSTANCE::setVisible, testFile, testDirectory);
-        testNegatives(INSTANCE::setVisible, hiddenFile, hiddenDirectory);
+        if (!System.getProperty("os.name").startsWith("Windows")) {
+            testNegatives(INSTANCE::setVisible, hiddenFile, hiddenDirectory);
+        }
     }
     
     /* -------------------------------------------------- Index -------------------------------------------------- */

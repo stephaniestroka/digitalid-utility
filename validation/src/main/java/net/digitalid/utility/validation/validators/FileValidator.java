@@ -12,7 +12,11 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 /**
  * This class declares the target types for file annotations.
  * 
- * @see net.digitalid.utility.validation.annotations.file
+ * @see net.digitalid.utility.validation.annotations.file.existence
+ * @see net.digitalid.utility.validation.annotations.file.kind
+ * @see net.digitalid.utility.validation.annotations.file.path
+ * @see net.digitalid.utility.validation.annotations.file.permission
+ * @see net.digitalid.utility.validation.annotations.file.visibility
  */
 @Stateless
 public abstract class FileValidator implements ValueAnnotationValidator {
