@@ -94,7 +94,7 @@ public class MethodInformation extends ExecutableInformation {
     @Pure
     public boolean isGetter() {
         // TODO: Remove the static check (see ProcessingUtility#isGetter)?
-        return !isStatic() && !isGeneric() && !throwsExceptions() && !hasParameters() && hasReturnType() && (getName().startsWith("get") || (getName().startsWith("is") || getName().startsWith("has")) && hasReturnType(boolean.class));
+        return !isStatic() && !isGeneric() && !throwsExceptions() && !hasParameters() && hasReturnType() && (getName().startsWith("get") || (getName().startsWith("is") || getName().startsWith("has") || getName().startsWith("can")) && hasReturnType(boolean.class));
     }
     
     /**
