@@ -136,6 +136,7 @@
                         <configuration>
                             <sources>
                                 <source>target/generated-sources/annotations</source>
+                                <source>target/generated-test-sources/annotations</source>
                             </sources>
                         </configuration>
                     </execution>
