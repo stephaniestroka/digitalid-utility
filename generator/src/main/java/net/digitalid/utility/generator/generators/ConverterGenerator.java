@@ -233,7 +233,7 @@ public class ConverterGenerator extends JavaFileGenerator {
                 if (customAnnotations.length() != 0) {
                     customAnnotations.append(", ");
                 }
-                customAnnotations.append(importIfPossible(CustomAnnotation.class) + ".with" + Brackets.inRound(importIfPossible(qualifiedAnnotationName) + ".class, " + importIfPossible(ImmutableMap.class) + ".with" + Brackets.inRound(annotationValuesMap)));
+                customAnnotations.append(importIfPossible(CustomAnnotation.class) + ".with" + Brackets.inRound(importIfPossible(qualifiedAnnotationName) + ".class, " + importIfPossible(ImmutableMap.class) + ".withMappingsOf" + Brackets.inRound(annotationValuesMap)));
                 statements.add(importIfPossible(Map.class) + Brackets.inPointy("@" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + ",@" + importIfPossible(Nullable.class) + " " + importIfPossible(Object.class)) + " " + annotationValuesMap + " = new " + importIfPossible(HashMap.class) + Brackets.inPointy("") + Brackets.inRound(""));
                 final @Nonnull Map<@Nonnull String, @Nonnull AnnotationValue> annotationValues = ProcessingUtility.getAnnotationValues(annotation);
                 for (Map.Entry<@Nonnull String, @Nonnull AnnotationValue> entry : annotationValues.entrySet()) {
@@ -250,7 +250,7 @@ public class ConverterGenerator extends JavaFileGenerator {
             if (fieldsString.length() != 0) {
                 fieldsString.append(", ");
             }
-            fieldsString.append(importIfPossible(CustomField.class) + ".with(" + getTypeName(representingField.getType()) + ", " + Quotes.inDouble(fieldName) + ", ImmutableList.with(" + customAnnotations.toString() + "))");
+            fieldsString.append(importIfPossible(CustomField.class) + ".with(" + getTypeName(representingField.getType()) + ", " + Quotes.inDouble(fieldName) + ", ImmutableList.withElements(" + customAnnotations.toString() + "))");
         }
         addField("private static " + importIfPossible(ImmutableList.class) + "<" + importIfPossible(CustomField.class) + "> fields");
         beginBlock(true);
@@ -258,7 +258,7 @@ public class ConverterGenerator extends JavaFileGenerator {
             addStatement(statement);
         }
         addEmptyLine();
-        addStatement("fields = " + importIfPossible(ImmutableList.class) + ".with(" + fieldsString + ")");
+        addStatement("fields = " + importIfPossible(ImmutableList.class) + ".withElements(" + fieldsString + ")");
         endBlock();
     }
     
