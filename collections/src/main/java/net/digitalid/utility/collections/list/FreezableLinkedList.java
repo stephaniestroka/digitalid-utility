@@ -14,6 +14,7 @@ import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.collections.iterator.FreezableIterator;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
@@ -131,6 +132,12 @@ public abstract class FreezableLinkedList<E> extends LinkedList<E> implements Fr
     @Override
     public @Capturable @Nonnull ReadOnlyIterator<E> iterator() {
         return ReadOnlyIterableIterator.with(super.iterator());
+    }
+    
+    @Pure
+    @Override
+    public @Capturable @Nonnull FreezableIterator<E> freezableIterator() {
+        return FreezableIterator.with(super.listIterator(0), this); // All other iterator methods of the superclass call overridden methods.
     }
     
     @Pure
@@ -286,7 +293,7 @@ public abstract class FreezableLinkedList<E> extends LinkedList<E> implements Fr
     @Override
     @NonFrozenRecipient
     public boolean removeAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
-        return super.removeAll(collection);
+        return FreezableList.super.removeAll(collection);
     }
     
     /* -------------------------------------------------- Poll -------------------------------------------------- */
@@ -348,7 +355,7 @@ public abstract class FreezableLinkedList<E> extends LinkedList<E> implements Fr
     @Override
     @NonFrozenRecipient
     public boolean retainAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
-        return super.retainAll(collection);
+        return FreezableList.super.retainAll(collection);
     }
     
 }

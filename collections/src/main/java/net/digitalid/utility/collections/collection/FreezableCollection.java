@@ -1,6 +1,7 @@
 package net.digitalid.utility.collections.collection;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,12 +13,14 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.collections.iterable.FreezableIterable;
+import net.digitalid.utility.collections.iterator.FreezableIterator;
 import net.digitalid.utility.collections.list.FreezableList;
 import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
 import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
@@ -69,6 +72,169 @@ public interface FreezableCollection<E> extends ReadOnlyCollection<E>, Collectio
     @Override
     public default @Capturable <T> @Nonnull T[] toArray(@NonCaptured @Modified @Nonnull T[] array) {
         return ReadOnlyCollection.super.toArray(array);
+    }
+    
+    /* -------------------------------------------------- Iterator -------------------------------------------------- */
+    
+    /**
+     * Returns a freezable iterator over the elements in this collection.
+     */
+    @Pure
+    public @Capturable @Nonnull FreezableIterator<E> freezableIterator();
+    
+    /* -------------------------------------------------- Methods -------------------------------------------------- */
+    
+    /**
+     * Adds the elements of the given iterable to this collection.
+     * 
+     * @return whether this collection changed as a result of the call.
+     */
+    @Impure
+    @NonFrozenRecipient
+    public default boolean addAll(@Nonnull FiniteIterable<? extends E> iterable) {
+        boolean modified = false;
+        for (E element : iterable) { modified = add(element) || modified; }
+        return modified;
+    }
+    
+    /**
+     * Adds the elements of the given collection to this collection.
+     * 
+     * @return whether this collection changed as a result of the call.
+     */
+    @Impure
+    @NonFrozenRecipient
+    public default boolean addAll(@NonCaptured @Unmodified @Nonnull FreezableCollection<? extends E> collection) {
+        boolean modified = false;
+        for (E element : collection) { modified = add(element) || modified; }
+        return modified;
+    }
+    
+    /**
+     * Returns whether this iterable contains all of the elements of the given collection.
+     */
+    @Pure
+    public default boolean containsAll(@NonCaptured @Unmodified @Nonnull FreezableCollection<?> collection) {
+        for (@Nullable Object element : collection) {
+            if (!contains(element)) { return false; }
+        }
+        return true;
+    }
+    
+    /**
+     * Removes the elements of the given iterable from this collection.
+     * 
+     * @return whether this collection changed as a result of the call.
+     */
+    @Impure
+    @NonFrozenRecipient
+    public default boolean removeAll(@Nonnull FiniteIterable<?> iterable) {
+        boolean modified = false;
+        final @Nonnull Iterator<E> iterator = freezableIterator();
+        while (iterator.hasNext()) {
+            if (iterable.contains(iterator.next())) {
+                iterator.remove();
+                modified = true;
+            }
+        }
+        return modified;
+    }
+    
+    /**
+     * Removes the elements of the given collection from this collection.
+     * 
+     * @return whether this collection changed as a result of the call.
+     */
+    @Impure
+    @Override
+    @NonFrozenRecipient
+    public default boolean removeAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
+        boolean modified = false;
+        final @Nonnull Iterator<E> iterator = freezableIterator();
+        while (iterator.hasNext()) {
+            if (collection.contains(iterator.next())) {
+                iterator.remove();
+                modified = true;
+            }
+        }
+        return modified;
+    }
+    
+    /**
+     * Removes the elements of the given collection from this collection.
+     * 
+     * @return whether this collection changed as a result of the call.
+     */
+    @Impure
+    @NonFrozenRecipient
+    public default boolean removeAll(@NonCaptured @Unmodified @Nonnull FreezableCollection<?> collection) {
+        boolean modified = false;
+        final @Nonnull Iterator<E> iterator = freezableIterator();
+        while (iterator.hasNext()) {
+            if (collection.contains(iterator.next())) {
+                iterator.remove();
+                modified = true;
+            }
+        }
+        return modified;
+    }
+    
+    /**
+     * Retains the elements of the given iterable and removes all other.
+     * 
+     * @return whether this collection changed as a result of the call.
+     */
+    @Impure
+    @NonFrozenRecipient
+    public default boolean retainAll(@Nonnull FiniteIterable<?> iterable) {
+        boolean modified = false;
+        final @Nonnull Iterator<E> iterator = freezableIterator();
+        while (iterator.hasNext()) {
+            if (!iterable.contains(iterator.next())) {
+                iterator.remove();
+                modified = true;
+            }
+        }
+        return modified;
+    }
+    
+    /**
+     * Retains the elements of the given collection and removes all other.
+     * 
+     * @return whether this collection changed as a result of the call.
+     */
+    @Impure
+    @Override
+    @NonFrozenRecipient
+    public default boolean retainAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
+        boolean modified = false;
+        final @Nonnull Iterator<E> iterator = freezableIterator();
+        while (iterator.hasNext()) {
+            if (!collection.contains(iterator.next())) {
+                iterator.remove();
+                modified = true;
+            }
+        }
+        return modified;
+    }
+    
+    /**
+     * Retains the elements of the given collection and removes all other.
+     * 
+     * @return whether this collection changed as a result of the call.
+     */
+    @Impure
+    @NonFrozenRecipient
+    public default boolean retainAll(@NonCaptured @Unmodified @Nonnull FreezableCollection<?> collection) {
+        boolean modified = false;
+        final @Nonnull Iterator<E> iterator = freezableIterator();
+        while (iterator.hasNext()) {
+            if (!collection.contains(iterator.next())) {
+                iterator.remove();
+                modified = true;
+            }
+        }
+        return modified;
     }
     
 }

@@ -14,6 +14,7 @@ import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.circumfixes.Brackets;
+import net.digitalid.utility.collections.iterator.FreezableIterator;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
@@ -138,12 +139,18 @@ public abstract class FreezableLinkedHashSet<E> extends LinkedHashSet<E> impleme
         return new FreezableLinkedHashSetSubclass<>(size(), this);
     }
     
-    /* -------------------------------------------------- Iterable -------------------------------------------------- */
+    /* -------------------------------------------------- Iterator -------------------------------------------------- */
     
     @Pure
     @Override
     public @Capturable @Nonnull ReadOnlyIterator<E> iterator() {
         return ReadOnlyIterableIterator.with(super.iterator());
+    }
+    
+    @Pure
+    @Override
+    public @Capturable @Nonnull FreezableIterator<E> freezableIterator() {
+        return FreezableIterator.with(super.iterator(), this);
     }
     
     /* -------------------------------------------------- Operations -------------------------------------------------- */
@@ -180,7 +187,7 @@ public abstract class FreezableLinkedHashSet<E> extends LinkedHashSet<E> impleme
     @Override
     @NonFrozenRecipient
     public boolean retainAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
-        return super.retainAll(collection);
+        return FreezableSet.super.retainAll(collection);
     }
     
     @Impure

@@ -14,6 +14,7 @@ import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.collections.iterator.FreezableIterator;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
@@ -134,12 +135,18 @@ public abstract class FreezableArrayList<E> extends ArrayList<E> implements Free
         return new FreezableArrayListSubclass<>(size(), this);
     }
     
-    /* -------------------------------------------------- Iterable -------------------------------------------------- */
+    /* -------------------------------------------------- Iterator -------------------------------------------------- */
     
     @Pure
     @Override
     public @Capturable @Nonnull ReadOnlyIterator<E> iterator() {
         return ReadOnlyIterableIterator.with(super.iterator());
+    }
+    
+    @Pure
+    @Override
+    public @Capturable @Nonnull FreezableIterator<E> freezableIterator() {
+        return FreezableIterator.with(super.iterator(), this);
     }
     
     /* -------------------------------------------------- List -------------------------------------------------- */
