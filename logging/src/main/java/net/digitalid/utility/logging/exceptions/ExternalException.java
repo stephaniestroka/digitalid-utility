@@ -40,7 +40,7 @@ public abstract class ExternalException extends Exception {
     protected ExternalException(@Nullable String message, @Nullable Exception cause, @Captured @Nonnull @NullableElements Object... arguments) {
         super(message == null ? "An external exception occurred." : Strings.format(message, arguments), cause);
         
-        this.arguments = ImmutableList.with(arguments);
+        this.arguments = ImmutableList.withElements(arguments);
         
         Log.warning("An external exception occurred:", this);
     }

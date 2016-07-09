@@ -40,30 +40,30 @@ public class ImmutableList<E> extends ArrayList<E> implements CollectionIterable
     }
     
     /**
-     * Returns an immutable list with the elements of the given collection in the same order or null if the given collection is null.
-     * The given collection is not captured as its elements are copied to the immutable list.
+     * Returns an immutable list with the elements of the given array in the same order or null if the given array is null.
+     * The given array is not captured as its elements are copied to the immutable list.
      */
     @Pure
-    public static <E> ImmutableList<E> with(@NonCaptured @Unmodified Collection<? extends E> collection) {
-        return collection == null ? null : new ImmutableList<>(collection);
+    @SafeVarargs
+    public static <E> ImmutableList<E> withElements(@NonCaptured @Unmodified E... elements) {
+        return elements == null ? null : new ImmutableList<>(Arrays.asList(elements));
     }
     
     /**
      * Returns an immutable list with the elements of the given iterable in the same order or null if the given iterable is null.
      */
     @Pure
-    public static <E> ImmutableList<E> with(FiniteIterable<? extends E> iterable) {
+    public static <E> ImmutableList<E> withElementsOf(FiniteIterable<? extends E> iterable) {
         return iterable == null ? null : new ImmutableList<>(iterable);
     }
     
     /**
-     * Returns an immutable list with the elements of the given array in the same order or null if the given array is null.
-     * The given array is not captured as its elements are copied to the immutable list.
+     * Returns an immutable list with the elements of the given collection in the same order or null if the given collection is null.
+     * The given collection is not captured as its elements are copied to the immutable list.
      */
     @Pure
-    @SafeVarargs
-    public static <E> ImmutableList<E> with(@NonCaptured @Unmodified E... elements) {
-        return elements == null ? null : new ImmutableList<>(Arrays.asList(elements));
+    public static <E> ImmutableList<E> withElementsOfCollection(@NonCaptured @Unmodified Collection<? extends E> collection) {
+        return collection == null ? null : new ImmutableList<>(collection);
     }
     
     /* -------------------------------------------------- Modified Operations -------------------------------------------------- */

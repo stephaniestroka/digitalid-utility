@@ -105,20 +105,7 @@ public interface FreezableCollection<E> extends ReadOnlyCollection<E>, Collectio
     @Impure
     @NonFrozenRecipient
     public default boolean addAll(@NonCaptured @Unmodified @Nonnull FreezableCollection<? extends E> collection) {
-        boolean modified = false;
-        for (E element : collection) { modified = add(element) || modified; }
-        return modified;
-    }
-    
-    /**
-     * Returns whether this iterable contains all of the elements of the given collection.
-     */
-    @Pure
-    public default boolean containsAll(@NonCaptured @Unmodified @Nonnull FreezableCollection<?> collection) {
-        for (@Nullable Object element : collection) {
-            if (!contains(element)) { return false; }
-        }
-        return true;
+        return addAll((FiniteIterable<? extends E>) collection);
     }
     
     /**
@@ -149,15 +136,7 @@ public interface FreezableCollection<E> extends ReadOnlyCollection<E>, Collectio
     @Override
     @NonFrozenRecipient
     public default boolean removeAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
-        boolean modified = false;
-        final @Nonnull Iterator<E> iterator = freezableIterator();
-        while (iterator.hasNext()) {
-            if (collection.contains(iterator.next())) {
-                iterator.remove();
-                modified = true;
-            }
-        }
-        return modified;
+        return removeAll(FiniteIterable.of(collection));
     }
     
     /**
@@ -168,15 +147,7 @@ public interface FreezableCollection<E> extends ReadOnlyCollection<E>, Collectio
     @Impure
     @NonFrozenRecipient
     public default boolean removeAll(@NonCaptured @Unmodified @Nonnull FreezableCollection<?> collection) {
-        boolean modified = false;
-        final @Nonnull Iterator<E> iterator = freezableIterator();
-        while (iterator.hasNext()) {
-            if (collection.contains(iterator.next())) {
-                iterator.remove();
-                modified = true;
-            }
-        }
-        return modified;
+        return removeAll((FiniteIterable<?>) collection);
     }
     
     /**
@@ -207,15 +178,7 @@ public interface FreezableCollection<E> extends ReadOnlyCollection<E>, Collectio
     @Override
     @NonFrozenRecipient
     public default boolean retainAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
-        boolean modified = false;
-        final @Nonnull Iterator<E> iterator = freezableIterator();
-        while (iterator.hasNext()) {
-            if (!collection.contains(iterator.next())) {
-                iterator.remove();
-                modified = true;
-            }
-        }
-        return modified;
+        return retainAll(FiniteIterable.of(collection));
     }
     
     /**
@@ -226,15 +189,7 @@ public interface FreezableCollection<E> extends ReadOnlyCollection<E>, Collectio
     @Impure
     @NonFrozenRecipient
     public default boolean retainAll(@NonCaptured @Unmodified @Nonnull FreezableCollection<?> collection) {
-        boolean modified = false;
-        final @Nonnull Iterator<E> iterator = freezableIterator();
-        while (iterator.hasNext()) {
-            if (!collection.contains(iterator.next())) {
-                iterator.remove();
-                modified = true;
-            }
-        }
-        return modified;
+        return retainAll((FiniteIterable<?>) collection);
     }
     
 }

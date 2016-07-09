@@ -238,7 +238,7 @@ public class Strings {
     
     /* -------------------------------------------------- Cardinal Numbers -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableList<@Nonnull String> cardinalNumbers = ImmutableList.with("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve");
+    private static final @Nonnull ImmutableList<@Nonnull String> cardinalNumbers = ImmutableList.withElements("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve");
     
     /**
      * Returns the given number as a cardinal string (written-out if smaller than 13).
@@ -252,7 +252,7 @@ public class Strings {
     
     /* -------------------------------------------------- Ordinal Numbers with English Root -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableList<@Nonnull String> ordinalNumbersWithEnglishRoot = ImmutableList.with("first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twelfth", "13th");
+    private static final @Nonnull ImmutableList<@Nonnull String> ordinalNumbersWithEnglishRoot = ImmutableList.withElements("first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh", "twelfth", "13th");
     
     /**
      * Returns the given number as an ordinal string (written-out if smaller than 13).
@@ -269,7 +269,7 @@ public class Strings {
     
     /* -------------------------------------------------- Ordinal Numbers with Latin Root -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableList<@Nonnull String> ordinalNumbersWithLatinRoot = ImmutableList.with("primary", "secondary", "tertiary", "quaternary", "quinary", "senary", "septenary", "octonary", "novenary", "decenary", "undenary", "duodenary");
+    private static final @Nonnull ImmutableList<@Nonnull String> ordinalNumbersWithLatinRoot = ImmutableList.withElements("primary", "secondary", "tertiary", "quaternary", "quinary", "senary", "septenary", "octonary", "novenary", "decenary", "undenary", "duodenary");
     
     /**
      * Returns the given number as an ordinal string with Latin root (written-out if smaller than 13).

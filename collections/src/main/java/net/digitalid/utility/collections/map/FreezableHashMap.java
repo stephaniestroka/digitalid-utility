@@ -78,7 +78,24 @@ public abstract class FreezableHashMap<K, V> extends HashMap<K, V> implements Fr
      * Returns a new freezable hash map with the mappings of the given map or null if the given map is null.
      */
     @Pure
+    @SuppressWarnings("unchecked")
+    public static @Capturable <K, V> @NonFrozen FreezableHashMap<K, V> withMappingsOf(ReadOnlyMap<? extends K, ? extends V> map) {
+        return map == null ? null : new FreezableHashMapSubclass<>((Map<? extends K, ? extends V>) map);
+    }
+    
+    /**
+     * Returns a new freezable hash map with the mappings of the given map or null if the given map is null.
+     */
+    @Pure
     public static @Capturable <K, V> @NonFrozen FreezableHashMap<K, V> withMappingsOf(@NonCaptured @Unmodified Map<? extends K, ? extends V> map) {
+        return map == null ? null : new FreezableHashMapSubclass<>(map);
+    }
+    
+    /**
+     * Returns a new freezable hash map with the mappings of the given map or null if the given map is null.
+     */
+    @Pure
+    public static @Capturable <K, V> @NonFrozen FreezableHashMap<K, V> withMappingsOf(@NonCaptured @Unmodified FreezableMap<? extends K, ? extends V> map) {
         return map == null ? null : new FreezableHashMapSubclass<>(map);
     }
     

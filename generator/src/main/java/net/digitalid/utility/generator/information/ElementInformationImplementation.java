@@ -99,7 +99,7 @@ public abstract class ElementInformationImplementation implements ElementInforma
         this.element = element;
         this.type = type;
         this.containingType = containingType;
-        this.modifiers = ImmutableSet.with(element.getModifiers());
+        this.modifiers = ImmutableSet.withElementsOfCollection(element.getModifiers());
         this.annotations = ProcessingUtility.getAnnotationMirrors(element);
         this.annotationsMap = annotations.toMap(annotationMirror -> ProcessingUtility.getQualifiedName(annotationMirror));
     }

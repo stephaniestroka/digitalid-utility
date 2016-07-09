@@ -12,7 +12,7 @@ public class ImmutableSetTest {
     
     @Test
     public void testImmutableSet() {
-        final @Nonnull ImmutableSet<@Nonnull String> set = ImmutableSet.with("hello", "world");
+        final @Nonnull ImmutableSet<@Nonnull String> set = ImmutableSet.withElements("hello", "world");
         final @Nonnull ReadOnlyIterator<@Nonnull String> iterator = set.iterator();
         assertTrue(iterator.hasNext());
         assertEquals("hello", iterator.next());

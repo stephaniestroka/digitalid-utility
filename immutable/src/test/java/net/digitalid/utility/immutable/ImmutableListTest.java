@@ -13,7 +13,7 @@ public class ImmutableListTest {
     
     @Test
     public void testImmutableList() {
-        final @Nonnull ImmutableList<@Nonnull String> list = ImmutableList.with("hello", "world");
+        final @Nonnull ImmutableList<@Nonnull String> list = ImmutableList.withElements("hello", "world");
         
         final @Nonnull ReadOnlyIterator<@Nonnull String> iterator = list.iterator();
         assertTrue(iterator.hasNext());

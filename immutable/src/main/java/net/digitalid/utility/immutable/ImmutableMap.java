@@ -35,11 +35,11 @@ public class ImmutableMap<K, V> extends LinkedHashMap<K, V> {
     }
     
     /**
-     * Returns an immutable map with the elements of the given map or null if the given map is null.
+     * Returns an immutable map with the mappings of the given map or null if the given map is null.
      * The given map is not captured as its keys and values are copied to the immutable map.
      */
     @Pure
-    public static <K, V> ImmutableMap<K, V> with(@NonCaptured @Unmodified Map<? extends K, ? extends V> map) {
+    public static <K, V> ImmutableMap<K, V> withMappingsOf(@NonCaptured @Unmodified Map<? extends K, ? extends V> map) {
         return map == null ? null : new ImmutableMap<>(map);
     }
     
@@ -112,7 +112,7 @@ public class ImmutableMap<K, V> extends LinkedHashMap<K, V> {
          */
         @Pure
         public @Nonnull ImmutableMap<K, V> build() {
-            return ImmutableMap.with(this);
+            return ImmutableMap.withMappingsOf(this);
         }
         
     }

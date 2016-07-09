@@ -14,6 +14,7 @@ import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.circumfixes.Brackets;
+import net.digitalid.utility.collections.collection.FreezableCollection;
 import net.digitalid.utility.collections.iterator.FreezableIterator;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
@@ -77,24 +78,29 @@ public abstract class FreezableHashSet<E> extends HashSet<E> implements Freezabl
         return set;
     }
     
-    /**
-     * Returns a new freezable hash set with the given elements or null if the given array is null.
-     */
-    @Pure
-    @SafeVarargs
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableHashSet<E> withElements(@Captured E... elements) {
-        if (elements == null) { return null; }
-        final @Nonnull FreezableHashSet<E> set = withCapacity(elements.length);
-        set.addAll(Arrays.asList(elements));
-        return set;
-    }
-    
     protected FreezableHashSet(@NonNegative int initialCapacity, @NonCaptured @Unmodified @Nonnull Iterable<? extends E> iterable) {
         super(initialCapacity);
         
         for (E element : iterable) {
             super.add(element);
         }
+    }
+    
+    /**
+     * Returns a new freezable hash set with the given elements or null if the given array is null.
+     */
+    @Pure
+    @SafeVarargs
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableHashSet<E> withElements(@NonCaptured @Unmodified E... elements) {
+        return elements == null ? null : new FreezableHashSetSubclass<>(elements.length, Arrays.asList(elements));
+    }
+    
+    /**
+     * Returns a new freezable hash set with the elements of the given iterable or null if the given iterable is null.
+     */
+    @Pure
+    public static @Capturable <E> @NonFrozen FreezableHashSet<E> withElementsOf(FiniteIterable<? extends E> iterable) {
+        return iterable == null ? null : new FreezableHashSetSubclass<>(iterable.size(), iterable);
     }
     
     /**
@@ -106,11 +112,11 @@ public abstract class FreezableHashSet<E> extends HashSet<E> implements Freezabl
     }
     
     /**
-     * Returns a new freezable hash set with the elements of the given iterable or null if the given iterable is null.
+     * Returns a new freezable hash set with the elements of the given freezable collection or null if the given collection is null.
      */
     @Pure
-    public static @Capturable <E> @NonFrozen FreezableHashSet<E> withElementsOf(FiniteIterable<? extends E> iterable) {
-        return iterable == null ? null : new FreezableHashSetSubclass<>(iterable.size(), iterable);
+    public static @Capturable <E> @NonFrozen FreezableHashSet<E> withElementsOf(@NonCaptured @Unmodified FreezableCollection<? extends E> collection) {
+        return collection == null ? null : new FreezableHashSetSubclass<>(collection.size(), collection);
     }
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */

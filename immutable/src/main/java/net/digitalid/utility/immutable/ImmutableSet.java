@@ -33,30 +33,30 @@ public class ImmutableSet<E> extends LinkedHashSet<E> implements CollectionItera
     }
     
     /**
-     * Returns an immutable set with the elements of the given collection or null if the given collection is null.
-     * The given collection is not captured as its elements are copied to the immutable set.
+     * Returns an immutable set with the elements of the given array or null if the given array is null.
+     * The given array is not captured as its elements are copied to the immutable set.
      */
     @Pure
-    public static <E> ImmutableSet<E> with(@NonCaptured @Unmodified Collection<? extends E> collection) {
-        return collection == null ? null : new ImmutableSet<>(collection);
+    @SafeVarargs
+    public static <E> ImmutableSet<E> withElements(@NonCaptured @Unmodified E... elements) {
+        return elements == null ? null : new ImmutableSet<>(Arrays.asList(elements));
     }
     
     /**
      * Returns an immutable set with the elements of the given iterable or null if the given iterable is null.
      */
     @Pure
-    public static <E> ImmutableSet<E> with(FiniteIterable<? extends E> iterable) {
+    public static <E> ImmutableSet<E> withElementsOf(FiniteIterable<? extends E> iterable) {
         return iterable == null ? null : new ImmutableSet<>(iterable);
     }
     
     /**
-     * Returns an immutable set with the elements of the given array or null if the given array is null.
-     * The given array is not captured as its elements are copied to the immutable set.
+     * Returns an immutable set with the elements of the given collection or null if the given collection is null.
+     * The given collection is not captured as its elements are copied to the immutable set.
      */
     @Pure
-    @SafeVarargs
-    public static <E> ImmutableSet<E> with(@NonCaptured @Unmodified E... elements) {
-        return elements == null ? null : new ImmutableSet<>(Arrays.asList(elements));
+    public static <E> ImmutableSet<E> withElementsOfCollection(@NonCaptured @Unmodified Collection<? extends E> collection) {
+        return collection == null ? null : new ImmutableSet<>(collection);
     }
     
     /* -------------------------------------------------- Modified Operations -------------------------------------------------- */
