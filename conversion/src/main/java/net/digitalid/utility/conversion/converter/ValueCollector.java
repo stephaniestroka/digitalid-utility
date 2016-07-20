@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.conversion.converter.types.CustomType;
 import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
@@ -152,7 +152,7 @@ public interface ValueCollector<R> {
     public R setBinaryStream(@Nonnull InputStream stream, int length);
     
     @Impure
-    public <T> R setList(@Nonnull List<T> value, @Nonnull UnaryFunction<@Nullable T, R> entityCollector);
+    public <T> R setList(@Nonnull List<T> list, @Nonnull UnaryFunction<T, R> entityCollector);
     
     @Impure
     public <T> R setArray(@Nonnull T[] value, Consumer<T> entityCollector);
@@ -169,6 +169,6 @@ public interface ValueCollector<R> {
      * Sets the next parameter to null.
      */
     @Impure
-    public R setNull();
+    public R setNull(@Nonnull CustomType customType);
     
 }
