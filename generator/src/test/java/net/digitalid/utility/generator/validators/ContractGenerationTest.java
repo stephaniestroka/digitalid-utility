@@ -83,8 +83,12 @@ import net.digitalid.utility.validation.annotations.size.NonSingle;
 import net.digitalid.utility.validation.annotations.size.Single;
 import net.digitalid.utility.validation.annotations.size.Size;
 import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
+import net.digitalid.utility.validation.annotations.string.DomainName;
 import net.digitalid.utility.validation.annotations.string.JavaExpression;
+import net.digitalid.utility.validation.annotations.substring.Infix;
+import net.digitalid.utility.validation.annotations.substring.Prefix;
 import net.digitalid.utility.validation.annotations.substring.Regex;
+import net.digitalid.utility.validation.annotations.substring.Suffix;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
@@ -910,12 +914,41 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     }
     
     @Impure
+    public void setDomainName(@DomainName String identifier) {}
+    
+    @Test
+    public void testDomainName() {
+        testPositives(INSTANCE::setDomainName, null, "a.ch", "test.com", "subdomain.domain.tld", "hello-world.org");
+        testNegatives(INSTANCE::setDomainName, "", "a.c", "com", ".com", "test..com", "hello--world.org");
+    }
+    
+    @Impure
     public void setJavaExpression(@JavaExpression String expression) {}
     
     @Test
     public void testJavaExpression() {
         testPositives(INSTANCE::setJavaExpression, null, "", "3 + 4", "2 * (3 + 4)", "new String(\":-)\")");
         testNegatives(INSTANCE::setJavaExpression, "return 0;", "2 * ((3 + 4)", "while (true) {}");
+    }
+    
+    /* -------------------------------------------------- Substring -------------------------------------------------- */
+    
+    @Impure
+    public void setInfix(@Infix("ab") String string) {}
+    
+    @Test
+    public void testInfix() {
+        testPositives(INSTANCE::setInfix, null, "aba", "bab");
+        testNegatives(INSTANCE::setInfix, "", "a", "b", "ba");
+    }
+    
+    @Impure
+    public void setPrefix(@Prefix("ab") String string) {}
+    
+    @Test
+    public void testPrefix() {
+        testPositives(INSTANCE::setPrefix, null, "ab", "aba", "abab");
+        testNegatives(INSTANCE::setPrefix, "", "a", "b", "ba", "bab");
     }
     
     @Impure
@@ -925,6 +958,15 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     public void testRegex() {
         testPositives(INSTANCE::setRegex, null, "ba", "aba", "bab", "abab", "aababb");
         testNegatives(INSTANCE::setRegex, "", "a", "b", "ab", "cba");
+    }
+    
+    @Impure
+    public void setSuffix(@Suffix("ab") String string) {}
+    
+    @Test
+    public void testSuffix() {
+        testPositives(INSTANCE::setSuffix, null, "ab", "bab", "abab");
+        testNegatives(INSTANCE::setSuffix, "", "a", "b", "ba", "aba");
     }
     
     /* -------------------------------------------------- Type Kind -------------------------------------------------- */
