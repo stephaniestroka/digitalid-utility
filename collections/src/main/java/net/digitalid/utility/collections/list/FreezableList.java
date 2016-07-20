@@ -87,6 +87,20 @@ public interface FreezableList<E> extends ReadOnlyList<E>, List<E>, FreezableCol
         return FreezableCollection.super.containsAll(collection);
     }
     
+    @Impure
+    @Override
+    @NonFrozenRecipient
+    public default boolean removeAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
+        return FreezableCollection.super.removeAll(collection);
+    }
+    
+    @Impure
+    @Override
+    @NonFrozenRecipient
+    public default boolean retainAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
+        return FreezableCollection.super.retainAll(collection);
+    }
+    
     @Pure
     @Override
     public default @Capturable @Nonnull Object[] toArray() {

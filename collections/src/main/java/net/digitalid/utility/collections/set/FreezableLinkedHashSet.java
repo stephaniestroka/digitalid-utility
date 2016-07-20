@@ -14,6 +14,8 @@ import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.circumfixes.Brackets;
+import net.digitalid.utility.collections.collection.FreezableCollection;
+import net.digitalid.utility.collections.iterator.FreezableIterator;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
 import net.digitalid.utility.freezable.annotations.Frozen;
@@ -76,24 +78,29 @@ public abstract class FreezableLinkedHashSet<E> extends LinkedHashSet<E> impleme
         return set;
     }
     
-    /**
-     * Returns a new freezable linked hash set with the given elements or null if the given array is null.
-     */
-    @Pure
-    @SafeVarargs
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedHashSet<E> withElements(@Captured E... elements) {
-        if (elements == null) { return null; }
-        final @Nonnull FreezableLinkedHashSet<E> set = withCapacity(elements.length);
-        set.addAll(Arrays.asList(elements));
-        return set;
-    }
-    
     protected FreezableLinkedHashSet(@NonNegative int initialCapacity, @NonCaptured @Unmodified @Nonnull Iterable<? extends E> iterable) {
         super(initialCapacity);
         
         for (E element : iterable) {
             super.add(element);
         }
+    }
+    
+    /**
+     * Returns a new freezable linked hash set with the given elements or null if the given array is null.
+     */
+    @Pure
+    @SafeVarargs
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedHashSet<E> withElements(@NonCaptured @Unmodified E... elements) {
+        return elements == null ? null : new FreezableLinkedHashSetSubclass<>(elements.length, Arrays.asList(elements));
+    }
+    
+    /**
+     * Returns a new freezable linked hash set with the elements of the given iterable or null if the given iterable is null.
+     */
+    @Pure
+    public static @Capturable <E> @NonFrozen FreezableLinkedHashSet<E> withElementsOf(FiniteIterable<? extends E> iterable) {
+        return iterable == null ? null : new FreezableLinkedHashSetSubclass<>(iterable.size(), iterable);
     }
     
     /**
@@ -105,11 +112,11 @@ public abstract class FreezableLinkedHashSet<E> extends LinkedHashSet<E> impleme
     }
     
     /**
-     * Returns a new freezable linked hash set with the elements of the given iterable or null if the given iterable is null.
+     * Returns a new freezable linked hash set with the elements of the given freezable collection or null if the given collection is null.
      */
     @Pure
-    public static @Capturable <E> @NonFrozen FreezableLinkedHashSet<E> withElementsOf(FiniteIterable<? extends E> iterable) {
-        return iterable == null ? null : new FreezableLinkedHashSetSubclass<>(iterable.size(), iterable);
+    public static @Capturable <E> @NonFrozen FreezableLinkedHashSet<E> withElementsOf(@NonCaptured @Unmodified FreezableCollection<? extends E> collection) {
+        return collection == null ? null : new FreezableLinkedHashSetSubclass<>(collection.size(), collection);
     }
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */
@@ -138,12 +145,18 @@ public abstract class FreezableLinkedHashSet<E> extends LinkedHashSet<E> impleme
         return new FreezableLinkedHashSetSubclass<>(size(), this);
     }
     
-    /* -------------------------------------------------- Iterable -------------------------------------------------- */
+    /* -------------------------------------------------- Iterator -------------------------------------------------- */
     
     @Pure
     @Override
     public @Capturable @Nonnull ReadOnlyIterator<E> iterator() {
         return ReadOnlyIterableIterator.with(super.iterator());
+    }
+    
+    @Pure
+    @Override
+    public @Capturable @Nonnull FreezableIterator<E> freezableIterator() {
+        return FreezableIterator.with(super.iterator(), this);
     }
     
     /* -------------------------------------------------- Operations -------------------------------------------------- */
@@ -180,7 +193,7 @@ public abstract class FreezableLinkedHashSet<E> extends LinkedHashSet<E> impleme
     @Override
     @NonFrozenRecipient
     public boolean retainAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
-        return super.retainAll(collection);
+        return FreezableSet.super.retainAll(collection);
     }
     
     @Impure

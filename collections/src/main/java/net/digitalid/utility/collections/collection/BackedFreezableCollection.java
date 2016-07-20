@@ -13,6 +13,7 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.collections.iterator.FreezableIterator;
 import net.digitalid.utility.collections.list.BackedFreezableList;
 import net.digitalid.utility.collections.list.FreezableArrayList;
 import net.digitalid.utility.collections.set.BackedFreezableSet;
@@ -103,6 +104,12 @@ public abstract class BackedFreezableCollection<E> extends RootClass implements 
     @Override
     public @Capturable @Nonnull ReadOnlyIterator<E> iterator() {
         return ReadOnlyIterableIterator.with(collection.iterator());
+    }
+    
+    @Pure
+    @Override
+    public @Capturable @Nonnull FreezableIterator<E> freezableIterator() {
+        return FreezableIterator.with(collection.iterator(), this);
     }
     
     /* -------------------------------------------------- Operations -------------------------------------------------- */

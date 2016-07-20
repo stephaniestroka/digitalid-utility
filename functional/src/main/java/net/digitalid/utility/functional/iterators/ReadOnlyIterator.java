@@ -9,7 +9,7 @@ import net.digitalid.utility.functional.exceptions.FailedIterationException;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * This interface models an iterator whose elements cannot be removed.
+ * This class models an iterator whose elements cannot be removed.
  */
 @Mutable
 public abstract class ReadOnlyIterator<E> implements Iterator<E> {

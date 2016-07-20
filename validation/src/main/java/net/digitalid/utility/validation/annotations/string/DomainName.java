@@ -22,13 +22,13 @@ import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.validators.StringValidator;
 
 /**
- * This annotation indicates that a string is a valid identifier in most languages like Java or SQL.
+ * This annotation indicates that a string denotes a valid domain name.
  */
 @Documented
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.RUNTIME)
-@ValueValidator(CodeIdentifier.Validator.class)
-public @interface CodeIdentifier {
+@ValueValidator(DomainName.Validator.class)
+public @interface DomainName {
     
     /* -------------------------------------------------- Validator -------------------------------------------------- */
     
@@ -38,10 +38,10 @@ public @interface CodeIdentifier {
     @Stateless
     public static class Validator extends StringValidator {
         
-        private static final @Nonnull Pattern PATTERN = Pattern.compile("[a-z_$][a-z0-9_$]*", Pattern.CASE_INSENSITIVE);
+        private static final @Nonnull Pattern PATTERN = Pattern.compile("[a-z0-9]+(?:[.-][a-z0-9]+)*\\.[a-z][a-z]+");
         
         /**
-         * Returns whether the given string is a valid identifier in most languages like Java or SQL.
+         * Returns whether the given string denotes a valid domain name.
          */
         @Pure
         public static boolean validate(@Nullable String string) {
@@ -51,7 +51,7 @@ public @interface CodeIdentifier {
         @Pure
         @Override
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-            return Contract.with(typeImporter.importIfPossible(CodeIdentifier.class) + ".Validator.validate(#)", "The # has to be a valid code identifier but was $.", element);
+            return Contract.with(typeImporter.importIfPossible(DomainName.class) + ".Validator.validate(#)", "The # has to denote a valid domain name but was $.", element);
         }
         
     }

@@ -637,7 +637,7 @@ public class ProcessingUtility {
                 method.getThrownTypes().isEmpty() &&
                 method.getParameters().isEmpty() &&
                 method.getReturnType().getKind() != TypeKind.VOID &&
-                (name.startsWith("get") || (name.startsWith("is") || name.startsWith("has")) && isRawlyAssignable(method.getReturnType(), boolean.class));
+                (name.startsWith("get") || (name.startsWith("is") || name.startsWith("has") || name.startsWith("can")) && isRawlyAssignable(method.getReturnType(), boolean.class));
     }
     
     /**

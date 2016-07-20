@@ -10,6 +10,8 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.collections.collection.FreezableCollection;
 import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.freezable.FreezableInterface;
@@ -77,15 +79,6 @@ public interface FreezableMap<K, V> extends ReadOnlyMap<K, V>, Map<K, V>, Freeza
      */
     @Impure
     @NonFrozenRecipient
-    public default void removeAll(@Nonnull Collection<?> keys) {
-        for (Object key : keys) { remove(key); }
-    }
-    
-    /**
-     * Removes the given keys from this map.
-     */
-    @Impure
-    @NonFrozenRecipient
     public default void removeAll(@Nonnull FiniteIterable<?> keys) {
         for (Object key : keys) { remove(key); }
     }
@@ -95,7 +88,16 @@ public interface FreezableMap<K, V> extends ReadOnlyMap<K, V>, Map<K, V>, Freeza
      */
     @Impure
     @NonFrozenRecipient
-    public default void removeAll(@Nonnull FreezableCollection<?> keys) {
+    public default void removeAll(@NonCaptured @Unmodified @Nonnull Collection<?> keys) {
+        for (Object key : keys) { remove(key); }
+    }
+    
+    /**
+     * Removes the given keys from this map.
+     */
+    @Impure
+    @NonFrozenRecipient
+    public default void removeAll(@NonCaptured @Unmodified @Nonnull FreezableCollection<?> keys) {
         for (Object key : keys) { remove(key); }
     }
     

@@ -30,7 +30,7 @@ public abstract class NumericalValueValidator implements ValueAnnotationValidato
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(byte.class, short.class, int.class, long.class, float.class, double.class, BigInteger.class, LongNumerical.class, BigIntegerNumerical.class);
+    private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(byte.class, Byte.class, short.class, Short.class, int.class, Integer.class, long.class, Long.class, float.class, Float.class, double.class, Double.class, BigInteger.class, LongNumerical.class, BigIntegerNumerical.class);
     
     @Pure
     @Override

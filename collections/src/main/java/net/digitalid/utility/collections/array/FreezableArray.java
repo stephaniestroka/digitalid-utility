@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
-import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
@@ -17,6 +16,7 @@ import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.collaboration.annotations.TODO;
 import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.collaboration.enumerations.Priority;
+import net.digitalid.utility.collections.collection.FreezableCollection;
 import net.digitalid.utility.collections.iterable.FreezableIterable;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.annotations.Freezable;
@@ -64,8 +64,8 @@ public abstract class FreezableArray<E> extends RootClass implements ReadOnlyArr
     }
     
     @SafeVarargs
-    protected FreezableArray(@Captured @Nonnull E... elements) {
-        this.elements = elements;
+    protected FreezableArray(@NonCaptured @Unmodified @Nonnull E... elements) {
+        this.elements = elements.clone();
     }
     
     /**
@@ -73,12 +73,12 @@ public abstract class FreezableArray<E> extends RootClass implements ReadOnlyArr
      */
     @Pure
     @SafeVarargs
-    public static @Capturable <E> @NonFrozen FreezableArray<E> withElements(@Captured E... elements) {
+    public static @Capturable <E> @NonFrozen FreezableArray<E> withElements(@NonCaptured @Unmodified E... elements) {
         return elements == null ? null : new FreezableArraySubclass<>(elements);
     }
     
-    protected FreezableArray(@Nonnull FiniteIterable<? extends E> iterable) {
-        this(iterable.size());
+    protected FreezableArray(@NonNegative int size, @Nonnull Iterable<? extends E> iterable) {
+        this(size);
         
         int index = 0;
         for (E element : iterable) {
@@ -91,16 +91,7 @@ public abstract class FreezableArray<E> extends RootClass implements ReadOnlyArr
      */
     @Pure
     public static @Capturable <E> @NonFrozen FreezableArray<E> withElementsOf(FiniteIterable<? extends E> iterable) {
-        return iterable == null ? null : new FreezableArraySubclass<>(iterable);
-    }
-    
-    protected FreezableArray(@NonCaptured @Unmodified @Nonnull Collection<? extends E> collection) {
-        this(collection.size());
-        
-        int index = 0;
-        for (E element : collection) {
-            this.elements[index++] = element;
-        }
+        return iterable == null ? null : new FreezableArraySubclass<>(iterable.size(), iterable);
     }
     
     /**
@@ -108,7 +99,15 @@ public abstract class FreezableArray<E> extends RootClass implements ReadOnlyArr
      */
     @Pure
     public static @Capturable <E> @NonFrozen FreezableArray<E> withElementsOf(@NonCaptured @Unmodified Collection<? extends E> collection) {
-        return collection == null ? null : new FreezableArraySubclass<>(collection);
+        return collection == null ? null : new FreezableArraySubclass<>(collection.size(), collection);
+    }
+    
+    /**
+     * Returns a new freezable array with the elements of the given freezable collection or null if the given collection is null.
+     */
+    @Pure
+    public static @Capturable <E> @NonFrozen FreezableArray<E> withElementsOf(@NonCaptured @Unmodified FreezableCollection<? extends E> collection) {
+        return collection == null ? null : new FreezableArraySubclass<>(collection.size(), collection);
     }
     
     /* -------------------------------------------------- Freezable -------------------------------------------------- */

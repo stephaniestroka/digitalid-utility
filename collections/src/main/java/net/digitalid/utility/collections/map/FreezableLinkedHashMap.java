@@ -99,7 +99,24 @@ public abstract class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> i
      * Returns a new freezable linked hash map with the mappings of the given map or null if the given map is null.
      */
     @Pure
+    @SuppressWarnings("unchecked")
+    public static @Capturable <K, V> @NonFrozen FreezableLinkedHashMap<K, V> withMappingsOf(ReadOnlyMap<? extends K, ? extends V> map) {
+        return map == null ? null : new FreezableLinkedHashMapSubclass<>((Map<? extends K, ? extends V>) map);
+    }
+    
+    /**
+     * Returns a new freezable linked hash map with the mappings of the given map or null if the given map is null.
+     */
+    @Pure
     public static @Capturable <K, V> @NonFrozen FreezableLinkedHashMap<K, V> withMappingsOf(@NonCaptured @Unmodified Map<? extends K, ? extends V> map) {
+        return map == null ? null : new FreezableLinkedHashMapSubclass<>(map);
+    }
+    
+    /**
+     * Returns a new freezable linked hash map with the mappings of the given map or null if the given map is null.
+     */
+    @Pure
+    public static @Capturable <K, V> @NonFrozen FreezableLinkedHashMap<K, V> withMappingsOf(@NonCaptured @Unmodified FreezableMap<? extends K, ? extends V> map) {
         return map == null ? null : new FreezableLinkedHashMapSubclass<>(map);
     }
     

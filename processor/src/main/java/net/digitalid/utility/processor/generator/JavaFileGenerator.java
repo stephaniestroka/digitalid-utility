@@ -147,7 +147,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     /**
      * Stores the import groups which will be separated by an empty line in the desired order.
      */
-    private final @Nonnull ImmutableList<@Nonnull ImportGroup> importGroups = ImmutableList.with(
+    private final @Nonnull ImmutableList<@Nonnull ImportGroup> importGroups = ImmutableList.withElements(
         new ImportGroup("java."),
         new ImportGroup("javax."),
         new ImportGroup("net.digitalid.utility."),

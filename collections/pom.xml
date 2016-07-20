@@ -19,6 +19,12 @@
             <artifactId>utility-generator</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-testing</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     
 </project>

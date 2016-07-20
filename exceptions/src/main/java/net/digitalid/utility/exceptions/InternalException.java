@@ -40,7 +40,7 @@ public abstract class InternalException extends RuntimeException {
     protected InternalException(@Nullable String message, @Nullable Exception cause, @Captured @Nonnull @NullableElements Object... arguments) {
         super(message == null ? "An internal exception occurred." : Strings.format(message, arguments), cause);
         
-        this.arguments = ImmutableList.with(arguments);
+        this.arguments = ImmutableList.withElements(arguments);
     }
     
     protected InternalException(@Nullable String message, @Captured @Nonnull @NullableElements Object... arguments) {
