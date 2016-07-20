@@ -21,7 +21,7 @@ public abstract class ModuloValidator implements ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     
-    private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(byte.class, short.class, int.class, long.class, BigInteger.class, LongNumerical.class, BigIntegerNumerical.class);
+    private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(byte.class, Byte.class, short.class, Short.class, int.class, Integer.class, long.class, Long.class, float.class, Float.class, double.class, Double.class, BigInteger.class, LongNumerical.class, BigIntegerNumerical.class);
     
     @Pure
     @Override

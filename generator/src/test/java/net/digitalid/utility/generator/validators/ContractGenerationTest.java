@@ -167,8 +167,9 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     }
     
     @Pure
-    public static void testNumerical(@Nonnull Consumer<Long> longConsumer, @Nonnull Consumer<BigInteger> bigIntegerConsumer, @Nonnull Consumer<LongNumerical<?>> longNumericalConsumer, @Nonnull Consumer<BigIntegerNumerical<?>> bigIntegerNumericalConsumer, long positive, long negative) {
+    public static void testNumerical(@Nonnull Consumer<Long> longConsumer, @Nonnull Consumer<Integer> integerConsumer, @Nonnull Consumer<BigInteger> bigIntegerConsumer, @Nonnull Consumer<LongNumerical<?>> longNumericalConsumer, @Nonnull Consumer<BigIntegerNumerical<?>> bigIntegerNumericalConsumer, long positive, long negative) {
         test(longConsumer, positive, negative);
+        test(integerConsumer, (int) positive, (int) negative);
         test(bigIntegerConsumer, BigInteger.valueOf(positive), BigInteger.valueOf(negative));
         test(longNumericalConsumer, new LongValueSubclass(positive), new LongValueSubclass(negative));
         test(bigIntegerNumericalConsumer, new BigIntegerValueSubclass(BigInteger.valueOf(positive)), new BigIntegerValueSubclass(BigInteger.valueOf(negative)));
@@ -468,6 +469,9 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     public void setNegativeLong(@Negative long value) {}
     
     @Impure
+    public void setNegativeInteger(@Negative Integer value) {}
+    
+    @Impure
     public void setNegativeBigInteger(@Negative BigInteger value) {}
     
     @Impure
@@ -478,11 +482,14 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     
     @Test
     public void testNegative() {
-        testNumerical(INSTANCE::setNegativeLong, INSTANCE::setNegativeBigInteger, INSTANCE::setNegativeLongNumerical, INSTANCE::setNegativeBigIntegerNumerical, -1, 0);
+        testNumerical(INSTANCE::setNegativeLong, INSTANCE::setNegativeInteger, INSTANCE::setNegativeBigInteger, INSTANCE::setNegativeLongNumerical, INSTANCE::setNegativeBigIntegerNumerical, -1, 0);
     }
     
     @Impure
     public void setNonNegativeLong(@NonNegative long value) {}
+    
+    @Impure
+    public void setNonNegativeInteger(@NonNegative Integer value) {}
     
     @Impure
     public void setNonNegativeBigInteger(@NonNegative BigInteger value) {}
@@ -495,11 +502,14 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     
     @Test
     public void testNonNegative() {
-        testNumerical(INSTANCE::setNonNegativeLong, INSTANCE::setNonNegativeBigInteger, INSTANCE::setNonNegativeLongNumerical, INSTANCE::setNonNegativeBigIntegerNumerical, 0, -1);
+        testNumerical(INSTANCE::setNonNegativeLong, INSTANCE::setNonNegativeInteger, INSTANCE::setNonNegativeBigInteger, INSTANCE::setNonNegativeLongNumerical, INSTANCE::setNonNegativeBigIntegerNumerical, 0, -1);
     }
     
     @Impure
     public void setNonPositiveLong(@NonPositive long value) {}
+    
+    @Impure
+    public void setNonPositiveInteger(@NonPositive Integer value) {}
     
     @Impure
     public void setNonPositiveBigInteger(@NonPositive BigInteger value) {}
@@ -512,11 +522,14 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     
     @Test
     public void testNonPositive() {
-        testNumerical(INSTANCE::setNonPositiveLong, INSTANCE::setNonPositiveBigInteger, INSTANCE::setNonPositiveLongNumerical, INSTANCE::setNonPositiveBigIntegerNumerical, 0, 1);
+        testNumerical(INSTANCE::setNonPositiveLong, INSTANCE::setNonPositiveInteger, INSTANCE::setNonPositiveBigInteger, INSTANCE::setNonPositiveLongNumerical, INSTANCE::setNonPositiveBigIntegerNumerical, 0, 1);
     }
     
     @Impure
     public void setPositiveLong(@Positive long value) {}
+    
+    @Impure
+    public void setPositiveInteger(@Positive Integer value) {}
     
     @Impure
     public void setPositiveBigInteger(@Positive BigInteger value) {}
@@ -529,13 +542,16 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     
     @Test
     public void testPositive() {
-        testNumerical(INSTANCE::setPositiveLong, INSTANCE::setPositiveBigInteger, INSTANCE::setPositiveLongNumerical, INSTANCE::setPositiveBigIntegerNumerical, 1, 0);
+        testNumerical(INSTANCE::setPositiveLong, INSTANCE::setPositiveInteger, INSTANCE::setPositiveBigInteger, INSTANCE::setPositiveLongNumerical, INSTANCE::setPositiveBigIntegerNumerical, 1, 0);
     }
     
     /* -------------------------------------------------- Modulo -------------------------------------------------- */
     
     @Impure
     public void setEvenLong(@Even long value) {}
+    
+    @Impure
+    public void setEvenInteger(@Even Integer value) {}
     
     @Impure
     public void setEvenBigInteger(@Even BigInteger value) {}
@@ -548,11 +564,14 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     
     @Test
     public void testEven() {
-        testNumerical(INSTANCE::setEvenLong, INSTANCE::setEvenBigInteger, INSTANCE::setEvenLongNumerical, INSTANCE::setEvenBigIntegerNumerical, 2, 3);
+        testNumerical(INSTANCE::setEvenLong, INSTANCE::setEvenInteger, INSTANCE::setEvenBigInteger, INSTANCE::setEvenLongNumerical, INSTANCE::setEvenBigIntegerNumerical, 2, 3);
     }
     
     @Impure
     public void setMultipleOfLong(@MultipleOf(2) long value) {}
+    
+    @Impure
+    public void setMultipleOfInteger(@MultipleOf(2) Integer value) {}
     
     @Impure
     public void setMultipleOfBigInteger(@MultipleOf(2) BigInteger value) {}
@@ -565,11 +584,14 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     
     @Test
     public void testMultipleOf() {
-        testNumerical(INSTANCE::setMultipleOfLong, INSTANCE::setMultipleOfBigInteger, INSTANCE::setMultipleOfLongNumerical, INSTANCE::setMultipleOfBigIntegerNumerical, 4, 5);
+        testNumerical(INSTANCE::setMultipleOfLong, INSTANCE::setMultipleOfInteger, INSTANCE::setMultipleOfBigInteger, INSTANCE::setMultipleOfLongNumerical, INSTANCE::setMultipleOfBigIntegerNumerical, 4, 5);
     }
     
     @Impure
     public void setUnevenLong(@Uneven long value) {}
+    
+    @Impure
+    public void setUnevenInteger(@Uneven Integer value) {}
     
     @Impure
     public void setUnevenBigInteger(@Uneven BigInteger value) {}
@@ -582,13 +604,16 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     
     @Test
     public void testUneven() {
-        testNumerical(INSTANCE::setUnevenLong, INSTANCE::setUnevenBigInteger, INSTANCE::setUnevenLongNumerical, INSTANCE::setUnevenBigIntegerNumerical, 3, 2);
+        testNumerical(INSTANCE::setUnevenLong, INSTANCE::setUnevenInteger, INSTANCE::setUnevenBigInteger, INSTANCE::setUnevenLongNumerical, INSTANCE::setUnevenBigIntegerNumerical, 3, 2);
     }
     
     /* -------------------------------------------------- Relative -------------------------------------------------- */
     
     @Impure
     public void setGreaterThanLong(@GreaterThan(2) long value) {}
+    
+    @Impure
+    public void setGreaterThanInteger(@GreaterThan(2) Integer value) {}
     
     @Impure
     public void setGreaterThanBigInteger(@GreaterThan(2) BigInteger value) {}
@@ -601,11 +626,14 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     
     @Test
     public void testGreaterThan() {
-        testNumerical(INSTANCE::setGreaterThanLong, INSTANCE::setGreaterThanBigInteger, INSTANCE::setGreaterThanLongNumerical, INSTANCE::setGreaterThanBigIntegerNumerical, 3, 2);
+        testNumerical(INSTANCE::setGreaterThanLong, INSTANCE::setGreaterThanInteger, INSTANCE::setGreaterThanBigInteger, INSTANCE::setGreaterThanLongNumerical, INSTANCE::setGreaterThanBigIntegerNumerical, 3, 2);
     }
     
     @Impure
     public void setGreaterThanOrEqualToLong(@GreaterThanOrEqualTo(2) long value) {}
+    
+    @Impure
+    public void setGreaterThanOrEqualToInteger(@GreaterThanOrEqualTo(2) Integer value) {}
     
     @Impure
     public void setGreaterThanOrEqualToBigInteger(@GreaterThanOrEqualTo(2) BigInteger value) {}
@@ -618,11 +646,14 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     
     @Test
     public void testGreaterThanOrEqualTo() {
-        testNumerical(INSTANCE::setGreaterThanOrEqualToLong, INSTANCE::setGreaterThanOrEqualToBigInteger, INSTANCE::setGreaterThanOrEqualToLongNumerical, INSTANCE::setGreaterThanOrEqualToBigIntegerNumerical, 2, 1);
+        testNumerical(INSTANCE::setGreaterThanOrEqualToLong, INSTANCE::setGreaterThanOrEqualToInteger, INSTANCE::setGreaterThanOrEqualToBigInteger, INSTANCE::setGreaterThanOrEqualToLongNumerical, INSTANCE::setGreaterThanOrEqualToBigIntegerNumerical, 2, 1);
     }
     
     @Impure
     public void setLessThanLong(@LessThan(2) long value) {}
+    
+    @Impure
+    public void setLessThanInteger(@LessThan(2) Integer value) {}
     
     @Impure
     public void setLessThanBigInteger(@LessThan(2) BigInteger value) {}
@@ -635,11 +666,14 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     
     @Test
     public void testLessThan() {
-        testNumerical(INSTANCE::setLessThanLong, INSTANCE::setLessThanBigInteger, INSTANCE::setLessThanLongNumerical, INSTANCE::setLessThanBigIntegerNumerical, 1, 2);
+        testNumerical(INSTANCE::setLessThanLong, INSTANCE::setLessThanInteger, INSTANCE::setLessThanBigInteger, INSTANCE::setLessThanLongNumerical, INSTANCE::setLessThanBigIntegerNumerical, 1, 2);
     }
     
     @Impure
     public void setLessThanOrEqualToLong(@LessThanOrEqualTo(2) long value) {}
+    
+    @Impure
+    public void setLessThanOrEqualToInteger(@LessThanOrEqualTo(2) Integer value) {}
     
     @Impure
     public void setLessThanOrEqualToBigInteger(@LessThanOrEqualTo(2) BigInteger value) {}
@@ -652,7 +686,7 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     
     @Test
     public void testLessThanOrEqualTo() {
-        testNumerical(INSTANCE::setLessThanOrEqualToLong, INSTANCE::setLessThanOrEqualToBigInteger, INSTANCE::setLessThanOrEqualToLongNumerical, INSTANCE::setLessThanOrEqualToBigIntegerNumerical, 2, 3);
+        testNumerical(INSTANCE::setLessThanOrEqualToLong, INSTANCE::setLessThanOrEqualToInteger, INSTANCE::setLessThanOrEqualToBigInteger, INSTANCE::setLessThanOrEqualToLongNumerical, INSTANCE::setLessThanOrEqualToBigIntegerNumerical, 2, 3);
     }
     
     /* -------------------------------------------------- Order -------------------------------------------------- */

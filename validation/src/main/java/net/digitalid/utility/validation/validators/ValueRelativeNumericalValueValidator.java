@@ -34,7 +34,9 @@ public abstract class ValueRelativeNumericalValueValidator extends NumericalValu
         } else if (ProcessingUtility.isRawSubtype(element, BigInteger.class)) {
             return Contract.with("# == null || #.compareTo(" + typeImporter.importIfPossible(BigInteger.class) + ".valueOf(@)) " + getComparisonOperator() + " 0", "The # has to be null or " + getDecamelizedAnnotationName() + " @ but was $.", element, annotationMirror);
         } else if (ProcessingUtility.isRawSubtype(element, LongNumerical.class)) {
-            return Contract.with("# == null || #.getValue() " + getComparisonOperator() + " @", "The # has to be " + getDecamelizedAnnotationName() + " @ but was $.", element, annotationMirror);
+            return Contract.with("# == null || #.getValue() " + getComparisonOperator() + " @", "The # has to be null or " + getDecamelizedAnnotationName() + " @ but was $.", element, annotationMirror);
+        } else if (ProcessingUtility.isRawSubtype(element, Number.class)) {
+            return Contract.with("# == null || # " + getComparisonOperator() + " @", "The # has to be null or " + getDecamelizedAnnotationName() + " @ but was $.", element, annotationMirror);
         } else {
             return Contract.with("# " + getComparisonOperator() + " @", "The # has to be " + getDecamelizedAnnotationName() + " @ but was $.", element, annotationMirror);
         }

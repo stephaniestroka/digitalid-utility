@@ -56,7 +56,9 @@ public abstract class NumericalValueValidator implements ValueAnnotationValidato
         } else if (ProcessingUtility.isRawSubtype(element, BigInteger.class)) {
             return Contract.with("# == null || #.compareTo(" + typeImporter.importIfPossible(BigInteger.class) + ".ZERO) " + getComparisonOperator() + " 0", "The # has to be null or " + getDecamelizedAnnotationName().replace(" ", "-") + " but was $.", element);
         } else if (ProcessingUtility.isRawSubtype(element, LongNumerical.class)) {
-            return Contract.with("# == null || #.getValue() " + getComparisonOperator() + " 0", "The # has to be " + getDecamelizedAnnotationName().replace(" ", "-") + " but was $.", element);
+            return Contract.with("# == null || #.getValue() " + getComparisonOperator() + " 0", "The # has to be null or " + getDecamelizedAnnotationName().replace(" ", "-") + " but was $.", element);
+        } else if (ProcessingUtility.isRawSubtype(element, Number.class)) {
+            return Contract.with("# == null || # " + getComparisonOperator() + " 0", "The # has to be null or " + getDecamelizedAnnotationName().replace(" ", "-") + " but was $.", element);
         } else {
             return Contract.with("# " + getComparisonOperator() + " 0", "The # has to be " + getDecamelizedAnnotationName().replace(" ", "-") + " but was $.", element);
         }
