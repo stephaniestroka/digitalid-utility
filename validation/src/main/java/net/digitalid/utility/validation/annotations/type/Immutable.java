@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -59,7 +60,7 @@ public @interface Immutable {
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
             for (@Nonnull ExecutableElement method : ProcessingUtility.getAllMethods((TypeElement) element)) {
-                if (ProcessingUtility.isDeclaredInDigitalIDLibrary(method) && !ProcessingUtility.hasAnnotation(method, Pure.class)) {
+                if (ProcessingUtility.isDeclaredInDigitalIDLibrary(method) && !ProcessingUtility.hasAnnotation(method, Pure.class) && method.getEnclosingElement().getKind() != ElementKind.ENUM) {
                     errorLogger.log("The immutable type $ may only contain pure methods.", SourcePosition.of(method), element);
                 }
             }
