@@ -169,7 +169,7 @@ public abstract class Console {
      * Stores the available options for the user.
      */
     @TODO(task = "Fix the generics of the builder and allow a direct (static) build call on the builder.", date = "2016-05-01", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.MIDDLE)
-    public static final @Nonnull WritableExtensibleProperty<Option, ReadOnlySet<Option>> options = VolatileWritableExtensiblePropertyBuilder.get().build();
+    public static final @Nonnull WritableExtensibleProperty<Option, ReadOnlySet<Option>> options = VolatileWritableExtensiblePropertyBuilder.build();
     
     /* -------------------------------------------------- Loop -------------------------------------------------- */
     

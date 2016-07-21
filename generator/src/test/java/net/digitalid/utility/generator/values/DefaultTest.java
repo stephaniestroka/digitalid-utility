@@ -7,32 +7,32 @@ import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.generation.Default;
 
+import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 @GenerateBuilder
 @GenerateSubclass
-abstract class ClassWithDefaultValuesInFields {
-    
-    @Pure
-    @Default("99")
-    public abstract int getNumber();
+abstract class ClassWithDefaultValueInConstructorParameter {
     
     private final @Nonnull String optionalText;
     
     private final @Nonnull String mandatoryText;
     
-    ClassWithDefaultValuesInFields(@Default("\"blubb\"") String optionalText, @Nonnull String mandatoryText) {
+    ClassWithDefaultValueInConstructorParameter(@Default("\"blubb\"") String optionalText, @Nonnull String mandatoryText) {
         this.optionalText = optionalText;
         this.mandatoryText = mandatoryText;
+    }
+    
+    @Pure
+    public @Nonnull String getOptionalText() {
+        return optionalText;
     }
     
 }
 
 @GenerateBuilder
 @GenerateSubclass
-abstract class OtherClass {
+abstract class ClassWithDefaultValueInFields {
     
     @GenerateBuilder
     @GenerateSubclass
@@ -49,7 +49,9 @@ public class DefaultTest {
     @Test
     @Pure
     public void testNonnull() {
-        assertEquals(42, OtherClassBuilder.get().build().getIdentity());
+        ClassWithDefaultValueInConstructorParameter classWithDefaultValueInConstructorParameter = ClassWithDefaultValueInConstructorParameterBuilder.withMandatoryText("Bla").build();
+        Assert.assertEquals("blubb", classWithDefaultValueInConstructorParameter.getOptionalText());
+        Assert.assertEquals(42, ClassWithDefaultValueInFieldsBuilder.build().getIdentity());
     }
     
 }

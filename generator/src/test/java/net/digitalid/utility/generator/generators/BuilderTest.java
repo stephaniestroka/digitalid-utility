@@ -79,8 +79,7 @@ public class BuilderTest extends CustomTest {
     
     @Test
     public void testOptionalFields() {
-        // TODO: Eliminate the get and support a direct build call!
-        testFields(OptionalFieldsBuilder.get().build(), null, null);
+        testFields(OptionalFieldsBuilder.build(), null, null);
         testFields(OptionalFieldsBuilder.withFirst("alpha").build(), "alpha", null);
         testFields(OptionalFieldsBuilder.withSecond("beta").build(), null, "beta");
         testFields(OptionalFieldsBuilder.withSecond("beta").withFirst("alpha").build(), "alpha", "beta");

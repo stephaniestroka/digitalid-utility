@@ -35,7 +35,7 @@ public class KeyPairTest extends CustomTest {
     
     @Test
     public void testKeyPair() {
-        @Nonnull Time time = TimeBuilder.get().build();
+        @Nonnull Time time = TimeBuilder.build();
         final @Nonnull KeyPair keyPair = KeyPair.withRandomValues();
         final @Nonnull PrivateKey privateKey = keyPair.getPrivateKey();
         final @Nonnull PublicKey publicKey = keyPair.getPublicKey();
@@ -46,13 +46,13 @@ public class KeyPairTest extends CustomTest {
         for (int i = 0; i < 10; i++) {
             Log.information("Starting with another round:");
             final @Nonnull Element m = publicKey.getCompositeGroup().getRandomElement();
-            time = TimeBuilder.get().build();
+            time = TimeBuilder.build();
             final @Nonnull Element c = m.pow(publicKey.getE());
             Log.information("Encryption (only algorithm): " + time.ago().getValue() + " ms");
-            time = TimeBuilder.get().build();
+            time = TimeBuilder.build();
             assertEquals(c.pow(privateKey.getD()), m);
             Log.information("Decryption (slow algorithm): " + time.ago().getValue() + " ms");
-            time = TimeBuilder.get().build();
+            time = TimeBuilder.build();
             assertEquals(privateKey.powD(c), m);
             Log.information("Decryption (fast algorithm): " + time.ago().getValue() + " ms");
         }

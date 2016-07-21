@@ -201,8 +201,8 @@ public class BuilderGenerator extends JavaFileGenerator {
             for (@Nonnull ElementInformation optionalField : typeInformation.getConstructorParameters()) {
                 addSetterForField(optionalField, nameOfBuilder, nameOfBuilder);
             }
-            beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + nameOfBuilder + " get()");
-            addStatement("return new " + nameOfBuilder + "()");
+            beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + typeInformation.getName() + " build()");
+            addStatement("return new " + nameOfBuilder + "().build()");
             endMethod();
         }
     }
