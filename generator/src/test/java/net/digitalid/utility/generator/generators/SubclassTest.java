@@ -24,11 +24,34 @@ interface SubclassedInterface {
     
 }
 
+@Immutable
+@GenerateSubclass
+abstract class SubclassedClass {
+    
+    @Pure
+    public abstract boolean isFlag();
+    
+    @Pure
+    public abstract int getSize();
+    
+    @Pure
+    public abstract String getText();
+    
+}
+
 public class SubclassTest extends CustomTest {
     
     @Test
-    public void testSubclass() {
+    public void testInterfaceSubclass() {
         final @Nonnull SubclassedInterfaceSubclass object = new SubclassedInterfaceSubclass(true, 1234, "hi");
+        assertEquals(true, object.isFlag());
+        assertEquals(1234, object.getSize());
+        assertEquals("hi", object.getText());
+    }
+    
+    @Test
+    public void testClassSubclass() {
+        final @Nonnull SubclassedClassSubclass object = new SubclassedClassSubclass(true, 1234, "hi");
         assertEquals(true, object.isFlag());
         assertEquals(1234, object.getSize());
         assertEquals("hi", object.getText());
