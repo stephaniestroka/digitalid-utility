@@ -43,6 +43,7 @@ import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.size.MinSize;
+import net.digitalid.utility.validation.annotations.size.NonEmpty;
 
 /**
  * This type collects the relevant information about a class for generating a {@link SubclassGenerator subclass}, {@link BuilderGenerator builder} and {@link ConverterGenerator converter}.
@@ -132,32 +133,8 @@ public class ClassInformation extends TypeInformation {
      */
     @Pure
     @Override
-    public @Unmodifiable @Nonnull @MinSize(1) FiniteIterable<@Nonnull ConstructorInformation> getConstructors() {
+    public @Unmodifiable @Nonnull @NonEmpty FiniteIterable<@Nonnull ConstructorInformation> getConstructors() {
         return constructors;
-    }
-    
-    /* -------------------------------------------------- Recover Executable -------------------------------------------------- */
-    
-    /**
-     * Returns the executable element used to create an instance of this type.
-     * The executable element is either the recover method (if available) or the single
-     * constructor. If no recover method and multiple constructors exist, a unsupported type exception is thrown, indicating that we cannot defer how to create an instance of this type.
-     * An unexpected failure exception is thrown if no constructors could be found. This should never happen.
-     */
-    public @Nullable ExecutableElement getRecoverExecutable(@Nullable MethodInformation recoverMethod, @Nonnull FiniteIterable<@Nonnull ConstructorInformation> constructors) {
-        if (recoverMethod != null) {
-            return recoverMethod.getElement();
-        } else {
-            if (constructors.size() > 1) {
-                ProcessingLog.debugging("More than one constructor, but no recover method found. We cannot decide which constructor to use for object construction.");
-                return null;
-            } else if (constructors.size() == 0) {
-                throw UnexpectedFailureException.with("No constructor found.");
-            } else {
-                final @Nonnull ConstructorInformation constructor = constructors.iterator().next();
-                return constructor.getElement();
-            }
-        }
     }
     
     /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */

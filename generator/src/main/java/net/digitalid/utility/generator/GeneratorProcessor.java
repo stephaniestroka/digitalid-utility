@@ -22,6 +22,7 @@ import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.ConverterGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.information.type.ClassInformation;
+import net.digitalid.utility.generator.information.type.EnumInformation;
 import net.digitalid.utility.generator.information.type.InterfaceInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.logging.Log;
@@ -81,16 +82,26 @@ public class GeneratorProcessor extends CustomProcessor {
         try {
             if (typeElement.getKind() == ElementKind.CLASS) {
                 typeInformation = ClassInformation.of(typeElement, containingType);
-            } else {
-                assert typeElement.getKind() == ElementKind.INTERFACE;
-                
+            } else if (typeElement.getKind() == ElementKind.INTERFACE) {
                 typeInformation = InterfaceInformation.of(typeElement, containingType);
+            } else  {
+                assert (typeElement.getKind() == ElementKind.ENUM);
+                
+                typeInformation = EnumInformation.of(typeElement, containingType);
             }
             ProcessingLog.debugging("Type $ is generatable", typeInformation);
-            if (typeInformation.hasAnnotation(GenerateSubclass.class)) {
-                SubclassGenerator.generateSubclassOf(typeInformation);
+            if (!typeElement.getModifiers().contains(Modifier.FINAL)) {
+                if (typeInformation.hasAnnotation(GenerateSubclass.class)) {
+                    assert (!(typeElement.getKind() == ElementKind.ENUM)) : "Enums cannot have subclasses";
+    
+                    SubclassGenerator.generateSubclassOf(typeInformation);
+                }
+            } else if (typeInformation.hasAnnotation(GenerateSubclass.class)) {
+                ProcessingLog.warning("Cannot generate subclass for final class $", typeElement.getSimpleName());
             }
             if (typeInformation.hasAnnotation(GenerateBuilder.class)) {
+                assert (!(typeElement.getKind() == ElementKind.ENUM)) : "Enums cannot have builders";
+                
                 BuilderGenerator.generateBuilderFor(typeInformation);
             }
             if (typeInformation.hasAnnotation(GenerateConverter.class)) {
@@ -108,15 +119,15 @@ public class GeneratorProcessor extends CustomProcessor {
     @Override
     public void processFirstRound(@Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
         for (@Nonnull Element rootElement : roundEnvironment.getRootElements()) {
-            if (rootElement.getKind() == ElementKind.CLASS || rootElement.getKind() == ElementKind.INTERFACE) {
-                // TODO: In order to just generate a builder, the class can actually be final.
-                if (!rootElement.getModifiers().contains(Modifier.FINAL)) {
-                    ProcessingLog.debugging("Generate the classes for " + Quotes.inSingle(rootElement.getSimpleName()));
-                    final long start = System.currentTimeMillis();
-                    final boolean generated = generateClasses((TypeElement) rootElement, (DeclaredType) rootElement.asType());
-                    final long end = System.currentTimeMillis();
-                    ProcessingLog.debugging("Generated " + (generated ? "the" : "no") + " classes for " + Quotes.inSingle(rootElement.getSimpleName()) + " in " + (end - start) + " ms.\n");
-                }
+            ProcessingLog.information("Processing element $ of kind $", rootElement.getSimpleName(), rootElement.getKind());
+            if (rootElement.getKind() == ElementKind.CLASS || rootElement.getKind() == ElementKind.INTERFACE || rootElement.getKind() == ElementKind.ENUM) {
+                ProcessingLog.debugging("Generate the classes for " + Quotes.inSingle(rootElement.getSimpleName()));
+                final long start = System.currentTimeMillis();
+                final boolean generated = generateClasses((TypeElement) rootElement, (DeclaredType) rootElement.asType());
+                final long end = System.currentTimeMillis();
+                ProcessingLog.debugging("Generated " + (generated ? "the" : "no") + " classes for " + Quotes.inSingle(rootElement.getSimpleName()) + " in " + (end - start) + " ms.\n");
+            } else {
+                ProcessingLog.information("Not processing element $ of kind $", rootElement.getSimpleName(), rootElement.getKind());
             }
         }
     }

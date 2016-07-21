@@ -48,7 +48,7 @@ public class DefaultTest {
     
     @Test
     @Pure
-    public void testNonnull() {
+    public void testDefaultValues() {
         ClassWithDefaultValueInConstructorParameter classWithDefaultValueInConstructorParameter = ClassWithDefaultValueInConstructorParameterBuilder.withMandatoryText("Bla").build();
         Assert.assertEquals("blubb", classWithDefaultValueInConstructorParameter.getOptionalText());
         Assert.assertEquals(42, ClassWithDefaultValueInFieldsBuilder.build().getIdentity());

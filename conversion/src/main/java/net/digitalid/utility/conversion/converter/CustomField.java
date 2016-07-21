@@ -1,6 +1,7 @@
 package net.digitalid.utility.conversion.converter;
 
 import java.lang.annotation.Annotation;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
@@ -107,6 +108,28 @@ public class CustomField {
      */
     public static @Nonnull CustomField with(@Nonnull CustomType customType, @Nonnull String name, @Nonnull ImmutableList<@Nonnull CustomAnnotation> annotations) {
         return new CustomField(customType, name, annotations);
+    }
+    
+    /* -------------------------------------------------- Equals -------------------------------------------------- */
+    
+    @Override
+    public boolean equals(Object object) {
+        if (object == null || !(object instanceof CustomField)) {
+            return false;
+        } else {
+            final @Nonnull CustomField other = (CustomField) object;
+            return name.equals(other.name) && customType.equals(other.customType) && annotations.equals(other.annotations);
+        }
+    }
+    
+    @Override
+    public int hashCode() {
+        int prime = 92_821;
+        int result = 46_411;
+        result = prime * result + Objects.hashCode(name);
+        result = prime * result + Objects.hashCode(customType);
+        result = prime * result + Objects.hashCode(annotations);
+        return result;
     }
     
 }

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
@@ -237,11 +238,27 @@ public class CustomType {
     /**
      * Returns the custom type that fits the given type mirror by iterating through all custom types and returning the
      * one which predicate evaluates to true.
-     * If no custom type is found, tuple will be returned.
+     * If no custom type is found, a type is inferred: It is either a tuple (for classes and interfaces) or a string (for enums).
      */
     public static @Nonnull CustomType of(@Nonnull TypeMirror typeMirror) {
         final @Nullable CustomType syntacticType = get(typeMirror);
-        return syntacticType != null ? syntacticType : CustomType.TUPLE;
+        return syntacticType != null ? syntacticType : (ProcessingUtility.getTypeElement(typeMirror).getKind() == ElementKind.ENUM ? CustomType.STRING : CustomType.TUPLE);
     }
     
+    /* -------------------------------------------------- Equals -------------------------------------------------- */
+    
+    @Override
+    public boolean equals(Object object) {
+        if (object == null || !(object instanceof CustomType)) {
+            return false;
+        } else {
+            CustomType otherType = (CustomType) object;
+            return typeName.equals(otherType.typeName);
+        }
+    }
+    
+    @Override
+    public int hashCode() {
+        return typeName.hashCode();
+    }
 }

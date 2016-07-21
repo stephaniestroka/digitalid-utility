@@ -22,6 +22,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
@@ -464,6 +465,21 @@ public class ProcessingUtility {
             default:
                 ProcessingLog.error("The type mirror represents neither a primitive, a declared nor an array type: $.", typeMirror);
                 return null;
+        }
+    }
+    
+    @Pure
+    @LogsErrorWhenReturningNull
+    public static @Nullable TypeElement getTypeElement(@Nonnull TypeMirror typeMirror) {
+        switch (typeMirror.getKind()) {
+            case DECLARED:
+                final @Nonnull TypeElement typeElement = (TypeElement) ((DeclaredType) typeMirror).asElement();
+                return typeElement;
+            case ARRAY:
+                return getTypeElement(((ArrayType) typeMirror).getComponentType());
+            default:
+            ProcessingLog.error("The type mirror cannot be converted to a type element.");
+            return null;
         }
     }
     

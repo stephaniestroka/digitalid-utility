@@ -32,6 +32,7 @@ import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.generation.Derive;
+import net.digitalid.utility.validation.annotations.size.MinSize;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.processing.AnnotationHandlerUtility;
@@ -52,7 +53,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns an iterable of constructor information objects.
      */
     @Pure
-    public abstract @Nonnull @NonEmpty FiniteIterable<ConstructorInformation> getConstructors();
+    public abstract @Nonnull @MinSize(0) FiniteIterable<ConstructorInformation> getConstructors();
     
     /* -------------------------------------------------- Constructor Parameters -------------------------------------------------- */
     

@@ -151,6 +151,11 @@ public class MethodInformation extends ExecutableInformation {
         return hasAnnotation("org.junit.Test");
     }
     
+    @Pure
+    public boolean isEnum() {
+        return getContainingType().asElement().getKind() == ElementKind.ENUM;
+    }
+    
     /* -------------------------------------------------- Return Value Validators -------------------------------------------------- */
     
     private final @Nonnull Map<@Nonnull AnnotationMirror, @Nonnull ValueAnnotationValidator> returnValueValidators;
@@ -191,8 +196,7 @@ public class MethodInformation extends ExecutableInformation {
         this.methodInterceptors = AnnotationHandlerUtility.getAnnotationHandlers(element, Interceptor.class, MethodInterceptor.class);
         
         if (isDeclaredInDigitalIDLibrary()) {
-            // TODO: Make sure that this doesn't apply for tests!
-            if (!isTest() && isPure() == isImpure()) { ProcessingLog.error("A method has to be either '@Pure' or '@Impure':", SourcePosition.of(element)); }
+            if (!isEnum() && !isTest() && isPure() == isImpure()) { ProcessingLog.error("A method has to be either '@Pure' or '@Impure':", SourcePosition.of(element)); }
             if (isSetter() && isPure()) { ProcessingLog.error("A setter may not be '@Pure':", SourcePosition.of(element)); }
         }
         

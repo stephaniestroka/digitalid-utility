@@ -15,6 +15,9 @@ import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
+import net.digitalid.utility.validation.annotations.size.Empty;
+import net.digitalid.utility.validation.annotations.size.MaxSize;
+import net.digitalid.utility.validation.annotations.size.MinSize;
 
 /**
  * This type collects the relevant information about an interface for generating a {@link SubclassGenerator subclass}, {@link BuilderGenerator builder} and {@link ConverterGenerator converter}.
@@ -25,7 +28,7 @@ public class InterfaceInformation extends TypeInformation {
     
     @Pure
     @Override
-    public @Nonnull FiniteIterable<@Nonnull ConstructorInformation> getConstructors() {
+    public @Nonnull @MinSize(0) @Empty FiniteIterable<@Nonnull ConstructorInformation> getConstructors() {
         return FiniteIterable.of(Collections.<ConstructorInformation>emptyList());
     }
     

@@ -40,4 +40,19 @@ public class CustomAnnotation {
         return new CustomAnnotation(annotationType, annotationFields);
     }
     
+    /* -------------------------------------------------- Equals -------------------------------------------------- */
+    
+    @Override
+    public boolean equals(Object object) {
+        if (object == null || !(object instanceof CustomAnnotation)) {
+            return false;
+        } else {
+            return annotationType.equals(((CustomAnnotation) object).annotationType);
+        }
+    }
+    
+    @Override
+    public int hashCode() {
+        return annotationType.hashCode();
+    }
 }
