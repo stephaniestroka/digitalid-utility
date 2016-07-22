@@ -3,6 +3,7 @@ package net.digitalid.utility.generator.information.type;
 import java.util.Collections;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 
@@ -12,9 +13,12 @@ import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.ConverterGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.generator.information.filter.InformationFilter;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
+import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.size.Empty;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.size.MinSize;
@@ -23,6 +27,18 @@ import net.digitalid.utility.validation.annotations.size.MinSize;
  * This type collects the relevant information about an interface for generating a {@link SubclassGenerator subclass}, {@link BuilderGenerator builder} and {@link ConverterGenerator converter}.
  */
 public class InterfaceInformation extends TypeInformation {
+    
+    /* -------------------------------------------------- Recover Method -------------------------------------------------- */
+    
+    /**
+     * The method information of the recover method, or null if the class does not implement a recover method.
+     */
+    private final @Nullable MethodInformation recoverMethod;
+    
+    @Override
+    public @Nullable MethodInformation getRecoverMethod() {
+        return recoverMethod;
+    }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
@@ -79,6 +95,12 @@ public class InterfaceInformation extends TypeInformation {
      */
     protected InterfaceInformation(@Nonnull TypeElement element, @Nonnull DeclaredType containingType) {
         super(element, containingType);
+    
+        final @Nonnull FiniteIterable<@Nonnull MethodInformation> methodInformationIterable = InformationFilter.getMethodInformation(element, containingType);
+    
+        ProcessingLog.debugging("All methods of type $: $", containingType, methodInformationIterable.join());
+        
+        this.recoverMethod = methodInformationIterable.findFirst(method -> method.hasAnnotation(Recover.class));
     }
     
     /**

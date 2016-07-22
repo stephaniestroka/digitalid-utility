@@ -19,6 +19,7 @@ import net.digitalid.utility.conversion.converter.Declaration;
 import net.digitalid.utility.conversion.converter.SelectionResult;
 import net.digitalid.utility.conversion.converter.ValueCollector;
 import net.digitalid.utility.conversion.converter.types.CustomType;
+import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.functional.interfaces.Producer;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
@@ -26,6 +27,7 @@ import net.digitalid.utility.generator.annotations.generators.GenerateConverter;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.testing.CustomTest;
 import net.digitalid.utility.tuples.Pair;
+import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.size.Size;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -59,6 +61,37 @@ enum SimpleEnum {
     PLANET,
     COMET,
     MOON
+    
+}
+
+@GenerateConverter
+enum EnumWithRecoverMethod {
+    
+    ZERO(0),
+    ONE(1),
+    TWO(2),
+    THREE(3);
+    
+    int id;
+    
+    EnumWithRecoverMethod(int id) {
+        this.id = id;
+    }
+    
+    @Recover
+    public static @Nonnull EnumWithRecoverMethod of(int id) {
+        switch (id) {
+            case 0:
+                return ZERO;
+            case 1:
+                return ONE;
+            case 2:
+                return TWO;
+            case 3:
+                return THREE;
+        }
+        throw UnexpectedFailureException.with("Unexpected id $ found", id);
+    }
     
 }
 
@@ -412,6 +445,30 @@ public class ConverterTest extends CustomTest {
         final @Nonnull TestSelectionResult testSelectionResult = new TestSelectionResult(testQueue);
         final @Nonnull SimpleEnum recoveredObject = SimpleEnumConverter.INSTANCE.recover(testSelectionResult);
         assertEquals(SimpleEnum.COMET, recoveredObject);
+    }
+    
+    @Test
+    public void testFieldsOfEnumWithRecoverMethod() {
+        final @Nonnull TestDeclaration testDeclaration = new TestDeclaration();
+        EnumWithRecoverMethodConverter.INSTANCE.declare(testDeclaration);
+        assertEquals(CustomField.with(INTEGER32, "id", ImmutableList.withElements()), testDeclaration.collectedFields.get(0));
+    }
+
+    @Test
+    public void testValueCollectionOfEnumWithRecoverMethod() {
+        final @Nonnull TestValueCollector testValueCollector = new TestValueCollector();
+        EnumWithRecoverMethodConverter.INSTANCE.convert(EnumWithRecoverMethod.ONE, testValueCollector);
+        assertEquals(1, testValueCollector.collectedValues.size());
+        assertEquals(Pair.of(1, int.class), testValueCollector.collectedValues.get(0));
+    }
+
+    @Test
+    public void testSelectionResultOfEnumWithRecoverMethod() {
+        final Queue<@Nonnull Object> testQueue = new LinkedList<>();
+        testQueue.add(3);
+        final @Nonnull TestSelectionResult testSelectionResult = new TestSelectionResult(testQueue);
+        final @Nonnull EnumWithRecoverMethod recoveredObject = EnumWithRecoverMethodConverter.INSTANCE.recover(testSelectionResult);
+        assertEquals(EnumWithRecoverMethod.THREE, recoveredObject);
     }
     
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
@@ -11,9 +12,6 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.collaboration.annotations.TODO;
-import net.digitalid.utility.collaboration.enumerations.Author;
-import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
@@ -69,17 +67,6 @@ public abstract class ExecutableInformation extends ElementInformationImplementa
         final @Nonnull List<MethodParameterInformation> parameters = new ArrayList<>(getElement().getParameters().size());
         for (@Nonnull VariableElement variableElement : getElement().getParameters()) {
             parameters.add(new MethodParameterInformation(variableElement, getContainingType()));
-        }
-        this.parameters = FiniteIterable.of(parameters);
-    }
-    
-    @TODO(task = "Remove the code duplication of the two constructors by making the field information nullable and calling this constructor from the other.", date = "2016-05-16", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.LOW)
-    protected ExecutableInformation(@Nonnull Element element, @Nonnull DeclaredType containingType, @Nonnull FiniteIterable<@Nonnull FieldInformation> fieldInformation) {
-        super(element, StaticProcessingEnvironment.getTypeUtils().asMemberOf(containingType, element), containingType);
-        
-        final @Nonnull List<MethodParameterInformation> parameters = new ArrayList<>(getElement().getParameters().size());
-        for (@Nonnull VariableElement variableElement : getElement().getParameters()) {
-            parameters.add(new MethodParameterInformation(variableElement, getContainingType(), fieldInformation));
         }
         this.parameters = FiniteIterable.of(parameters);
     }

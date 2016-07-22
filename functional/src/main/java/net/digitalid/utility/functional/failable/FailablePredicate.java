@@ -85,20 +85,6 @@ public interface FailablePredicate<T, X extends Exception> {
      * Returns the conjunction of the given predicates.
      */
     @Pure
-    @SafeVarargs
-    public static <T, X extends Exception> @Nonnull FailablePredicate<T, X> and(@Nonnull @NonNullableElements FailablePredicate<? super T, ? extends X>... predicates) {
-        return object -> {
-            for (@Nonnull FailablePredicate<? super T, ? extends X> predicate : predicates) {
-                if (!predicate.evaluate(object)) { return false; }
-            }
-            return true;
-        };
-    }
-    
-    /**
-     * Returns the conjunction of the given predicates.
-     */
-    @Pure
     public static <T, X extends Exception> @Nonnull FailablePredicate<T, X> and(@Nonnull FiniteIterable<@Nonnull ? extends FailablePredicate<? super T, ? extends X>> predicates) {
         return object -> {
             for (@Nonnull FailablePredicate<? super T, ? extends X> predicate : predicates) {
@@ -183,7 +169,7 @@ public interface FailablePredicate<T, X extends Exception> {
      */
     @Pure
     public default @Nonnull FailableUnaryFunction<T, @Nonnull Boolean, X> asFunction() {
-        return object -> evaluate(object);
+        return this::evaluate;
     }
     
     /* -------------------------------------------------- Null Handling -------------------------------------------------- */

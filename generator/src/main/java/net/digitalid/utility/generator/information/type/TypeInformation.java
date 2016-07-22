@@ -6,19 +6,24 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeVariable;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.state.Unmodifiable;
+import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.collaboration.annotations.TODO;
 import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.ConverterGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
+import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedDerivedFieldInformation;
@@ -30,6 +35,7 @@ import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
+import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.generation.Derive;
 import net.digitalid.utility.validation.annotations.size.MinSize;
@@ -46,6 +52,14 @@ import net.digitalid.utility.validation.processing.AnnotationHandlerUtility;
 @Immutable
 @TODO(task = "The type validators are never loaded, which means their usage is never checked.", date = "2016-05-16", author = Author.KASPAR_ETTER)
 public abstract class TypeInformation extends ElementInformationImplementation {
+    
+    /* -------------------------------------------------- Recover Method -------------------------------------------------- */
+    
+    /**
+     * Returns the recover method, if one exists.
+     */
+    @Pure
+    public abstract @Nullable MethodInformation getRecoverMethod();
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
@@ -200,6 +214,41 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns a map of indexed abstract setters.
      */
     public final @Unmodifiable @Nonnull Map<@Nonnull String, @Nonnull MethodInformation> abstractSetters;
+    
+    /* -------------------------------------------------- Instance Code -------------------------------------------------- */
+    
+    /**
+     * Returns a string that can be used in generated code to instantiate this type.
+     */
+    public @Nonnull String getInstantiationCode(boolean useBuilderIfAvailable, boolean useSubclassIfAvailable, boolean useRecoverMethodIfAvailable) {
+        // TODO: add a "getCreationCode" method to type information. Provide it with annotations that should be considered (GenerateBuilder, GenerateSubclass). 
+        // TODO: The expected result is:
+        // TODO:    - the call to the generated builder, if the GenerateBuilder annotation was provided and is available for the type, 
+        // TODO:    - the call to the recover method, if available, or
+        // TODO:    - the call to the generated subclass constructor, if the GenerateSubclass was provided and is available for the type,
+        // TODO:    - the call to the constructor.
+        if (useBuilderIfAvailable && hasAnnotation(GenerateBuilder.class)) {
+            final @Nonnull StringBuilder assignedParameters = new StringBuilder();
+            for (@Nonnull VariableElementInformation constructorParameter : getConstructorParameters()) {
+                assignedParameters.append(".with").append(Strings.capitalizeFirstLetters(constructorParameter.getName())).append("(").append(constructorParameter.getName()).append(")");
+            }
+            return "return " + getSimpleNameOfGeneratedBuilder() + assignedParameters.append(".build()").toString();
+        } else if (useRecoverMethodIfAvailable && getRecoverMethod() != null) {
+            final @Nonnull MethodInformation recoverMethod = getRecoverMethod();
+            return "return " + getName() + "." + recoverMethod.getName() + getConstructorParameters().map(ElementInformation::getName).join(Brackets.ROUND);
+        } else if (getElement().getKind() == ElementKind.ENUM) {
+            // maybe move to subclass, because that's a special case of EnumInformation
+            return "return " + getName() + ".valueOf(value)";
+        } else {
+            final @Nonnull String nameOfConstructor;
+            if (useSubclassIfAvailable && hasAnnotation(GenerateSubclass.class)) {
+                nameOfConstructor = getSimpleNameOfGeneratedSubclass();
+            } else {
+                nameOfConstructor = getName();
+            }
+            return "return new " + nameOfConstructor + getConstructorParameters().map(ElementInformation::getName).join(Brackets.ROUND);
+        }
+    }
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     

@@ -31,20 +31,6 @@ public interface Predicate<T> extends FailablePredicate<T, RuntimeException> {
      * Returns the conjunction of the given predicates.
      */
     @Pure
-    @SafeVarargs
-    public static <T> @Nonnull Predicate<T> and(@Nonnull @NonNullableElements Predicate<? super T>... predicates) {
-        return object -> {
-            for (@Nonnull Predicate<? super T> predicate : predicates) {
-                if (!predicate.evaluate(object)) { return false; }
-            }
-            return true;
-        };
-    }
-    
-    /**
-     * Returns the conjunction of the given predicates.
-     */
-    @Pure
     public static <T> @Nonnull Predicate<T> and(@Nonnull FiniteIterable<@Nonnull ? extends Predicate<? super T>> predicates) {
         return object -> {
             for (@Nonnull Predicate<? super T> predicate : predicates) {
@@ -114,7 +100,7 @@ public interface Predicate<T> extends FailablePredicate<T, RuntimeException> {
     @Pure
     @Override
     public default @Nonnull UnaryFunction<T, @Nonnull Boolean> asFunction() {
-        return object -> evaluate(object);
+        return this::evaluate;
     }
     
     /* -------------------------------------------------- Null Handling -------------------------------------------------- */

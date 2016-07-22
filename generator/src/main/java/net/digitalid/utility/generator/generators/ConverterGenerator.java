@@ -9,7 +9,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
@@ -30,12 +29,8 @@ import net.digitalid.utility.conversion.converter.types.CustomType;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.GeneratorProcessor;
-import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
-import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
-import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.field.EnumValueInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
-import net.digitalid.utility.generator.information.type.ClassInformation;
 import net.digitalid.utility.generator.information.type.EnumInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
@@ -182,46 +177,15 @@ public class ConverterGenerator extends JavaFileGenerator {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
         beginMethod("public @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(Capturable.class) + " " + typeInformation.getName() + " recover(@" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " " + importIfPossible(SelectionResult.class) + " selectionResult)");
-        final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
-    
-        for (@Nonnull VariableElementInformation constructorParameter : typeInformation.getConstructorParameters()) {
+        final @Nonnull FiniteIterable<FieldInformation> constructorParameters = typeInformation.getRepresentingFieldInformation();
+        for (@Nonnull VariableElementInformation constructorParameter : constructorParameters) {
             if (constructorParameter instanceof EnumValueInformation) {
                 addStatement("final @" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + " value = " + generateSelectionResultCall(constructorParameter.getType()));
             } else {
                 addStatement("final " + importIfPossible(constructorParameter.getType()) + " " + constructorParameter.getName() + " = " + generateSelectionResultCall(constructorParameter.getType()));
             }
         }
-        // TODO: add a "getCreationCode" method to type information. Provide it with annotations that should be considered (GenerateBuilder, GenerateSubclass). 
-        // TODO: The expected result is:
-        // TODO:    - the call to the generated builder, if the GenerateBuilder annotation was provided and is available for the type, 
-        // TODO:    - the call to the generated subclass constructor, if the GenerateSubclass was provided and is available for the type,
-        // TODO:    - the call to the recover method, if available, or
-        // TODO:    - the call to the constructor.
-        if (typeInformation.getElement().getAnnotation(GenerateBuilder.class) != null) {
-            final @Nonnull StringBuilder assignedParameters = new StringBuilder();
-            if (!representingFieldInformation.isEmpty()) {
-                for (@Nonnull VariableElementInformation constructorParameter : typeInformation.getConstructorParameters()) {
-                    assignedParameters.append(".with").append(Strings.capitalizeFirstLetters(constructorParameter.getName())).append("(").append(constructorParameter.getName()).append(")");
-                }
-            }
-            addStatement("return " + typeInformation.getSimpleNameOfGeneratedBuilder() + assignedParameters.append(".build()"));
-        } else if (typeInformation.getElement().getKind() == ElementKind.ENUM) {
-            addStatement("return " + typeInformation.getName() + ".valueOf(value)");
-        } else {
-            final @Nonnull FiniteIterable<VariableElementInformation> constructorParameters = typeInformation.getConstructorParameters();
-            
-            final @Nonnull String nameOfConstructor;
-            if (typeInformation.hasAnnotation(GenerateSubclass.class)) {
-                nameOfConstructor = typeInformation.getSimpleNameOfGeneratedSubclass();
-            } else {
-                if (typeInformation instanceof ClassInformation) {
-                    ClassInformation classInformation = (ClassInformation) typeInformation;
-                    // TODO: get recover method
-                }
-                nameOfConstructor = typeInformation.getName();
-            }
-            addStatement("return new " + nameOfConstructor + constructorParameters.map(ElementInformation::getName).join(Brackets.ROUND));
-        }
+        addStatement(typeInformation.getInstantiationCode(true, true, true));
         endMethod();
     }
     
@@ -262,6 +226,7 @@ public class ConverterGenerator extends JavaFileGenerator {
         final @Nonnull List<@Nonnull String> statements = new ArrayList<>();
         for (@Nonnull FieldInformation representingField : typeInformation.getRepresentingFieldInformation()) {
             final @Nonnull StringBuilder customAnnotations = new StringBuilder();
+            ProcessingLog.information("Representing field: $", representingField);
             final @Nonnull FiniteIterable<@Nonnull AnnotationMirror> annotations = representingField.getAnnotations();
             final @Nonnull String fieldName = representingField.getName();
             // annotations are only collected if it isn't an enum we're processing. Enum values cannot have annotations.

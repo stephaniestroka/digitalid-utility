@@ -20,8 +20,8 @@ public class ConstructorInformation extends ExecutableInformation {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ConstructorInformation(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType, @Nonnull FiniteIterable<@Nonnull FieldInformation> fieldInformation) {
-        super(element, containingType, fieldInformation);
+    protected ConstructorInformation(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType) {
+        super(element, containingType);
         
         Require.that(element.getKind() == ElementKind.CONSTRUCTOR).orThrow("The element $ has to be a constructor.", SourcePosition.of(element));
     }
@@ -32,8 +32,8 @@ public class ConstructorInformation extends ExecutableInformation {
      * @require element.getKind() == ElementKind.CONSTRUCTOR : "The element has to be a constructor.";
      */
     @Pure
-    public static @Nonnull ConstructorInformation of(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType, @Nonnull FiniteIterable<@Nonnull FieldInformation> fieldInformation) {
-        return new ConstructorInformation(element, containingType, fieldInformation);
+    public static @Nonnull ConstructorInformation of(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType) {
+        return new ConstructorInformation(element, containingType);
     }
     
     public @Nonnull String toString() {

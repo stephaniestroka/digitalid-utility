@@ -4,16 +4,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
-import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.generation.Default;
 
 import com.sun.tools.javac.code.Type;
@@ -25,10 +26,10 @@ public class MethodParameterInformation extends ElementInformationImplementation
     
     /* -------------------------------------------------- Matching Field -------------------------------------------------- */
     
-    private final @Nullable FieldInformation matchingFieldInformation;
+    private final @Nullable VariableElement matchingFieldInformation;
     
     @Pure
-    public @Nullable FieldInformation getMatchingField() {
+    public @Nullable VariableElement getMatchingField() {
         return matchingFieldInformation;
     }
     
@@ -38,16 +39,10 @@ public class MethodParameterInformation extends ElementInformationImplementation
         super(element, element.asType(), containingType);
         
         Require.that(element.getKind() == ElementKind.PARAMETER).orThrow("The element $ has to be a parameter.", SourcePosition.of(element));
-        
-        this.matchingFieldInformation = null;
-    }
     
-    protected MethodParameterInformation(@Nonnull Element element, @Nonnull DeclaredType containingType, @Nonnull FiniteIterable<FieldInformation> fieldInformation) {
-        super(element, element.asType(), containingType);
-        
-        Require.that(element.getKind() == ElementKind.PARAMETER).orThrow("The element $ has to be a parameter.", SourcePosition.of(element));
+        final @Nonnull FiniteIterable<@Nonnull VariableElement> fields = ProcessingUtility.getAllFields(ProcessingUtility.getTypeElement(containingType));
     
-        final @Nullable FieldInformation matchingFieldInformation = fieldInformation.findFirst(field -> field.getName().equals(getName()));
+        final @Nullable VariableElement matchingFieldInformation = fields.findFirst(field -> field.getSimpleName().contentEquals(getName()));
         this.matchingFieldInformation = matchingFieldInformation;
     }
     
@@ -63,7 +58,7 @@ public class MethodParameterInformation extends ElementInformationImplementation
     @Pure
     @Override
     public boolean hasDefaultValue() {
-        if (hasAnnotation(Default.class) || matchingFieldInformation != null && matchingFieldInformation.hasAnnotation(Default.class)) {
+        if (hasAnnotation(Default.class) || matchingFieldInformation != null && ProcessingUtility.hasAnnotation(matchingFieldInformation, Default.class)) {
             return true;
         }
         return false;
@@ -76,8 +71,8 @@ public class MethodParameterInformation extends ElementInformationImplementation
         if (hasAnnotation(Default.class)) {
             defaultValue = getAnnotation(Default.class).value();
         } else {
-            if (matchingFieldInformation != null && matchingFieldInformation.hasAnnotation(Default.class)) {
-                defaultValue = matchingFieldInformation.getDefaultValue();
+            if (matchingFieldInformation != null && ProcessingUtility.hasAnnotation(matchingFieldInformation, Default.class)) {
+                defaultValue = ProcessingUtility.getString(ProcessingUtility.getAnnotationValue(matchingFieldInformation, Default.class));
             }
         }
         if (defaultValue == null) {
