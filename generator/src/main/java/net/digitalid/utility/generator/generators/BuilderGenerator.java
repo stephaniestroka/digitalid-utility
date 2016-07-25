@@ -150,7 +150,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         }
         
         addSection("Build");
-    
+        
         @Nonnull final FiniteIterable<@Nonnull ConstructorInformation> constructors = typeInformation.getConstructors();
         if (constructors.size() > 1) {
             throw FailedClassGenerationException.with("Cannot handle multiple constructors in builder.", SourcePosition.of(typeInformation.getElement()));
