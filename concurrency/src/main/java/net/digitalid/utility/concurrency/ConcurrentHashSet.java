@@ -17,6 +17,7 @@ import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.validation.annotations.generation.Default;
 import net.digitalid.utility.validation.annotations.generation.Recover;
@@ -30,7 +31,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * @param <E> the type of the elements of this set.
  */
 @Mutable
-// TODO: @GenerateBuilder
+@GenerateBuilder
 @GenerateSubclass
 public abstract class ConcurrentHashSet<E> extends AbstractSet<E> implements ConcurrentSet<E> {
     
@@ -50,48 +51,12 @@ public abstract class ConcurrentHashSet<E> extends AbstractSet<E> implements Con
     
     @Recover
     protected ConcurrentHashSet(@NonNegative @Default("16") int initialCapacity, @Positive @Default("0.75f") float loadFactor, @Positive @Default("1") int concurrencyLevel) {
-        this.map = ConcurrentHashMap.withInitialCapacityAndLoadFactorAndConcurrencyLevel(initialCapacity, loadFactor, concurrencyLevel);
+        this.map = ConcurrentHashMapBuilder.<E, Boolean>withInitialCapacity(initialCapacity).withLoadFactor(loadFactor).withConcurrencyLevel(concurrencyLevel).build();
         this.set = map.keySet();
     }
     
-    /**
-     * @see ConcurrentHashMap#withInitialCapacityAndLoadFactorAndConcurrencyLevel((@net.digitalid.utility.validation.annotations.math.NonNegative :: int), (@net.digitalid.utility.validation.annotations.math.Positive :: float), (@net.digitalid.utility.validation.annotations.math.Positive :: int))
-     */
-    @Pure
-    @Deprecated // TODO: Remove this method once the builder can be generated.
-    public static @Capturable <E> @Nonnull ConcurrentHashSet<E> withInitialCapacityAndLoadFactorAndConcurrencyLevel(@NonNegative int initialCapacity, @Positive float loadFactor, @Positive int concurrencyLevel) {
-        return new ConcurrentHashSetSubclass<>(initialCapacity, loadFactor, concurrencyLevel);
-    }
-    
-    /**
-     * @see ConcurrentHashMap#withInitialCapacityAndLoadFactor(int, float)
-     */
-    @Pure
-    @Deprecated // TODO: Remove this method once the builder can be generated.
-    public static @Capturable <E> @Nonnull ConcurrentHashSet<E> withInitialCapacityAndLoadFactor(@NonNegative int initialCapacity, @Positive float loadFactor) {
-        return withInitialCapacityAndLoadFactorAndConcurrencyLevel(initialCapacity, loadFactor, 1);
-    }
-    
-    /**
-     * @see ConcurrentHashMap#withInitialCapacity(int)
-     */
-    @Pure
-    @Deprecated // TODO: Remove this method once the builder can be generated.
-    public static @Capturable <E> @Nonnull ConcurrentHashSet<E> withInitialCapacity(@NonNegative int initialCapacity) {
-        return withInitialCapacityAndLoadFactor(initialCapacity, 0.75f);
-    }
-    
-    /**
-     * @see ConcurrentHashMap#withDefaultCapacity()
-     */
-    @Pure
-    @Deprecated // TODO: Remove this method once the builder can be generated.
-    public static @Capturable <E> @Nonnull ConcurrentHashSet<E> withDefaultCapacity() {
-        return withInitialCapacity(16);
-    }
-    
     protected ConcurrentHashSet(@NonCaptured @Unmodified @Nonnull Set<? extends E> set) {
-        this.map = ConcurrentHashMap.withInitialCapacity(set.size());
+        this.map = ConcurrentHashMapBuilder.buildWithInitialCapacity(set.size());
         this.set = map.keySet();
         addAll(set);
     }

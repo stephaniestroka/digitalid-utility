@@ -9,7 +9,7 @@ import net.digitalid.utility.collections.array.ReadOnlyArray;
 import net.digitalid.utility.collections.collection.ReadOnlyCollection;
 import net.digitalid.utility.collections.list.FreezableLinkedList;
 import net.digitalid.utility.collections.list.FreezableList;
-import net.digitalid.utility.collections.map.FreezableLinkedHashMap;
+import net.digitalid.utility.collections.map.FreezableLinkedHashMapBuilder;
 import net.digitalid.utility.collections.map.FreezableMap;
 import net.digitalid.utility.collections.set.FreezableLinkedHashSet;
 import net.digitalid.utility.collections.set.FreezableSet;
@@ -67,7 +67,7 @@ public interface ReadOnlyIterable<E> extends CollectionIterable<E>, ReadOnlyInte
      */
     @Pure
     public default @Capturable <K, X extends Exception> @Nonnull @NonFrozen FreezableMap<K, E> toFreezableMap(@Nonnull FailableUnaryFunction<? super E, ? extends K, ? extends X> function) throws X {
-        final @Nonnull FreezableMap<K, E> result = FreezableLinkedHashMap.withDefaultCapacity();
+        final @Nonnull FreezableMap<K, E> result = FreezableLinkedHashMapBuilder.build();
         for (E element : this) {
             result.put(function.evaluate(element), element);
         }

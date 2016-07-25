@@ -36,7 +36,7 @@ public abstract class VolatileWritableExtensibleProperty<V, R extends ReadOnlySe
     /* -------------------------------------------------- Set -------------------------------------------------- */
     
     @Pure
-    @Default("(F) net.digitalid.utility.collections.set.FreezableLinkedHashSet.withDefaultCapacity()")
+    @Default("(F) net.digitalid.utility.collections.set.FreezableLinkedHashSetBuilder.build()")
     protected abstract @Nonnull @NonFrozen F getSet();
     
     @Pure

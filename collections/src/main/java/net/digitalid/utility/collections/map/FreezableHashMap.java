@@ -51,33 +51,6 @@ public abstract class FreezableHashMap<K, V> extends HashMap<K, V> implements Fr
         super(initialCapacity, loadFactor);
     }
     
-    /**
-     * Returns a new freezable hash map with the given initial capacity and load factor.
-     */
-    @Pure
-    @Deprecated // TODO: Remove this method once the builder can be generated.
-    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableHashMap<K, V> withInitialCapacityAndLoadFactor(@NonNegative int initialCapacity, @Positive float loadFactor) {
-        return new FreezableHashMapSubclass<>(initialCapacity, loadFactor);
-    }
-    
-    /**
-     * Returns a new freezable hash map with the given initial capacity.
-     */
-    @Pure
-    @Deprecated // TODO: Remove this method once the builder can be generated.
-    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableHashMap<K, V> withInitialCapacity(@NonNegative int initialCapacity) {
-        return FreezableHashMap.withInitialCapacityAndLoadFactor(initialCapacity, 0.75f);
-    }
-    
-    /**
-     * Returns a new freezable hash map with the default capacity.
-     */
-    @Pure
-    @Deprecated // TODO: Remove this method once the builder can be generated.
-    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableHashMap<K, V> withDefaultCapacity() {
-        return withInitialCapacity(16);
-    }
-    
     protected FreezableHashMap(@NonCaptured @Unmodified @Nonnull Map<? extends K, ? extends V> map) {
         super(map);
     }

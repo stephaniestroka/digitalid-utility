@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.collections.set.FreezableLinkedHashSet;
+import net.digitalid.utility.collections.set.FreezableLinkedHashSetBuilder;
 import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
@@ -49,7 +49,7 @@ public abstract class Property<V, O extends Property.Observer<V>> extends RootCl
      */
     @Impure
     public boolean register(@Nonnull O observer) {
-        if (observers == null) { observers = FreezableLinkedHashSet.withInitialCapacity(1); }
+        if (observers == null) { observers = FreezableLinkedHashSetBuilder.buildWithInitialCapacity(1); }
         return observers.add(observer);
     }
     
@@ -84,7 +84,7 @@ public abstract class Property<V, O extends Property.Observer<V>> extends RootCl
      */
     @Pure
     protected @Nonnull @NonFrozen ReadOnlySet<O> getObservers() {
-        if (observers == null) { observers = FreezableLinkedHashSet.withInitialCapacity(1); }
+        if (observers == null) { observers = FreezableLinkedHashSetBuilder.buildWithInitialCapacity(1); }
         return observers;
     }
     

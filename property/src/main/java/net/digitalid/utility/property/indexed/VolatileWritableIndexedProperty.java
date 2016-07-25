@@ -40,7 +40,7 @@ public abstract class VolatileWritableIndexedProperty<K, V, R extends ReadOnlyMa
     /* -------------------------------------------------- Map -------------------------------------------------- */
     
     @Pure
-    @Default("(F) net.digitalid.utility.collections.map.FreezableLinkedHashMap.withDefaultCapacity()")
+    @Default("(F) net.digitalid.utility.collections.map.FreezableLinkedHashMapBuilder.build()")
     protected abstract @Nonnull @NonFrozen F getMap();
     
     @Pure
