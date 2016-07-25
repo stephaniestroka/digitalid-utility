@@ -29,6 +29,8 @@ import net.digitalid.utility.freezable.annotations.NonFrozenRecipient;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.immutable.entry.ReadOnlyEntrySet;
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
+import net.digitalid.utility.validation.annotations.generation.Default;
+import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.method.Chainable;
@@ -40,6 +42,7 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * It is recommended to use only {@link Immutable} types for the keys
  * and {@link ReadOnly} or {@link Immutable} types for the values.
  */
+// TODO: @GenerateBuilder
 @GenerateSubclass
 @Freezable(ReadOnlyMap.class)
 public abstract class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> implements FreezableMap<K, V> {
@@ -55,40 +58,45 @@ public abstract class FreezableLinkedHashMap<K, V> extends LinkedHashMap<K, V> i
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected FreezableLinkedHashMap(@NonNegative int initialCapacity, @Positive float loadFactor, boolean accessOrder) {
+    @Recover
+    protected FreezableLinkedHashMap(@NonNegative @Default("16") int initialCapacity, @Positive @Default("0.75f") float loadFactor, @Default("false") boolean accessOrder) {
         super(initialCapacity, loadFactor, accessOrder);
     }
-
+    
     /**
      * Returns a new freezable linked hash map with the given initial capacity, load factor and access order.
      */
     @Pure
-    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> withCapacityAndFactorAndOrder(@NonNegative int initialCapacity, @Positive float loadFactor, boolean accessOrder) {
+    @Deprecated // TODO: Remove this method once the builder can be generated.
+    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> withInitialCapacityAndLoadFactorAndAccessOrder(@NonNegative int initialCapacity, @Positive float loadFactor, boolean accessOrder) {
         return new FreezableLinkedHashMapSubclass<>(initialCapacity, loadFactor, accessOrder);
     }
-
+    
     /**
      * Returns a new freezable linked hash map with the given initial capacity and load factor.
      */
     @Pure
-    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> withCapacityAndFactor(@NonNegative int initialCapacity, @Positive float loadFactor) {
-        return FreezableLinkedHashMap.withCapacityAndFactorAndOrder(initialCapacity, loadFactor, false);
+    @Deprecated // TODO: Remove this method once the builder can be generated.
+    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> withInitialCapacityAndLoadFactor(@NonNegative int initialCapacity, @Positive float loadFactor) {
+        return FreezableLinkedHashMap.withInitialCapacityAndLoadFactorAndAccessOrder(initialCapacity, loadFactor, false);
     }
     
     /**
      * Returns a new freezable linked hash map with the given initial capacity.
      */
     @Pure
-    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> withCapacity(@NonNegative int initialCapacity) {
-        return FreezableLinkedHashMap.withCapacityAndFactor(initialCapacity, 0.75f);
+    @Deprecated // TODO: Remove this method once the builder can be generated.
+    public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> withInitialCapacity(@NonNegative int initialCapacity) {
+        return FreezableLinkedHashMap.withInitialCapacityAndLoadFactor(initialCapacity, 0.75f);
     }
     
     /**
      * Returns a new freezable linked hash map with the default capacity.
      */
     @Pure
+    @Deprecated // TODO: Remove this method once the builder can be generated.
     public static @Capturable <K, V> @Nonnull @NonFrozen FreezableLinkedHashMap<K, V> withDefaultCapacity() {
-        return withCapacity(16);
+        return withInitialCapacity(16);
     }
     
     protected FreezableLinkedHashMap(@NonCaptured @Unmodified @Nonnull Map<? extends K, ? extends V> map) {

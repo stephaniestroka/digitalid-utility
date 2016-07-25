@@ -70,7 +70,7 @@ public abstract class FreezableArrayList<E> extends ArrayList<E> implements Free
      * Returns a new freezable array list with the given initial capacity.
      */
     @Pure
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableArrayList<E> withCapacity(@NonNegative int initialCapacity) {
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableArrayList<E> withInitialCapacity(@NonNegative int initialCapacity) {
         return new FreezableArrayListSubclass<>(initialCapacity);
     }
     

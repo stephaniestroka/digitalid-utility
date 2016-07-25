@@ -25,6 +25,8 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
+import net.digitalid.utility.validation.annotations.generation.Default;
+import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -34,13 +36,15 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * This class extends the {@link LinkedHashSet} and makes it {@link FreezableInterface freezable}.
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
  */
+// TODO: @GenerateBuilder
 @GenerateSubclass
 @Freezable(ReadOnlySet.class)
 public abstract class FreezableLinkedHashSet<E> extends LinkedHashSet<E> implements FreezableSet<E> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected FreezableLinkedHashSet(@NonNegative int initialCapacity, @Positive float loadFactor) {
+    @Recover
+    protected FreezableLinkedHashSet(@NonNegative @Default("16") int initialCapacity, @Positive @Default("0.75f") float loadFactor) {
         super(initialCapacity, loadFactor);
     }
     
@@ -48,7 +52,8 @@ public abstract class FreezableLinkedHashSet<E> extends LinkedHashSet<E> impleme
      * Returns a new freezable linked hash set with the given initial capacity and the given load factor.
      */
     @Pure
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedHashSet<E> withCapacityAndFactor(@NonNegative int initialCapacity, @Positive float loadFactor) {
+    @Deprecated // TODO: Remove this method once the builder can be generated.
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedHashSet<E> withInitialCapacityAndLoadFactor(@NonNegative int initialCapacity, @Positive float loadFactor) {
         return new FreezableLinkedHashSetSubclass<>(initialCapacity, loadFactor);
     }
     
@@ -56,16 +61,18 @@ public abstract class FreezableLinkedHashSet<E> extends LinkedHashSet<E> impleme
      * Returns a new freezable linked hash set with the given initial capacity.
      */
     @Pure
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedHashSet<E> withCapacity(@NonNegative int initialCapacity) {
-        return withCapacityAndFactor(initialCapacity, 0.75f);
+    @Deprecated // TODO: Remove this method once the builder can be generated.
+    public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedHashSet<E> withInitialCapacity(@NonNegative int initialCapacity) {
+        return withInitialCapacityAndLoadFactor(initialCapacity, 0.75f);
     }
     
     /**
      * Returns a new freezable linked hash set with .
      */
     @Pure
+    @Deprecated // TODO: Remove this method once the builder can be generated.
     public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedHashSet<E> withDefaultCapacity() {
-        return withCapacity(16);
+        return withInitialCapacity(16);
     }
     
     /**

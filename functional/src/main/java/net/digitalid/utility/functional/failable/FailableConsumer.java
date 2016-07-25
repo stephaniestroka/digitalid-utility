@@ -1,7 +1,5 @@
 package net.digitalid.utility.functional.failable;
 
-
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 

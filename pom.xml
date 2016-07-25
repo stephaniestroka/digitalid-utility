@@ -55,7 +55,6 @@
         <module>testing</module>
         <module>system</module>
         <module>threading</module>
-        <module>concurrency</module>
         <module>casting</module>
         <module>rootclass</module>
         <module>freezable</module>
@@ -64,6 +63,7 @@
         <module>initializer</module>
         <module>conversion</module>
         <module>generator</module>
+        <module>concurrency</module>
         <module>collections</module>
         <module>group</module>
         <module>math</module>

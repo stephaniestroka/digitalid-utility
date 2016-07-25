@@ -14,6 +14,9 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
+import net.digitalid.utility.validation.annotations.generation.Default;
+import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.Mutable;
@@ -25,14 +28,14 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * @param <V> the type of the values of this map.
  */
 @Mutable
-public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHashMap<K, V> implements ConcurrentMap<K, V> {
+// TODO: @GenerateBuilder
+@GenerateSubclass
+public abstract class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHashMap<K, V> implements ConcurrentMap<K, V> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    /**
-     * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(int, float, int)
-     */
-    protected ConcurrentHashMap(@NonNegative int initialCapacity, @Positive float loadFactor, @Positive int concurrencyLevel) {
+    @Recover
+    protected ConcurrentHashMap(@NonNegative @Default("16") int initialCapacity, @Positive @Default("0.75f") float loadFactor, @Positive @Default("1") int concurrencyLevel) {
         super(initialCapacity, loadFactor, concurrencyLevel);
     }
     
@@ -40,55 +43,48 @@ public class ConcurrentHashMap<K, V> extends java.util.concurrent.ConcurrentHash
      * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(int, float, int)
      */
     @Pure
-    public static @Capturable <K, V> @Nonnull ConcurrentHashMap<K, V> get(@NonNegative int initialCapacity, @Positive float loadFactor, @Positive int concurrencyLevel) {
-        return new ConcurrentHashMap<>(initialCapacity, loadFactor, concurrencyLevel);
+    @Deprecated // TODO: Remove this method once the builder can be generated.
+    public static @Capturable <K, V> @Nonnull ConcurrentHashMap<K, V> withInitialCapacityAndLoadFactorAndConcurrencyLevel(@NonNegative int initialCapacity, @Positive float loadFactor, @Positive int concurrencyLevel) {
+        return new ConcurrentHashMapSubclass<>(initialCapacity, loadFactor, concurrencyLevel);
     }
     
     /**
-     * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(int, float)
+     * Returns a new concurrent hash map with the given initial capacity and load factor.
      */
     @Pure
-    public static @Capturable <K, V> @Nonnull ConcurrentHashMap<K, V> get(@NonNegative int initialCapacity, @Positive float loadFactor) {
-        return get(initialCapacity, loadFactor, 16);
+    @Deprecated // TODO: Remove this method once the builder can be generated.
+    public static @Capturable <K, V> @Nonnull ConcurrentHashMap<K, V> withInitialCapacityAndLoadFactor(@NonNegative int initialCapacity, @Positive float loadFactor) {
+        return withInitialCapacityAndLoadFactorAndConcurrencyLevel(initialCapacity, loadFactor, 1);
     }
     
     /**
-     * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(int)
+     * Returns a new concurrent hash map with the given initial capacity.
      */
     @Pure
-    public static @Capturable <K, V> @Nonnull ConcurrentHashMap<K, V> get(@NonNegative int initialCapacity) {
-        return get(initialCapacity, 0.75f);
+    @Deprecated // TODO: Remove this method once the builder can be generated.
+    public static @Capturable <K, V> @Nonnull ConcurrentHashMap<K, V> withInitialCapacity(@NonNegative int initialCapacity) {
+        return withInitialCapacityAndLoadFactor(initialCapacity, 0.75f);
     }
     
     /**
-     * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap()
+     * Returns a new concurrent hash map with the default capacity.
      */
     @Pure
-    public static @Capturable <K, V> @Nonnull ConcurrentHashMap<K, V> get() {
-        return get(16);
+    @Deprecated // TODO: Remove this method once the builder can be generated.
+    public static @Capturable <K, V> @Nonnull ConcurrentHashMap<K, V> withDefaultCapacity() {
+        return withInitialCapacity(16);
     }
     
-    /**
-     * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(java.util.Map)
-     */
     protected ConcurrentHashMap(@NonCaptured @Unmodified @Nonnull Map<? extends K, ? extends V> map) {
         super(map);
     }
     
     /**
-     * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(java.util.Map)
+     * Returns a new concurrent hash map with the mappings of the given map or null if the given map is null.
      */
     @Pure
-    public static @Capturable <K, V> @Nonnull ConcurrentHashMap<K, V> getNonNullable(@NonCaptured @Unmodified @Nonnull Map<? extends K, ? extends V> map) {
-        return new ConcurrentHashMap<>(map);
-    }
-    
-    /**
-     * @see java.util.concurrent.ConcurrentHashMap#ConcurrentHashMap(java.util.Map)
-     */
-    @Pure
-    public static @Capturable <K, V> @Nullable ConcurrentHashMap<K, V> getNullable(@NonCaptured @Unmodified @Nullable Map<? extends K, ? extends V> map) {
-        return map == null ? null : getNonNullable(map);
+    public static @Capturable <K, V> ConcurrentHashMap<K, V> withMappingsOf(@NonCaptured @Unmodified Map<? extends K, ? extends V> map) {
+        return map == null ? null : new ConcurrentHashMapSubclass<>(map);
     }
     
     /* -------------------------------------------------- ConcurrentMap -------------------------------------------------- */

@@ -49,7 +49,7 @@ public abstract class Property<V, O extends Property.Observer<V>> extends RootCl
      */
     @Impure
     public boolean register(@Nonnull O observer) {
-        if (observers == null) { observers = FreezableLinkedHashSet.withCapacity(1); }
+        if (observers == null) { observers = FreezableLinkedHashSet.withInitialCapacity(1); }
         return observers.add(observer);
     }
     
@@ -84,7 +84,7 @@ public abstract class Property<V, O extends Property.Observer<V>> extends RootCl
      */
     @Pure
     protected @Nonnull @NonFrozen ReadOnlySet<O> getObservers() {
-        if (observers == null) { observers = FreezableLinkedHashSet.withCapacity(1); }
+        if (observers == null) { observers = FreezableLinkedHashSet.withInitialCapacity(1); }
         return observers;
     }
     

@@ -5,7 +5,6 @@ import java.util.NoSuchElementException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 
 import net.digitalid.utility.annotations.method.Pure;
@@ -60,7 +59,7 @@ public abstract class InstantiableTypeInformation extends TypeInformation {
                 try {
                     constructorInformation = constructors.findUnique(constructor -> constructor.hasAnnotation(Recover.class));
                 } catch (NoSuchElementException e) {
-                    throw FailedClassGenerationException.with("Multiple constructors found, but non is marked with @Recover.", SourcePosition.of(getElement()));
+                    throw FailedClassGenerationException.with("Multiple constructors found, but none is marked with @Recover.", SourcePosition.of(getElement()));
                 }
             } else {
                 constructorInformation = constructors.getFirst();

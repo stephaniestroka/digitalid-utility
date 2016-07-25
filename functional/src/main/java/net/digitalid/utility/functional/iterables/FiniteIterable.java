@@ -66,11 +66,11 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
-     * Wraps the given collection as a finite iterable.
+     * Wraps the given collection as a finite iterable or returns null if the collection is null.
      */
     @Pure
-    public static <E> @Nonnull FiniteIterable<E> of(@Referenced @Unmodified @Nonnull Collection<? extends E> collection) {
-        return new CollectionBasedIterable<>(collection);
+    public static <E> FiniteIterable<E> of(@Referenced @Unmodified Collection<? extends E> collection) {
+        return collection == null ? null : new CollectionBasedIterable<>(collection);
     }
     
     /**
