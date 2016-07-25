@@ -31,15 +31,17 @@ import net.digitalid.utility.generator.information.field.GeneratedRepresentingFi
 import net.digitalid.utility.generator.information.filter.InformationFilter;
 import net.digitalid.utility.generator.information.filter.MethodSignatureMatcher;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
+import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
+import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.generation.Derive;
+import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.size.MinSize;
-import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.processing.AnnotationHandlerUtility;
 
@@ -52,6 +54,32 @@ import net.digitalid.utility.validation.processing.AnnotationHandlerUtility;
 @Immutable
 @TODO(task = "The type validators are never loaded, which means their usage is never checked.", date = "2016-05-16", author = Author.KASPAR_ETTER)
 public abstract class TypeInformation extends ElementInformationImplementation {
+    
+    /* -------------------------------------------------- Recover Method or Constructor -------------------------------------------------- */
+    
+    public @Nullable ExecutableInformation getRecoverConstructorOrMethod() {
+        if (getRecoverMethod() != null) {
+            return getRecoverMethod();
+        } else {
+            @Nullable ConstructorInformation recoverConstructor = null;
+            if (getConstructors().size() > 1) {
+                for (@Nonnull ConstructorInformation constructorInformation : getConstructors()) {
+                    if (constructorInformation.hasAnnotation(Recover.class)) {
+                        if (recoverConstructor != null) {
+                            Log.error("Only one recover constructor allowed, but multiple @Recover annotations found in type $", getName());
+                            return null;
+                        }
+                        recoverConstructor = constructorInformation;
+                    }
+                }
+            }
+            if (recoverConstructor == null) {
+                Log.error("Found multiple constructors, but none is annotated with @Recover in type $", getName());
+                return null;
+            }
+            return recoverConstructor;
+        }
+    }
     
     /* -------------------------------------------------- Recover Method -------------------------------------------------- */
     

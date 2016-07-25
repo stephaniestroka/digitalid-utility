@@ -5,6 +5,8 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.testing.CustomTest;
+import net.digitalid.utility.validation.annotations.generation.Default;
+import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 import org.junit.Test;
@@ -39,6 +41,23 @@ abstract class SubclassedClass {
     
 }
 
+@Immutable
+@GenerateSubclass
+abstract class ClassWithMultipleConstructors {
+    
+    final int number;
+    
+    ClassWithMultipleConstructors() {
+        number = 0;
+    }
+    
+    @Recover
+    ClassWithMultipleConstructors(@Default("1") int number) {
+        this.number = number;
+    }
+    
+}
+
 public class SubclassTest extends CustomTest {
     
     @Test
@@ -55,6 +74,12 @@ public class SubclassTest extends CustomTest {
         assertEquals(true, object.isFlag());
         assertEquals(1234, object.getSize());
         assertEquals("hi", object.getText());
+    }
+    
+    @Test
+    public void testClassWithMultipleConstructors() {
+        final @Nonnull ClassWithMultipleConstructorsSubclass object = new ClassWithMultipleConstructorsSubclass(2);
+        assertEquals(2, object.number);
     }
     
 }

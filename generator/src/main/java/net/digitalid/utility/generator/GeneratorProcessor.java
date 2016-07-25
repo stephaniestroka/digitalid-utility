@@ -109,8 +109,8 @@ public class GeneratorProcessor extends CustomProcessor {
             }
             return true;
         } catch (FailedClassGenerationException e) {
-            Log.information("The compilation failed due to the following problem:", e);
-            ProcessingLog.information("Type $ is NOT generatable: ", e.getSourcePosition(), typeInformation == null ? typeElement : typeInformation, e.getMessage());
+            Log.error("The compilation failed due to the following problem:", e);
+            ProcessingLog.error("Type $ is NOT generatable: ", e.getSourcePosition(), typeInformation == null ? typeElement : typeInformation, e.getMessage());
         }
         return false;
     }

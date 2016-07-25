@@ -9,12 +9,14 @@ import javax.lang.model.type.DeclaredType;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.ConverterGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.filter.InformationFilter;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
+import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
@@ -35,6 +37,7 @@ public class InterfaceInformation extends TypeInformation {
      */
     private final @Nullable MethodInformation recoverMethod;
     
+    @Pure
     @Override
     public @Nullable MethodInformation getRecoverMethod() {
         return recoverMethod;

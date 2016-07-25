@@ -12,14 +12,12 @@ import javax.lang.model.type.TypeVariable;
 
 import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.ElementInformation;
-import net.digitalid.utility.generator.information.method.ConstructorInformation;
+import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
-import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -151,27 +149,24 @@ public class BuilderGenerator extends JavaFileGenerator {
         
         addSection("Build");
     
-        @Nonnull final FiniteIterable<@Nonnull ConstructorInformation> constructors = typeInformation.getConstructors();
-        if (constructors.size() > 1) {
-            throw FailedClassGenerationException.with("Cannot handle multiple constructors in builder.", SourcePosition.of(typeInformation.getElement()));
-        }
-        @Nonnull Set<@Nonnull TypeMirror> throwTypes = new HashSet<>();
-        for (@Nonnull ConstructorInformation constructorInformation : constructors) {
-            if (constructorInformation.throwsExceptions()) {
-                throwTypes.addAll(constructorInformation.getElement().getThrownTypes());
-            }
+        final @Nullable ExecutableInformation constructorOrRecoverMethod = typeInformation.getRecoverConstructorOrMethod();
+        final @Nonnull Set<@Nonnull TypeMirror> throwTypes = new HashSet<>();
+        if (constructorOrRecoverMethod != null && constructorOrRecoverMethod.throwsExceptions()) {
+            throwTypes.addAll(constructorOrRecoverMethod.getElement().getThrownTypes());
         }
         beginMethod("public " + typeInformation.getName() + " build()" + (throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()));
         
         final @Nonnull FiniteIterable<VariableElementInformation> constructorParameters = typeInformation.getConstructorParameters();
         
-        final @Nonnull String nameOfConstructor;
-        if (typeInformation.hasAnnotation(GenerateSubclass.class)) {
-            nameOfConstructor = typeInformation.getSimpleNameOfGeneratedSubclass();
-        } else {
-            nameOfConstructor = typeInformation.getName();
-        }
-        addStatement("return new " + nameOfConstructor + constructorParameters.map(ElementInformation::getName).join(Brackets.ROUND));
+        // TODO: remove
+//        final @Nonnull String nameOfConstructor;
+//        if (typeInformation.hasAnnotation(GenerateSubclass.class)) {
+//            nameOfConstructor = typeInformation.getSimpleNameOfGeneratedSubclass();
+//        } else {
+//            nameOfConstructor = typeInformation.getName();
+//        }
+//        addStatement("return new " + nameOfConstructor + constructorParameters.map(ElementInformation::getName).join(Brackets.ROUND));
+        addStatement(typeInformation.getInstantiationCode(false, true, true));
         
         endMethod();
         

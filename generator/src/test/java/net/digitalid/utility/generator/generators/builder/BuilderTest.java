@@ -6,6 +6,8 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.testing.CustomTest;
+import net.digitalid.utility.validation.annotations.generation.Default;
+import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 import org.junit.Test;
@@ -64,6 +66,24 @@ class MixedFields extends AbstractFields {
     
 }
 
+@Immutable
+@GenerateBuilder
+class ClassWithMultipleConstructors {
+    
+    final int number;
+    
+    ClassWithMultipleConstructors() {
+        number = 0;
+    }
+    
+    @Recover
+    ClassWithMultipleConstructors(@Default("1") int number) {
+        this.number = number;
+    }
+    
+}
+
+
 public class BuilderTest extends CustomTest {
     
     @Pure
@@ -89,6 +109,11 @@ public class BuilderTest extends CustomTest {
     public void testMixedFields() {
         testFields(MixedFieldsBuilder.withSecond("beta").build(), null, "beta");
         testFields(MixedFieldsBuilder.withSecond("beta").withFirst("alpha").build(), "alpha", "beta");
+    }
+    
+    @Test
+    public void testClassWithMultipleConstructors() {
+        
     }
     
 }
