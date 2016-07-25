@@ -26,6 +26,7 @@ import net.digitalid.utility.generator.information.field.DirectlyAccessibleDecla
 import net.digitalid.utility.generator.information.field.NonAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
+import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.string.Strings;
@@ -104,7 +105,13 @@ public class InformationFilter {
         final @Nullable MethodInformation methodInformation = methodsOfType.findFirst(MethodSignatureMatcher.of(nameRegex));
         if (methodInformation != null) {
             @Nullable TypeMirror returnType = methodInformation.getReturnType();
-            return returnType.equals(fieldType);
+            if (StaticProcessingEnvironment.getTypeUtils().isAssignable(returnType, fieldType)) {
+                ProcessingLog.information("Found getter for field $: $", fieldName, methodInformation);
+                return true;
+            } else {
+                ProcessingLog.information("Found method that looks like a getter, but return type of method is: $, type of field: $ ", returnType, fieldType);
+                return false;
+            }
         }
         return methodInformation != null;
     }

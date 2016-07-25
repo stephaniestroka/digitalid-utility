@@ -14,6 +14,7 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.functional.iterables.CollectionIterable;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
@@ -125,6 +126,13 @@ public class ReadOnlyEntrySet<K, V> implements Set<Map.@Nonnull Entry<K, V>>, Co
     @Override
     public final void clear() {
         throw new UnsupportedOperationException();
+    }
+    
+    /* -------------------------------------------------- To String -------------------------------------------------- */
+    
+    @Override
+    public String toString() {
+        return join(Brackets.CURLY);
     }
     
 }
