@@ -80,7 +80,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
         beginInterface("public interface " + interfaceName + importWithBounds(typeInformation.getTypeArguments()));
         addAnnotation(Chainable.class);
-        addMethodDeclaration("public @" + importIfPossible(Nonnull.class) + " " + nextInterface + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")");
+        addMethodDeclaration("public @" + importIfPossible(Nonnull.class) + " " + nextInterface + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")");
         endInterface();
         return interfaceName;
     }
@@ -93,12 +93,16 @@ public class BuilderGenerator extends JavaFileGenerator {
         return typeInformation.getConstructorParameters().filter(VariableElementInformation::isMandatory);
     }
     
+    private String getSetterForFieldStatementString(@Nonnull ElementInformation field, @Nonnull String returnType, @Nonnull String methodName) {
+        return "public static " + importWithBounds(typeInformation.getTypeArguments()) + returnType + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")";
+    }
+    
     /**
      * Declares and implements the setter for the given field with the given return type and the given returned instance.
      */
     private void addSetterForField(@Nonnull ElementInformation field, @Nonnull String returnType, @Nonnull String returnedInstance) {
         final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
-        beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + returnType + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")");
+        beginMethod(getSetterForFieldStatementString(field, returnType, methodName));
         addStatement("return new " + returnedInstance + "()." + methodName + "(" + field.getName() + ")");
         endMethod();
     }
@@ -141,7 +145,7 @@ public class BuilderGenerator extends JavaFileGenerator {
                 addAnnotation(Override.class);
             }
             addAnnotation(Chainable.class);
-            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + nameOfBuilder + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")");
+            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + nameOfBuilder + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")");
             addStatement("this." + field.getName() + " = " + field.getName());
             addStatement("return this");
             endMethod();
@@ -154,7 +158,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         if (constructorOrRecoverMethod != null && constructorOrRecoverMethod.throwsExceptions()) {
             throwTypes.addAll(constructorOrRecoverMethod.getElement().getThrownTypes());
         }
-        beginMethod("public " + typeInformation.getName() + " build()" + (throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()));
+        beginMethod("public " + typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " build()" + (throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()));
         
         final @Nonnull FiniteIterable<VariableElementInformation> constructorParameters = typeInformation.getConstructorParameters();
         
@@ -196,9 +200,16 @@ public class BuilderGenerator extends JavaFileGenerator {
             for (@Nonnull ElementInformation optionalField : typeInformation.getConstructorParameters()) {
                 addSetterForField(optionalField, nameOfBuilder, nameOfBuilder);
             }
-            beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + typeInformation.getName() + " build()");
+            beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + " " + typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " build()");
             addStatement("return new " + nameOfBuilder + "().build()");
             endMethod();
+    
+            for (@Nonnull ElementInformation optionalField : typeInformation.getConstructorParameters()) {
+                final @Nonnull String methodName = Strings.capitalizeFirstLetters(optionalField.getName());
+                beginMethod(getSetterForFieldStatementString(optionalField, typeInformation.getName(), "buildWith" + methodName));
+                addStatement("return new " + nameOfBuilder + "().with" + methodName + Brackets.inRound(optionalField.getName()) + ".build()");
+                endMethod();
+            }
         }
     }
     

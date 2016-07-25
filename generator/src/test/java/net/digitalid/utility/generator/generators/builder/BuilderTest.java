@@ -83,6 +83,31 @@ class ClassWithMultipleConstructors {
     
 }
 
+@Immutable
+@GenerateBuilder
+class ClassWithGenericTypes<K, V> {
+    
+    final K number;
+    
+    @Recover
+    ClassWithGenericTypes(K number) {
+        this.number = number;
+    }
+    
+}
+
+@Immutable
+@GenerateBuilder
+class ClassWithGenericTypesWithBounds<K extends Number> {
+    
+    final K number;
+    
+    @Recover
+    ClassWithGenericTypesWithBounds(K number) {
+        this.number = number;
+    }
+    
+}
 
 public class BuilderTest extends CustomTest {
     
@@ -113,7 +138,11 @@ public class BuilderTest extends CustomTest {
     
     @Test
     public void testClassWithMultipleConstructors() {
-        
+        // TODO: test
     }
     
+    @Test
+    public void testClassWithGenericTypes() {
+        // TODO: test
+    }
 }
