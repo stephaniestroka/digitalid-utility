@@ -4,7 +4,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.CallSuper;
-import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -19,7 +18,7 @@ public abstract class RootClass implements RootInterface {
     /**
      * Initializes this object after the constructors of the subclasses have been executed.
      */
-    @Impure
+    @Pure
     @CallSuper
     protected void initialize() {}
     
