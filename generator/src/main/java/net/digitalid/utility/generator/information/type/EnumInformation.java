@@ -17,7 +17,7 @@ import net.digitalid.utility.generator.information.method.MethodParameterInforma
 /**
  * This type collects the relevant information about an enum for generating a {@link ConverterGenerator converter}.
  */
-public class EnumInformation extends InstantiableTypeInformation {
+public final class EnumInformation extends InstantiableTypeInformation {
     
     /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
     
@@ -27,10 +27,8 @@ public class EnumInformation extends InstantiableTypeInformation {
             // returns the value of the enum
             return FiniteIterable.of(EnumValueInformation.of(getElement()));
         } else {
-            // return the parameters of the recover method
-            final @Nonnull FiniteIterable<@Nonnull VariableElement> variableElements = getRecoverMethod().getParameters().map(MethodParameterInformation::getMatchingField);
-            // Ignoring the warning by IntelliJ. findFirst() can indeed return a null object and therefore the predicate does not always return true. IntelliJ is confused because we are using @Nullable from the bootstrap project in the iterable project and it doesn't map to the @Nullable in the validation project.
-            return getFieldInformation().filter(field -> variableElements.findFirst(variableElement -> variableElement.getSimpleName().contentEquals(field.getName())) != null);
+            // return the fields matching the parameters of the recover method
+            return getRecoverMethod().getParameters().map(MethodParameterInformation::getMatchingField);
         }
     }
     
@@ -41,6 +39,15 @@ public class EnumInformation extends InstantiableTypeInformation {
         return FiniteIterable.of(Collections.emptyList());
     }
     
+    /* -------------------------------------------------- Initialization Marker -------------------------------------------------- */
+    
+    private boolean initialized;
+    
+    @Override
+    public boolean isInitialized() {
+        return initialized;
+    }
+    
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
@@ -48,6 +55,8 @@ public class EnumInformation extends InstantiableTypeInformation {
      */
     protected EnumInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
         super(typeElement, containingType);
+        
+        this.initialized = true;
     }
     
     /**

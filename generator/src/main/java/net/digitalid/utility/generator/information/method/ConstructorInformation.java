@@ -7,10 +7,9 @@ import javax.lang.model.type.DeclaredType;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
-import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.processing.logging.SourcePosition;
 
 /**
@@ -20,8 +19,8 @@ public class ConstructorInformation extends ExecutableInformation {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ConstructorInformation(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType) {
-        super(element, containingType);
+    protected ConstructorInformation(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType, @Nonnull TypeInformation typeInformation) {
+        super(element, containingType, typeInformation);
         
         Require.that(element.getKind() == ElementKind.CONSTRUCTOR).orThrow("The element $ has to be a constructor.", SourcePosition.of(element));
     }
@@ -32,8 +31,8 @@ public class ConstructorInformation extends ExecutableInformation {
      * @require element.getKind() == ElementKind.CONSTRUCTOR : "The element has to be a constructor.";
      */
     @Pure
-    public static @Nonnull ConstructorInformation of(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType) {
-        return new ConstructorInformation(element, containingType);
+    public static @Nonnull ConstructorInformation of(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType, @Nonnull TypeInformation typeInformation) {
+        return new ConstructorInformation(element, containingType, typeInformation);
     }
     
     public @Nonnull String toString() {

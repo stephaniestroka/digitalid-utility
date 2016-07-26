@@ -15,6 +15,7 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.method.ExecutableInformation;
+import net.digitalid.utility.generator.information.type.InstantiableTypeInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
@@ -153,10 +154,12 @@ public class BuilderGenerator extends JavaFileGenerator {
         
         addSection("Build");
     
-        final @Nullable ExecutableInformation constructorOrRecoverMethod = typeInformation.getRecoverConstructorOrMethod();
         final @Nonnull Set<@Nonnull TypeMirror> throwTypes = new HashSet<>();
-        if (constructorOrRecoverMethod != null && constructorOrRecoverMethod.throwsExceptions()) {
-            throwTypes.addAll(constructorOrRecoverMethod.getElement().getThrownTypes());
+        if (typeInformation instanceof InstantiableTypeInformation) {
+            final @Nullable ExecutableInformation constructorOrRecoverMethod = typeInformation.getRecoverConstructorOrMethod();
+            if (constructorOrRecoverMethod != null && constructorOrRecoverMethod.throwsExceptions()) {
+                throwTypes.addAll(constructorOrRecoverMethod.getElement().getThrownTypes());
+            }
         }
         beginMethod("public " + typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " build()" + (throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()));
         

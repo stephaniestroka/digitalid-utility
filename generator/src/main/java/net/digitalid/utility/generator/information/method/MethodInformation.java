@@ -26,7 +26,7 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.annotations.meta.Interceptor;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
-import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
@@ -189,8 +189,8 @@ public class MethodInformation extends ExecutableInformation {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected MethodInformation(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType) {
-        super(element, containingType);
+    protected MethodInformation(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType, @Nonnull TypeInformation typeInformation) {
+        super(element, containingType, typeInformation);
         
         Require.that(element.getKind() == ElementKind.METHOD).orThrow("The element $ has to be a method.", SourcePosition.of(element));
         
@@ -230,8 +230,8 @@ public class MethodInformation extends ExecutableInformation {
      * @require element.getKind() == ElementKind.METHOD : "The element has to be a method.";
      */
     @Pure
-    public static @Nonnull MethodInformation of(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType) {
-        return new MethodInformation(element, containingType);
+    public static @Nonnull MethodInformation of(@Nonnull ExecutableElement element, @Nonnull DeclaredType containingType, @Nonnull TypeInformation typeInformation) {
+        return new MethodInformation(element, containingType, typeInformation);
     }
     
     /* -------------------------------------------------- Modifiers -------------------------------------------------- */

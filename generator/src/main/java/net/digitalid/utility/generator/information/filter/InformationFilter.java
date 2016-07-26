@@ -26,6 +26,7 @@ import net.digitalid.utility.generator.information.field.DirectlyAccessibleDecla
 import net.digitalid.utility.generator.information.field.NonAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
+import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
@@ -40,7 +41,7 @@ public class InformationFilter {
     /**
      * Returns an iterable of method information objects for a given type element and declared type.
      */
-    public static @Unmodifiable @Nonnull FiniteIterable<@Nonnull MethodInformation> getMethodInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
+    public static @Unmodifiable @Nonnull FiniteIterable<@Nonnull MethodInformation> getMethodInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType, @Nonnull TypeInformation typeInformation) {
         final List<? extends Element> allMembers = StaticProcessingEnvironment.getElementUtils().getAllMembers(typeElement);
         final @Nonnull HashMap<String, Integer> abstractMethodEntries = new HashMap<>();
         final @Nonnull Set<String> nonAbstractMethodEntries = new HashSet<>();
@@ -51,7 +52,7 @@ public class InformationFilter {
                 final @Nonnull ExecutableElement executableElement = (ExecutableElement) element;
                 final @Nonnull String methodKey = executableElement.getSimpleName().toString() + FiniteIterable.of(executableElement.getParameters()).map(parameter -> ProcessingUtility.getQualifiedName(parameter.asType())).join(Brackets.ROUND);
                 if (!nonAbstractMethodEntries.contains(methodKey)) {
-                    allMethods.add(MethodInformation.of(executableElement, containingType));
+                    allMethods.add(MethodInformation.of(executableElement, containingType, typeInformation));
                 }
                 if (executableElement.getModifiers().contains(Modifier.ABSTRACT)) {
                     abstractMethodEntries.put(methodKey, allMethods.size() - 1);

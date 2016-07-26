@@ -134,7 +134,7 @@ public abstract class InstantiableTypeInformation extends TypeInformation {
     protected InstantiableTypeInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
         super(typeElement, containingType);
     
-        this.methodInformationIterable = InformationFilter.getMethodInformation(typeElement, containingType);
+        this.methodInformationIterable = InformationFilter.getMethodInformation(typeElement, containingType, this);
         ProcessingLog.debugging("All methods of type $: $", containingType, methodInformationIterable.join());
         
         this.recoverMethod = methodInformationIterable.findFirst(method -> method.hasAnnotation(Recover.class));
@@ -145,7 +145,7 @@ public abstract class InstantiableTypeInformation extends TypeInformation {
         
         this.nonAccessibleDeclaredFields = InformationFilter.getNonAccessibleFieldInformation(typeElement, methodInformationIterable);
     
-        this.constructors = ProcessingUtility.getConstructors(typeElement).map((element) -> (ConstructorInformation.of(element, containingType)));
+        this.constructors = ProcessingUtility.getConstructors(typeElement).map((element) -> (ConstructorInformation.of(element, containingType, this)));
     }
     
 }

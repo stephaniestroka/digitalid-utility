@@ -1,6 +1,7 @@
 package net.digitalid.utility.generator.information.type;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -18,17 +19,15 @@ import net.digitalid.utility.generator.generators.ConverterGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
-import net.digitalid.utility.generator.information.filter.InformationFilter;
 import net.digitalid.utility.generator.information.filter.MethodSignatureMatcher;
-import net.digitalid.utility.generator.information.method.ConstructorInformation;
+import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.method.MethodParameterInformation;
-import net.digitalid.utility.processing.logging.ProcessingLog;
 
 /**
  * This type collects the relevant information about a class for generating a {@link SubclassGenerator subclass}, {@link BuilderGenerator builder} and {@link ConverterGenerator converter}.
  */
-public class ClassInformation extends InstantiableTypeInformation {
+public final class ClassInformation extends InstantiableTypeInformation {
     
     /* -------------------------------------------------- Type-specific Methods -------------------------------------------------- */
     
@@ -79,32 +78,26 @@ public class ClassInformation extends InstantiableTypeInformation {
     /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
     
     /**
-     * Finds and returns a subset of the accessible field information that maps to the parameters of the constructors.
+     * Returns a subset of the accessible field information that maps to the parameters of the constructors.
      */
-    private @Nonnull FiniteIterable<@Nonnull FieldInformation> extractRepresentingFieldInformation() {
+    @Override
+    public @Unmodifiable @Nonnull FiniteIterable<FieldInformation> getRepresentingFieldInformation() {
         final @Nonnull List<FieldInformation> representingFieldInformation = new ArrayList<>();
-        for (@Nonnull ConstructorInformation constructor : getConstructors()) {
-            @Nonnull final FiniteIterable<MethodParameterInformation> parameters = constructor.getParameters();
+        final @Nullable ExecutableInformation recoverConstructorOrMethod = getRecoverConstructorOrMethod();
+        if (recoverConstructorOrMethod != null) {
+            final @Nonnull FiniteIterable<MethodParameterInformation> parameters = recoverConstructorOrMethod.getParameters();
             for (@Nonnull MethodParameterInformation parameter : parameters) {
                 if (parameter.getMatchingField() != null) {
-                    final FieldInformation matchingFieldInformation = getFieldInformation().findFirst(field -> field.getName().equals(parameter.getMatchingField().getSimpleName().toString()));
+                    final FieldInformation matchingFieldInformation = getFieldInformation().findFirst(field -> field.getName().equals(parameter.getMatchingField().getName()));
                     if (matchingFieldInformation.isAccessible() && !representingFieldInformation.contains(parameter.getMatchingField())) {
                         representingFieldInformation.add(matchingFieldInformation);
                     }
                 }
             }
+            // TODO: what if the constructor already declared generated representing fields? In that case we would duplicate the parameters.
+            return FiniteIterable.of(representingFieldInformation).combine(generatedRepresentingFieldInformation);
         }
-        return FiniteIterable.of(representingFieldInformation).combine(generatedRepresentingFieldInformation);
-    }
-    
-    private final @Nonnull FiniteIterable<@Nonnull FieldInformation> representingFieldInformation;
-    
-    /**
-     * Returns a subset of the accessible field information that maps to the parameters of the constructors.
-     */
-    @Override
-    public @Unmodifiable @Nonnull FiniteIterable<FieldInformation> getRepresentingFieldInformation() {
-        return representingFieldInformation;
+        return FiniteIterable.of(Collections.emptyList());
     }
     
     /* -------------------------------------------------- Writable Accessible Fields -------------------------------------------------- */
@@ -113,6 +106,15 @@ public class ClassInformation extends InstantiableTypeInformation {
      * Stores the accessible fields that are mutable and must be validated by the generated subclass.
      */
     public final @Nonnull FiniteIterable<@Nonnull DirectlyAccessibleDeclaredFieldInformation> writableAccessibleFields;
+    
+    /* -------------------------------------------------- Initialization Marker -------------------------------------------------- */
+    
+    private boolean initialized = false;
+    
+    @Override
+    public boolean isInitialized() {
+        return initialized;
+    }
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
@@ -139,7 +141,7 @@ public class ClassInformation extends InstantiableTypeInformation {
     
         this.writableAccessibleFields = directlyAccessibleDeclaredFields.filter((field) -> (!field.getModifiers().contains(Modifier.FINAL)));
         
-        this.representingFieldInformation = extractRepresentingFieldInformation();
+        this.initialized = true;
     }
     
     /**

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
@@ -16,7 +15,7 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
-import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -61,12 +60,12 @@ public abstract class ExecutableInformation extends ElementInformationImplementa
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ExecutableInformation(@Nonnull Element element, @Nonnull DeclaredType containingType) {
+    protected ExecutableInformation(@Nonnull Element element, @Nonnull DeclaredType containingType, @Nonnull TypeInformation typeInformation) {
         super(element, StaticProcessingEnvironment.getTypeUtils().asMemberOf(containingType, element), containingType);
         
         final @Nonnull List<MethodParameterInformation> parameters = new ArrayList<>(getElement().getParameters().size());
         for (@Nonnull VariableElement variableElement : getElement().getParameters()) {
-            parameters.add(new MethodParameterInformation(variableElement, getContainingType()));
+            parameters.add(new MethodParameterInformation(variableElement, getContainingType(), typeInformation));
         }
         this.parameters = FiniteIterable.of(parameters);
     }

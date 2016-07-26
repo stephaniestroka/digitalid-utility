@@ -34,7 +34,6 @@ import net.digitalid.utility.generator.information.method.ConstructorInformation
 import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
-import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.string.Strings;
@@ -62,20 +61,20 @@ public abstract class TypeInformation extends ElementInformationImplementation {
             return getRecoverMethod();
         } else {
             @Nullable ConstructorInformation recoverConstructor = null;
-            if (getConstructors().size() > 1) {
+            if (getConstructors().size() == 1) {
+                recoverConstructor = getConstructors().getFirst();
+            } else if (getConstructors().size() > 1) {
                 for (@Nonnull ConstructorInformation constructorInformation : getConstructors()) {
                     if (constructorInformation.hasAnnotation(Recover.class)) {
                         if (recoverConstructor != null) {
-                            Log.error("Only one recover constructor allowed, but multiple @Recover annotations found in type $", getName());
-                            return null;
+                            throw FailedClassGenerationException.with("Only one recover constructor allowed, but multiple @Recover annotations found in type $", SourcePosition.of(getElement()), getName());
                         }
                         recoverConstructor = constructorInformation;
                     }
                 }
-            }
-            if (recoverConstructor == null) {
-                Log.error("Found multiple constructors, but none is annotated with @Recover in type $", getName());
-                return null;
+                if (recoverConstructor == null) {
+                    throw FailedClassGenerationException.with("Found multiple constructors, but none is annotated with @Recover in type $", SourcePosition.of(getElement()), getName());
+                }
             }
             return recoverConstructor;
         }
@@ -243,6 +242,14 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      */
     public final @Unmodifiable @Nonnull Map<@Nonnull String, @Nonnull MethodInformation> abstractSetters;
     
+    /* -------------------------------------------------- Initialization Marker -------------------------------------------------- */
+    
+    /**
+     * Returns true, iff the object is fully initialized. This means, implementing classes should only return true at the end of the object construction. To avoid errors, this should only be implemented and returned by classes that are final.
+     */
+    @Pure
+    public abstract boolean isInitialized();
+    
     /* -------------------------------------------------- Instance Code -------------------------------------------------- */
     
     /**
@@ -291,7 +298,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         
         // TODO: Enforce that every type has an @Immutable, @Stateless, @Utility and the like annotation?
         
-        final @Nonnull FiniteIterable<@Nonnull MethodInformation> methodInformation = InformationFilter.getMethodInformation(typeElement, containingType);
+        final @Nonnull FiniteIterable<@Nonnull MethodInformation> methodInformation = InformationFilter.getMethodInformation(typeElement, containingType, this);
         
         this.abstractGetters = methodInformation.filter((method) -> method.isGetter() && method.isAbstract()).toMap(MethodInformation::getFieldName);
     

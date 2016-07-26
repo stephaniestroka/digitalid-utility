@@ -31,6 +31,7 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.circumfixes.Quotes;
+import net.digitalid.utility.exceptions.utility.ExceptionUtility;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.logging.exceptions.InvalidConfigurationException;
@@ -145,6 +146,7 @@ public abstract class CustomProcessor implements Processor {
             return annotationsConsumed;
         } catch (@Nonnull Throwable throwable) {
             Log.error("The compilation failed due to the following problem:", throwable);
+            ProcessingLog.error("An unexpected compilation error occurred: $. Please consult the log file under target/processor-logs/GeneratorProcessor.log for details. ", ExceptionUtility.getThrowableSummary(throwable));
             throw throwable;
         }
     }

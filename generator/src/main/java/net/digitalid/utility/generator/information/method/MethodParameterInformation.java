@@ -4,17 +4,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
+import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
-import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.validation.annotations.generation.Default;
 
 import com.sun.tools.javac.code.Type;
@@ -26,24 +26,32 @@ public class MethodParameterInformation extends ElementInformationImplementation
     
     /* -------------------------------------------------- Matching Field -------------------------------------------------- */
     
-    private final @Nullable VariableElement matchingFieldInformation;
+    /**
+     * The type information object that contains information about the class, interface or enum.
+     */
+    private final @Nonnull TypeInformation typeInformation;
     
+    /**
+     * Returns a matching field for the method parameter. This method may only be called once type information is fully initialized. Otherwise, it may accidentally return null even though a field with the same name might exist.
+     */
     @Pure
-    public @Nullable VariableElement getMatchingField() {
-        return matchingFieldInformation;
+    public @Nullable FieldInformation getMatchingField() {
+        Require.that(typeInformation.isInitialized()).orThrow("getMatchingField() called before the type information object was fully initialized.");
+        
+        return typeInformation.getFieldInformation().findFirst(field -> field.getName().equals(getName()) && StaticProcessingEnvironment.getTypeUtils().isAssignable(field.getType(), getType()));
     }
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
-    protected MethodParameterInformation(@Nonnull Element element, @Nonnull DeclaredType containingType) {
+    /**
+     * Creates a method parameter information object from the given element, containing type and type information.
+     */
+    protected MethodParameterInformation(@Nonnull Element element, @Nonnull DeclaredType containingType, @Nonnull TypeInformation typeInformation) {
         super(element, element.asType(), containingType);
         
         Require.that(element.getKind() == ElementKind.PARAMETER).orThrow("The element $ has to be a parameter.", SourcePosition.of(element));
-    
-        final @Nonnull FiniteIterable<@Nonnull VariableElement> fields = ProcessingUtility.getAllFields(ProcessingUtility.getTypeElement(containingType));
-    
-        final @Nullable VariableElement matchingFieldInformation = fields.findFirst(field -> field.getSimpleName().contentEquals(getName()));
-        this.matchingFieldInformation = matchingFieldInformation;
+        
+        this.typeInformation = typeInformation;
     }
     
     /* -------------------------------------------------- toString -------------------------------------------------- */
@@ -58,7 +66,7 @@ public class MethodParameterInformation extends ElementInformationImplementation
     @Pure
     @Override
     public boolean hasDefaultValue() {
-        if (hasAnnotation(Default.class) || matchingFieldInformation != null && ProcessingUtility.hasAnnotation(matchingFieldInformation, Default.class)) {
+        if (hasAnnotation(Default.class) || getMatchingField() != null && getMatchingField().hasDefaultValue()) {
             return true;
         }
         return false;
@@ -71,8 +79,8 @@ public class MethodParameterInformation extends ElementInformationImplementation
         if (hasAnnotation(Default.class)) {
             defaultValue = getAnnotation(Default.class).value();
         } else {
-            if (matchingFieldInformation != null && ProcessingUtility.hasAnnotation(matchingFieldInformation, Default.class)) {
-                defaultValue = ProcessingUtility.getString(ProcessingUtility.getAnnotationValue(matchingFieldInformation, Default.class));
+            if (getMatchingField() != null && getMatchingField().hasDefaultValue()) {
+                defaultValue = getMatchingField().getDefaultValue();
             }
         }
         if (defaultValue == null) {

@@ -28,7 +28,7 @@ import net.digitalid.utility.validation.annotations.size.MinSize;
 /**
  * This type collects the relevant information about an interface for generating a {@link SubclassGenerator subclass}, {@link BuilderGenerator builder} and {@link ConverterGenerator converter}.
  */
-public class InterfaceInformation extends TypeInformation {
+public final class InterfaceInformation extends TypeInformation {
     
     /* -------------------------------------------------- Recover Method -------------------------------------------------- */
     
@@ -91,6 +91,15 @@ public class InterfaceInformation extends TypeInformation {
         return FiniteIterable.of(Collections.<MethodInformation>emptyList());
     }
     
+    /* -------------------------------------------------- Initialization Marker -------------------------------------------------- */
+    
+    private boolean initialized = false;
+    
+    @Override
+    public boolean isInitialized() {
+        return initialized;
+    }
+    
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
     /**
@@ -99,11 +108,13 @@ public class InterfaceInformation extends TypeInformation {
     protected InterfaceInformation(@Nonnull TypeElement element, @Nonnull DeclaredType containingType) {
         super(element, containingType);
     
-        final @Nonnull FiniteIterable<@Nonnull MethodInformation> methodInformationIterable = InformationFilter.getMethodInformation(element, containingType);
+        final @Nonnull FiniteIterable<@Nonnull MethodInformation> methodInformationIterable = InformationFilter.getMethodInformation(element, containingType, this);
     
         ProcessingLog.debugging("All methods of type $: $", containingType, methodInformationIterable.join());
         
         this.recoverMethod = methodInformationIterable.findFirst(method -> method.hasAnnotation(Recover.class));
+        
+        this.initialized = true;
     }
     
     /**
