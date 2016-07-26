@@ -64,7 +64,7 @@ public abstract class SymmetricKey extends RootClass {
     @Pure
     @Initialize(target = SymmetricKey.class)
     @TODO(task = "Consider using Bouncy Castle as a JRE-independent solution to the following hack.", date = "2016-04-19", author = Author.KASPAR_ETTER, priority = Priority.LOW)
-    public static void initialize() {
+    public static void initializeKeyLength() {
         try {
             final int length = Cipher.getMaxAllowedKeyLength("AES");
             if (length < Parameters.ENCRYPTION_KEY.get()) {
