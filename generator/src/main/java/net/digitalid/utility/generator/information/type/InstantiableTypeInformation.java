@@ -18,7 +18,6 @@ import net.digitalid.utility.generator.information.field.NonDirectlyAccessibleDe
 import net.digitalid.utility.generator.information.filter.InformationFilter;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
-import net.digitalid.utility.generator.information.method.MethodParameterInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
@@ -51,7 +50,7 @@ public abstract class InstantiableTypeInformation extends TypeInformation {
     @Override
     public @Nonnull FiniteIterable<VariableElementInformation> getConstructorParameters() {
         if (recoverMethod != null) {
-            return recoverMethod.getParameters().map(MethodParameterInformation::getMatchingField).map(variableElement -> getFieldInformation().findUnique(field -> variableElement.getSimpleName().contentEquals(field.getName())));
+            return recoverMethod.getParameters().map(parameterInformation -> parameterInformation);
         } else {
             final @Nonnull FiniteIterable<VariableElementInformation> constructorParameters;
             @Unmodifiable @Nonnull final FiniteIterable<@Nonnull ConstructorInformation> constructors = getConstructors();
