@@ -10,12 +10,14 @@ import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.cryptography.HashGenerator;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.generators.GenerateConverter;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.group.annotations.InGroup;
 import net.digitalid.utility.math.Element;
 import net.digitalid.utility.math.Exponent;
 import net.digitalid.utility.math.GroupWithUnknownOrder;
 import net.digitalid.utility.tuples.Pair;
+import net.digitalid.utility.validation.annotations.generation.Provide;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -29,6 +31,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 @Immutable
 @GenerateBuilder
 @GenerateSubclass
+@GenerateConverter
 public abstract class PublicKey extends AsymmetricKey {
     
     /* -------------------------------------------------- Composite Group -------------------------------------------------- */
@@ -47,30 +50,35 @@ public abstract class PublicKey extends AsymmetricKey {
      * Returns the base for blinding.
      */
     @Pure
+    @Provide("compositeGroup")
     public abstract @Nonnull @InGroup("compositeGroup") Element getAb();
     
     /**
      * Returns the base of the client's secret.
      */
     @Pure
+    @Provide("compositeGroup")
     public abstract @Nonnull @InGroup("compositeGroup") Element getAu();
     
     /**
      * Returns the base of the serial number.
      */
     @Pure
+    @Provide("compositeGroup")
     public abstract @Nonnull @InGroup("compositeGroup") Element getAi();
     
     /**
      * Returns the base of the hashed identifier.
      */
     @Pure
+    @Provide("compositeGroup")
     public abstract @Nonnull @InGroup("compositeGroup") Element getAv();
     
     /**
      * Returns the base of the exposed arguments.
      */
     @Pure
+    @Provide("compositeGroup")
     public abstract @Nonnull @InGroup("compositeGroup") Element getAo();
     
     /* -------------------------------------------------- Subgroup Proof -------------------------------------------------- */
@@ -128,18 +136,21 @@ public abstract class PublicKey extends AsymmetricKey {
      * Returns the generator of the square group.
      */
     @Pure
+    @Provide("squareGroup")
     public abstract @Nonnull @InGroup("squareGroup") Element getG();
     
     /**
      * Returns the encryption element of the square group.
      */
     @Pure
+    @Provide("squareGroup")
     public abstract @Nonnull @InGroup("squareGroup") Element getY();
     
     /**
      * Returns the encryption base of the square group.
      */
     @Pure
+    @Provide("squareGroup")
     public abstract @Nonnull @InGroup("squareGroup") Element getZPlus1();
     
     /* -------------------------------------------------- Verifiable Encryption -------------------------------------------------- */

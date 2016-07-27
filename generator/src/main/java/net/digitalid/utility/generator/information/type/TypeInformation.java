@@ -256,12 +256,11 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      * Returns a string that can be used in generated code to instantiate this type.
      */
     public @Nonnull String getInstantiationCode(boolean useBuilderIfAvailable, boolean useSubclassIfAvailable, boolean useRecoverMethodIfAvailable) {
-        // TODO: add a "getCreationCode" method to type information. Provide it with annotations that should be considered (GenerateBuilder, GenerateSubclass). 
-        // TODO: The expected result is:
-        // TODO:    - the call to the generated builder, if the GenerateBuilder annotation was provided and is available for the type, 
-        // TODO:    - the call to the recover method, if available, or
-        // TODO:    - the call to the generated subclass constructor, if the GenerateSubclass was provided and is available for the type,
-        // TODO:    - the call to the constructor.
+        // The expected result is:
+        // - the call to the generated builder, if useBuilderIfAvailable flag is set to true and the @GenerateBuilder annotation is available for the type, 
+        // - the call to the recover method, if useRecoverMethodIfAvailable is true and a @Recover annotated method is available, or
+        // - the call to the generated subclass constructor, if useSubclassIfAvailable is true and the @GenerateSubclass annotation is available for the type,
+        // - the call to the constructor.
         if (useBuilderIfAvailable && hasAnnotation(GenerateBuilder.class)) {
             final @Nonnull StringBuilder assignedParameters = new StringBuilder();
             for (@Nonnull VariableElementInformation constructorParameter : getConstructorParameters()) {

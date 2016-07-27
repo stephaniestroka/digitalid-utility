@@ -97,7 +97,7 @@ public class CustomType {
          * Creates a new instance of a custom converter type with the given converter.
          */
         @NonRawRecipient
-        public @Nonnull CustomConverterType of(@Nonnull Converter<?> converter) {
+        public @Nonnull CustomConverterType of(@Nonnull Converter<?, ?> converter) {
             return new CustomConverterType(super.predicate, super.typeName, converter);
         }
     
@@ -116,19 +116,19 @@ public class CustomType {
         /**
          * The object converter.
          */
-        private final @Nonnull Converter<?> converter;
+        private final @Nonnull Converter<?, ?> converter;
     
         /**
          * Returns the object converter.
          */
-        public @Nonnull Converter<?> getConverter() {
+        public @Nonnull Converter<?, ?> getConverter() {
             return converter;
         }
     
         /**
          * Creates a new custom converter type.
          */
-        private CustomConverterType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName, @Nonnull Converter<?> converter) {
+        private CustomConverterType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName, @Nonnull Converter<?, ?> converter) {
             super(predicate, typeName);
             this.converter = converter;
         }

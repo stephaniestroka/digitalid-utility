@@ -13,6 +13,8 @@ import net.digitalid.utility.generator.annotations.generators.GenerateConverter;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.testing.CustomTest;
 import net.digitalid.utility.tuples.Pair;
+import net.digitalid.utility.validation.annotations.generation.Provide;
+import net.digitalid.utility.validation.annotations.generation.Provided;
 import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
@@ -35,6 +37,63 @@ class VariousFields {
         this.flag = flag;
         this.size = size;
         this.text = text;
+    }
+    
+}
+
+@Immutable
+@GenerateConverter
+class ExternallyProvidedType {
+    
+    public final @Nonnull String value;
+    
+    ExternallyProvidedType(@Nonnull String value) {
+        this.value = value;
+    }
+    
+}
+
+@Immutable
+@GenerateConverter
+class ExternallyProvidedField {
+    
+    @Provided
+    public final @Nonnull ExternallyProvidedType externallyProvidedType;
+    
+    protected ExternallyProvidedField(@Nonnull ExternallyProvidedType externallyProvidedType) {
+        this.externallyProvidedType = externallyProvidedType;
+    }
+    
+}
+
+@Immutable
+@GenerateConverter
+class DependentType {
+    
+    public final @Nonnull String value;
+    
+    @Provided
+    public final @Nonnull ExternallyProvidedType externallyProvidedType;
+    
+    DependentType(@Nonnull String value, @Nonnull ExternallyProvidedType externallyProvidedType) {
+        this.value = value;
+        this.externallyProvidedType = externallyProvidedType;
+    }
+    
+}
+
+@Immutable
+@GenerateConverter
+class ProvideValue {
+    
+    public final @Nonnull ExternallyProvidedType externallyProvidedType;
+    
+    @Provide("externallyProvidedType")
+    public final @Nonnull DependentType dependentType;
+    
+    protected ProvideValue(@Nonnull ExternallyProvidedType externallyProvidedType, @Nonnull DependentType dependentType) {
+        this.externallyProvidedType = externallyProvidedType;
+        this.dependentType = dependentType;
     }
     
 }
@@ -152,7 +211,7 @@ public class ConverterTest extends CustomTest {
         testQueue.add(5);
         testQueue.add("bla");
         final @Nonnull TestSelectionResult testSelectionResult = new TestSelectionResult(testQueue);
-        final @Nonnull VariousFields recoveredObject = VariousFieldsConverter.INSTANCE.recover(testSelectionResult);
+        final @Nonnull VariousFields recoveredObject = VariousFieldsConverter.INSTANCE.recover(testSelectionResult, null);
         assertEquals(true, recoveredObject.flag);
         assertEquals(5, recoveredObject.size);
         assertEquals("bla", recoveredObject.text);
@@ -178,7 +237,7 @@ public class ConverterTest extends CustomTest {
         final Queue<@Nonnull Object> testQueue = new LinkedList<>();
         testQueue.add(SimpleEnum.COMET.name());
         final @Nonnull TestSelectionResult testSelectionResult = new TestSelectionResult(testQueue);
-        final @Nonnull SimpleEnum recoveredObject = SimpleEnumConverter.INSTANCE.recover(testSelectionResult);
+        final @Nonnull SimpleEnum recoveredObject = SimpleEnumConverter.INSTANCE.recover(testSelectionResult, null);
         assertEquals(SimpleEnum.COMET, recoveredObject);
     }
     
@@ -202,7 +261,7 @@ public class ConverterTest extends CustomTest {
         final Queue<@Nonnull Object> testQueue = new LinkedList<>();
         testQueue.add(3);
         final @Nonnull TestSelectionResult testSelectionResult = new TestSelectionResult(testQueue);
-        final @Nonnull EnumWithRecoverMethod recoveredObject = EnumWithRecoverMethodConverter.INSTANCE.recover(testSelectionResult);
+        final @Nonnull EnumWithRecoverMethod recoveredObject = EnumWithRecoverMethodConverter.INSTANCE.recover(testSelectionResult, null);
         assertEquals(EnumWithRecoverMethod.THREE, recoveredObject);
     }
     
@@ -226,7 +285,7 @@ public class ConverterTest extends CustomTest {
         final Queue<@Nonnull Object> testQueue = new LinkedList<>();
         testQueue.add((byte) 3);
         final @Nonnull TestSelectionResult testSelectionResult = new TestSelectionResult(testQueue);
-        final @Nonnull EnumWithRecoverMethodAndNonDirectlyAccessibleField recoveredObject = EnumWithRecoverMethodAndNonDirectlyAccessibleFieldConverter.INSTANCE.recover(testSelectionResult);
+        final @Nonnull EnumWithRecoverMethodAndNonDirectlyAccessibleField recoveredObject = EnumWithRecoverMethodAndNonDirectlyAccessibleFieldConverter.INSTANCE.recover(testSelectionResult, null);
         assertEquals(EnumWithRecoverMethodAndNonDirectlyAccessibleField.THREE, recoveredObject);
     }
     

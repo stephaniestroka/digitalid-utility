@@ -33,13 +33,21 @@ import net.digitalid.utility.generator.information.field.EnumValueInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.type.EnumInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
-import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.immutable.ImmutableMap;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.tuples.Octet;
+import net.digitalid.utility.tuples.Pair;
+import net.digitalid.utility.tuples.Quartet;
+import net.digitalid.utility.tuples.Quintet;
+import net.digitalid.utility.tuples.Septet;
+import net.digitalid.utility.tuples.Sextet;
+import net.digitalid.utility.tuples.Triplet;
+import net.digitalid.utility.validation.annotations.generation.Provide;
+import net.digitalid.utility.validation.annotations.generation.Provided;
 
 /**
  * This class generates a converter with the provided type information.
@@ -55,6 +63,80 @@ public class ConverterGenerator extends JavaFileGenerator {
      * The type information for which a converter is generated.
      */
     protected final @Nonnull TypeInformation typeInformation;
+    
+    /* -------------------------------------------------- Externally and Non-Externally Provided Fields -------------------------------------------------- */
+    
+    /**
+     * Returns all field information objects that do not have a @Provided annotation.
+     */
+    @Pure
+    private @Nonnull FiniteIterable<@Nonnull FieldInformation> filterNonExternallyProvidedFields(@Nonnull FiniteIterable<@Nonnull FieldInformation> fieldInformation) {
+        return fieldInformation.filter(field -> !field.hasAnnotation(Provided.class));
+    }
+    
+    /**
+     * Returns all field information objects that do have a @Provided annotation.
+     */
+    @Pure
+    private @Nonnull FiniteIterable<@Nonnull FieldInformation> filterExternallyProvidedFields(@Nonnull FiniteIterable<@Nonnull FieldInformation> fieldInformation) {
+        return fieldInformation.filter(field -> field.hasAnnotation(Provided.class));
+    }
+    
+    /**
+     * Returns a list of externally provided parameter declarations as comma-separated string.
+     */
+    @Pure
+    private @Nonnull String getExternallyProvidedParameterDeclarationsAsString(@Nonnull String postFix) {
+        postFix = postFix.isEmpty() ? postFix : " " + postFix;
+        final @Nonnull FiniteIterable<@Nonnull FieldInformation> externallyProvidedFields = filterExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
+        final @Nonnull String parameterTypes = externallyProvidedFields.map(field -> importIfPossible(field.getType())).join();
+        switch (externallyProvidedFields.size()) {
+            case 0:
+                return importIfPossible(Void.class) + postFix;
+            case 1:
+                return importIfPossible(externallyProvidedFields.getFirst().getType()) + postFix;
+            case 2:
+                return importIfPossible(Pair.class) + Brackets.inPointy(parameterTypes) + postFix;
+            case 3:
+                return importIfPossible(Triplet.class) + Brackets.inPointy(parameterTypes) + postFix;
+            case 4:
+                return importIfPossible(Quartet.class) + Brackets.inPointy(parameterTypes) + postFix;
+            case 5:
+                return importIfPossible(Quintet.class) + Brackets.inPointy(parameterTypes) + postFix;
+            case 6:
+                return importIfPossible(Sextet.class) + Brackets.inPointy(parameterTypes) + postFix;
+            case 7:
+                return importIfPossible(Septet.class) + Brackets.inPointy(parameterTypes) + postFix;
+            case 8:
+                return importIfPossible(Octet.class) + Brackets.inPointy(parameterTypes) + postFix;
+            default:
+                throw UnexpectedFailureException.with("Cannot accept more than 8 externally provided parameters.");
+        }
+    }
+    
+    /**
+     * Returns a list of externally provided parameter declarations as comma-separated string.
+     */
+    @Pure
+    private @Nonnull String getExternallyProvidedParameterNameAsString() {
+        final @Nonnull FiniteIterable<@Nonnull FieldInformation> externallyProvidedFields = filterExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
+        switch (externallyProvidedFields.size()) {
+            case 0:
+                return "none";
+            case 1:
+                return externallyProvidedFields.getFirst().getName();
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+                return "provided";
+            default:
+                throw UnexpectedFailureException.with("Cannot accept more than 8 externally provided parameters.");
+        }
+    }
     
     /* -------------------------------------------------- Value Collector -------------------------------------------------- */
     
@@ -106,7 +188,7 @@ public class ConverterGenerator extends JavaFileGenerator {
         addAnnotation(Override.class);
         beginMethod("public " + Brackets.inPointy("R") + " void convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(ValueCollector.class) + Brackets.inPointy("R") + " valueCollector)");
 //        beginMethod("public void convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(ValueCollector.class) + " valueCollector)");
-        final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
+        final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
         beginIf(Strings.lowercaseFirstCharacter(typeInformation.getName()) + " == null");
         for (@Nonnull FieldInformation field : representingFieldInformation) {
             addStatement(generateValueCollectorCall("null", field.getType(), 1));
@@ -139,17 +221,17 @@ public class ConverterGenerator extends JavaFileGenerator {
     /**
      * Returns a generated statement that reads the field value from the selection result.
      */
-    private @Nonnull String generateSelectionResultCall(@Nonnull TypeMirror fieldType) {
+    private @Nonnull String generateSelectionResultCall(@Nonnull TypeMirror fieldType, @Nonnull String provideParameterName) {
         final @Nonnull CustomType customType = CustomType.of(fieldType);
         final @Nonnull String customTypeName = Strings.capitalizeFirstLetters(customType.getTypeName().toLowerCase());
         
         if (customType.isCompositeType()) {
             final @Nullable TypeMirror componentType = ProcessingUtility.getComponentType(fieldType);
             Require.that(componentType != null).orThrow("The field type is not an array or list");
-            return getAssignmentPrefix(fieldType) + getSelectionResultStatement(customTypeName, generateSelectionResultCall(componentType)) + getAssignmentPostfix(fieldType);
+            return getAssignmentPrefix(fieldType) + getSelectionResultStatement(customTypeName, generateSelectionResultCall(componentType, provideParameterName)) + getAssignmentPostfix(fieldType);
         } else if (customType.isObjectType()) {
             final @Nonnull String converterInstance = importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter") + ".INSTANCE";
-            return converterInstance + ".recover(selectionResult)";
+            return converterInstance + ".recover(selectionResult, " + provideParameterName + ")";
         } else {
             return getSelectionResultStatement(customTypeName);
         }
@@ -176,13 +258,23 @@ public class ConverterGenerator extends JavaFileGenerator {
     protected void generateRecoverMethod() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
-        beginMethod("public @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(Capturable.class) + " " + typeInformation.getName() + " recover(@" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " " + importIfPossible(SelectionResult.class) + " selectionResult)");
-        final @Nonnull FiniteIterable<FieldInformation> constructorParameters = typeInformation.getRepresentingFieldInformation();
-        for (@Nonnull VariableElementInformation constructorParameter : constructorParameters) {
+        beginMethod("public @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(Capturable.class) + " " + typeInformation.getName() + " recover(@" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " " + importIfPossible(SelectionResult.class) + " selectionResult, " + getExternallyProvidedParameterDeclarationsAsString(getExternallyProvidedParameterNameAsString()) + ")");
+        final @Nonnull FiniteIterable<@Nonnull FieldInformation> externallyProvidedFields = filterExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
+        
+        if (externallyProvidedFields.size() > 1) {
+            int i = 0;
+            for (@Nonnull FieldInformation externallyProvidedField : externallyProvidedFields) {
+                addStatement("final " + importIfPossible(externallyProvidedField.getType()) + " " + externallyProvidedField.getName() + " = provided.get" + i + "()");
+            }
+        }
+        final @Nonnull FiniteIterable<FieldInformation> constructorParameters = filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
+        
+        for (@Nonnull FieldInformation constructorParameter : constructorParameters) {
+            final @Nonnull String provide = constructorParameter.hasAnnotation(Provide.class) ? constructorParameter.getAnnotation(Provide.class).value() : "none";
             if (constructorParameter instanceof EnumValueInformation) {
-                addStatement("final @" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + " value = " + generateSelectionResultCall(constructorParameter.getType()));
+                addStatement("final @" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + " value = " + generateSelectionResultCall(constructorParameter.getType(), provide));
             } else {
-                addStatement("final " + importIfPossible(constructorParameter.getType()) + " " + constructorParameter.getName() + " = " + generateSelectionResultCall(constructorParameter.getType()));
+                addStatement("final " + importIfPossible(constructorParameter.getType()) + " " + constructorParameter.getName() + " = " + generateSelectionResultCall(constructorParameter.getType(), provide));
             }
         }
         addStatement(typeInformation.getInstantiationCode(true, true, true));
@@ -224,7 +316,7 @@ public class ConverterGenerator extends JavaFileGenerator {
     private void generateFields() {
         final @Nonnull StringBuilder fieldsString = new StringBuilder();
         final @Nonnull List<@Nonnull String> statements = new ArrayList<>();
-        for (@Nonnull FieldInformation representingField : typeInformation.getRepresentingFieldInformation()) {
+        for (@Nonnull FieldInformation representingField : filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation())) {
             final @Nonnull StringBuilder customAnnotations = new StringBuilder();
             ProcessingLog.information("Representing field: $", representingField);
             final @Nonnull FiniteIterable<@Nonnull AnnotationMirror> annotations = representingField.getAnnotations();
@@ -292,7 +384,7 @@ public class ConverterGenerator extends JavaFileGenerator {
         this.typeInformation = typeInformation;
     
         try {
-            beginClass("public class " + typeInformation.getSimpleNameOfGeneratedConverter() + importWithBounds(typeInformation.getTypeArguments()) + " implements " + importIfPossible(Converter.class) + "<" + typeInformation.getName() + ">");
+            beginClass("public class " + typeInformation.getSimpleNameOfGeneratedConverter() + importWithBounds(typeInformation.getTypeArguments()) + " implements " + importIfPossible(Converter.class) + "<" + typeInformation.getName() + ", " + getExternallyProvidedParameterDeclarationsAsString("") + ">");
             
             generateInstanceField();
             generateFields();

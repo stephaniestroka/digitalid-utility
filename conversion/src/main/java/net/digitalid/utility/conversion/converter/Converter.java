@@ -9,7 +9,7 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 
-public interface Converter<T> {
+public interface Converter<T, E> {
     
     @Pure
     public void declare(@Nonnull @NonCaptured @Modified Declaration declaration);
@@ -18,6 +18,6 @@ public interface Converter<T> {
     public <R> void convert(@Nullable @NonCaptured @Unmodified T object, @Nonnull @NonCaptured @Modified ValueCollector<R> valueCollector);
     
     @Pure
-    public @Nonnull @Capturable T recover(@Nonnull @NonCaptured @Modified SelectionResult selectionResult);
+    public @Nonnull @Capturable T recover(@Nonnull @NonCaptured @Modified SelectionResult selectionResult, E externallyProvided);
     
 }

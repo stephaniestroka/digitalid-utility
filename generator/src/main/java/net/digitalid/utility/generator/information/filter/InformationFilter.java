@@ -32,10 +32,12 @@ import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
- *
+ * The information filter provides utility functions to filter information from types and build method- or field information objects from the filtered information.
  */
+@Utility
 public class InformationFilter {
     
     /**

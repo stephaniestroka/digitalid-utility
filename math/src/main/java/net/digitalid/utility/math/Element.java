@@ -9,12 +9,14 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.generators.GenerateConverter;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.group.GroupMember;
 import net.digitalid.utility.group.annotations.InSameGroup;
 import net.digitalid.utility.interfaces.BigIntegerNumerical;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.generation.Normalize;
+import net.digitalid.utility.validation.annotations.generation.Provided;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -25,6 +27,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 @Immutable
 @GenerateBuilder
 @GenerateSubclass
+@GenerateConverter
 public abstract class Element extends RootClass implements BigIntegerNumerical<Element>, GroupMember {
     
     /* -------------------------------------------------- Validatable -------------------------------------------------- */
@@ -41,6 +44,7 @@ public abstract class Element extends RootClass implements BigIntegerNumerical<E
     
     @Pure
     @Override
+    @Provided
     public abstract @Nonnull Group getGroup();
     
     @Pure
