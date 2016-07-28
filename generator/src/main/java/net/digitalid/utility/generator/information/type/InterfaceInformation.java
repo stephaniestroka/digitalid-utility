@@ -20,6 +20,7 @@ import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.validation.annotations.generation.NonRepresentative;
 import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.size.Empty;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
@@ -72,7 +73,7 @@ public final class InterfaceInformation extends TypeInformation {
     @Pure
     @Override
     public @Nonnull FiniteIterable<VariableElementInformation> getConstructorParameters() {
-        return generatedRepresentingFieldInformation.map(field -> field);
+        return generatedRepresentingFieldInformation.map(field -> (VariableElementInformation) field).filter(field -> !field.hasAnnotation(NonRepresentative.class));
     }
     
     /* -------------------------------------------------- Representing Field Information -------------------------------------------------- */
@@ -80,7 +81,7 @@ public final class InterfaceInformation extends TypeInformation {
     @Pure
     @Override
     public @Nonnull FiniteIterable<@Nonnull FieldInformation> getRepresentingFieldInformation() {
-        return getFieldInformation();
+        return getFieldInformation().filter(field -> !field.hasAnnotation(NonRepresentative.class));
     }
     
     /* -------------------------------------------------- Overriden Methods -------------------------------------------------- */

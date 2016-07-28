@@ -478,7 +478,7 @@ public class ProcessingUtility {
             case ARRAY:
                 return getTypeElement(((ArrayType) typeMirror).getComponentType());
             default:
-            ProcessingLog.error("The type mirror cannot be converted to a type element.");
+            ProcessingLog.error("The type mirror of kind $ cannot be converted to a type element.", typeMirror.getKind());
             return null;
         }
     }

@@ -27,6 +27,8 @@ import net.digitalid.utility.validation.annotations.size.NonEmpty;
 
 /**
  *
+ * @see ClassInformation
+ * @see EnumInformation
  */
 public abstract class InstantiableTypeInformation extends TypeInformation {
     

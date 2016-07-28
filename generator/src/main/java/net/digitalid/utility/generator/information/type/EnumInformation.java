@@ -13,6 +13,7 @@ import net.digitalid.utility.generator.information.field.EnumValueInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.method.MethodParameterInformation;
+import net.digitalid.utility.validation.annotations.generation.NonRepresentative;
 
 /**
  * This type collects the relevant information about an enum for generating a {@link ConverterGenerator converter}.
@@ -28,7 +29,7 @@ public final class EnumInformation extends InstantiableTypeInformation {
             return FiniteIterable.of(EnumValueInformation.of(getElement()));
         } else {
             // return the fields matching the parameters of the recover method
-            return getRecoverMethod().getParameters().map(MethodParameterInformation::getMatchingField);
+            return getRecoverMethod().getParameters().filter(parameter -> !parameter.hasAnnotation(NonRepresentative.class)).map(MethodParameterInformation::getMatchingField).filter(field -> !field.hasAnnotation(NonRepresentative.class));
         }
     }
     

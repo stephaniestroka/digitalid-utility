@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
@@ -37,6 +38,7 @@ import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.immutable.ImmutableMap;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Octet;
@@ -173,8 +175,12 @@ public class ConverterGenerator extends JavaFileGenerator {
             final @Nonnull String entryName = "entry" + round;
             return getValueCollectorStatement(fieldType, fieldAccess, generateValueCollectorCall(fieldAccess.equals("null") ? "null" : entryName, componentType, ++round), entryName);
         } else if (customType.isObjectType()) {
-            final @Nonnull String converterInstance = importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter") + ".INSTANCE";
-            return converterInstance + ".convert(" + fieldAccess + ", valueCollector)";
+            if (StaticProcessingEnvironment.getTypeUtils().isAssignable(fieldType, typeInformation.getType()) && ProcessingUtility.getTypeElement(fieldType).getKind() == ElementKind.ENUM) {
+                return getValueCollectorStatement(ProcessingUtility.getTypeMirror(String.class), fieldAccess);
+            } else {
+                final @Nonnull String converterInstance = importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter") + ".INSTANCE";
+                return converterInstance + ".convert(" + fieldAccess + ", valueCollector)";
+            }
         } else {
             return getValueCollectorStatement(fieldType, fieldAccess);
         }
@@ -230,8 +236,12 @@ public class ConverterGenerator extends JavaFileGenerator {
             Require.that(componentType != null).orThrow("The field type is not an array or list");
             return getAssignmentPrefix(fieldType) + getSelectionResultStatement(customTypeName, generateSelectionResultCall(componentType, provideParameterName)) + getAssignmentPostfix(fieldType);
         } else if (customType.isObjectType()) {
-            final @Nonnull String converterInstance = importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter") + ".INSTANCE";
-            return converterInstance + ".recover(selectionResult, " + provideParameterName + ")";
+            if (StaticProcessingEnvironment.getTypeUtils().isAssignable(fieldType, typeInformation.getType()) && ProcessingUtility.getTypeElement(fieldType).getKind() == ElementKind.ENUM) {
+                return getSelectionResultStatement("String");
+            } else {
+                final @Nonnull String converterInstance = importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter") + ".INSTANCE";
+                return converterInstance + ".recover(selectionResult, " + provideParameterName + ")";
+            }
         } else {
             return getSelectionResultStatement(customTypeName);
         }
@@ -296,7 +306,10 @@ public class ConverterGenerator extends JavaFileGenerator {
      * Returns the custom type for the given representing field.
      */
     private @Nonnull String getTypeName(@Nonnull TypeMirror representingFieldType) {
-        final @Nonnull CustomType customType = CustomType.of(representingFieldType);
+        @Nonnull CustomType customType = CustomType.of(representingFieldType);
+        if (customType == CustomType.TUPLE && ProcessingUtility.getTypeElement(representingFieldType).getKind() == ElementKind.ENUM) {
+            customType = CustomType.STRING;
+        } 
         if (customType == CustomType.TUPLE) {
             return importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(importIfPossible(ProcessingUtility.getQualifiedName(representingFieldType) + "Converter") + ".INSTANCE");
         } else if (customType == CustomType.SET) {

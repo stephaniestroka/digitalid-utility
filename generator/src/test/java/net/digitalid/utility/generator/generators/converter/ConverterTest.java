@@ -179,6 +179,17 @@ enum EnumWithRecoverMethodAndNonDirectlyAccessibleField {
     
 }
 
+@GenerateConverter
+class ClassContainingEnum {
+    
+    public final EnumWithRecoverMethod enumWithRecoverMethod;
+    
+    ClassContainingEnum(EnumWithRecoverMethod enumWithRecoverMethod) {
+        this.enumWithRecoverMethod = enumWithRecoverMethod;
+    }
+    
+}
+
 public class ConverterTest extends CustomTest {
     
     @Test

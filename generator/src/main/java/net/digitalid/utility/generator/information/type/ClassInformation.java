@@ -23,6 +23,7 @@ import net.digitalid.utility.generator.information.filter.MethodSignatureMatcher
 import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.method.MethodParameterInformation;
+import net.digitalid.utility.validation.annotations.generation.NonRepresentative;
 
 /**
  * This type collects the relevant information about a class for generating a {@link SubclassGenerator subclass}, {@link BuilderGenerator builder} and {@link ConverterGenerator converter}.
@@ -95,7 +96,7 @@ public final class ClassInformation extends InstantiableTypeInformation {
                 }
             }
             // TODO: what if the constructor already declared generated representing fields? In that case we would duplicate the parameters.
-            return FiniteIterable.of(representingFieldInformation).combine(generatedRepresentingFieldInformation);
+            return FiniteIterable.of(representingFieldInformation).combine(generatedRepresentingFieldInformation).filter(field -> !field.hasAnnotation(NonRepresentative.class));
         }
         return FiniteIterable.of(Collections.emptyList());
     }

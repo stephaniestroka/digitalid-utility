@@ -242,7 +242,7 @@ public class CustomType {
      */
     public static @Nonnull CustomType of(@Nonnull TypeMirror typeMirror) {
         final @Nullable CustomType syntacticType = get(typeMirror);
-        return syntacticType != null ? syntacticType : (ProcessingUtility.getTypeElement(typeMirror).getKind() == ElementKind.ENUM ? CustomType.STRING : CustomType.TUPLE);
+        return syntacticType != null ? syntacticType : CustomType.TUPLE;
     }
     
     /* -------------------------------------------------- Equals -------------------------------------------------- */
