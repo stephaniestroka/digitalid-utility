@@ -188,4 +188,27 @@ public abstract class Tuple implements Collection<Object>, CustomComparable<Tupl
         return size() - tuple.size();
     }
     
+    /* -------------------------------------------------- Tuple Type -------------------------------------------------- */
+    
+    public static @Nullable Class<? extends Tuple> getTupleType(int size) {
+        switch (size) {
+            case 2:
+                return Pair.class;
+            case 3:
+                return Triplet.class;
+            case 4:
+                return Quartet.class;
+            case 5:
+                return Quintet.class;
+            case 6:
+                return Sextet.class;
+            case 7:
+                return Septet.class;
+            case 8:
+                return Octet.class;
+            default:
+                return null;
+        }
+    }
+    
 }

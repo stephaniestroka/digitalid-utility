@@ -34,7 +34,6 @@ import net.digitalid.utility.generator.typevisitors.GenerateComparisonTypeVisito
 import net.digitalid.utility.generator.typevisitors.GenerateHashCodeTypeVisitor;
 import net.digitalid.utility.generator.typevisitors.GenerateToStringTypeVisitor;
 import net.digitalid.utility.processing.logging.ProcessingLog;
-import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Pair;
@@ -203,6 +202,7 @@ public class SubclassGenerator extends JavaFileGenerator {
     private @Nonnull String implementCallToMethodInterceptors(@Nonnull MethodInformation method, @Nonnull String methodCall, @Nullable String returnedValue, @Nullable String defaultValue) {
         for (Map.@Nonnull Entry<AnnotationMirror, MethodInterceptor> annotationMirrorMethodInterceptorEntry : method.getMethodInterceptors().entrySet()) {
             final @Nonnull MethodInterceptor methodInterceptor = annotationMirrorMethodInterceptorEntry.getValue();
+            methodInterceptor.generateFieldsRequiredByMethod(this, method);
             methodCall = methodInterceptor.generateInterceptorMethod(this, method, methodCall, returnedValue, defaultValue);
         }
         if (method.hasReturnType()) {

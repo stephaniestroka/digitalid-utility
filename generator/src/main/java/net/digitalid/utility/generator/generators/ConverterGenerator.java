@@ -48,6 +48,7 @@ import net.digitalid.utility.tuples.Quintet;
 import net.digitalid.utility.tuples.Septet;
 import net.digitalid.utility.tuples.Sextet;
 import net.digitalid.utility.tuples.Triplet;
+import net.digitalid.utility.tuples.Tuple;
 import net.digitalid.utility.validation.annotations.generation.Provide;
 import net.digitalid.utility.validation.annotations.generation.Provided;
 
@@ -92,28 +93,18 @@ public class ConverterGenerator extends JavaFileGenerator {
         postFix = postFix.isEmpty() ? postFix : " " + postFix;
         final @Nonnull FiniteIterable<@Nonnull FieldInformation> externallyProvidedFields = filterExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
         final @Nonnull String parameterTypes = externallyProvidedFields.map(field -> importIfPossible(field.getType())).join();
-        switch (externallyProvidedFields.size()) {
-            case 0:
-                return importIfPossible(Void.class) + postFix;
-            case 1:
-                return importIfPossible(externallyProvidedFields.getFirst().getType()) + postFix;
-            case 2:
-                return importIfPossible(Pair.class) + Brackets.inPointy(parameterTypes) + postFix;
-            case 3:
-                return importIfPossible(Triplet.class) + Brackets.inPointy(parameterTypes) + postFix;
-            case 4:
-                return importIfPossible(Quartet.class) + Brackets.inPointy(parameterTypes) + postFix;
-            case 5:
-                return importIfPossible(Quintet.class) + Brackets.inPointy(parameterTypes) + postFix;
-            case 6:
-                return importIfPossible(Sextet.class) + Brackets.inPointy(parameterTypes) + postFix;
-            case 7:
-                return importIfPossible(Septet.class) + Brackets.inPointy(parameterTypes) + postFix;
-            case 8:
-                return importIfPossible(Octet.class) + Brackets.inPointy(parameterTypes) + postFix;
-            default:
-                throw UnexpectedFailureException.with("Cannot accept more than 8 externally provided parameters.");
+        final @Nullable Class<?> tupleType = Tuple.getTupleType(externallyProvidedFields.size());
+        if (tupleType == null) {
+            switch (externallyProvidedFields.size()) {
+                case 0:
+                    return importIfPossible(Void.class) + postFix;
+                case 1:
+                    return importIfPossible(externallyProvidedFields.getFirst().getType()) + postFix;
+                default:
+                    throw UnexpectedFailureException.with("Cannot accept more than 8 externally provided parameters.");
+            }
         }
+        return importIfPossible(tupleType) + Brackets.inPointy(parameterTypes) + postFix;
     }
     
     /**
@@ -331,7 +322,6 @@ public class ConverterGenerator extends JavaFileGenerator {
         final @Nonnull List<@Nonnull String> statements = new ArrayList<>();
         for (@Nonnull FieldInformation representingField : filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation())) {
             final @Nonnull StringBuilder customAnnotations = new StringBuilder();
-            ProcessingLog.information("Representing field: $", representingField);
             final @Nonnull FiniteIterable<@Nonnull AnnotationMirror> annotations = representingField.getAnnotations();
             final @Nonnull String fieldName = representingField.getName();
             // annotations are only collected if it isn't an enum we're processing. Enum values cannot have annotations.

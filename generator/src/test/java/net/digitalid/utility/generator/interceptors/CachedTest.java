@@ -27,9 +27,8 @@ public class CachedTest extends CustomTest {
     @Test
     public void testCaching() {
         final @Nonnull CachedMethodSubclass object = new CachedMethodSubclass();
-        // TODO: Implement the caching for methods!
-//        assertTrue(object.method(0) == object.method(0));
-//        assertTrue(object.method(1) == object.method(1));
+        assertTrue(object.method(0) == object.method(0));
+        assertTrue(object.method(1) == object.method(1));
         assertTrue(object.method(0) != object.method(1));
     }
     

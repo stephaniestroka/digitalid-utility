@@ -16,6 +16,9 @@ public abstract class MethodInterceptor implements MethodAnnotationValidator {
     @Pure
     protected abstract @Nonnull String getPrefix();
     
+    @Pure
+    public void generateFieldsRequiredByMethod(@Nonnull JavaFileGenerator javaFileGenerator, @Nonnull MethodInformation method) {}
+        
     /**
      * Implements an interceptor method. The method is required to implement the call to the given statement. It can wrap its own functionality around the statement.
      */

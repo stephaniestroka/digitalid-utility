@@ -521,6 +521,33 @@ public class ProcessingUtility {
         return null;
     }
     
+    @Pure
+    public static boolean isTypePrimitive(@Nonnull TypeMirror typeMirror) {
+        switch(typeMirror.getKind()) {
+            case BOOLEAN:
+            case BYTE:
+            case DOUBLE:
+            case FLOAT:
+            case INT:
+            case LONG:
+            case SHORT:
+                return true;
+            case ARRAY:
+                return isTypePrimitive(((ArrayType) typeMirror).getComponentType());
+            default:
+                return false;
+        }
+    }
+    
+    @Pure
+    public static @Nonnull TypeMirror getBoxedType(@Nonnull TypeMirror typeMirror) {
+        if (isTypePrimitive(typeMirror)) {
+            return ProcessingUtility.getType(StaticProcessingEnvironment.getTypeUtils().boxedClass((PrimitiveType) typeMirror));
+        } else {
+            return typeMirror;
+        }
+    }
+    
     /* -------------------------------------------------- Annotation Strings -------------------------------------------------- */
     
 //    /**
