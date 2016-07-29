@@ -190,6 +190,7 @@ public abstract class Tuple implements Collection<Object>, CustomComparable<Tupl
     
     /* -------------------------------------------------- Tuple Type -------------------------------------------------- */
     
+    @Pure
     public static @Nullable Class<? extends Tuple> getTupleType(int size) {
         switch (size) {
             case 2:
