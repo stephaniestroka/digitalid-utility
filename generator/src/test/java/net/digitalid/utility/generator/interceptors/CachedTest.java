@@ -6,6 +6,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.generator.annotations.interceptors.Cached;
 import net.digitalid.utility.testing.CustomTest;
+import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 import org.junit.Test;
@@ -17,6 +18,24 @@ class CachedMethod {
     @Pure
     @Cached
     double method(int input) {
+        return Math.random();
+    }
+    
+    @Pure
+    @Cached
+    double method(double input) {
+        return Math.random();
+    }
+    
+    @Pure
+    @Cached
+    double method(String input1, int input2) {
+        return Math.random();
+    }
+    
+    @Pure
+    @Cached
+    double method(Pair<String, Integer> input) {
         return Math.random();
     }
     

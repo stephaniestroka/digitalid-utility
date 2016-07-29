@@ -202,7 +202,7 @@ public class SubclassGenerator extends JavaFileGenerator {
     private @Nonnull String implementCallToMethodInterceptors(@Nonnull MethodInformation method, @Nonnull String methodCall, @Nullable String returnedValue, @Nullable String defaultValue) {
         for (Map.@Nonnull Entry<AnnotationMirror, MethodInterceptor> annotationMirrorMethodInterceptorEntry : method.getMethodInterceptors().entrySet()) {
             final @Nonnull MethodInterceptor methodInterceptor = annotationMirrorMethodInterceptorEntry.getValue();
-            methodInterceptor.generateFieldsRequiredByMethod(this, method);
+            methodInterceptor.generateFieldsRequiredByMethod(this, method, typeInformation);
             methodCall = methodInterceptor.generateInterceptorMethod(this, method, methodCall, returnedValue, defaultValue);
         }
         if (method.hasReturnType()) {

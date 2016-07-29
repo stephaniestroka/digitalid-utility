@@ -7,6 +7,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.collaboration.annotations.TODO;
 import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.generator.information.method.MethodInformation;
+import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 
@@ -17,7 +18,7 @@ public abstract class MethodInterceptor implements MethodAnnotationValidator {
     protected abstract @Nonnull String getPrefix();
     
     @Pure
-    public void generateFieldsRequiredByMethod(@Nonnull JavaFileGenerator javaFileGenerator, @Nonnull MethodInformation method) {}
+    public void generateFieldsRequiredByMethod(@Nonnull JavaFileGenerator javaFileGenerator, @Nonnull MethodInformation method, @Nonnull TypeInformation typeInformation) {}
         
     /**
      * Implements an interceptor method. The method is required to implement the call to the given statement. It can wrap its own functionality around the statement.
@@ -31,6 +32,9 @@ public abstract class MethodInterceptor implements MethodAnnotationValidator {
      */
     @Pure
     public @Nonnull String generateInterceptorMethod(@Nonnull JavaFileGenerator javaFileGenerator, @Nonnull MethodInformation method, @Nonnull String statement, @Nullable String resultVariable, @Nullable String defaultValue) {
+        if (method.isAbstract()) {
+            javaFileGenerator.addAnnotation(Override.class);
+        }
         MethodUtility.generateBeginMethod(javaFileGenerator, method, getPrefix());
         implementInterceptorMethod(javaFileGenerator, method, statement, resultVariable, defaultValue);
         javaFileGenerator.endMethod();
