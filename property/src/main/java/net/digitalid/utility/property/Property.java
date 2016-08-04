@@ -11,8 +11,7 @@ import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.property.extensible.ExtensibleProperty;
 import net.digitalid.utility.property.indexed.IndexedProperty;
-import net.digitalid.utility.property.nonnullable.NonNullableProperty;
-import net.digitalid.utility.property.nullable.NullableProperty;
+import net.digitalid.utility.property.simple.SimpleProperty;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
@@ -20,10 +19,9 @@ import net.digitalid.utility.validation.annotations.value.Valid;
 /**
  * A property is an object that can be {@link Property.Observer observed}.
  * 
- * @see NullableProperty
- * @see NonNullableProperty
  * @see ExtensibleProperty
  * @see IndexedProperty
+ * @see SimpleProperty
  */
 @Mutable
 public abstract class Property<V, O extends Property.Observer<V>> extends RootClass implements Valid.Value<V> {

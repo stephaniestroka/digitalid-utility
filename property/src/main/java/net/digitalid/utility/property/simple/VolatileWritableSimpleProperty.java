@@ -1,6 +1,6 @@
-package net.digitalid.utility.property.nullable;
+package net.digitalid.utility.property.simple;
 
-import javax.annotation.Nullable;
+import java.util.Objects;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
@@ -13,37 +13,37 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
- * This writable property stores a nullable value in volatile memory.
+ * This writable property stores a simple value in volatile memory.
  */
 @Mutable
 @GenerateBuilder
 @GenerateSubclass
-public abstract class VolatileWritableNullableProperty<V> extends WritableNullableProperty<V> {
+public abstract class VolatileWritableSimpleProperty<V> extends WritableSimpleProperty<V> {
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
-    private @Nullable @Valid V value;
+    private @Valid V value;
     
     @Pure
     @Override
-    public @NonCapturable @Nullable @Valid V get() {
+    public @NonCapturable @Valid V get() {
         return value;
     }
     
     @Impure
     @Override
-    public @Capturable @Nullable @Valid V set(@Captured @Nullable @Valid V newValue) {
-        final @Nullable V oldValue = this.value;
+    public @Capturable @Valid V set(@Captured @Valid V newValue) {
+        final V oldValue = this.value;
         this.value = newValue;
         
-        if (!newValue.equals(oldValue)) { notifyObservers(oldValue, newValue); }
+        if (!Objects.equals(newValue, oldValue)) { notifyObservers(oldValue, newValue); }
         
         return oldValue;
     }
     
-    /* -------------------------------------------------- Constructors -------------------------------------------------- */
+    /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
-    protected VolatileWritableNullableProperty(@Captured @Nullable @Valid V value) {
+    protected VolatileWritableSimpleProperty(@Captured @Valid V value) {
         this.value = value;
     }
     
