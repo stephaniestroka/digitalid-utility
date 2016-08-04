@@ -1,39 +1,24 @@
 package net.digitalid.utility.rootclass;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import net.digitalid.utility.annotations.method.CallSuper;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
+import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * All custom classes in the Digital ID Library extend this root class.
+ * The root class for all custom classes whose initialization does not throw a checked exception.
  */
 @Mutable
-public abstract class RootClass implements RootInterface {
+public abstract class RootClass extends RootClassWithException<RuntimeException> {
     
-    /* -------------------------------------------------- Initialization -------------------------------------------------- */
-    
-    /**
-     * Initializes this object after the constructors of the subclasses have been executed.
-     */
     @Pure
+    @Override
     @CallSuper
-    protected void initialize() {}
-    
-    /* -------------------------------------------------- Object -------------------------------------------------- */
-    
-    @Pure
-    @Override
-    public abstract boolean equals(@Nullable Object object);
-    
-    @Pure
-    @Override
-    public abstract int hashCode();
-    
-    @Pure
-    @Override
-    public abstract @Nonnull String toString();
+    @TODO(task = "Remove this overriding once the subclass generator can handle generic exception types.", date = "2016-08-04", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.MIDDLE)
+    protected void initialize() throws RuntimeException {
+        super.initialize();
+    }
     
 }
