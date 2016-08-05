@@ -11,10 +11,12 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.reference.NonRawRecipient;
+import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.conversion.converter.Converter;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
+import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.tuples.Tuple;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 
@@ -261,4 +263,28 @@ public class CustomType {
     public int hashCode() {
         return typeName.hashCode();
     }
+    
+    /* -------------------------------------------------- Type Name -------------------------------------------------- */
+    
+    /**
+     * Returns the custom type for the given representing field.
+     */
+    public static @Nonnull String getTypeName(@Nonnull TypeMirror representingFieldType, @Nonnull TypeImporter typeImporter) {
+        @Nonnull CustomType customType = CustomType.of(representingFieldType);
+        if (customType == CustomType.TUPLE && ProcessingUtility.getTypeElement(representingFieldType).getKind() == ElementKind.ENUM) {
+            customType = CustomType.STRING;
+        } 
+        if (customType == CustomType.TUPLE) {
+            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(typeImporter.importConverterType(representingFieldType) + ".INSTANCE");
+        } else if (customType == CustomType.SET) {
+            final @Nonnull TypeMirror componentType = ProcessingUtility.getComponentType(representingFieldType);
+            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(getTypeName(componentType, typeImporter));
+        } else if (customType == CustomType.LIST) {
+            final @Nonnull TypeMirror componentType = ProcessingUtility.getComponentType(representingFieldType);
+            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(getTypeName(componentType, typeImporter));
+        } else {
+            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName());
+        }
+    }
+    
 }

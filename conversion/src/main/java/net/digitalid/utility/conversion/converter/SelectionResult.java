@@ -122,4 +122,7 @@ public interface SelectionResult {
     @Impure
     public <K, V> @Nonnull Map<K, V> getMap(@Nonnull Producer<K> keyFunction, @Nonnull Producer<V> valueFunction);
     
+    @Impure
+    public boolean moveToNextRow();
+    
 }

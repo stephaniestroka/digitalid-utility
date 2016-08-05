@@ -32,9 +32,6 @@ public abstract class MethodInterceptor implements MethodAnnotationValidator {
      */
     @Pure
     public @Nonnull String generateInterceptorMethod(@Nonnull JavaFileGenerator javaFileGenerator, @Nonnull MethodInformation method, @Nonnull String statement, @Nullable String resultVariable, @Nullable String defaultValue) {
-        if (method.isAbstract()) {
-            javaFileGenerator.addAnnotation(Override.class);
-        }
         MethodUtility.generateBeginMethod(javaFileGenerator, method, getPrefix());
         implementInterceptorMethod(javaFileGenerator, method, statement, resultVariable, defaultValue);
         javaFileGenerator.endMethod();

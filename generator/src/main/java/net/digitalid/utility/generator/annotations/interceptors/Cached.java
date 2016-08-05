@@ -58,7 +58,7 @@ public @interface Cached {
         @Pure
         private @Nonnull String getCacheName(@Nonnull JavaFileGenerator javaFileGenerator, @Nonnull MethodInformation method) {
             final @Nonnull FiniteIterable<@Nonnull MethodParameterInformation> parameters = method.getParameters();
-            return method.getName() + getListOfParameterTypes(javaFileGenerator, parameters).replaceAll("\\.", "").replaceAll(", ", "").replaceAll("<", "Of").replaceAll(">", "") + "Cache";
+            return method.getName() + getListOfParameterTypes(javaFileGenerator, parameters).replaceAll("@", "").replaceAll(" ", "").replaceAll("\\.", "").replaceAll(",", "And").replaceAll("<", "Of").replaceAll(">", "").replaceAll("\\?", "Unknown").replaceAll("\\?", "Unknown") + "Cache";
         }
         
         @Pure
@@ -80,8 +80,8 @@ public @interface Cached {
             } else {
                 keyTypeAsString = javaFileGenerator.importIfPossible(keyType) + Brackets.inPointy(getListOfParameterTypes(javaFileGenerator, parameters));
             }
-            @Nonnull Class<?> valueType = ProcessingUtility.getClass(ProcessingUtility.getBoxedType(method.getReturnType()));
-            javaFileGenerator.addField("final @" + javaFileGenerator.importIfPossible(Nonnull.class) + " " + javaFileGenerator.importIfPossible(HashMap.class) + Brackets.inPointy(keyTypeAsString + ", " + javaFileGenerator.importIfPossible(valueType)) + " " + getCacheName(javaFileGenerator, method) + " = new HashMap<>()");
+            @Nonnull final TypeMirror valueType = ProcessingUtility.getBoxedType(method.getReturnType());
+            javaFileGenerator.addField("private final @" + javaFileGenerator.importIfPossible(Nonnull.class) + " " + javaFileGenerator.importIfPossible(HashMap.class) + Brackets.inPointy(keyTypeAsString + ", " + javaFileGenerator.importIfPossible(valueType)) + " " + getCacheName(javaFileGenerator, method) + " = new HashMap<>()");
         }
         
         @Pure
@@ -102,10 +102,7 @@ public @interface Cached {
                 }
             }
             final @Nonnull String cacheName = getCacheName(javaFileGenerator, method);
-            final @Nullable Class<?> valueType = ProcessingUtility.getClass(ProcessingUtility.getBoxedType(method.getReturnType()));
-            if (valueType == null) {
-                
-            }
+            @Nonnull final TypeMirror valueType = ProcessingUtility.getBoxedType(method.getReturnType());
             javaFileGenerator.addStatement("final @" + javaFileGenerator.importIfPossible(Nullable.class) + " " + javaFileGenerator.importIfPossible(valueType) + " cached = " + cacheName + ".get(" + keyAccess + ")");
             
             javaFileGenerator.beginIf("cached != null");

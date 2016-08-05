@@ -1,5 +1,6 @@
 package net.digitalid.utility.generator.information.method;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -23,6 +24,7 @@ import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.generator.annotations.meta.Interceptor;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
@@ -194,7 +196,12 @@ public class MethodInformation extends ExecutableInformation {
         
         Require.that(element.getKind() == ElementKind.METHOD).orThrow("The element $ has to be a method.", SourcePosition.of(element));
         
-        this.methodInterceptors = AnnotationHandlerUtility.getAnnotationHandlers(element, Interceptor.class, MethodInterceptor.class);
+        if (typeInformation.hasAnnotation(GenerateSubclass.class)) {
+            this.methodInterceptors = AnnotationHandlerUtility.getAnnotationHandlers(element, Interceptor.class, MethodInterceptor.class);
+        } else {
+            this.methodInterceptors = new HashMap<>();
+            ProcessingLog.warning("Ignoring method interceptors on method $, because no subclass in generated for type $", getName(), typeInformation.getName());
+        }
         
         if (isDeclaredInDigitalIDLibrary()) {
             if (!isEnum() && !isTest() && isPure() == isImpure()) { ProcessingLog.error("A method has to be either '@Pure' or '@Impure':", SourcePosition.of(element)); }
@@ -343,6 +350,11 @@ public class MethodInformation extends ExecutableInformation {
         }
         ProcessingLog.debugging("Stringifying return type: $ = $", returnType.getClass(), returnTypeAsString);
         return returnTypeAsString.toString();
+    }
+    
+    @Pure
+    public boolean canBeImplemented() {
+        return AnnotationHandlerUtility.getAnnotationHandlers(getElement(), Interceptor.class, MethodInterceptor.class).size() > 0;
     }
     
 }

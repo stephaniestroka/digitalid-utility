@@ -242,6 +242,13 @@ public abstract class TypeInformation extends ElementInformationImplementation {
      */
     public final @Unmodifiable @Nonnull Map<@Nonnull String, @Nonnull MethodInformation> abstractSetters;
     
+    /* -------------------------------------------------- Abstract Methods -------------------------------------------------- */
+    
+    /**
+     * Returns an iterable of methods that must be implemented.
+     */
+    public final @Unmodifiable @Nonnull FiniteIterable<@Nonnull MethodInformation> generatedMethods;
+    
     /* -------------------------------------------------- Initialization Marker -------------------------------------------------- */
     
     /**
@@ -303,6 +310,8 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     
         this.abstractSetters = methodInformation.filter((method) -> method.isSetter() && method.isAbstract()).toMap(MethodInformation::getFieldName);
         
+        this.generatedMethods = methodInformation.filter((method) -> method.isAbstract() && method.canBeImplemented());
+        
         final @Nonnull List<@Nonnull Pair<@Nonnull MethodInformation, @Nullable MethodInformation>> gettersAndSetters = new ArrayList<>();
         
         for (Map.@Nonnull Entry<String, MethodInformation> indexedGetter : abstractGetters.entrySet()) {
@@ -316,7 +325,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     
         this.derivedFieldInformation = FiniteIterable.of(abstractGetters.entrySet()).filter(entry -> entry.getValue().hasAnnotation(Derive.class)).map(entry -> GeneratedDerivedFieldInformation.of(entry.getValue().getContainingType(), entry.getValue()));
     
-        final @Nonnull FiniteIterable<MethodInformation> allRemainingAbstractMethods = methodInformation.filter((method) -> (method.isAbstract() && !method.isSetter() && !method.isGetter())).filter(MethodSignatureMatcher.of("equals", Object.class).and(MethodSignatureMatcher.of("toString")).and(MethodSignatureMatcher.of("hashCode")));
+        final @Nonnull FiniteIterable<MethodInformation> allRemainingAbstractMethods = methodInformation.filter((method) -> (method.isAbstract() && !method.isSetter() && !method.isGetter() && (!hasAnnotation(GenerateSubclass.class) || !method.canBeImplemented()))).filter(MethodSignatureMatcher.of("equals", Object.class).and(MethodSignatureMatcher.of("toString")).and(MethodSignatureMatcher.of("hashCode")));
         
         if (allRemainingAbstractMethods.size() != 0) {
             ProcessingLog.debugging("Found $ abstract methods which cannot be generated", allRemainingAbstractMethods.size());

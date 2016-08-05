@@ -140,4 +140,10 @@ class TestSelectionResult implements SelectionResult {
         return (Map<K, V>) selectedObjects.poll();
     }
     
+    @Impure
+    @Override
+    public boolean moveToNextRow() {
+        return false;
+    }
+    
 }

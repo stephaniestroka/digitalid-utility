@@ -54,6 +54,7 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
+import net.digitalid.utility.validation.auxiliary.None;
 import net.digitalid.utility.validation.contract.Contract;
 
 import static net.digitalid.utility.processor.generator.JavaFileGenerator.CodeBlock.*;
@@ -345,6 +346,16 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         Require.that(executableType.getParameterTypes().size() == executableElement.getParameters().size()).orThrow("The executable type and the executable element have to have the same number of parameters.");
         
         return FiniteIterable.of(executableType.getParameterTypes()).zipShortest(FiniteIterable.of(executableElement.getParameters())).map(pair -> importIfPossible(pair.get0()) + " " + pair.get1().getSimpleName()).join(Brackets.ROUND);
+    }
+    
+    @Impure
+    @Override
+    public @Nonnull String importConverterType(@Nonnull TypeMirror fieldType) {
+        if (ProcessingUtility.isRawlyAssignable(fieldType, None.class)) {
+            return "NoneConverter";
+        } else {
+            return importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter");
+        }
     }
     
     /* -------------------------------------------------- Code Blocks -------------------------------------------------- */

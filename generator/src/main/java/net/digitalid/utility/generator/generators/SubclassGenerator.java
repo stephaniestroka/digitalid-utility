@@ -222,6 +222,16 @@ public class SubclassGenerator extends JavaFileGenerator {
         }
     }
     
+    /**
+     * Implements the methods by adding code via the method interceptor with which the methods were annotated.
+     */
+    private void implementMethods() {
+        if (!typeInformation.getOverriddenMethods().isEmpty()) { addSection("Implement Methods"); }
+        for (final @Nonnull MethodInformation method : typeInformation.generatedMethods) {
+            generateMethodWithStatement(method, "", "result", method.getDefaultValue());
+        }
+    }
+    
     /* -------------------------------------------------- Generate RootInterface Methods -------------------------------------------------- */
     
     /**
@@ -381,6 +391,7 @@ public class SubclassGenerator extends JavaFileGenerator {
             generateFields();
             generateConstructors();
             overrideMethods();
+            implementMethods();
             generateMethods();
             
             endClass();
