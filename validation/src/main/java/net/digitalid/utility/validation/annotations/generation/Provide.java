@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.validation.annotations.string.JavaExpression;
+
 /**
  * Annotates fields that are propagated as parameters to the recover method of all other object converters referenced in the converter of the containing type.
  */
@@ -19,6 +21,6 @@ public @interface Provide {
     /**
      * Returns the default value as a Java expression.
      */
-    @Nonnull String value();
+    @Nonnull @JavaExpression String value();
     
 }

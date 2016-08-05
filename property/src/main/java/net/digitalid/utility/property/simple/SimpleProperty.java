@@ -1,11 +1,9 @@
-package net.digitalid.utility.property.nullable;
+package net.digitalid.utility.property.simple;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.property.Property;
@@ -14,17 +12,17 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
- * This read-only property stores a nullable value.
+ * This read-only property stores a simple value.
  * 
- * @see WritableNullableProperty
+ * @see WritableSimpleProperty
  */
 @Mutable
-public abstract class NullableProperty<V> extends Property<V, NullableProperty.Observer<V>> {
+public abstract class SimpleProperty<V> extends Property<V, SimpleProperty.Observer<V>> {
     
     /* -------------------------------------------------- Observer -------------------------------------------------- */
     
     /**
-     * Objects that implement this interface can be used to observe {@link NullableProperty nullable properties}.
+     * Objects that implement this interface can be used to observe {@link SimpleProperty simple properties}.
      */
     @Mutable
     @Functional
@@ -36,16 +34,16 @@ public abstract class NullableProperty<V> extends Property<V, NullableProperty.O
          * @require !Objects.equals(newValue, oldValue) : "The new value may not be the same as the old value.";
          */
         @Impure
-        public void replaced(@NonCaptured @Unmodified @Nonnull NullableProperty<V> property, @NonCaptured @Unmodified @Nullable @Valid V oldValue, @NonCaptured @Unmodified @Nullable @Valid V newValue);
+        public void replaced(@NonCaptured @Unmodified @Nonnull SimpleProperty<V> property, @NonCaptured @Unmodified @Valid V oldValue, @NonCaptured @Unmodified @Valid V newValue);
         
     }
     
     /* -------------------------------------------------- Getter -------------------------------------------------- */
     
     /**
-     * Returns the value of this nullable property.
+     * Returns the value of this simple property.
      */
     @Pure
-    public abstract @NonCapturable @Nullable @Valid V get();
+    public abstract @Valid V get();
     
 }

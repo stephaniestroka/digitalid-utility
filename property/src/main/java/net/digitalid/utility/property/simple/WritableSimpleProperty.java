@@ -1,9 +1,8 @@
-package net.digitalid.utility.property.nullable;
+package net.digitalid.utility.property.simple;
 
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
@@ -16,12 +15,12 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
- * This writable property stores a nullable value.
+ * This writable property stores a simple value.
  * 
- * @see VolatileWritableNullableProperty
+ * @see VolatileWritableSimpleProperty
  */
 @Mutable
-public abstract class WritableNullableProperty<V> extends NullableProperty<V> {
+public abstract class WritableSimpleProperty<V> extends SimpleProperty<V> {
     
     /* -------------------------------------------------- Setter -------------------------------------------------- */
     
@@ -31,7 +30,7 @@ public abstract class WritableNullableProperty<V> extends NullableProperty<V> {
      * @return the old value of this property that got replaced by the given value.
      */
     @Impure
-    public abstract @Capturable @Nullable @Valid V set(@Captured @Nullable @Valid V value);
+    public abstract @Capturable @Valid V set(@Captured @Valid V value);
     
     /* -------------------------------------------------- Notification -------------------------------------------------- */
     
@@ -42,12 +41,12 @@ public abstract class WritableNullableProperty<V> extends NullableProperty<V> {
      * @require Objects.equals(newValue, get()) : "The new value has to be set for this property.";
      */
     @Pure
-    protected void notifyObservers(@NonCaptured @Unmodified @Nullable @Valid V oldValue, @NonCaptured @Unmodified @Nullable @Valid V newValue) {
+    protected void notifyObservers(@NonCaptured @Unmodified @Nonnull @Valid V oldValue, @NonCaptured @Unmodified @Nonnull @Valid V newValue) {
         Require.that(!Objects.equals(newValue, oldValue)).orThrow("The new value $ may not be the same as the old value $.", newValue, oldValue);
         Require.that(Objects.equals(newValue, get())).orThrow("The new value $ has to be set for this property.", newValue);
         
         if (hasObservers()) {
-            for (NullableProperty.@Nonnull Observer<V> observer : getObservers()) {
+            for (SimpleProperty.@Nonnull Observer<V> observer : getObservers()) {
                 observer.replaced(this, oldValue, newValue);
             }
         }
