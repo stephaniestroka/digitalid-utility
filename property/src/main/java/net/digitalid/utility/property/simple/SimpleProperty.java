@@ -17,7 +17,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  * @see WritableSimpleProperty
  */
 @Mutable
-public abstract class SimpleProperty<V> extends Property<V, SimpleProperty.Observer<V>> {
+public abstract class SimpleProperty<V, X extends Exception> extends Property<V, SimpleProperty.Observer<V>> {
     
     /* -------------------------------------------------- Observer -------------------------------------------------- */
     
@@ -34,7 +34,7 @@ public abstract class SimpleProperty<V> extends Property<V, SimpleProperty.Obser
          * @require !Objects.equals(newValue, oldValue) : "The new value may not be the same as the old value.";
          */
         @Impure
-        public void replaced(@NonCaptured @Unmodified @Nonnull SimpleProperty<V> property, @NonCaptured @Unmodified @Valid V oldValue, @NonCaptured @Unmodified @Valid V newValue);
+        public void replaced(@NonCaptured @Unmodified @Nonnull SimpleProperty<V, ?> property, @NonCaptured @Unmodified @Valid V oldValue, @NonCaptured @Unmodified @Valid V newValue);
         
     }
     
@@ -44,6 +44,6 @@ public abstract class SimpleProperty<V> extends Property<V, SimpleProperty.Obser
      * Returns the value of this simple property.
      */
     @Pure
-    public abstract @Valid V get();
+    public abstract @Valid V get() throws X;
     
 }
