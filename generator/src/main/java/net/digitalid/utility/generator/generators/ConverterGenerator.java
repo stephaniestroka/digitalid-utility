@@ -23,7 +23,6 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.conversion.converter.Converter;
 import net.digitalid.utility.conversion.converter.CustomAnnotation;
 import net.digitalid.utility.conversion.converter.CustomField;
-import net.digitalid.utility.conversion.converter.Declaration;
 import net.digitalid.utility.conversion.converter.SelectionResult;
 import net.digitalid.utility.conversion.converter.ValueCollector;
 import net.digitalid.utility.conversion.converter.types.CustomType;
@@ -176,19 +175,21 @@ public class ConverterGenerator extends JavaFileGenerator {
     private void generateConvert() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
-        beginMethod("public " + Brackets.inPointy("R") + " void convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(ValueCollector.class) + Brackets.inPointy("R") + " valueCollector)");
+        beginMethod("public int convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(ValueCollector.class) + " valueCollector)");
 //        beginMethod("public void convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(ValueCollector.class) + " valueCollector)");
+        addStatement("int i = 0");
         final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
         beginIf(Strings.lowercaseFirstCharacter(typeInformation.getName()) + " == null");
         for (@Nonnull FieldInformation field : representingFieldInformation) {
-            addStatement(generateValueCollectorCall("null", field.getType(), 1));
+            addStatement("i += " + generateValueCollectorCall("null", field.getType(), 1));
         }
         endIfBeginElse();
         for (@Nonnull FieldInformation field : representingFieldInformation) {
             final @Nonnull String fieldAccess = Strings.lowercaseFirstCharacter(typeInformation.getName()) + "." + field.getAccessCode();
-            addStatement(generateValueCollectorCall(fieldAccess, field.getType(), 1));
+            addStatement("i += " + generateValueCollectorCall(fieldAccess, field.getType(), 1));
         }
         endElse();
+        addStatement("return i");
         endMethod();
     }
     
@@ -338,18 +339,15 @@ public class ConverterGenerator extends JavaFileGenerator {
     /**
      * Generates the declare method that iterates through the representing fields and sets the field in the declaration object.
      */
-    private void generateDeclare() {
+    private void generateGetFields() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
-        beginMethod("public void declare(@" + importIfPossible(Nonnull.class) + " @" + importIfPossible(Modified.class) + " @" + importIfPossible(NonCaptured.class) + " " + importIfPossible(Declaration.class) + " declaration)");
-        beginForLoop("@Nonnull CustomField field : fields");
-        addStatement("declaration.setField(field)");
-        endForLoop();
+        beginMethod("public @" + importIfPossible(Nonnull.class) + " " + importIfPossible(ImmutableList.class) + Brackets.inPointy("@" + importIfPossible(Nonnull.class) + " " + importIfPossible(CustomField.class)) + " getFields()");
+        addStatement("return fields");
         endMethod();
     }
     
     /* -------------------------------------------------- Get Name -------------------------------------------------- */
-    
     
     private void generateGetName() {
         addAnnotation(Pure.class);
@@ -374,7 +372,7 @@ public class ConverterGenerator extends JavaFileGenerator {
             
             generateInstanceField();
             generateFields();
-            generateDeclare();
+            generateGetFields();
             generateGetName();
             generateConvert();
             generateRecoverMethod();

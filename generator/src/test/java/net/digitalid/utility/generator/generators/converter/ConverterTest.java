@@ -195,7 +195,11 @@ public class ConverterTest extends CustomTest {
     @Test
     public void testFieldsOfClass() {
         final @Nonnull TestDeclaration testDeclaration = new TestDeclaration();
-        VariousFieldsConverter.INSTANCE.declare(testDeclaration);
+        final @Nonnull ImmutableList<@Nonnull CustomField> fields = VariousFieldsConverter.INSTANCE.getFields();
+        for (@Nonnull CustomField field : fields) {
+            testDeclaration.setField(field);
+        }
+    
         final @Nonnull CustomField[] customFieldsArray = { 
                 CustomField.with(BOOLEAN, "flag", ImmutableList.withElements()),
                 CustomField.with(INTEGER32, "size", ImmutableList.withElements()),
@@ -231,7 +235,11 @@ public class ConverterTest extends CustomTest {
     @Test
     public void testFieldsOfEnum() {
         final @Nonnull TestDeclaration testDeclaration = new TestDeclaration();
-        SimpleEnumConverter.INSTANCE.declare(testDeclaration);
+        final @Nonnull ImmutableList<@Nonnull CustomField> fields = SimpleEnumConverter.INSTANCE.getFields();
+        for (@Nonnull CustomField field : fields) {
+            testDeclaration.setField(field);
+        }
+        
         assertEquals(CustomField.with(STRING, "SimpleEnum", ImmutableList.withElements()), testDeclaration.collectedFields.get(0));
     }
     
@@ -255,7 +263,11 @@ public class ConverterTest extends CustomTest {
     @Test
     public void testFieldsOfEnumWithRecoverMethod() {
         final @Nonnull TestDeclaration testDeclaration = new TestDeclaration();
-        EnumWithRecoverMethodConverter.INSTANCE.declare(testDeclaration);
+        final @Nonnull ImmutableList<@Nonnull CustomField> fields = EnumWithRecoverMethodConverter.INSTANCE.getFields();
+        for (@Nonnull CustomField field : fields) {
+            testDeclaration.setField(field);
+        }
+        
         assertEquals(CustomField.with(INTEGER32, "id", ImmutableList.withElements()), testDeclaration.collectedFields.get(0));
     }
 
@@ -279,7 +291,10 @@ public class ConverterTest extends CustomTest {
     @Test
     public void testFieldsOfEnumWithRecoverMethodAndNonDirectlyAccessibleField() {
         final @Nonnull TestDeclaration testDeclaration = new TestDeclaration();
-        EnumWithRecoverMethodAndNonDirectlyAccessibleFieldConverter.INSTANCE.declare(testDeclaration);
+        final @Nonnull ImmutableList<@Nonnull CustomField> fields = EnumWithRecoverMethodAndNonDirectlyAccessibleFieldConverter.INSTANCE.getFields();
+        for (@Nonnull CustomField field : fields) {
+            testDeclaration.setField(field);
+        }
         assertEquals(CustomField.with(INTEGER08, "value", ImmutableList.withElements()), testDeclaration.collectedFields.get(0));
     }
 

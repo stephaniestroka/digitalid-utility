@@ -10,7 +10,6 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.conversion.converter.types.CustomType;
-import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.size.Size;
@@ -18,7 +17,7 @@ import net.digitalid.utility.validation.annotations.size.Size;
 /**
  *
  */
-public interface ValueCollector<R> {
+public interface ValueCollector {
     
     /* -------------------------------------------------- Setters -------------------------------------------------- */
     
@@ -26,7 +25,7 @@ public interface ValueCollector<R> {
      * Sets the next parameter to empty.
      */
     @Impure
-    public R setEmpty();
+    public Integer setEmpty();
     
     /**
      * Sets the next parameter to the given boolean value.
@@ -34,7 +33,7 @@ public interface ValueCollector<R> {
      * @param value the boolean value which is to be set.
      */
     @Impure
-    public R setBoolean(boolean value);
+    public Integer setBoolean(boolean value);
     
     /**
      * Sets the next parameter to the given byte value.
@@ -42,7 +41,7 @@ public interface ValueCollector<R> {
      * @param value the byte value which is to be set.
      */
     @Impure
-    public R setInteger08(byte value);
+    public Integer setInteger08(byte value);
     
     /**
      * Sets the next parameter to the given short value.
@@ -50,7 +49,7 @@ public interface ValueCollector<R> {
      * @param value the short value which is to be set.
      */
     @Impure
-    public R setInteger16(short value);
+    public Integer setInteger16(short value);
     
     /**
      * Sets the next parameter to the given int value.
@@ -58,7 +57,7 @@ public interface ValueCollector<R> {
      * @param value the int value which is to be set.
      */
     @Impure
-    public R setInteger32(int value);
+    public Integer setInteger32(int value);
     
     /**
      * Sets the next parameter to the given long value.
@@ -66,7 +65,7 @@ public interface ValueCollector<R> {
      * @param value the long value which is to be set.
      */
     @Impure
-    public R setInteger64(long value);
+    public Integer setInteger64(long value);
     
     /**
      * Sets the next parameter to the given integer value.
@@ -74,7 +73,7 @@ public interface ValueCollector<R> {
      * @param value the integer value which is to be set.
      */
     @Impure
-    public R setInteger(@Nonnull BigInteger value);
+    public Integer setInteger(@Nonnull BigInteger value);
     
     /**
      * Sets the next parameter to the given float value.
@@ -82,7 +81,7 @@ public interface ValueCollector<R> {
      * @param value the float value which is to be set.
      */
     @Impure
-    public R setDecimal32(float value);
+    public Integer setDecimal32(float value);
     
     /**
      * Sets the next parameter to the given double value.
@@ -90,7 +89,7 @@ public interface ValueCollector<R> {
      * @param value the double value which is to be set.
      */
     @Impure
-    public R setDecimal64(double value);
+    public Integer setDecimal64(double value);
     
     /**
      * Sets the next parameter to the given char value.
@@ -98,7 +97,7 @@ public interface ValueCollector<R> {
      * @param value the char value which is to be set.
      */
     @Impure
-    public R setString01(char value);
+    public Integer setString01(char value);
     
     /**
      * Sets the next parameter to the given string value.
@@ -106,7 +105,7 @@ public interface ValueCollector<R> {
      * @param value the string value which is to be set.
      */
     @Impure
-    public R setString64(@Nonnull @MaxSize(64) String value);
+    public Integer setString64(@Nonnull @MaxSize(64) String value);
     
     /**
      * Sets the next parameter to the given string value.
@@ -114,7 +113,7 @@ public interface ValueCollector<R> {
      * @param value the string value which is to be set.
      */
     @Impure
-    public R setString(@Nonnull String value);
+    public Integer setString(@Nonnull String value);
     
     /**
      * Sets the next parameter to the given binary value.
@@ -122,7 +121,7 @@ public interface ValueCollector<R> {
      * @param value the binary value which is to be set.
      */
     @Impure
-    public R setBinary128(@Nonnull @Size(16) byte[] value);
+    public Integer setBinary128(@Nonnull @Size(16) byte[] value);
     
     /**
      * Sets the next parameter to the given binary value.
@@ -130,7 +129,7 @@ public interface ValueCollector<R> {
      * @param value the binary value which is to be set.
      */
     @Impure
-    public R setBinary256(@Nonnull @Size(32) byte[] value);
+    public Integer setBinary256(@Nonnull @Size(32) byte[] value);
     
     /**
      * Sets the next parameter to the given binary value.
@@ -138,7 +137,7 @@ public interface ValueCollector<R> {
      * @param value the binary value which is to be set.
      */
     @Impure
-    public R setBinary(@Nonnull byte[] value);
+    public Integer setBinary(@Nonnull byte[] value);
     
     /**
      * Sets the next parameter to the given input stream.
@@ -149,19 +148,19 @@ public interface ValueCollector<R> {
      * @require Database.getInstance().supportsBinaryStreams() : "The database supports binary streams.";
      */
     @Impure
-    public R setBinaryStream(@Nonnull InputStream stream, int length);
+    public Integer setBinaryStream(@Nonnull InputStream stream, int length);
     
     @Impure
-    public <T> R setList(@Nonnull List<T> list, @Nonnull UnaryFunction<T, R> entityCollector);
+    public <T> Integer setList(@Nonnull List<T> list, @Nonnull UnaryFunction<T, Integer> entityCollector);
     
     @Impure
-    public <T> R setArray(@Nonnull T[] value, Consumer<T> entityCollector);
+    public <T> Integer setArray(@Nonnull T[] value, @Nonnull UnaryFunction<T, Integer> entityCollector);
     
     @Impure
-    public <T> R setSet(@Nonnull Set<T> value, Consumer<T> entityCollector);
+    public <T> Integer setSet(@Nonnull Set<T> value, @Nonnull UnaryFunction<T, Integer> entityCollector);
     
     @Impure
-    public <K, V> R setMap(@Nonnull Map<K, V> value, Consumer<K> genericTypeKey, Consumer<V> genericTypeValue);
+    public <K, V> Integer setMap(@Nonnull Map<K, V> value, UnaryFunction<K, Integer> genericTypeKey, @Nonnull UnaryFunction<V, Integer> genericTypeValue);
     
     /* -------------------------------------------------- Null -------------------------------------------------- */
     
@@ -169,6 +168,6 @@ public interface ValueCollector<R> {
      * Sets the next parameter to null.
      */
     @Impure
-    public R setNull(@Nonnull CustomType customType);
+    public Integer setNull(@Nonnull CustomType customType);
     
 }

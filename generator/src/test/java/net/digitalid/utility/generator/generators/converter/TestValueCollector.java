@@ -12,7 +12,6 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.conversion.converter.ValueCollector;
 import net.digitalid.utility.conversion.converter.types.CustomType;
-import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.functional.interfaces.UnaryFunction;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.size.Size;
@@ -20,156 +19,155 @@ import net.digitalid.utility.validation.annotations.size.Size;
 /**
  * The value collector that is used to test the functionality of the converter.
  */
-class TestValueCollector implements ValueCollector<Void> {
-    
+class TestValueCollector implements ValueCollector {
     
     List<@Nonnull Pair<@Nonnull Object, @Nonnull Class<?>>> collectedValues = new ArrayList<>();
     
     @Impure
     @Override
-    public Void setEmpty() {
+    public @Nonnull Integer setEmpty() {
         collectedValues.add(Pair.of(null, boolean.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setBoolean(boolean value) {
+    public @Nonnull Integer setBoolean(boolean value) {
         collectedValues.add(Pair.of(value, boolean.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setInteger08(byte value) {
+    public @Nonnull Integer setInteger08(byte value) {
         collectedValues.add(Pair.of(value, byte.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setInteger16(short value) {
+    public @Nonnull Integer setInteger16(short value) {
         collectedValues.add(Pair.of(value, short.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setInteger32(int value) {
+    public @Nonnull Integer setInteger32(int value) {
         collectedValues.add(Pair.of(value, int.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setInteger64(long value) {
+    public @Nonnull Integer setInteger64(long value) {
         collectedValues.add(Pair.of(value, long.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setInteger(BigInteger value) {
+    public @Nonnull Integer setInteger(BigInteger value) {
         collectedValues.add(Pair.of(value, BigInteger.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setDecimal32(float value) {
+    public @Nonnull Integer setDecimal32(float value) {
         collectedValues.add(Pair.of(value, float.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setDecimal64(double value) {
+    public @Nonnull Integer setDecimal64(double value) {
         collectedValues.add(Pair.of(value, double.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setString01(char value) {
+    public @Nonnull Integer setString01(char value) {
         collectedValues.add(Pair.of(value, char.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setString64(String value) {
+    public @Nonnull Integer setString64(String value) {
         collectedValues.add(Pair.of(value, String.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setString(String value) {
+    public @Nonnull Integer setString(String value) {
         collectedValues.add(Pair.of(value, String.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setBinary128(@Nonnull @Size(16) byte[] value) {
+    public @Nonnull Integer setBinary128(@Nonnull @Size(16) byte[] value) {
         collectedValues.add(Pair.of(value, byte[].class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setBinary256(@Nonnull @Size(32) byte[] value) {
+    public @Nonnull Integer setBinary256(@Nonnull @Size(32) byte[] value) {
         collectedValues.add(Pair.of(value, byte[].class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setBinary(@Nonnull byte[] value) {
+    public @Nonnull Integer setBinary(@Nonnull byte[] value) {
         collectedValues.add(Pair.of(value, byte[].class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setBinaryStream(InputStream stream, int length) {
+    public @Nonnull Integer setBinaryStream(InputStream stream, int length) {
         collectedValues.add(Pair.of(stream, InputStream.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public <T> Void setList(List<T> list, UnaryFunction<T, Void> entityCollector) {
+    public <T> @Nonnull Integer setList(List<T> list, UnaryFunction<T, @Nonnull Integer> entityCollector) {
         collectedValues.add(Pair.of(list, List.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public <T> Void setArray(T[] value, Consumer<T> entityCollector) {
+    public <T> @Nonnull Integer setArray(T[] value, UnaryFunction<T, @Nonnull Integer> entityCollector) {
         collectedValues.add(Pair.of(value, Object[].class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public <T> Void setSet(Set<T> value, Consumer<T> entityCollector) {
+    public <T> @Nonnull Integer setSet(Set<T> value, UnaryFunction<T, @Nonnull Integer> entityCollector) {
         collectedValues.add(Pair.of(value, Set.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public <K, V> Void setMap(Map<K, V> value, Consumer<K> genericTypeKey, Consumer<V> genericTypeValue) {
+    public <K, V> @Nonnull Integer setMap(Map<K, V> value, UnaryFunction<K, @Nonnull Integer> genericTypeKey, UnaryFunction<V, @Nonnull Integer> genericTypeValue) {
         collectedValues.add(Pair.of(value, Map.class));
-        return null;
+        return 1;
     }
     
     @Impure
     @Override
-    public Void setNull(CustomType customType) {
+    public @Nonnull Integer setNull(CustomType customType) {
         collectedValues.add(Pair.of(null, Object.class));
-        return null;
+        return 1;
     }
     
 }
