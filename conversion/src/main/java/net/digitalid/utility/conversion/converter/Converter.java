@@ -9,6 +9,7 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.immutable.ImmutableList;
+import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
 import net.digitalid.utility.validation.auxiliary.None;
 
 public interface Converter<T, E> {
@@ -23,7 +24,7 @@ public interface Converter<T, E> {
     public @Nonnull @Capturable T recover(@Nonnull @NonCaptured @Modified SelectionResult selectionResult, E externallyProvided);
     
     @Pure
-    public @Nonnull String getName();
+    public @Nonnull @CodeIdentifier String getName();
     
     public class NoneConverter implements Converter<None, Object> {
         
@@ -35,7 +36,7 @@ public interface Converter<T, E> {
         }
         
         @Override
-        public @Nonnull String getName() {
+        public @Nonnull @CodeIdentifier String getName() {
             return "None";
         }
         
