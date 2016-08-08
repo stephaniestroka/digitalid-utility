@@ -177,7 +177,7 @@ public class ConverterGenerator extends JavaFileGenerator {
         addAnnotation(Override.class);
         beginMethod("public int convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(ValueCollector.class) + " valueCollector)");
 //        beginMethod("public void convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(ValueCollector.class) + " valueCollector)");
-        addStatement("int i = 0");
+        addStatement("int i = 1");
         final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
         beginIf(Strings.lowercaseFirstCharacter(typeInformation.getName()) + " == null");
         for (@Nonnull FieldInformation field : representingFieldInformation) {
@@ -186,7 +186,7 @@ public class ConverterGenerator extends JavaFileGenerator {
         endIfBeginElse();
         for (@Nonnull FieldInformation field : representingFieldInformation) {
             final @Nonnull String fieldAccess = Strings.lowercaseFirstCharacter(typeInformation.getName()) + "." + field.getAccessCode();
-            addStatement("i += " + generateValueCollectorCall(fieldAccess, field.getType(), 1));
+            addStatement("i *= " + generateValueCollectorCall(fieldAccess, field.getType(), 1));
         }
         endElse();
         addStatement("return i");
