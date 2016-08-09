@@ -181,7 +181,7 @@ public class ConverterGenerator extends JavaFileGenerator {
         final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
         beginIf(Strings.lowercaseFirstCharacter(typeInformation.getName()) + " == null");
         for (@Nonnull FieldInformation field : representingFieldInformation) {
-            addStatement("i += " + generateValueCollectorCall("null", field.getType(), 1));
+            addStatement("i *= " + generateValueCollectorCall("null", field.getType(), 1));
         }
         endIfBeginElse();
         for (@Nonnull FieldInformation field : representingFieldInformation) {
