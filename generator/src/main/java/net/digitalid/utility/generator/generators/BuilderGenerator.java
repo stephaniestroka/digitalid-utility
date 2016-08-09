@@ -204,13 +204,13 @@ public class BuilderGenerator extends JavaFileGenerator {
                 addSetterForField(optionalField, nameOfBuilder, nameOfBuilder);
             }
             beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + " " + typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " build()");
-            addStatement("return new " + nameOfBuilder + "().build()");
+            addStatement("return new " + nameOfBuilder + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + "().build()");
             endMethod();
     
             for (@Nonnull ElementInformation optionalField : typeInformation.getConstructorParameters()) {
                 final @Nonnull String methodName = Strings.capitalizeFirstLetters(optionalField.getName());
                 beginMethod(getSetterForFieldStatementString(optionalField, typeInformation.getName(), "buildWith" + methodName));
-                addStatement("return new " + nameOfBuilder + "().with" + methodName + Brackets.inRound(optionalField.getName()) + ".build()");
+                addStatement("return new " + nameOfBuilder + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + "().with" + methodName + Brackets.inRound(optionalField.getName()) + ".build()");
                 endMethod();
             }
         }
