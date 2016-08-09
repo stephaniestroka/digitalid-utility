@@ -146,4 +146,8 @@ class TestSelectionResult implements SelectionResult {
         return false;
     }
     
+    @Impure
+    @Override
+    public void moveToFirstColumn() { }
+    
 }

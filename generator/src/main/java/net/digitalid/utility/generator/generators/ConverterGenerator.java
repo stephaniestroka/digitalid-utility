@@ -293,6 +293,7 @@ public class ConverterGenerator extends JavaFileGenerator {
     private void generateFields() {
         final @Nonnull StringBuilder fieldsString = new StringBuilder();
         final @Nonnull List<@Nonnull String> statements = new ArrayList<>();
+        boolean addedMap = false;
         for (@Nonnull FieldInformation representingField : filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation())) {
             final @Nonnull StringBuilder customAnnotations = new StringBuilder();
             final @Nonnull FiniteIterable<@Nonnull AnnotationMirror> annotations = representingField.getAnnotations();
@@ -307,7 +308,8 @@ public class ConverterGenerator extends JavaFileGenerator {
                         customAnnotations.append(", ");
                     }
                     customAnnotations.append(importIfPossible(CustomAnnotation.class) + ".with" + Brackets.inRound(importIfPossible(qualifiedAnnotationName) + ".class, " + importIfPossible(ImmutableMap.class) + ".withMappingsOf" + Brackets.inRound(annotationValuesMap)));
-                    statements.add(importIfPossible(Map.class) + Brackets.inPointy("@" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + ",@" + importIfPossible(Nullable.class) + " " + importIfPossible(Object.class)) + " " + annotationValuesMap + " = new " + importIfPossible(HashMap.class) + Brackets.inPointy("") + Brackets.inRound(""));
+                    statements.add("final @" + importIfPossible(Nonnull.class) + " " + importIfPossible(Map.class) + Brackets.inPointy("@" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + ", @" + importIfPossible(Nullable.class) + " " + importIfPossible(Object.class)) + " " + annotationValuesMap + " = new " + importIfPossible(HashMap.class) + Brackets.inPointy("") + Brackets.inRound(""));
+                    addedMap = true;
                     final @Nonnull Map<@Nonnull String, @Nonnull AnnotationValue> annotationValues = ProcessingUtility.getAnnotationValues(annotation);
                     for (Map.Entry<@Nonnull String, @Nonnull AnnotationValue> entry : annotationValues.entrySet()) {
                         @Nonnull String printValue = ProcessingUtility.getAnnotationValueAsString(entry.getValue(), this);
@@ -326,14 +328,17 @@ public class ConverterGenerator extends JavaFileGenerator {
             }
             fieldsString.append(importIfPossible(CustomField.class) + ".with(" + CustomType.getTypeName(representingField.getType(), this) + ", " + Quotes.inDouble(fieldName) + ", ImmutableList.withElements(" + customAnnotations.toString() + "))");
         }
-        addField("private static " + importIfPossible(ImmutableList.class) + "<" + importIfPossible(CustomField.class) + "> fields");
+        addField("private static final @" + importIfPossible(Nonnull.class) + " " + importIfPossible(ImmutableList.class) + "<@" + importIfPossible(Nonnull.class) + " " + importIfPossible(CustomField.class) + "> fields");
         beginBlock(true);
         for (@Nonnull String statement : statements) {
             addStatement(statement);
         }
-        addEmptyLine();
+        if (addedMap) {
+            addEmptyLine();
+        }
         addStatement("fields = " + importIfPossible(ImmutableList.class) + ".withElements(" + fieldsString + ")");
         endBlock();
+        addEmptyLine();
     }
     
     /**
