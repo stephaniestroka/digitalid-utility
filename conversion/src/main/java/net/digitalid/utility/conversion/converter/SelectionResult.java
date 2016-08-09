@@ -125,4 +125,7 @@ public interface SelectionResult {
     @Impure
     public boolean moveToNextRow();
     
+    @Impure
+    public void moveToFirstColumn();
+    
 }
