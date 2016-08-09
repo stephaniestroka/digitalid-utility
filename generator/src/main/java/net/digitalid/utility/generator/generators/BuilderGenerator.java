@@ -95,7 +95,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     }
     
     private String getSetterForFieldStatementString(@Nonnull ElementInformation field, @Nonnull String returnType, @Nonnull String methodName) {
-        return "public static " + importWithBounds(typeInformation.getTypeArguments()) + returnType + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")";
+        return "public static " + importWithBounds(typeInformation.getTypeArguments()) + (typeInformation.getTypeArguments().isEmpty() ? "" : " ") + returnType + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")";
     }
     
     /**
@@ -163,20 +163,9 @@ public class BuilderGenerator extends JavaFileGenerator {
         }
         beginMethod("public " + typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " build()" + (throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()));
         
-        final @Nonnull FiniteIterable<VariableElementInformation> constructorParameters = typeInformation.getConstructorParameters();
-        
-        // TODO: remove
-//        final @Nonnull String nameOfConstructor;
-//        if (typeInformation.hasAnnotation(GenerateSubclass.class)) {
-//            nameOfConstructor = typeInformation.getSimpleNameOfGeneratedSubclass();
-//        } else {
-//            nameOfConstructor = typeInformation.getName();
-//        }
-//        addStatement("return new " + nameOfConstructor + constructorParameters.map(ElementInformation::getName).join(Brackets.ROUND));
         addStatement(typeInformation.getInstantiationCode(false, true, true));
         
         endMethod();
-        
         endClass();
     }
     
