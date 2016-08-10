@@ -270,9 +270,15 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         // - the call to the constructor.
         if (useBuilderIfAvailable && hasAnnotation(GenerateBuilder.class)) {
             final @Nonnull StringBuilder assignedParameters = new StringBuilder();
+            final @Nonnull StringBuilder optionalParameters = new StringBuilder();
             for (@Nonnull VariableElementInformation constructorParameter : getConstructorParameters()) {
-                assignedParameters.append(".with").append(Strings.capitalizeFirstLetters(constructorParameter.getName())).append("(").append(constructorParameter.getName()).append(")");
+                if (constructorParameter.isMandatory()) {
+                    assignedParameters.append(".with").append(Strings.capitalizeFirstLetters(constructorParameter.getName())).append("(").append(constructorParameter.getName()).append(")");
+                } else {
+                    optionalParameters.append(".with").append(Strings.capitalizeFirstLetters(constructorParameter.getName())).append("(").append(constructorParameter.getName()).append(")");
+                }
             }
+            assignedParameters.append(optionalParameters);
             return "return " + getSimpleNameOfGeneratedBuilder() + assignedParameters.append(".build()").toString();
         } else if (useRecoverMethodIfAvailable && getRecoverMethod() != null) {
             final @Nonnull MethodInformation recoverMethod = getRecoverMethod();

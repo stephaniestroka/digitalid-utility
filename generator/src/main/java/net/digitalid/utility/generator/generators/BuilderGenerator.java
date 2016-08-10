@@ -82,6 +82,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         beginInterface("public interface " + interfaceName + importWithBounds(typeInformation.getTypeArguments()));
         addAnnotation(Chainable.class);
         addMethodDeclaration("public @" + importIfPossible(Nonnull.class) + " " + nextInterface + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")");
+        addEmptyLine();
         endInterface();
         return interfaceName;
     }
@@ -95,7 +96,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     }
     
     private String getSetterForFieldStatementString(@Nonnull ElementInformation field, @Nonnull String returnType, @Nonnull String methodName) {
-        return "public static " + importWithBounds(typeInformation.getTypeArguments()) + (typeInformation.getTypeArguments().isEmpty() ? "" : " ") + returnType + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")";
+        return "public static " + importWithBounds(typeInformation.getTypeArguments()) + (typeInformation.getTypeArguments().isEmpty() ? "" : " ") + returnType + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")";
     }
     
     /**
@@ -122,7 +123,7 @@ public class BuilderGenerator extends JavaFileGenerator {
                 final @Nonnull ElementInformation nextField = requiredFields.get(i + 1);
                 nextInterface = getNameOfFieldBuilder(nextField);
             }
-            listOfInterfaces.add(createInterfaceForField(requiredField, nextInterface));
+            listOfInterfaces.add(createInterfaceForField(requiredField, nextInterface) + typeInformation.getTypeArguments().join(Brackets.POINTY, ""));
         }
         return listOfInterfaces;
     }
@@ -135,7 +136,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         ProcessingLog.debugging("createInnerClassForFields()");
         
         final @Nonnull FiniteIterable<@Nonnull TypeVariable> typeArguments = typeInformation.getTypeArguments();
-        beginClass("public static class " + nameOfBuilder + importWithBounds(typeArguments) + (interfacesForRequiredFields.isEmpty() ? "" : " implements " + FiniteIterable.of(interfacesForRequiredFields).join() + typeArguments.join(Brackets.POINTY, "")));
+        beginClass("public static class " + nameOfBuilder + importWithBounds(typeArguments) + (interfacesForRequiredFields.isEmpty() ? "" : " implements " + FiniteIterable.of(interfacesForRequiredFields).join()));
         
         for (@Nonnull VariableElementInformation field : typeInformation.getConstructorParameters()) {
             field.getAnnotations();
@@ -178,19 +179,19 @@ public class BuilderGenerator extends JavaFileGenerator {
      * a static "get()" method is created, which returns the new builder instance without calling any additional builder setters.
      */
     // TODO: improve exception handling
-    protected void createStaticEntryMethod(@Nonnull String nameOfBuilder, @Nonnull @NonNullableElements FiniteIterable<VariableElementInformation> requiredFields, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) {
+    protected void createStaticEntryMethod(@Nonnull String nameOfBuilder, @Nonnull FiniteIterable<@Nonnull VariableElementInformation> requiredFields, @Nonnull List<@Nonnull String> interfacesForRequiredFields) {
         if (requiredFields.size() > 0) {
             final @Nonnull ElementInformation entryField = requiredFields.get(0);
             final @Nonnull String secondInterface;
             if (interfacesForRequiredFields.size() > 1) {
                 secondInterface = interfacesForRequiredFields.get(1);
             } else {
-                secondInterface = nameOfBuilder;
+                secondInterface = nameOfBuilder + typeInformation.getTypeArguments().join(Brackets.POINTY, "");
             }
             addSetterForField(entryField, secondInterface, nameOfBuilder);
         } else {
             for (@Nonnull ElementInformation optionalField : typeInformation.getConstructorParameters()) {
-                addSetterForField(optionalField, nameOfBuilder, nameOfBuilder);
+                addSetterForField(optionalField, nameOfBuilder + typeInformation.getTypeArguments().join(Brackets.POINTY, ""), nameOfBuilder);
             }
             beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + " " + typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " build()");
             addStatement("return new " + nameOfBuilder + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + "().build()");

@@ -20,6 +20,11 @@ public class GeneratedRepresentingFieldInformation extends GeneratedFieldInforma
         super(containingType, getter, setter);
     }
     
+    @Override
+    public boolean isMandatory() {
+        return !(this.hasDefaultValue() || this.hasAnnotation(Nullable.class) || this.getGetter().getReturnType().getAnnotation(Nullable.class) != null || getSetter() != null);
+    }
+    
     /**
      * Returns the field information of the given containing type, getter and setter which can be used to access the value.
      * 
