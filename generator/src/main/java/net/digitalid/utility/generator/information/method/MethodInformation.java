@@ -36,6 +36,7 @@ import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.validation.annotations.file.permission.Executable;
 import net.digitalid.utility.validation.annotations.generation.Default;
 import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -118,6 +119,13 @@ public class MethodInformation extends ExecutableInformation {
         Require.that(isGetter() || isSetter()).orThrow("The method $ is neither a getter nor a setter.", getName());
         
         return Strings.lowercaseFirstCharacter(getName().substring(getName().startsWith("is") ? 2 : 3));
+    }
+    
+    /* -------------------------------------------------- Thrown Types -------------------------------------------------- */
+    
+    public @Nonnull FiniteIterable<@Nonnull TypeMirror> getThrownTypes() {
+        final @Nonnull ExecutableType executableType = (ExecutableType) StaticProcessingEnvironment.getTypeUtils().asMemberOf(getContainingType(), getElement());
+        return FiniteIterable.of(executableType.getThrownTypes());
     }
     
     /* -------------------------------------------------- Annotations -------------------------------------------------- */

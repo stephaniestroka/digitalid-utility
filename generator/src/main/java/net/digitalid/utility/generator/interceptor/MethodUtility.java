@@ -29,7 +29,7 @@ public final class MethodUtility {
         } else {
             methodName = method.getName();
         }
-        javaFileGenerator.beginMethod(method.getModifiersForOverridingMethod() + method.getReturnTypeAnnotations(javaFileGenerator) + javaFileGenerator.importIfPossible(method.getType()) + " " + methodName + javaFileGenerator.declareParameters(method.getType(), method.getElement()) + (method.getElement().getThrownTypes().isEmpty() ? "" : " throws " + FiniteIterable.of(method.getElement().getThrownTypes()).map(javaFileGenerator::importIfPossible).join()));
+        javaFileGenerator.beginMethod(method.getModifiersForOverridingMethod() + method.getReturnTypeAnnotations(javaFileGenerator) + javaFileGenerator.importIfPossible(method.getType()) + " " + methodName + javaFileGenerator.declareParameters(method.getType(), method.getElement()) + (method.getElement().getThrownTypes().isEmpty() ? "" : " throws " + method.getThrownTypes().map(javaFileGenerator::importIfPossible).join()));
         return methodName;
     }
     

@@ -13,12 +13,12 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 @Mutable
 public abstract class RootClass extends RootClassWithException<RuntimeException> {
     
-    @Pure
-    @Override
-    @CallSuper
-    @TODO(task = "Remove this overriding once the subclass generator can handle generic exception types.", date = "2016-08-04", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.MIDDLE)
-    protected void initialize() throws RuntimeException {
-        super.initialize();
-    }
+//    @Pure
+//    @Override
+//    @CallSuper
+//    @TODO(task = "Remove this overriding once the subclass generator can handle generic exception types.", date = "2016-08-04", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.MIDDLE)
+//    protected void initialize() throws RuntimeException {
+//        super.initialize();
+//    }
     
 }
