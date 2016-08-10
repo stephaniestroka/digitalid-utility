@@ -23,6 +23,7 @@ import net.digitalid.utility.generator.information.field.DirectlyAccessibleField
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedFieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedRepresentingFieldInformation;
+import net.digitalid.utility.generator.information.filter.MethodSignatureMatcher;
 import net.digitalid.utility.generator.information.method.ConstructorInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.type.ClassInformation;
@@ -34,7 +35,9 @@ import net.digitalid.utility.generator.typevisitors.GenerateComparisonTypeVisito
 import net.digitalid.utility.generator.typevisitors.GenerateHashCodeTypeVisitor;
 import net.digitalid.utility.generator.typevisitors.GenerateToStringTypeVisitor;
 import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
+import net.digitalid.utility.rootclass.RootClassWithException;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.tuples.Quartet;
@@ -140,6 +143,14 @@ public class SubclassGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
+    private boolean shouldGenerateValidateCall() {
+        return (typeInformation instanceof ClassInformation && ((ClassInformation) typeInformation).validateMethod != null);
+    }
+    
+    private boolean shouldGenerateInitializeCall() {
+        return ProcessingUtility.isRawlyAssignable(typeInformation.getElement(), RootClassWithException.class);
+    }
+    
     /**
      * Generates a constructor, calls the super constructor if available and initializes generated fields.
      */
@@ -161,22 +172,34 @@ public class SubclassGenerator extends JavaFileGenerator {
         for (@Nonnull FieldInformation field : typeInformation.derivedFieldInformation) {
             addStatement("this." + field.getName() + " = " + field.getAnnotation(Derive.class).value());
         }
-        if (typeInformation instanceof ClassInformation && ((ClassInformation) typeInformation).validateMethod != null) {
+        if (shouldGenerateValidateCall()) {
             addStatement("validate()");
         }
+        if (shouldGenerateInitializeCall()) {
+            addStatement("initialize()");
+        }
         endConstructor();
+    }
+    
+    private @Nonnull FiniteIterable<@Nonnull ? extends TypeMirror> getThrownTypesOfInitializeMethod() {
+        return typeInformation.getOverriddenMethods().findUnique(MethodSignatureMatcher.of("initialize")).getThrownTypes();
     }
     
     /**
      * Generates a subclass constructor from a given constructor information object;
      */
     private void generateConstructor(@Nonnull ConstructorInformation constructorInformation) {
-        @Nullable List<@Nonnull ? extends TypeMirror> throwTypes = constructorInformation.getElement().getThrownTypes();
+        final @Nullable List<@Nonnull ? extends TypeMirror> thrownTypes = constructorInformation.getElement().getThrownTypes();
+        @Nonnull FiniteIterable<@Nonnull TypeMirror> throwTypes = thrownTypes == null ? FiniteIterable.of() : FiniteIterable.of(thrownTypes);
+        if (shouldGenerateInitializeCall()) {
+            throwTypes = throwTypes.combine(getThrownTypesOfInitializeMethod());
+        }
+        
         final @Nonnull FiniteIterable<@Nonnull ElementInformation> constructorParameter = constructorInformation.getParameters().map(parameter -> (ElementInformation) parameter).combine(typeInformation.generatedRepresentingFieldInformation);
         
         final @Nonnull String superStatement = "super" + constructorInformation.getParameters().map(ElementInformationImplementation::getName).join(Brackets.ROUND);
         
-        generateConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + constructorParameter.map(element -> this.importIfPossible(element.getType()) + " " + element.getName()).join(Brackets.ROUND) + (throwTypes == null || throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()), superStatement);
+        generateConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + constructorParameter.map(element -> this.importIfPossible(element.getType()) + " " + element.getName()).join(Brackets.ROUND) + (throwTypes.isEmpty() ? "" : " throws " + throwTypes.map(this::importIfPossible).join()), superStatement);
     }
     
     /**
