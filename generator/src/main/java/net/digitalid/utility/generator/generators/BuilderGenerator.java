@@ -116,7 +116,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     private @Nonnull @NonNullableElements List<String> createInterfacesForRequiredFields(@Nonnull @NonNullableElements FiniteIterable<VariableElementInformation> requiredFields, @Nonnull String nameOfInnerClass) {
         final @Nonnull List<String> listOfInterfaces = new ArrayList<>();
         
-        for (int i = 0; i < requiredFields.size(); i++) {
+        for (int i = 1; i < requiredFields.size(); i++) {
             final @Nonnull ElementInformation requiredField = requiredFields.get(i);
             @Nonnull String nextInterface = nameOfInnerClass;
             if ((i + 1) < requiredFields.size()) {
@@ -141,13 +141,15 @@ public class BuilderGenerator extends JavaFileGenerator {
         beginConstructor("private " + nameOfBuilder + "()");
         endConstructor();
         
+        boolean first = true;
         for (@Nonnull VariableElementInformation field : typeInformation.getConstructorParameters()) {
             field.getAnnotations();
             addSection(Strings.capitalizeFirstLetters(Strings.decamelize(field.getName())));
             addField("private " + importIfPossible(field.getType()) + " " + field.getName() + " = " + field.getDefaultValue());
             final @Nonnull String methodName = "with" + Strings.capitalizeFirstLetters(field.getName());
-            if (field.isMandatory()) {
+            if (field.isMandatory() && !first) {
                 addAnnotation(Override.class);
+                first = false;
             }
             addAnnotation(Chainable.class);
             beginMethod("public @" + importIfPossible(Nonnull.class) + " " + nameOfBuilder + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " " + methodName + "(" + importIfPossible(field.getType()) + " " + field.getName() + ")");
@@ -157,7 +159,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         }
         
         addSection("Build");
-    
+        
         final @Nonnull Set<@Nonnull TypeMirror> throwTypes = new HashSet<>();
         if (typeInformation instanceof InstantiableTypeInformation) {
             final @Nullable ExecutableInformation constructorOrRecoverMethod = typeInformation.getRecoverConstructorOrMethod();
@@ -186,8 +188,8 @@ public class BuilderGenerator extends JavaFileGenerator {
         if (requiredFields.size() > 0) {
             final @Nonnull ElementInformation entryField = requiredFields.get(0);
             final @Nonnull String secondInterface;
-            if (interfacesForRequiredFields.size() > 1) {
-                secondInterface = interfacesForRequiredFields.get(1);
+            if (interfacesForRequiredFields.size() > 0) {
+                secondInterface = interfacesForRequiredFields.get(0);
             } else {
                 secondInterface = nameOfBuilder + typeInformation.getTypeArguments().join(Brackets.POINTY, "");
             }

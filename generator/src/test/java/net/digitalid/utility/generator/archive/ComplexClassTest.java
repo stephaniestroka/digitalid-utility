@@ -38,7 +38,7 @@ public class ComplexClassTest {
     public void shouldBeEqual() throws Exception {
         final @Nonnull ComplexClass complexClass1 = prepareBuilder().build();
         final @Nonnull ComplexClass complexClass2 = prepareBuilder().build();
-    
+        
         expectingEqual("representing fields").of(complexClass1).and(complexClass2);
     }
     
