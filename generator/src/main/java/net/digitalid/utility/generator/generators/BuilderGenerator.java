@@ -138,6 +138,9 @@ public class BuilderGenerator extends JavaFileGenerator {
         final @Nonnull FiniteIterable<@Nonnull TypeVariable> typeArguments = typeInformation.getTypeArguments();
         beginClass("public static class " + nameOfBuilder + importWithBounds(typeArguments) + (interfacesForRequiredFields.isEmpty() ? "" : " implements " + FiniteIterable.of(interfacesForRequiredFields).join()));
         
+        beginConstructor("private " + nameOfBuilder + "()");
+        endConstructor();
+        
         for (@Nonnull VariableElementInformation field : typeInformation.getConstructorParameters()) {
             field.getAnnotations();
             addSection(Strings.capitalizeFirstLetters(Strings.decamelize(field.getName())));
