@@ -256,6 +256,7 @@
                 </executions>
             </plugin>
             
+            <!-- Execute the plugin with 'mvn j2objc:convert'. -->
             <plugin>
                 <groupId>com.smoope.utils</groupId>
                 <artifactId>j2objc-maven-plugin</artifactId>
@@ -264,7 +265,10 @@
                     <j2objcPath>${J2OBJC_HOME}/j2objc</j2objcPath>
                     <noPackageDirectories>true</noPackageDirectories>
                     <skipParent>true</skipParent>
+                    <verbose>false</verbose>
+                    <werror>true</werror>
                     <useArc>true</useArc>
+                    <source>8</source>
                 </configuration>
             </plugin>
             
