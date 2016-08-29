@@ -118,6 +118,14 @@
         </snapshotRepository>
     </distributionManagement>
     
+    <pluginRepositories>
+        <pluginRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>sonatype-nexus-snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </pluginRepository>
+    </pluginRepositories>
+    
     <build>
         <plugins>
             
@@ -248,7 +256,23 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin> 
+            </plugin>
+            
+            <!-- Execute the plugin with 'mvn j2objc:convert'. -->
+            <plugin>
+                <groupId>com.smoope.utils</groupId>
+                <artifactId>j2objc-maven-plugin</artifactId>
+                <version>1.1.3-SNAPSHOT</version>
+                <configuration>
+                    <j2objcPath>${J2OBJC_HOME}/j2objc</j2objcPath>
+                    <noPackageDirectories>true</noPackageDirectories>
+                    <skipParent>true</skipParent>
+                    <verbose>false</verbose>
+                    <werror>true</werror>
+                    <useArc>true</useArc>
+                    <source>8</source>
+                </configuration>
+            </plugin>
             
         </plugins>
     </build>

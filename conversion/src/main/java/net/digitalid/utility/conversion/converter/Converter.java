@@ -10,13 +10,14 @@ import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.logging.exceptions.ExternalException;
+import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
 import net.digitalid.utility.validation.auxiliary.None;
 
 public interface Converter<T, E> {
     
     @Pure
-    public @Nonnull ImmutableList<CustomField> getFields();
+    public @Nonnull ImmutableList<@Nonnull CustomField> getFields();
     
     @Pure
     public <X extends ExternalException> int convert(@Nullable @NonCaptured @Unmodified T object, @Nonnull @NonCaptured @Modified ValueCollector<X> valueCollector) throws X;
@@ -25,12 +26,12 @@ public interface Converter<T, E> {
     public @Capturable <X extends ExternalException> @Nonnull T recover(@Nonnull @NonCaptured @Modified SelectionResult<X> selectionResult, E externallyProvided) throws X;
     
     @Pure
-    public @Nonnull @CodeIdentifier String getName();
+    public @Nonnull @CodeIdentifier @MaxSize(63) String getName();
     
     public class NoneConverter implements Converter<None, Object> {
         
         public static @Nonnull NoneConverter INSTANCE = new NoneConverter();
-    
+        
         @Override
         public @Nonnull ImmutableList<@Nonnull CustomField> getFields() {
             return ImmutableList.withElements();
