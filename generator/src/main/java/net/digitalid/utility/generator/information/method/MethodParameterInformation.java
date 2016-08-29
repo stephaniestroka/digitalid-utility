@@ -12,9 +12,11 @@ import net.digitalid.utility.generator.information.ElementInformationImplementat
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
+import net.digitalid.utility.generator.interceptor.MethodInterceptor;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
+import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.generation.Default;
 
 import com.sun.tools.javac.code.Type;
@@ -32,13 +34,23 @@ public class MethodParameterInformation extends ElementInformationImplementation
     private final @Nonnull TypeInformation typeInformation;
     
     /**
-     * Returns a matching field for the method parameter. This method may only be called once type information is fully initialized. Otherwise, it may accidentally return null even though a field with the same name might exist.
+     * Returns a matching field for the method parameter, if one exists. This method may only be called once type information is fully initialized. Otherwise, it may accidentally return null even though a field with the same name might exist.
      */
     @Pure
     public @Nullable FieldInformation getMatchingField() {
         Require.that(typeInformation.isInitialized()).orThrow("getMatchingField() called before the type information object was fully initialized.");
         
         return typeInformation.getFieldInformation().findFirst(field -> field.getName().equals(getName()) && StaticProcessingEnvironment.getTypeUtils().isAssignable(field.getType(), getType()));
+    }
+    
+    /**
+     * Returns a matching getter for the method parameter, if one exists. This method may only be called once type information is fully initialized. Otherwise, it may accidentally return null even though a getter with the matching name might exist.
+     */
+    @Pure
+    public @Nullable MethodInformation getMatchingGetter() {
+        Require.that(typeInformation.isInitialized()).orThrow("getMatchingGetter() called before the type information object was fully initialized.");
+        
+        return typeInformation.getOverriddenMethods().findFirst(method -> method.isGetter() && method.getName().equals("get" + Strings.capitalizeFirstLetters(getName())) && StaticProcessingEnvironment.getTypeUtils().isAssignable(method.getReturnType(), getType()));
     }
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */

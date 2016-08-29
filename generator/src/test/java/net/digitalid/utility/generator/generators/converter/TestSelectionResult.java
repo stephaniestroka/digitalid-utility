@@ -1,24 +1,29 @@
 package net.digitalid.utility.generator.generators.converter;
 
 import java.math.BigInteger;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.zip.Inflater;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.crypto.Cipher;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.conversion.converter.SelectionResult;
-import net.digitalid.utility.functional.interfaces.Producer;
+import net.digitalid.utility.functional.failable.FailableProducer;
+import net.digitalid.utility.logging.exceptions.ExternalException;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.size.Size;
 
 /**
  * The selection result that is used to test the functionality of the converter.
  */
-class TestSelectionResult implements SelectionResult {
+class TestSelectionResult implements SelectionResult<ExternalException> {
     
     final @Nonnull Queue<@Nonnull Object> selectedObjects;
     
@@ -118,36 +123,61 @@ class TestSelectionResult implements SelectionResult {
     
     @Impure
     @Override
-    public <T> List<T> getList(Producer<T> function) {
+    public <T> List<T> getList(@Nonnull FailableProducer<T, ExternalException> function) {
         return (List<T>) selectedObjects.poll();
     }
     
     @Impure
     @Override
-    public <T> T[] getArray(Producer<T> function) {
+    public <T> T[] getArray(@Nonnull FailableProducer<T, ExternalException> function) {
         return (T[]) selectedObjects.poll();
     }
     
     @Impure
     @Override
-    public <T> Set<T> getSet(Producer<T> function) {
+    public <T> Set<T> getSet(@Nonnull FailableProducer<T, ExternalException> function) {
         return (Set<T>) selectedObjects.poll();
     }
     
     @Impure
     @Override
-    public <K, V> Map<K, V> getMap(Producer<K> keyFunction, Producer<V> valueFunction) {
+    public <K, V> Map<K, V> getMap(@Nonnull FailableProducer<K, ExternalException> keyFunction, FailableProducer<V, ExternalException> valueFunction) {
         return (Map<K, V>) selectedObjects.poll();
     }
     
     @Impure
     @Override
-    public boolean moveToNextRow() {
-        return false;
+    public void setDecryptionCipher(@Nonnull Cipher cipher) {
+        // TODO: implement if we have a test for that.
+    }
+    
+    @Impure
+    @Override public void popDecryptionCipher() throws ExternalException {
+        
     }
     
     @Impure
     @Override
-    public void moveToFirstColumn() { }
+    public void setDecompression(@Nonnull Inflater inflater) {
+        // TODO: implement if we have a test for that.
+    }
+    
+    @Impure
+    @Override
+    public void popDecompression() throws ExternalException {
+        
+    }
+    
+    @Impure
+    @Override
+    public void setSignatureDigest(@Nonnull MessageDigest digest) throws ExternalException {
+        
+    }
+    
+    @Impure
+    @Override
+    public @Nonnull DigestInputStream popSignatureDigest() throws ExternalException {
+        return null;
+    }
     
 }

@@ -1,7 +1,9 @@
 package net.digitalid.utility.conversion.converter.types;
 
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
@@ -77,6 +79,74 @@ public class CustomType {
         private CompositeType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName, @Nonnull CustomType compositeType) {
             super(predicate, typeName);
             this.compositeType = compositeType;
+        }
+        
+    }
+    
+    /* -------------------------------------------------- Map Type Subclass -------------------------------------------------- */
+    
+    /**
+     * A custom type that maps a type to another type.
+     */
+    public static class MapType extends CustomType {
+    
+        /**
+         * Creates a custom type.
+         */
+        private MapType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName) {
+            super(predicate, typeName);
+        }
+    
+        /**
+         * Creates a new instance of a composite type with the given custom type.
+         */
+        @NonRawRecipient
+        public @Nonnull MapType of(@Nonnull CustomType keyType, @Nonnull CustomType valueType) {
+            return new KeyValueType(super.predicate, super.typeName, keyType, valueType);
+        }
+    
+        /* -------------------------------------------------- Composite Type -------------------------------------------------- */
+        
+        /**
+         * Returns true, because the type is a map type.
+         */
+        @Override
+        public boolean isMapType() {
+            return true;
+        }
+        
+    }
+    
+    public static class KeyValueType extends MapType {
+    
+        /**
+         * The key type.
+         */
+        private final @Nonnull CustomType keyType;
+        
+        /**
+         * The value type.
+         */
+        private final @Nonnull CustomType valueType;
+        
+        /**
+         * Returns the key type.
+         */
+        public @Nonnull CustomType getKeyType() {
+            return keyType;
+        }
+        
+        /**
+         * Returns the value type.
+         */
+        public @Nonnull CustomType getValueType() {
+            return valueType;
+        }
+    
+        private KeyValueType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName, @Nonnull CustomType keyType, @Nonnull CustomType valueType) {
+            super(predicate, typeName);
+            this.keyType = keyType;
+            this.valueType = valueType;
         }
         
     }
@@ -166,6 +236,8 @@ public class CustomType {
     
     public static final CustomType BINARY = new CustomType(typeMirror -> (ProcessingUtility.isRawlyAssignable(typeMirror, byte[].class) || ProcessingUtility.isRawlyAssignable(typeMirror, Byte[].class)) && (typeMirror.getAnnotation(MaxSize.class) == null || typeMirror.getAnnotation(MaxSize.class).value() > 256), "BINARY");
     
+    public static final CustomType BINARYSTREAM = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, InputStream.class), "BINARYSTREAM");
+    
     public static final IterableType SET = new IterableType(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, Set.class), "SET");
     
     // TODO: Consider ReadOnlyList and co.
@@ -173,12 +245,14 @@ public class CustomType {
     
     public static final IterableType ARRAY = new IterableType(typeMirror -> typeMirror.getKind() == TypeKind.ARRAY, "ARRAY");
     
+    public static final MapType MAP = new MapType(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, Map.class), "MAP");
+    
     public static final TupleType TUPLE = new TupleType(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, Tuple.class), "TUPLE");
     
     /**
      * A list of custom types that are statically defined in this class.
      */
-    private static final CustomType[] customTypes = {BOOLEAN, INTEGER08, INTEGER16, INTEGER32, INTEGER64, INTEGER, DECIMAL32, DECIMAL64, STRING01, STRING64, STRING, BINARY128, BINARY256, BINARY, SET, LIST, ARRAY, TUPLE};
+    private static final CustomType[] customTypes = {BOOLEAN, INTEGER08, INTEGER16, INTEGER32, INTEGER64, INTEGER, DECIMAL32, DECIMAL64, STRING01, STRING64, STRING, BINARY128, BINARY256, BINARY, SET, LIST, ARRAY, MAP, TUPLE};
     
     /* -------------------------------------------------- Predicate -------------------------------------------------- */
     
@@ -215,6 +289,13 @@ public class CustomType {
      * Always returns false, unless the custom type is a {@link TupleType}.
      */
     public boolean isObjectType() {
+        return false;
+    }
+    
+    /**
+     * Always returns false, unless the custom type is a {@link MapType}.
+     */
+    public boolean isMapType() {
         return false;
     }
     

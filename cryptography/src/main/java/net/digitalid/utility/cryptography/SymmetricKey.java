@@ -31,6 +31,7 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.MissingSupportException;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
+import net.digitalid.utility.generator.annotations.generators.GenerateConverter;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.initialization.annotations.Initialize;
 import net.digitalid.utility.rootclass.RootClass;
@@ -47,6 +48,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 @Immutable
 @GenerateBuilder
 @GenerateSubclass
+@GenerateConverter
 public abstract class SymmetricKey extends RootClass {
     
     /* -------------------------------------------------- Configuration -------------------------------------------------- */
@@ -157,6 +159,21 @@ public abstract class SymmetricKey extends RootClass {
      */
     public static final @Nonnull String MODE = "AES/CBC/PKCS5Padding";
     
+    /**
+     * Initializes and returns the cipher of this symmetric key.
+     * 
+     * @param cipherMode e.g. Cipher.ENCRYPT_MODE or Cipher.DECRYPT_MODE
+     */
+    @Pure
+    public @Nonnull Cipher getCipher(@Nonnull InitializationVector initializationVector, int cipherMode) {
+        try {
+            final @Nonnull Cipher cipher = Cipher.getInstance(MODE);
+            cipher.init(cipherMode, getKey(), initializationVector);
+            return cipher;
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException  e) {
+            throw UnexpectedFailureException.with(e);
+        }
+    }
     /**
      * Encrypts the indicated section in the given byte array with this symmetric key and the given initialization vector.
      * 

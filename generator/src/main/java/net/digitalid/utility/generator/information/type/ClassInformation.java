@@ -19,6 +19,7 @@ import net.digitalid.utility.generator.generators.ConverterGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.generator.information.field.GeneratedRepresentingFieldInformation;
 import net.digitalid.utility.generator.information.filter.MethodSignatureMatcher;
 import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
@@ -89,9 +90,14 @@ public final class ClassInformation extends InstantiableTypeInformation {
             final @Nonnull FiniteIterable<MethodParameterInformation> parameters = recoverConstructorOrMethod.getParameters();
             for (@Nonnull MethodParameterInformation parameter : parameters) {
                 if (parameter.getMatchingField() != null) {
-                    final FieldInformation matchingFieldInformation = getFieldInformation().findFirst(field -> field.getName().equals(parameter.getMatchingField().getName()));
-                    if (matchingFieldInformation.isAccessible() && !representingFieldInformation.contains(parameter.getMatchingField())) {
+                    final @Nonnull FieldInformation matchingFieldInformation = parameter.getMatchingField();
+                    if (matchingFieldInformation.isAccessible() && !representingFieldInformation.contains(matchingFieldInformation)) {
                         representingFieldInformation.add(matchingFieldInformation);
+                    }
+                } else if (parameter.getMatchingGetter() != null) {
+                    final @Nonnull MethodInformation matchingGetter = parameter.getMatchingGetter();
+                    if (!representingFieldInformation.contains(parameter.getMatchingField())) {
+                        representingFieldInformation.add(GeneratedRepresentingFieldInformation.of(getContainingType(), matchingGetter, null));
                     }
                 }
             }

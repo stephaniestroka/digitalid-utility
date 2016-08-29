@@ -209,7 +209,7 @@ public class ConverterTest extends CustomTest {
     }
     
     @Test
-    public void testValueCollectionOfClass() {
+    public void testValueCollectionOfClass() throws Exception {
         final @Nonnull VariousFields variousFields = new VariousFields(true, 5, "bla");
         final @Nonnull TestValueCollector testValueCollector = new TestValueCollector();
         VariousFieldsConverter.INSTANCE.convert(variousFields, testValueCollector);
@@ -220,7 +220,7 @@ public class ConverterTest extends CustomTest {
     }
     
     @Test
-    public void testSelectionResultOfClass() {
+    public void testSelectionResultOfClass() throws Exception {
         final Queue<@Nonnull Object> testQueue = new LinkedList<>();
         testQueue.add(true);
         testQueue.add(5);
@@ -244,7 +244,7 @@ public class ConverterTest extends CustomTest {
     }
     
     @Test
-    public void testValueCollectionOfEnum() {
+    public void testValueCollectionOfEnum() throws Exception {
         final @Nonnull TestValueCollector testValueCollector = new TestValueCollector();
         SimpleEnumConverter.INSTANCE.convert(SimpleEnum.COMET, testValueCollector);
         assertEquals(1, testValueCollector.collectedValues.size());
@@ -252,7 +252,7 @@ public class ConverterTest extends CustomTest {
     }
     
     @Test
-    public void testSelectionResultOfEnum() {
+    public void testSelectionResultOfEnum() throws Exception {
         final Queue<@Nonnull Object> testQueue = new LinkedList<>();
         testQueue.add(SimpleEnum.COMET.name());
         final @Nonnull TestSelectionResult testSelectionResult = new TestSelectionResult(testQueue);
@@ -272,7 +272,7 @@ public class ConverterTest extends CustomTest {
     }
 
     @Test
-    public void testValueCollectionOfEnumWithRecoverMethod() {
+    public void testValueCollectionOfEnumWithRecoverMethod() throws Exception {
         final @Nonnull TestValueCollector testValueCollector = new TestValueCollector();
         EnumWithRecoverMethodConverter.INSTANCE.convert(EnumWithRecoverMethod.ONE, testValueCollector);
         assertEquals(1, testValueCollector.collectedValues.size());
@@ -280,7 +280,7 @@ public class ConverterTest extends CustomTest {
     }
 
     @Test
-    public void testSelectionResultOfEnumWithRecoverMethod() {
+    public void testSelectionResultOfEnumWithRecoverMethod() throws Exception {
         final Queue<@Nonnull Object> testQueue = new LinkedList<>();
         testQueue.add(3);
         final @Nonnull TestSelectionResult testSelectionResult = new TestSelectionResult(testQueue);
@@ -299,7 +299,7 @@ public class ConverterTest extends CustomTest {
     }
 
     @Test
-    public void testValueCollectionOfEnumWithRecoverMethodAndNonDirectlyAccessibleField() {
+    public void testValueCollectionOfEnumWithRecoverMethodAndNonDirectlyAccessibleField() throws Exception {
         final @Nonnull TestValueCollector testValueCollector = new TestValueCollector();
         EnumWithRecoverMethodAndNonDirectlyAccessibleFieldConverter.INSTANCE.convert(EnumWithRecoverMethodAndNonDirectlyAccessibleField.ONE, testValueCollector);
         assertEquals(1, testValueCollector.collectedValues.size());
@@ -307,7 +307,7 @@ public class ConverterTest extends CustomTest {
     }
 
     @Test
-    public void testSelectionResultOfEnumWithRecoverMethodAndNonDirectlyAccessibleField() {
+    public void testSelectionResultOfEnumWithRecoverMethodAndNonDirectlyAccessibleField() throws Exception {
         final Queue<@Nonnull Object> testQueue = new LinkedList<>();
         testQueue.add((byte) 3);
         final @Nonnull TestSelectionResult testSelectionResult = new TestSelectionResult(testQueue);
