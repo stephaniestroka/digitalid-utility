@@ -204,7 +204,7 @@ public class BuilderGenerator extends JavaFileGenerator {
     
             for (@Nonnull ElementInformation optionalField : typeInformation.getConstructorParameters()) {
                 final @Nonnull String methodName = Strings.capitalizeFirstLetters(optionalField.getName());
-                beginMethod(getSetterForFieldStatementString(optionalField, typeInformation.getName(), "buildWith" + methodName));
+                beginMethod(getSetterForFieldStatementString(optionalField, typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, ""), "buildWith" + methodName));
                 addStatement("return new " + nameOfBuilder + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + "().with" + methodName + Brackets.inRound(optionalField.getName()) + ".build()");
                 endMethod();
             }
