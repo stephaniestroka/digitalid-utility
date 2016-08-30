@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.immutable.ImmutableMap;
 
 /**
@@ -36,8 +37,14 @@ public class CustomAnnotation {
         this.annotationFields = annotationFields;
     }
     
+    @Pure
     public static @Nonnull CustomAnnotation with(@Nonnull Class<? extends Annotation> annotationType, @Nonnull ImmutableMap<@Nonnull String, @Nullable Object> annotationFields) {
         return new CustomAnnotation(annotationType, annotationFields);
+    }
+    
+    @Pure
+    public static @Nonnull CustomAnnotation with(@Nonnull Class<? extends Annotation> annotationType) {
+        return new CustomAnnotation(annotationType, ImmutableMap.withNoEntries());
     }
     
     /* -------------------------------------------------- Equals -------------------------------------------------- */
