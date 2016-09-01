@@ -31,7 +31,7 @@ public interface Converter<T, E> {
     public @Nonnull @CodeIdentifier @MaxSize(63) String getName();
     
     @TODO(task = "Move this class to some other place!", date = "2016-08-30", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA)
-    public class NoneConverter implements Converter<None, Object> {
+    public static class NoneConverter implements Converter<None, Object> {
         
         public static @Nonnull NoneConverter INSTANCE = new NoneConverter();
         

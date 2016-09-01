@@ -12,6 +12,7 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.type.TypeMirror;
 
+import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
@@ -44,6 +45,7 @@ import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Tuple;
 import net.digitalid.utility.validation.annotations.generation.Provide;
 import net.digitalid.utility.validation.annotations.generation.Provided;
+import net.digitalid.utility.validation.auxiliary.None;
 
 /**
  * This class generates a converter with the provided type information.
@@ -52,6 +54,20 @@ import net.digitalid.utility.validation.annotations.generation.Provided;
  * @see TypeInformation
  */
 public class ConverterGenerator extends JavaFileGenerator {
+    
+    /* -------------------------------------------------- Converter Import -------------------------------------------------- */
+    
+    /**
+     * Returns the name of the converter and, if necessary, imports it.
+     */
+    @Impure
+    public @Nonnull String importConverterType(@Nonnull TypeMirror fieldType) {
+        if (ProcessingUtility.isRawlyAssignable(fieldType, None.class)) {
+            return importIfPossible(Converter.NoneConverter.class);
+        } else {
+            return importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter");
+        }
+    }
     
     /* -------------------------------------------------- Type Information -------------------------------------------------- */
     

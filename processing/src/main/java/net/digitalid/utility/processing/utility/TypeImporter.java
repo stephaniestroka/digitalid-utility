@@ -57,10 +57,4 @@ public interface TypeImporter {
     @Impure
     public @Nonnull String importStaticallyIfPossible(@Nonnull String qualifiedMemberName);
     
-    /**
-     * Returns the name of the converter and, if necessary, imports it.
-     */
-    @Impure
-    public @Nonnull String importConverterType(@Nonnull TypeMirror fieldType);
-    
 }
