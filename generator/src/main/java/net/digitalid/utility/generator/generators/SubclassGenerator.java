@@ -34,6 +34,7 @@ import net.digitalid.utility.generator.interceptor.MethodUtility;
 import net.digitalid.utility.generator.typevisitors.GenerateComparisonTypeVisitor;
 import net.digitalid.utility.generator.typevisitors.GenerateHashCodeTypeVisitor;
 import net.digitalid.utility.generator.typevisitors.GenerateToStringTypeVisitor;
+import net.digitalid.utility.generator.utility.OrderOfAssignmentComparator;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
@@ -44,6 +45,7 @@ import net.digitalid.utility.tuples.Quartet;
 import net.digitalid.utility.tuples.Triplet;
 import net.digitalid.utility.validation.annotations.generation.Derive;
 import net.digitalid.utility.validation.annotations.generation.Normalize;
+import net.digitalid.utility.validation.annotations.generation.OrderOfAssignment;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.processing.AnnotationHandlerUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
@@ -169,7 +171,7 @@ public class SubclassGenerator extends JavaFileGenerator {
                 addStatement("this." + field.getName() + " = " + field.getName());
             }
         }
-        for (@Nonnull FieldInformation field : typeInformation.derivedFieldInformation) {
+        for (@Nonnull FieldInformation field : typeInformation.derivedFieldInformation.sorted(OrderOfAssignmentComparator.INSTANCE)) {
             addStatement("this." + field.getName() + " = " + field.getAnnotation(Derive.class).value());
         }
         if (shouldGenerateValidateCall()) {
