@@ -8,6 +8,8 @@ import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.logging.exceptions.ExternalException;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
@@ -28,7 +30,8 @@ public interface Converter<T, E> {
     @Pure
     public @Nonnull @CodeIdentifier @MaxSize(63) String getName();
     
-    public class NoneConverter implements Converter<None, Object> {
+    @TODO(task = "Move this class to some other place!", date = "2016-08-30", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA)
+    public static class NoneConverter implements Converter<None, Object> {
         
         public static @Nonnull NoneConverter INSTANCE = new NoneConverter();
         
