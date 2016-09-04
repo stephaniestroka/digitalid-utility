@@ -356,7 +356,7 @@ public class CustomType {
             customType = CustomType.STRING;
         } 
         if (customType == CustomType.TUPLE) {
-            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(typeImporter.importConverterType(representingFieldType) + ".INSTANCE");
+            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(typeImporter.importIfPossible(ProcessingUtility.getQualifiedName(representingFieldType) + "Converter") + ".INSTANCE"); // TODO: The derivation of the converter was copied from ConverterGenerator#importConverterType(type) as that method is not available here. Please find a better solution!
         } else if (customType == CustomType.SET) {
             final @Nonnull TypeMirror componentType = ProcessingUtility.getComponentType(representingFieldType);
             return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(getTypeName(componentType, typeImporter));

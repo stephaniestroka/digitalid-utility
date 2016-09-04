@@ -63,8 +63,9 @@
         <module>initializer</module>
         <module>conversion</module>
         <module>generator</module>
-        <module>concurrency</module>
         <module>collections</module>
+        <module>concurrency</module>
+        <module>auxiliary</module>
         <module>group</module>
         <module>math</module>
         <module>time</module>

@@ -45,7 +45,6 @@ import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Tuple;
 import net.digitalid.utility.validation.annotations.generation.Provide;
 import net.digitalid.utility.validation.annotations.generation.Provided;
-import net.digitalid.utility.validation.auxiliary.None;
 
 /**
  * This class generates a converter with the provided type information.
@@ -58,15 +57,11 @@ public class ConverterGenerator extends JavaFileGenerator {
     /* -------------------------------------------------- Converter Import -------------------------------------------------- */
     
     /**
-     * Returns the name of the converter and, if necessary, imports it.
+     * Returns the name of the converter an imports it if possible.
      */
     @Impure
     public @Nonnull String importConverterType(@Nonnull TypeMirror fieldType) {
-        if (ProcessingUtility.isRawlyAssignable(fieldType, None.class)) {
-            return importIfPossible(Converter.NoneConverter.class);
-        } else {
-            return importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter");
-        }
+        return importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter");
     }
     
     /* -------------------------------------------------- Type Information -------------------------------------------------- */
