@@ -1,89 +1,56 @@
 package net.digitalid.utility.property;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.collections.set.FreezableLinkedHashSetBuilder;
-import net.digitalid.utility.collections.set.FreezableSet;
-import net.digitalid.utility.collections.set.ReadOnlySet;
-import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.property.extensible.ExtensibleProperty;
-import net.digitalid.utility.property.indexed.IndexedProperty;
-import net.digitalid.utility.property.simple.SimpleProperty;
-import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.property.map.ReadOnlyMapProperty;
+import net.digitalid.utility.property.set.ReadOnlySetProperty;
+import net.digitalid.utility.property.value.ReadOnlyValueProperty;
+import net.digitalid.utility.rootclass.RootInterface;
 import net.digitalid.utility.validation.annotations.type.Mutable;
-import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
  * A property is an object that can be {@link Property.Observer observed}.
  * 
- * @see ExtensibleProperty
- * @see IndexedProperty
- * @see SimpleProperty
+ * @see ReadOnlyMapProperty
+ * @see ReadOnlySetProperty
+ * @see ReadOnlyValueProperty
+ * @see PropertyImplementation
  */
 @Mutable
-public abstract class Property<V, O extends Property.Observer<V>> extends RootClass implements Valid.Value<V> {
+public interface Property<O extends Property.Observer> extends RootInterface {
     
     /* -------------------------------------------------- Observer -------------------------------------------------- */
     
     /**
-     * Objects that implement this interface can be used to observe {@link Property properties}.
+     * Objects that implement this interface can be used to {@link #register(net.digitalid.utility.property.Property.Observer) observe} {@link Property properties}.
      */
-    public static interface Observer<V> {}
+    public static interface Observer {}
     
     /* -------------------------------------------------- Observers -------------------------------------------------- */
-    
-    /**
-     * Stores null until the first observer registers and then the registered observers.
-     */
-    private @Nullable @NonFrozen FreezableSet<O> observers;
     
     /**
      * Registers the given observer for this property.
      * 
      * @return whether the given observer was not already registered.
      */
-    @Impure
-    public boolean register(@Nonnull O observer) {
-        if (observers == null) { observers = FreezableLinkedHashSetBuilder.buildWithInitialCapacity(1); }
-        return observers.add(observer);
-    }
+    @Pure // 
+    public boolean register(@Captured @Nonnull O observer);
     
     /**
      * Deregisters the given observer for this property.
      * 
      * @return whether the given observer was actually registered.
      */
-    @Impure
-    public boolean deregister(@Nonnull O observer) {
-        if (observers != null) { return observers.remove(observer); } else { return false; }
-    }
+    @Pure
+    public boolean deregister(@NonCaptured @Nonnull O observer);
     
     /**
      * Returns whether the given observer is registered for this property.
      */
     @Pure
-    public boolean isRegistered(@Nonnull O observer) {
-        return observers != null && observers.contains(observer);
-    }
-    
-    /**
-     * Returns whether this property has observers.
-     */
-    @Pure
-    protected boolean hasObservers() {
-        return observers != null && !observers.isEmpty();
-    }
-    
-    /**
-     * Returns the observers of this property.
-     */
-    @Pure
-    protected @Nonnull @NonFrozen ReadOnlySet<O> getObservers() {
-        if (observers == null) { observers = FreezableLinkedHashSetBuilder.buildWithInitialCapacity(1); }
-        return observers;
-    }
+    public boolean isRegistered(@NonCaptured @Nonnull O observer);
     
 }

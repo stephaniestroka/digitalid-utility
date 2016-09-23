@@ -142,8 +142,25 @@ public class Strings {
      * Returns the substring from the last occurrence of the given delimiter in the given string or the given string if the delimiter is not found.
      */
     @Pure
+    public static @Nonnull String substringFromLast(@Nonnull String string, char delimiter) {
+        return string.substring(string.lastIndexOf(delimiter) + 1);
+    }
+    
+    /**
+     * Returns the substring from the last occurrence of the given delimiter in the given string or the given string if the delimiter is not found.
+     */
+    @Pure
     public static @Nonnull String substringFromLast(@Nonnull String string, @Nonnull @NonEmpty String delimiter) {
         return string.substring(string.lastIndexOf(delimiter) + 1);
+    }
+    
+    /**
+     * Returns the substring until the first occurrence of the given delimiter in the given string or the given string if the delimiter is not found.
+     */
+    @Pure
+    public static @Nonnull String substringUntilFirst(@Nonnull String string, char delimiter) {
+        final int index = string.indexOf(delimiter);
+        return index >= 0 ? string.substring(0, index) : string;
     }
     
     /**

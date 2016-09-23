@@ -1132,6 +1132,19 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
         test(INSTANCE::setValidated, "12345", "123456");
     }
     
+    @Pure
+    public boolean isValidValue(int value) {
+        return value < 3;
+    }
+    
+    @Impure
+    public void setValidatedNamed(@Valid("value") int value) {}
+    
+    @Test
+    public void testValidatedNamed() {
+        test(INSTANCE::setValidatedNamed, 2, 4);
+    }
+    
     /* -------------------------------------------------- Threading -------------------------------------------------- */
     
     @Impure

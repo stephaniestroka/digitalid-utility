@@ -47,7 +47,7 @@ public class Configuration<P> {
          * 
          * @require !newProvider.equals(oldProvider) : "The new provider may not the same as the old provider.";
          */
-        public void replaced(@Nonnull Configuration<P> configuration, @Nullable P oldProvider, @Nonnull P newProvider);
+        public void notify(@Nonnull Configuration<P> configuration, @Nullable P oldProvider, @Nonnull P newProvider);
         
     }
     
@@ -120,7 +120,7 @@ public class Configuration<P> {
         
         if (!provider.equals(this.provider)) {
             for (@Nonnull Observer<P> observer : observers) {
-                observer.replaced(this, this.provider, provider);
+                observer.notify(this, this.provider, provider);
             }
             this.provider = provider;
         }

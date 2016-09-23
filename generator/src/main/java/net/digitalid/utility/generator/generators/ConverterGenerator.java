@@ -93,6 +93,7 @@ public class ConverterGenerator extends JavaFileGenerator {
      * Returns a list of externally provided parameter declarations as comma-separated string.
      */
     @Pure
+    @SuppressWarnings("AssignmentToMethodParameter")
     private @Nonnull String getExternallyProvidedParameterDeclarationsAsString(@Nonnull String postFix) {
         postFix = postFix.isEmpty() ? postFix : " " + postFix;
         final @Nonnull FiniteIterable<@Nonnull FieldInformation> externallyProvidedFields = filterExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
@@ -158,6 +159,7 @@ public class ConverterGenerator extends JavaFileGenerator {
     /**
      * Returns a generated statement that adds the field value to the value collector.
      */
+    @SuppressWarnings("AssignmentToMethodParameter")
     private @Nonnull String generateValueCollectorCall(@Nonnull String fieldAccess, @Nonnull TypeMirror fieldType, int round) {
         final @Nonnull CustomType customType = CustomType.of(fieldType);
         
@@ -304,13 +306,13 @@ public class ConverterGenerator extends JavaFileGenerator {
             // annotations are only collected if it isn't an enum we're processing. Enum values cannot have annotations.
             if (!(typeInformation instanceof EnumInformation)) {
                 for (@Nonnull AnnotationMirror annotation : annotations) {
-                    final @Nonnull String annotationName = annotation.getAnnotationType().asElement().getSimpleName().toString();
+                    final @Nonnull String annotationName = ProcessingUtility.getSimpleName(annotation);
                     final @Nonnull String qualifiedAnnotationName = ProcessingUtility.getQualifiedName(annotation.getAnnotationType());
                     final @Nonnull String annotationValuesMap = fieldName + Strings.capitalizeFirstLetters(annotationName);
                     if (customAnnotations.length() != 0) {
                         customAnnotations.append(", ");
                     }
-                    customAnnotations.append(importIfPossible(CustomAnnotation.class) + ".with" + Brackets.inRound(importIfPossible(qualifiedAnnotationName) + ".class, " + importIfPossible(ImmutableMap.class) + ".withMappingsOf" + Brackets.inRound(annotationValuesMap)));
+                    customAnnotations.append(importIfPossible(CustomAnnotation.class)).append(".with").append(Brackets.inRound(importIfPossible(qualifiedAnnotationName) + ".class, " + importIfPossible(ImmutableMap.class) + ".withMappingsOf" + Brackets.inRound(annotationValuesMap)));
                     statements.add("final @" + importIfPossible(Nonnull.class) + " " + importIfPossible(Map.class) + Brackets.inPointy("@" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + ", @" + importIfPossible(Nullable.class) + " " + importIfPossible(Object.class)) + " " + annotationValuesMap + " = new " + importIfPossible(HashMap.class) + Brackets.inPointy("") + Brackets.inRound(""));
                     addedMap = true;
                     final @Nonnull Map<@Nonnull String, @Nonnull AnnotationValue> annotationValues = ProcessingUtility.getAnnotationValues(annotation);
@@ -329,7 +331,7 @@ public class ConverterGenerator extends JavaFileGenerator {
             if (fieldsString.length() != 0) {
                 fieldsString.append(", ");
             }
-            fieldsString.append(importIfPossible(CustomField.class) + ".with(" + CustomType.getTypeName(representingField.getType(), this) + ", " + Quotes.inDouble(fieldName) + ", ImmutableList.withElements(" + customAnnotations.toString() + "))");
+            fieldsString.append(importIfPossible(CustomField.class)).append(".with(").append(CustomType.getTypeName(representingField.getType(), this)).append(", ").append(Quotes.inDouble(fieldName)).append(", ImmutableList.withElements(").append(customAnnotations.toString()).append("))");
         }
         addField("private static final @" + importIfPossible(Nonnull.class) + " " + importIfPossible(ImmutableList.class) + "<@" + importIfPossible(Nonnull.class) + " " + importIfPossible(CustomField.class) + "> fields");
         beginBlock(true);

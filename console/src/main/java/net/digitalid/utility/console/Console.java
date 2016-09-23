@@ -8,14 +8,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Impure;
-import net.digitalid.utility.collaboration.annotations.TODO;
-import net.digitalid.utility.collaboration.enumerations.Author;
-import net.digitalid.utility.collaboration.enumerations.Priority;
-import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.console.exceptions.EscapeOptionException;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
-import net.digitalid.utility.property.extensible.VolatileWritableExtensiblePropertyBuilder;
-import net.digitalid.utility.property.extensible.WritableExtensibleProperty;
+import net.digitalid.utility.property.set.WritableVolatileSimpleSetProperty;
+import net.digitalid.utility.property.set.WritableVolatileSimpleSetPropertyBuilder;
 import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
@@ -168,8 +164,7 @@ public abstract class Console {
     /**
      * Stores the available options for the user.
      */
-    @TODO(task = "Fix the generics of the builder and allow a direct (static) build call on the builder.", date = "2016-05-01", author = Author.KASPAR_ETTER, assignee = Author.STEPHANIE_STROKA, priority = Priority.MIDDLE)
-    public static final @Nonnull WritableExtensibleProperty<Option, ReadOnlySet<Option>> options = VolatileWritableExtensiblePropertyBuilder.build();
+    public static final @Nonnull WritableVolatileSimpleSetProperty<Option> options = WritableVolatileSimpleSetPropertyBuilder.build();
     
     /* -------------------------------------------------- Loop -------------------------------------------------- */
     

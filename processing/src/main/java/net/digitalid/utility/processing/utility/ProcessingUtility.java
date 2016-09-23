@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -183,11 +182,19 @@ public class ProcessingUtility {
     /* -------------------------------------------------- Annotation Mirrors -------------------------------------------------- */
     
     /**
+     * Returns the simple name of the given annotation mirror.
+     */
+    @Pure
+    public static @Nonnull String getSimpleName(@Nonnull AnnotationMirror annotationMirror) {
+        return annotationMirror.getAnnotationType().asElement().getSimpleName().toString();
+    }
+    
+    /**
      * Returns the simple name of the given annotation mirror with a leading at symbol.
      */
     @Pure
     public static @Nonnull String getSimpleNameWithLeadingAt(@Nonnull AnnotationMirror annotationMirror) {
-        return "@" + annotationMirror.getAnnotationType().asElement().getSimpleName().toString();
+        return "@" + getSimpleName(annotationMirror);
     }
     
     /**
@@ -231,97 +238,16 @@ public class ProcessingUtility {
     
     /* -------------------------------------------------- Annotation Values -------------------------------------------------- */
     
-    @Stateless
-    public static class AnnotationValueVisitor extends AbstractAnnotationValueVisitor8<String, TypeImporter> {
-        
-        @Pure
-        @Override
-        public String visitEnumConstant(VariableElement c, TypeImporter typeImporter) {
-            return typeImporter.importStaticallyIfPossible(ProcessingUtility.getQualifiedName(c.asType()) + "." + c.getSimpleName());
-        }
-        
-        @Pure
-        @Override
-        public String visitAnnotation(AnnotationMirror annotationMirror, TypeImporter typeImporter) {
-            return typeImporter.importIfPossible(ProcessingUtility.getQualifiedName(annotationMirror));
-        }
-        
-        @Pure
-        @Override
-        public String visitArray(List<? extends AnnotationValue> list, TypeImporter typeImporter) {
-            return Brackets.inCurly(FiniteIterable.of(list).map(annotationValue -> visit(annotationValue, typeImporter)).join(", "));
-        }
-        
-        @Pure
-        @Override
-        public String visitBoolean(boolean b, TypeImporter typeImporter) {
-            return Objects.toString(b);
-        }
-        
-        @Pure
-        @Override
-        public String visitByte(byte b, TypeImporter typeImporter) {
-            return Objects.toString(b);
-        }
-        
-        @Pure
-        @Override
-        public String visitChar(char c, TypeImporter typeImporter) {
-            return Quotes.inSingle(Objects.toString(c));
-        }
-        
-        @Pure
-        @Override
-        public String visitDouble(double v, TypeImporter typeImporter) {
-            return Objects.toString(v) + "d";
-        }
-        
-        @Pure
-        @Override
-        public String visitFloat(float v, TypeImporter typeImporter) {
-            return Objects.toString(v) + "f";
-        }
-        
-        @Pure
-        @Override
-        public String visitInt(int i, TypeImporter typeImporter) {
-            return Objects.toString(i);
-        }
-        
-        @Pure
-        @Override
-        public String visitLong(long l, TypeImporter typeImporter) {
-            return Objects.toString(l) + "L";
-        }
-        
-        @Pure
-        @Override
-        public String visitShort(short i, TypeImporter typeImporter) {
-            return "(short)" + Objects.toString(i);
-        }
-    
-        @Pure
-        @Override 
-        public String visitString(String s, TypeImporter typeImporter) {
-            return Quotes.inDouble(s);
-        }
-        
-        @Pure
-        @Override public String visitType(TypeMirror t, TypeImporter typeImporter) {
-            return typeImporter.importIfPossible(ProcessingUtility.getQualifiedName(t)) + ".class";
-        }
-    
-        // TODO: extend for type and arrays.
-    }
-    
-    private static final @Nonnull AnnotationValueVisitor ANNOTATION_VALUE_VISITOR = new AnnotationValueVisitor();
-    
     /**
-     * Returns the qualified name of the given annotation value.
+     * Returns the annotation values mapped from their name for all methods of the given annotation mirror.
      */
     @Pure
-    public static @Nonnull String getAnnotationValueAsString(@Nonnull AnnotationValue annotationValue, @Nonnull TypeImporter typeImporter) {
-        return ANNOTATION_VALUE_VISITOR.visit(annotationValue, typeImporter);
+    public static @Nonnull Map<@Nonnull String, @Nonnull AnnotationValue> getAnnotationValues(@Nonnull AnnotationMirror annotationMirror) {
+        final @Nonnull Map<@Nonnull String, @Nonnull AnnotationValue> result = new HashMap<>();
+        for (Map.@Nonnull Entry<@Nonnull ? extends ExecutableElement, @Nonnull ? extends AnnotationValue> annotationEntry : StaticProcessingEnvironment.getElementUtils().getElementValuesWithDefaults(annotationMirror).entrySet()) {
+            result.put(annotationEntry.getKey().getSimpleName().toString(), annotationEntry.getValue());
+        }
+        return result;
     }
     
     /**
@@ -330,13 +256,9 @@ public class ProcessingUtility {
     @Pure
     @LogsErrorWhenReturningNull
     public static @Nullable AnnotationValue getAnnotationValue(@Nonnull AnnotationMirror annotationMirror, @Nonnull String methodName) {
-        for (Map.@Nonnull Entry<@Nonnull ? extends ExecutableElement, @Nonnull ? extends AnnotationValue> annotationEntry : StaticProcessingEnvironment.getElementUtils().getElementValuesWithDefaults(annotationMirror).entrySet()) {
-            if (annotationEntry.getKey().getSimpleName().contentEquals(methodName)) {
-                return annotationEntry.getValue();
-            }
-        }
-        ProcessingLog.error("Found no value $ for the annotation $.", methodName, "@" + annotationMirror.getAnnotationType().asElement().getSimpleName());
-        return null;
+        final @Nullable AnnotationValue result = getAnnotationValues(annotationMirror).get(methodName);
+        if (result == null) { ProcessingLog.error("Found no value $ for the annotation $.", methodName, "@" + annotationMirror.getAnnotationType().asElement().getSimpleName()); }
+        return result;
     }
     
     /**
@@ -346,19 +268,6 @@ public class ProcessingUtility {
     @LogsErrorWhenReturningNull
     public static @Nullable AnnotationValue getAnnotationValue(@Nonnull AnnotationMirror annotationMirror) {
         return getAnnotationValue(annotationMirror, "value");
-    }
-    
-    /**
-     * Returns the annotation values for all methods of the given annotation mirror.
-     */
-    @Pure
-    @LogsErrorWhenReturningNull
-    public static @Nonnull Map<@Nonnull String, @Nonnull AnnotationValue> getAnnotationValues(@Nonnull AnnotationMirror annotationMirror) {
-        final @Nonnull Map<@Nonnull String, @Nonnull AnnotationValue> annotationValues = new HashMap<>();
-        for (Map.@Nonnull Entry<@Nonnull ? extends ExecutableElement, @Nonnull ? extends AnnotationValue> annotationEntry : StaticProcessingEnvironment.getElementUtils().getElementValuesWithDefaults(annotationMirror).entrySet()) {
-            annotationValues.put(annotationEntry.getKey().getSimpleName().toString(), annotationEntry.getValue());
-        }
-        return annotationValues;
     }
     
     /**
@@ -390,7 +299,7 @@ public class ProcessingUtility {
             if (object instanceof String) {
                 return (String) object;
             } else {
-                ProcessingLog.error("The annotation value is not a string: $.", object);
+                ProcessingLog.error("The annotation value $ is not a string.", object);
             }
         }
         return null;
@@ -468,6 +377,9 @@ public class ProcessingUtility {
         }
     }
     
+    /**
+     * Returns the given type mirror or its component type in case of arrays as a type element.
+     */
     @Pure
     @LogsErrorWhenReturningNull
     public static @Nullable TypeElement getTypeElement(@Nonnull TypeMirror typeMirror) {
@@ -478,8 +390,8 @@ public class ProcessingUtility {
             case ARRAY:
                 return getTypeElement(((ArrayType) typeMirror).getComponentType());
             default:
-            ProcessingLog.error("The type mirror of kind $ cannot be converted to a type element.", typeMirror.getKind());
-            return null;
+                ProcessingLog.error("The type mirror of kind $ cannot be converted to a type element.", typeMirror.getKind());
+                return null;
         }
     }
     
@@ -521,8 +433,11 @@ public class ProcessingUtility {
         return null;
     }
     
+    /**
+     * Returns whether the given type mirror or its component type in case of arrays is primitive.
+     */
     @Pure
-    public static boolean isTypePrimitive(@Nonnull TypeMirror typeMirror) {
+    public static boolean isPrimitive(@Nonnull TypeMirror typeMirror) {
         switch(typeMirror.getKind()) {
             case BOOLEAN:
             case BYTE:
@@ -533,15 +448,18 @@ public class ProcessingUtility {
             case SHORT:
                 return true;
             case ARRAY:
-                return isTypePrimitive(((ArrayType) typeMirror).getComponentType());
+                return isPrimitive(((ArrayType) typeMirror).getComponentType());
             default:
                 return false;
         }
     }
     
+    /**
+     * Returns the boxed type of the given type mirror or its component type in case of arrays.
+     */
     @Pure
     public static @Nonnull TypeMirror getBoxedType(@Nonnull TypeMirror typeMirror) {
-        if (isTypePrimitive(typeMirror)) {
+        if (isPrimitive(typeMirror)) {
             return ProcessingUtility.getType(StaticProcessingEnvironment.getTypeUtils().boxedClass((PrimitiveType) typeMirror));
         } else {
             return typeMirror;
@@ -550,18 +468,105 @@ public class ProcessingUtility {
     
     /* -------------------------------------------------- Annotation Strings -------------------------------------------------- */
     
-//    /**
-//     * Returns the given annotation value as a string.
-//     */
-//    @Pure
-//    private static @Nonnull String getAnnotationValueAsString(@Nonnull AnnotationValue annotationValue, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
-//        final @Nonnull Object object = annotationValue.getValue();
-//        if (object instanceof TypeMirror) {
-//            return typeImporter.importIfPossible((TypeMirror) object) + ".class";
-//        } else {
-//            return annotationValue.toString();
-//        }
-//    }
+    /**
+     * <em>Important:</em> Do not call {@link AnnotationValueVisitor#visit(javax.lang.model.element.AnnotationValue)} as this passes null as the visitor-specified parameter instead of a type importer.
+     */
+    @Stateless
+    public static class AnnotationValueVisitor extends AbstractAnnotationValueVisitor8<@Nonnull String, @Nonnull TypeImporter> {
+        
+        protected AnnotationValueVisitor() {}
+        
+        @Pure
+        @Override
+        public @Nonnull String visitBoolean(boolean value, @NonCaptured @Modified @Nullable TypeImporter typeImporter) {
+            return String.valueOf(value);
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull String visitByte(byte value, @NonCaptured @Modified @Nullable TypeImporter typeImporter) {
+            return String.valueOf(value);
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull String visitChar(char value, @NonCaptured @Modified @Nullable TypeImporter typeImporter) {
+            return Quotes.inSingle(String.valueOf(value));
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull String visitDouble(double value, @NonCaptured @Modified @Nullable TypeImporter typeImporter) {
+            return String.valueOf(value) + "d";
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull String visitFloat(float value, @NonCaptured @Modified @Nullable TypeImporter typeImporter) {
+            return String.valueOf(value) + "f";
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull String visitInt(int value, @NonCaptured @Modified @Nullable TypeImporter typeImporter) {
+            return String.valueOf(value);
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull String visitLong(long value, @NonCaptured @Modified @Nullable TypeImporter typeImporter) {
+            return String.valueOf(value) + "l";
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull String visitShort(short value, @NonCaptured @Modified @Nullable TypeImporter typeImporter) {
+            return String.valueOf(value);
+        }
+        
+        @Pure
+        @Override 
+        public @Nonnull String visitString(@Nonnull String string, @NonCaptured @Modified @Nullable TypeImporter typeImporter) {
+            return Quotes.inDouble(string);
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull String visitType(@Nonnull TypeMirror type, @NonCaptured @Modified @Nullable TypeImporter typeImporter) {
+            final @Nonnull String qualifiedTypeName = ProcessingUtility.getQualifiedName(type);
+            return (typeImporter != null ? typeImporter.importIfPossible(qualifiedTypeName) : qualifiedTypeName) + ".class";
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull String visitEnumConstant(@Nonnull VariableElement constant, @NonCaptured @Modified @Nullable TypeImporter typeImporter) {
+            final @Nonnull String qualifiedMemberName = ProcessingUtility.getQualifiedName(constant.asType()) + "." + constant.getSimpleName();
+            return typeImporter != null ? typeImporter.importStaticallyIfPossible(qualifiedMemberName) : qualifiedMemberName;
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull String visitAnnotation(@Nonnull AnnotationMirror annotation, @NonCaptured @Modified @Nullable TypeImporter typeImporter) {
+            return ProcessingUtility.getAnnotationAsString(annotation, typeImporter); // TODO: This call leads to a NullPointerException if the given type importer is null.
+        }
+        
+        @Pure
+        @Override
+        public @Nonnull String visitArray(@Nonnull List<@Nonnull ? extends AnnotationValue> list, @NonCaptured @Modified @Nullable TypeImporter typeImporter) {
+            return FiniteIterable.of(list).map(annotationValue -> visit(annotationValue, typeImporter)).join(Brackets.CURLY);
+        }
+        
+    }
+    
+    private static final @Nonnull AnnotationValueVisitor ANNOTATION_VALUE_VISITOR = new AnnotationValueVisitor();
+    
+    /**
+     * Returns the given annotation value as a string.
+     */
+    @Pure
+    public static @Nonnull String getAnnotationValueAsString(@Nonnull AnnotationValue annotationValue, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
+        return ANNOTATION_VALUE_VISITOR.visit(annotationValue, typeImporter);
+    }
     
     /**
      * Returns the given annotation entry as a string.
@@ -587,6 +592,14 @@ public class ProcessingUtility {
     @Pure
     public static @Nonnull String getAnnotationsAsString(@Nonnull FiniteIterable<@Nonnull ? extends AnnotationMirror> annotationMirrors, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
         return annotationMirrors.map(annotationMirror -> getAnnotationAsString(annotationMirror, typeImporter)).join("", " ", "", " ");
+    }
+    
+    /**
+     * Returns the annotations of the given type mirror with their values as a string.
+     */
+    @Pure
+    public static @Nonnull String getAnnotationsAsString(@Nonnull TypeMirror typeMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
+        return getAnnotationsAsString(FiniteIterable.of(typeMirror.getAnnotationMirrors()), typeImporter);
     }
     
     /* -------------------------------------------------- Type Conversion -------------------------------------------------- */

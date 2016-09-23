@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -210,8 +211,6 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     
     /* -------------------------------------------------- Type Visitor -------------------------------------------------- */
     
-    private final @Nonnull JavaFileGenerator javaFileGenerator = this;
-    
     /**
      * This type visitor imports the given type mirror with its generic parameters if their simple names are not yet mapped to different types.
      */
@@ -223,7 +222,19 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         @Pure
         @Override
         public @Nonnull String visitDeclared(@Nonnull DeclaredType type, @Nullable Void none) {
-            return ProcessingUtility.getAnnotationsAsString(FiniteIterable.of(type.getAnnotationMirrors()), javaFileGenerator) + importIfPossible(type.asElement()) + FiniteIterable.of(type.getTypeArguments()).map(this::visit).join(Brackets.POINTY, "");
+            @Nonnull TypeElement typeElement = (TypeElement) type.asElement();
+            @Nonnull String nestedTypeName = "";
+            while (typeElement.getNestingKind() == NestingKind.MEMBER) {
+                final @Nonnull Element enclosingElement = typeElement.getEnclosingElement();
+                if (enclosingElement instanceof TypeElement) {
+                    nestedTypeName = "." + typeElement.getSimpleName() + nestedTypeName;
+                    typeElement = (TypeElement) enclosingElement;
+                } else {
+                    ProcessingLog.error("The enclosing element $ of the member type $ is not a type element.", enclosingElement, typeElement);
+                    break;
+                }
+            }
+            return ProcessingUtility.getAnnotationsAsString(type, JavaFileGenerator.this) + importIfPossible(typeElement) + nestedTypeName + FiniteIterable.of(type.getTypeArguments()).map(this::visit).join(Brackets.POINTY, "");
         }
         
         @Pure
@@ -255,7 +266,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @Override
     @NonWrittenRecipient
     public @Nonnull String importIfPossible(@Nonnull String qualifiedTypeName) {
-        final @Nonnull String simpleTypeName = qualifiedTypeName.substring(qualifiedTypeName.lastIndexOf('.') + 1);
+        final @Nonnull String simpleTypeName = Strings.substringFromLast(qualifiedTypeName, '.');
         if (!nameSpace.containsKey(simpleTypeName)) {
             addImport(qualifiedTypeName);
             nameSpace.put(simpleTypeName, qualifiedTypeName);
@@ -287,15 +298,14 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @Override
     @NonWrittenRecipient
     public @Nonnull String importIfPossible(@Nonnull TypeMirror typeMirror) {
-        final @Nonnull String annotationsAsString = ProcessingUtility.getAnnotationsAsString(FiniteIterable.of(typeMirror.getAnnotationMirrors()), this);
-        return annotationsAsString + importingTypeVisitor.visit(typeMirror);
+        return ProcessingUtility.getAnnotationsAsString(typeMirror, this) + importingTypeVisitor.visit(typeMirror);
     }
     
     @Impure
     @Override
     @NonWrittenRecipient
     public @Nonnull String importStaticallyIfPossible(@Nonnull String qualifiedMemberName) {
-        final @Nonnull String simpleMemberName = qualifiedMemberName.substring(qualifiedMemberName.lastIndexOf('.') + 1);
+        final @Nonnull String simpleMemberName = Strings.substringFromLast(qualifiedMemberName, '.');
         if (!nameSpace.containsKey(simpleMemberName)) {
             addStaticImport(qualifiedMemberName);
             nameSpace.put(simpleMemberName, qualifiedMemberName);

@@ -1,4 +1,4 @@
-package net.digitalid.utility.property.extensible;
+package net.digitalid.utility.property.set;
 
 import javax.annotation.Nonnull;
 
@@ -6,7 +6,6 @@ import net.digitalid.utility.annotations.method.CallSuper;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
-import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.collections.set.FreezableSet;
@@ -15,34 +14,34 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
-import net.digitalid.utility.validation.annotations.generation.Default;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
- * This writable property stores an extensible set of values in volatile memory.
+ * This writable property stores a set of values in volatile memory.
  * 
  * <em>Important:</em> Make sure that {@code F} is a sub-type of {@code R}!
  * Unfortunately, this cannot be enforced with the limited Java generics.
  * 
  * @invariant !get().containsNull() : "None of the values may be null.";
  * @invariant get().matchAll(getValidator()) : "Each value has to be valid.";
+ * 
+ * @see WritableVolatileSimpleSetProperty
  */
-@Mutable
 @GenerateBuilder
 @GenerateSubclass
-public abstract class VolatileWritableExtensibleProperty<V, R extends ReadOnlySet<@Nonnull V>, F extends FreezableSet<@Nonnull V>> extends WritableExtensibleProperty<V, R> {
+@Mutable(ReadOnlyVolatileSetProperty.class)
+public abstract class WritableVolatileSetProperty<V, R extends ReadOnlySet<@Nonnull @Valid V>, F extends FreezableSet<@Nonnull @Valid V>> extends WritableSetPropertyImplementation<V, R, RuntimeException, ReadOnlyVolatileSetProperty.Observer<V, R>, ReadOnlyVolatileSetProperty<V, R>> implements ReadOnlyVolatileSetProperty<V, R> {
     
     /* -------------------------------------------------- Set -------------------------------------------------- */
     
     @Pure
-    @Default("(F) net.digitalid.utility.collections.set.FreezableLinkedHashSetBuilder.build()")
     protected abstract @Nonnull @NonFrozen F getSet();
     
     @Pure
     @Override
     @SuppressWarnings("unchecked")
-    public @NonCapturable @Nonnull @NonFrozen R get() {
+    public @Nonnull @NonFrozen R get() {
         return (R) getSet();
     }
     
@@ -50,17 +49,17 @@ public abstract class VolatileWritableExtensibleProperty<V, R extends ReadOnlySe
     
     @Impure
     @Override
-    public boolean add(@Captured @Nonnull @Valid V value) {
+    public synchronized boolean add(@Captured @Nonnull @Valid V value) {
         final boolean notAlreadyContained = getSet().add(value);
-        if (notAlreadyContained) { notifyAdded(value); }
+        if (notAlreadyContained) { notifyObservers(value, true); }
         return notAlreadyContained;
     }
     
     @Impure
     @Override
-    public boolean remove(@NonCaptured @Unmodified @Nonnull @Valid V value) {
+    public synchronized boolean remove(@NonCaptured @Unmodified @Nonnull @Valid V value) {
         final boolean contained = getSet().remove(value);
-        if (contained) { notifyRemoved(value); }
+        if (contained) { notifyObservers(value, false); }
         return contained;
     }
     

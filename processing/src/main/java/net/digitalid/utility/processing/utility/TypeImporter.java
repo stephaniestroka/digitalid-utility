@@ -50,9 +50,9 @@ public interface TypeImporter {
     public @Nonnull String importIfPossible(@Nonnull TypeMirror typeMirror);
     
     /**
-     * Imports the given qualified type name if its simple name is not yet mapped to a different type.
+     * Imports the given qualified member name if its simple name is not yet mapped to a different member.
      * 
-     * @return the simple name of the given type if the qualified type name could be imported without a naming conflict and the given qualified type name otherwise.
+     * @return the simple name of the given member if the qualified member name could be imported without a naming conflict and the given qualified member name otherwise.
      */
     @Impure
     public @Nonnull String importStaticallyIfPossible(@Nonnull String qualifiedMemberName);

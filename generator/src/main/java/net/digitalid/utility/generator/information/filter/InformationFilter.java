@@ -109,10 +109,10 @@ public class InformationFilter {
         if (methodInformation != null) {
             @Nullable TypeMirror returnType = methodInformation.getReturnType();
             if (StaticProcessingEnvironment.getTypeUtils().isAssignable(returnType, fieldType)) {
-                ProcessingLog.information("Found getter for field $: $", fieldName, methodInformation);
+                ProcessingLog.debugging("Found getter for field $: $", fieldName, methodInformation);
                 return true;
             } else {
-                ProcessingLog.information("Found method that looks like a getter, but return type of method is: $, type of field: $ ", returnType, fieldType);
+                ProcessingLog.debugging("Found method that looks like a getter, but return type of method is: $, type of field: $ ", returnType, fieldType);
                 return false;
             }
         }

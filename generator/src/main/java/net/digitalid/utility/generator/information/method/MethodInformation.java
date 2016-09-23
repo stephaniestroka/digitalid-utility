@@ -36,7 +36,6 @@ import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.string.Strings;
-import net.digitalid.utility.validation.annotations.file.permission.Executable;
 import net.digitalid.utility.validation.annotations.generation.Default;
 import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -208,7 +207,7 @@ public class MethodInformation extends ExecutableInformation {
             this.methodInterceptors = AnnotationHandlerUtility.getAnnotationHandlers(element, Interceptor.class, MethodInterceptor.class);
         } else {
             this.methodInterceptors = new HashMap<>();
-            ProcessingLog.warning("Ignoring method interceptors on method $, because no subclass in generated for type $", getName(), typeInformation.getName());
+            ProcessingLog.verbose("Ignoring method interceptors on method $ because no subclass is generated for type $.", getName(), typeInformation.getName());
         }
         
         if (isDeclaredInDigitalIDLibrary()) {
