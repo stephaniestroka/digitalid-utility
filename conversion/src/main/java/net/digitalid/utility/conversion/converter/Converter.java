@@ -16,15 +16,15 @@ import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
 public interface Converter<T, E> {
     
     @Pure
+    public @Nonnull @CodeIdentifier @MaxSize(63) String getName();
+    
+    @Pure
     public @Nonnull ImmutableList<@Nonnull CustomField> getFields();
     
     @Pure
-    public <X extends ExternalException> int convert(@Nullable @NonCaptured @Unmodified T object, @Nonnull @NonCaptured @Modified ValueCollector<X> valueCollector) throws ExternalException;
+    public <X extends ExternalException> int convert(@NonCaptured @Unmodified @Nullable T object, @NonCaptured @Modified @Nonnull ValueCollector<X> valueCollector) throws X;
     
     @Pure
-    public @Capturable <X extends ExternalException> @Nonnull T recover(@Nonnull @NonCaptured @Modified SelectionResult<X> selectionResult, E externallyProvided) throws ExternalException;
-    
-    @Pure
-    public @Nonnull @CodeIdentifier @MaxSize(63) String getName();
+    public @Capturable <X extends ExternalException> @Nullable T recover(@NonCaptured @Modified @Nonnull SelectionResult<X> selectionResult, E externallyProvided) throws X;
     
 }
