@@ -9,7 +9,7 @@ import net.digitalid.utility.property.map.ReadOnlyMapProperty;
 import net.digitalid.utility.property.set.ReadOnlySetProperty;
 import net.digitalid.utility.property.value.ReadOnlyValueProperty;
 import net.digitalid.utility.rootclass.RootInterface;
-import net.digitalid.utility.validation.annotations.type.Mutable;
+import net.digitalid.utility.validation.annotations.type.ReadOnly;
 
 /**
  * A property is an object that can be {@link Property.Observer observed}.
@@ -19,7 +19,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * @see ReadOnlyValueProperty
  * @see PropertyImplementation
  */
-@Mutable
+@ReadOnly // This interface is mutable regarding the observers but read-only properties must be able to inherit from this interface.
 public interface Property<O extends Property.Observer> extends RootInterface {
     
     /* -------------------------------------------------- Observer -------------------------------------------------- */
@@ -36,7 +36,7 @@ public interface Property<O extends Property.Observer> extends RootInterface {
      * 
      * @return whether the given observer was not already registered.
      */
-    @Pure // 
+    @Pure // This method is impure regarding the observers but read-only properties must be able to expose this method as well.
     public boolean register(@Captured @Nonnull O observer);
     
     /**
@@ -44,7 +44,7 @@ public interface Property<O extends Property.Observer> extends RootInterface {
      * 
      * @return whether the given observer was actually registered.
      */
-    @Pure
+    @Pure // This method is impure regarding the observers but read-only properties must be able to expose this method as well.
     public boolean deregister(@NonCaptured @Nonnull O observer);
     
     /**

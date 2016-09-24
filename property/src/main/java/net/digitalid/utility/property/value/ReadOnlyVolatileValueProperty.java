@@ -10,7 +10,7 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * @see WritableVolatileValueProperty
  */
 @ReadOnly(WritableVolatileValueProperty.class)
-public interface ReadOnlyVolatileValueProperty<V> extends ReadOnlyValueProperty<V, RuntimeException, ReadOnlyVolatileValueProperty.Observer<V>, ReadOnlyVolatileValueProperty<V>>{
+public interface ReadOnlyVolatileValueProperty<V> extends ReadOnlyValueProperty<V, RuntimeException, ReadOnlyVolatileValueProperty.Observer<V>, ReadOnlyVolatileValueProperty<V>> {
     
     /* -------------------------------------------------- Observer -------------------------------------------------- */
     

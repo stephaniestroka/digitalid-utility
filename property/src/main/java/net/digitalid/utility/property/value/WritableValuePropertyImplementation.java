@@ -31,7 +31,7 @@ public abstract class WritableValuePropertyImplementation<V, X extends Exception
     @SuppressWarnings("unchecked")
     protected void notifyObservers(@NonCaptured @Unmodified @Valid V oldValue, @NonCaptured @Unmodified @Valid V newValue) throws X {
         Require.that(!Objects.equals(newValue, oldValue)).orThrow("The new value $ may not be the same as the old value $.", newValue, oldValue);
-        Require.that(Objects.equals(newValue, get())).orThrow("The new value $ has to be set for this property.", newValue);
+        Require.that(Objects.equals(newValue, get())).orThrow("The new value $ has to be set for this property but the value was $.", newValue, get());
         
         if (hasObservers()) {
             for (@Nonnull O observer : getObservers()) {

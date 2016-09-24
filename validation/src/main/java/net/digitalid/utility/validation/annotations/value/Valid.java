@@ -56,16 +56,16 @@ public @interface Valid {
      */
     @Nonnull String value() default "";
     
-    /* -------------------------------------------------- Interface -------------------------------------------------- */
+    /* -------------------------------------------------- Value Interface -------------------------------------------------- */
     
     /**
-     * This interface encapsulates one or more values which are validated by the given validator.
+     * This interface provides a validation method that can be configured with a predicate.
      */
     @Functional
     public static interface Value<V> {
         
         /**
-         * Returns the validator which validates the encapsulated value(s).
+         * Returns the validator which validates the values.
          */
         @Pure
         @Default("object -> true")
@@ -77,6 +77,31 @@ public @interface Valid {
         @Pure
         public default boolean isValid(V value) {
             return getValueValidator().evaluate(value);
+        }
+        
+    }
+    
+    /* -------------------------------------------------- Key Interface -------------------------------------------------- */
+    
+    /**
+     * This interface provides a validation method that can be configured with a predicate.
+     */
+    @Functional
+    public static interface Key<K> {
+        
+        /**
+         * Returns the validator which validates the keys.
+         */
+        @Pure
+        @Default("object -> true")
+        public @Nonnull Predicate<? super K> getKeyValidator();
+        
+        /**
+         * Returns whether the given key is valid.
+         */
+        @Pure
+        public default boolean isValidKey(K key) {
+            return getKeyValidator().evaluate(key);
         }
         
     }

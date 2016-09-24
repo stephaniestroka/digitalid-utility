@@ -10,9 +10,7 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.collections.map.ReadOnlyMap;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
-import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.property.Property;
-import net.digitalid.utility.validation.annotations.generation.Default;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 import net.digitalid.utility.validation.annotations.value.Valid;
@@ -25,7 +23,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  * @see ReadOnlyMapPropertyImplementation
  */
 @ReadOnly(WritableMapProperty.class)
-public interface ReadOnlyMapProperty<K, V, R extends ReadOnlyMap<@Nonnull @Valid("key") K, @Nonnull @Valid V>, X extends Exception, O extends ReadOnlyMapProperty.Observer<K, V, R, X, O, P>, P extends ReadOnlyMapProperty<K, V, R, X, O, P>> extends Property<O>, Valid.Value<V> {
+public interface ReadOnlyMapProperty<K, V, R extends ReadOnlyMap<@Nonnull @Valid("key") K, @Nonnull @Valid V>, X extends Exception, O extends ReadOnlyMapProperty.Observer<K, V, R, X, O, P>, P extends ReadOnlyMapProperty<K, V, R, X, O, P>> extends Property<O>, Valid.Key<K>, Valid.Value<V> {
     
     /* -------------------------------------------------- Observer -------------------------------------------------- */
     
@@ -43,23 +41,6 @@ public interface ReadOnlyMapProperty<K, V, R extends ReadOnlyMap<@Nonnull @Valid
         @Impure
         public void notify(@Nonnull P property, @NonCaptured @Unmodified @Nonnull @Valid("key") K key, @NonCaptured @Unmodified @Nonnull @Valid V value, boolean added);
         
-    }
-    
-    /* -------------------------------------------------- Key Validator -------------------------------------------------- */
-    
-    /**
-     * Returns the validator which validates the keys of this property.
-     */
-    @Pure
-    @Default("object -> true")
-    public @Nonnull Predicate<? super K> getKeyValidator();
-    
-    /**
-     * Returns whether the given key is valid.
-     */
-    @Pure
-    public default boolean isValidKey(@Nonnull K key) {
-        return getKeyValidator().evaluate(key);
     }
     
     /* -------------------------------------------------- Getters -------------------------------------------------- */
