@@ -8,6 +8,8 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
+import net.digitalid.utility.annotations.type.ThreadSafe;
+import net.digitalid.utility.concurrency.exceptions.ReentranceException;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
@@ -17,6 +19,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
 /**
  * This writable property stores a value in volatile memory.
  */
+@ThreadSafe
 @GenerateBuilder
 @GenerateSubclass
 @Mutable(ReadOnlyVolatileValueProperty.class)
@@ -34,13 +37,16 @@ public abstract class WritableVolatileValueProperty<V> extends WritableValueProp
     
     @Impure
     @Override
-    public synchronized @Capturable @Valid V set(@Captured @Valid V newValue) {
-        final V oldValue = this.value;
-        this.value = newValue;
-        
-        if (!Objects.equals(newValue, oldValue)) { notifyObservers(oldValue, newValue); }
-        
-        return oldValue;
+    public @Capturable @Valid V set(@Captured @Valid V newValue) throws ReentranceException {
+        lock.lock();
+        try {
+            final @Valid V oldValue = this.value;
+            this.value = newValue;
+            if (!Objects.equals(newValue, oldValue)) { notifyObservers(oldValue, newValue); }
+            return oldValue;
+        } finally {
+            lock.unlock();
+        }
     }
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */

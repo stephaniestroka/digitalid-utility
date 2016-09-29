@@ -7,6 +7,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.property.Property;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Mutable;
@@ -20,6 +21,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  * @see ReadOnlyVolatileValueProperty
  * @see ReadOnlyValuePropertyImplementation
  */
+@ThreadSafe
 @ReadOnly(WritableValueProperty.class)
 public interface ReadOnlyValueProperty<V, X extends Exception, O extends ReadOnlyValueProperty.Observer<V, X, O, P>, P extends ReadOnlyValueProperty<V, X, O, P>> extends Property<O>, Valid.Value<V> {
     

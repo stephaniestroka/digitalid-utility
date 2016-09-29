@@ -1,5 +1,6 @@
 package net.digitalid.utility.property.value;
 
+import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
@@ -9,6 +10,7 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * 
  * @see WritableVolatileValueProperty
  */
+@ThreadSafe
 @ReadOnly(WritableVolatileValueProperty.class)
 public interface ReadOnlyVolatileValueProperty<V> extends ReadOnlyValueProperty<V, RuntimeException, ReadOnlyVolatileValueProperty.Observer<V>, ReadOnlyVolatileValueProperty<V>> {
     

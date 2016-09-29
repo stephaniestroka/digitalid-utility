@@ -8,6 +8,10 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.annotations.type.ThreadSafe;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
+import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.collections.map.ReadOnlyMap;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.property.Property;
@@ -22,7 +26,9 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  * @see ReadOnlyVolatileMapProperty
  * @see ReadOnlyMapPropertyImplementation
  */
+@ThreadSafe
 @ReadOnly(WritableMapProperty.class)
+@TODO(task = "Restrict the ReadOnlyMap to a SyncrhonizedReadOnlyMap.", date = "2016-09-27", author = Author.KASPAR_ETTER, assignee = Author.KASPAR_ETTER, priority = Priority.MIDDLE)
 public interface ReadOnlyMapProperty<K, V, R extends ReadOnlyMap<@Nonnull @Valid("key") K, @Nonnull @Valid V>, X extends Exception, O extends ReadOnlyMapProperty.Observer<K, V, R, X, O, P>, P extends ReadOnlyMapProperty<K, V, R, X, O, P>> extends Property<O>, Valid.Key<K>, Valid.Value<V> {
     
     /* -------------------------------------------------- Observer -------------------------------------------------- */

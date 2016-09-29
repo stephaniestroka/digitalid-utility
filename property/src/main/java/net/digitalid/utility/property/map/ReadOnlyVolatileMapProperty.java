@@ -2,6 +2,7 @@ package net.digitalid.utility.property.map;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collections.map.ReadOnlyMap;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Mutable;
@@ -13,6 +14,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  * 
  * @see WritableVolatileMapProperty
  */
+@ThreadSafe
 @ReadOnly(WritableVolatileMapProperty.class)
 public interface ReadOnlyVolatileMapProperty<K, V, R extends ReadOnlyMap<@Nonnull @Valid("key") K, @Nonnull @Valid V>> extends ReadOnlyMapProperty<K, V, R, RuntimeException, ReadOnlyVolatileMapProperty.Observer<K, V, R>, ReadOnlyVolatileMapProperty<K, V, R>> {
     

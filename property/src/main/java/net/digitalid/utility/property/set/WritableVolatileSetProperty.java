@@ -8,8 +8,10 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.collections.set.ReadOnlySet;
+import net.digitalid.utility.concurrency.exceptions.ReentranceException;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
@@ -28,6 +30,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  * 
  * @see WritableVolatileSimpleSetProperty
  */
+@ThreadSafe
 @GenerateBuilder
 @GenerateSubclass
 @Mutable(ReadOnlyVolatileSetProperty.class)
@@ -49,18 +52,28 @@ public abstract class WritableVolatileSetProperty<V, R extends ReadOnlySet<@Nonn
     
     @Impure
     @Override
-    public synchronized boolean add(@Captured @Nonnull @Valid V value) {
-        final boolean notAlreadyContained = getSet().add(value);
-        if (notAlreadyContained) { notifyObservers(value, true); }
-        return notAlreadyContained;
+    public synchronized boolean add(@Captured @Nonnull @Valid V value) throws ReentranceException {
+        lock.lock();
+        try {
+            final boolean notAlreadyContained = getSet().add(value);
+            if (notAlreadyContained) { notifyObservers(value, true); }
+            return notAlreadyContained;
+        } finally {
+            lock.unlock();
+        }
     }
     
     @Impure
     @Override
-    public synchronized boolean remove(@NonCaptured @Unmodified @Nonnull @Valid V value) {
-        final boolean contained = getSet().remove(value);
-        if (contained) { notifyObservers(value, false); }
-        return contained;
+    public synchronized boolean remove(@NonCaptured @Unmodified @Nonnull @Valid V value) throws ReentranceException {
+        lock.lock();
+        try {
+            final boolean contained = getSet().remove(value);
+            if (contained) { notifyObservers(value, false); }
+            return contained;
+        } finally {
+            lock.unlock();
+        }
     }
     
     /* -------------------------------------------------- Validate -------------------------------------------------- */

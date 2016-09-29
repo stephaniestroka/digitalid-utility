@@ -6,7 +6,9 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collections.set.ReadOnlySet;
+import net.digitalid.utility.concurrency.exceptions.ReentranceException;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
@@ -16,6 +18,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  * @see WritableVolatileSetProperty
  * @see WritableSetPropertyImplementation
  */
+@ThreadSafe
 @Mutable(ReadOnlySetProperty.class)
 public interface WritableSetProperty<V, R extends ReadOnlySet<@Nonnull @Valid V>, X extends Exception, O extends ReadOnlySetProperty.Observer<V, R, X, O, P>, P extends ReadOnlySetProperty<V, R, X, O, P>> extends ReadOnlySetProperty<V, R, X, O, P> {
     
@@ -27,7 +30,7 @@ public interface WritableSetProperty<V, R extends ReadOnlySet<@Nonnull @Valid V>
      * @return whether the given value was not already stored.
      */
     @Impure
-    public abstract boolean add(@Captured @Nonnull @Valid V value) throws X;
+    public abstract boolean add(@Captured @Nonnull @Valid V value) throws X, ReentranceException;
     
     /**
      * Removes the given value from the values of this property.
@@ -35,6 +38,6 @@ public interface WritableSetProperty<V, R extends ReadOnlySet<@Nonnull @Valid V>
      * @return whether the given value was actually stored.
      */
     @Impure
-    public abstract boolean remove(@NonCaptured @Unmodified @Nonnull @Valid V value) throws X;
+    public abstract boolean remove(@NonCaptured @Unmodified @Nonnull @Valid V value) throws X, ReentranceException;
     
 }

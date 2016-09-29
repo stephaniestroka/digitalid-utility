@@ -1,18 +1,25 @@
 package net.digitalid.utility.property;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
-import net.digitalid.utility.collections.set.FreezableLinkedHashSetBuilder;
-import net.digitalid.utility.collections.set.FreezableSet;
-import net.digitalid.utility.collections.set.ReadOnlySet;
-import net.digitalid.utility.freezable.annotations.NonFrozen;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.annotations.type.ThreadSafe;
+import net.digitalid.utility.concurrency.lock.NonReentrantLock;
+import net.digitalid.utility.concurrency.lock.NonReentrantLockBuilder;
+import net.digitalid.utility.concurrency.map.ConcurrentHashMap;
+import net.digitalid.utility.concurrency.map.ConcurrentHashMapBuilder;
 import net.digitalid.utility.property.value.ReadOnlyValuePropertyImplementation;
 import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.threading.NamedThreadFactory;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
@@ -21,49 +28,61 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * @see ReadOnlyValuePropertyImplementation
  */
 @Mutable
-public abstract class PropertyImplementation<O extends Property.Observer> extends RootClass implements Property<O> {
+@ThreadSafe
+public abstract class PropertyImplementation<O extends Property.Observer, Q extends Property.Observer> extends RootClass implements Property<O> {
+    
+    /* -------------------------------------------------- Asynchronous Observer -------------------------------------------------- */
+    
+    /**
+     * An asynchronous observer executes the notifications on a separate thread sequentially.
+     */
+    @Immutable
+    public static class AsynchronousObserver<O extends Property.Observer> implements Property.Observer {
+        
+        private final static @Nonnull ThreadFactory threadFactory = NamedThreadFactory.with("Observer");
+        
+        protected final @Nonnull ExecutorService executorService = Executors.newSingleThreadExecutor(threadFactory);
+        
+        protected final @Nonnull O observer;
+        
+        protected AsynchronousObserver(@Captured @Modified @Nonnull O observer) {
+            this.observer = observer;
+        }
+        
+    }
     
     /* -------------------------------------------------- Observers -------------------------------------------------- */
     
     /**
-     * Stores null until the first observer registers and then the registered observers.
+     * Stores the registered observers mapped to the respective observer that is executed instead.
      */
-    private @Nullable @NonFrozen FreezableSet<@Nonnull O> observers;
+    protected final @Nonnull ConcurrentHashMap<@Nonnull O, @Nonnull Q> observers = ConcurrentHashMapBuilder.buildWithInitialCapacity(1);
     
     @Impure
     @Override
+    @SuppressWarnings("unchecked")
     public boolean register(@Captured @Nonnull O observer) {
-        if (observers == null) { observers = FreezableLinkedHashSetBuilder.buildWithInitialCapacity(1); }
-        return observers.add(observer);
+        return observers.put(observer, (Q) observer) == null;
     }
     
     @Impure
     @Override
     public boolean deregister(@NonCaptured @Nonnull O observer) {
-        if (observers != null) { return observers.remove(observer); } else { return false; }
+        return observers.remove(observer) != null;
     }
     
     @Pure
     @Override
     public boolean isRegistered(@NonCaptured @Nonnull O observer) {
-        return observers != null && observers.contains(observer);
+        return observers.containsKey(observer);
     }
     
-    /**
-     * Returns whether this property has observers.
-     */
-    @Pure
-    protected boolean hasObservers() {
-        return observers != null && !observers.isEmpty();
-    }
+    /* -------------------------------------------------- Lock -------------------------------------------------- */
     
     /**
-     * Returns the observers of this property.
+     * Stores a non-reentrant lock to guarantee that this property reflects the notified change for each observer.
+     * This can only be guaranteed if observers are prevented from changing this property during the notification.
      */
-    @Pure
-    protected @Nonnull @NonFrozen ReadOnlySet<@Nonnull O> getObservers() {
-        if (observers == null) { observers = FreezableLinkedHashSetBuilder.buildWithInitialCapacity(0); }
-        return observers;
-    }
+    protected final @Nonnull NonReentrantLock lock = NonReentrantLockBuilder.build();
     
 }

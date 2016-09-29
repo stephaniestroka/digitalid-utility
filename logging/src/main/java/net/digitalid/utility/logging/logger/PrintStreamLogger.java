@@ -40,40 +40,47 @@ public abstract class PrintStreamLogger extends Logger {
     
     /**
      * Sets the print stream to which the messages are printed.
+     * This class uses the given print stream for synchronization.
      */
     @Impure
-    protected synchronized void setPrintStream(@Captured @Nonnull PrintStream printStream) {
+    @SuppressWarnings("SynchronizeOnNonFinalField")
+    protected void setPrintStream(@Captured @Nonnull PrintStream printStream) {
         Require.that(printStream != null).orThrow("The print stream may not be null.");
         
-        if (this.printStream != null) {
+        synchronized (this.printStream) {
             this.printStream.close();
+            this.printStream = printStream;
         }
-        
-        this.printStream = printStream;
     }
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
      * Creates a print stream logger that logs the messages to the given print stream.
+     * This class uses the given print stream for synchronization.
      */
     protected PrintStreamLogger(@Captured @Nonnull PrintStream printStream) {
-        setPrintStream(printStream);
+        Require.that(printStream != null).orThrow("The print stream may not be null.");
+        
+        this.printStream = printStream;
     }
     
     /* -------------------------------------------------- Logging -------------------------------------------------- */
     
     @Impure
     @Override
-    protected synchronized void log(@Nonnull Level level, @Nonnull String caller, @Nonnull String thread, @Nonnull String message, @Nullable Throwable throwable) {
+    @SuppressWarnings("SynchronizeOnNonFinalField")
+    protected void log(@Nonnull Level level, @Nonnull String caller, @Nonnull String thread, @Nonnull String message, @Nullable Throwable throwable) {
         final @Nonnull String version = Version.string.get();
-        printStream.println(timeFormat.get().format(new Date()) + (version.isEmpty() ? "" : " in " + version) + " [" + thread + "] (" + level + ") <" + caller + ">: " + message);
-        if (throwable != null) {
-            printStream.println();
-            throwable.printStackTrace(printStream);
-            printStream.println();
+        synchronized (printStream) {
+            printStream.println(timeFormat.get().format(new Date()) + (version.isEmpty() ? "" : " in " + version) + " [" + thread + "] (" + level + ") <" + caller + ">: " + message);
+            if (throwable != null) {
+                printStream.println();
+                throwable.printStackTrace(printStream);
+                printStream.println();
+            }
+            printStream.flush();
         }
-        printStream.flush();
     }
     
 }

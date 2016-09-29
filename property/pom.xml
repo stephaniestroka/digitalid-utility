@@ -19,6 +19,16 @@
             <artifactId>utility-collections</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-concurrency</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-threading</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     
 </project>

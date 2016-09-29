@@ -11,8 +11,10 @@ import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collections.map.FreezableMap;
 import net.digitalid.utility.collections.map.ReadOnlyMap;
+import net.digitalid.utility.concurrency.exceptions.ReentranceException;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
@@ -31,6 +33,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  * @invariant get().keySet().matchAll(getKeyValidator()) : "Each key has to be valid.";
  * @invariant get().values().matchAll(getValueValidator()) : "Each value has to be valid.";
  */
+@ThreadSafe
 @GenerateBuilder
 @GenerateSubclass
 @Mutable(ReadOnlyVolatileMapProperty.class)
@@ -60,22 +63,32 @@ public abstract class WritableVolatileMapProperty<K, V, R extends ReadOnlyMap<@N
     
     @Impure
     @Override
-    public synchronized boolean add(@Captured @Nonnull @Valid("key") K key, @Captured @Nonnull @Valid V value) {
-        if (getMap().get(key) == null) {
-            getMap().put(key, value);
-            notifyObservers(key, value, true);
-            return true;
-        } else {
-            return false;
+    public synchronized boolean add(@Captured @Nonnull @Valid("key") K key, @Captured @Nonnull @Valid V value) throws ReentranceException {
+        lock.lock();
+        try {
+            if (getMap().get(key) == null) {
+                getMap().put(key, value);
+                notifyObservers(key, value, true);
+                return true;
+            } else {
+                return false;
+            }
+        } finally {
+            lock.unlock();
         }
     }
     
     @Impure
     @Override
-    public synchronized @Capturable @Nullable @Valid V remove(@NonCaptured @Unmodified @Nonnull @Valid("key") K key) {
-        final @Nullable V value = getMap().remove(key);
-        if (value != null) { notifyObservers(key, value, false); }
-        return value;
+    public synchronized @Capturable @Nullable @Valid V remove(@NonCaptured @Unmodified @Nonnull @Valid("key") K key) throws ReentranceException {
+        lock.lock();
+        try {
+            final @Nullable V value = getMap().remove(key);
+            if (value != null) { notifyObservers(key, value, false); }
+            return value;
+        } finally {
+            lock.unlock();
+        }
     }
     
     /* -------------------------------------------------- Validate -------------------------------------------------- */

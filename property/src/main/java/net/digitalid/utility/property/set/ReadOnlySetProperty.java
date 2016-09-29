@@ -6,6 +6,10 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.annotations.type.ThreadSafe;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
+import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.property.Property;
@@ -21,7 +25,9 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  * @see ReadOnlyVolatileSetProperty
  * @see ReadOnlySetPropertyImplementation
  */
+@ThreadSafe
 @ReadOnly(WritableSetProperty.class)
+@TODO(task = "Restrict the ReadOnlySet to a SynchronizedReadOnlySet.", date = "2016-09-27", author = Author.KASPAR_ETTER, assignee = Author.KASPAR_ETTER, priority = Priority.MIDDLE)
 public interface ReadOnlySetProperty<V, R extends ReadOnlySet<@Nonnull @Valid V>, X extends Exception, O extends ReadOnlySetProperty.Observer<V, R, X, O, P>, P extends ReadOnlySetProperty<V, R, X, O, P>> extends Property<O>, Valid.Value<V> {
     
     /* -------------------------------------------------- Observer -------------------------------------------------- */

@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
@@ -17,6 +18,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  * @see WritableVolatileValueProperty
  */
 @Mutable
+@ThreadSafe
 public abstract class WritableValuePropertyImplementation<V, X extends Exception, O extends ReadOnlyValueProperty.Observer<V, X, O, P>, P extends ReadOnlyValueProperty<V, X, O, P>> extends ReadOnlyValuePropertyImplementation<V, X, O, P> implements WritableValueProperty<V, X, O, P> {
     
     /* -------------------------------------------------- Notification -------------------------------------------------- */
@@ -33,8 +35,8 @@ public abstract class WritableValuePropertyImplementation<V, X extends Exception
         Require.that(!Objects.equals(newValue, oldValue)).orThrow("The new value $ may not be the same as the old value $.", newValue, oldValue);
         Require.that(Objects.equals(newValue, get())).orThrow("The new value $ has to be set for this property but the value was $.", newValue, get());
         
-        if (hasObservers()) {
-            for (@Nonnull O observer : getObservers()) {
+        if (!observers.isEmpty()) {
+            for (ReadOnlyValueProperty.@Nonnull Observer<V, X, O, P> observer : observers.values()) {
                 observer.notify((P) this, oldValue, newValue);
             }
         }

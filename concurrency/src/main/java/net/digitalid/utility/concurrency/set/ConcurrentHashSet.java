@@ -1,4 +1,4 @@
-package net.digitalid.utility.concurrency;
+package net.digitalid.utility.concurrency.set;
 
 import java.util.AbstractSet;
 import java.util.Collection;
@@ -16,6 +16,8 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.circumfixes.Brackets;
+import net.digitalid.utility.concurrency.map.ConcurrentHashMap;
+import net.digitalid.utility.concurrency.map.ConcurrentHashMapBuilder;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;

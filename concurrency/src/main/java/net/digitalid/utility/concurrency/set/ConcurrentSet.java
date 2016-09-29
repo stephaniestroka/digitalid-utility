@@ -1,4 +1,4 @@
-package net.digitalid.utility.concurrency;
+package net.digitalid.utility.concurrency.set;
 
 import java.util.Set;
 

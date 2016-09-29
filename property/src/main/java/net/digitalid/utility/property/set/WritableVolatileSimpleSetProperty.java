@@ -3,6 +3,7 @@ package net.digitalid.utility.property.set;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
@@ -15,6 +16,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
 /**
  * This class simplifies the creation and declaration of {@link WritableVolatileSetProperty}.
  */
+@ThreadSafe
 @GenerateBuilder
 @GenerateSubclass
 @Mutable(ReadOnlyVolatileSimpleSetProperty.class)
