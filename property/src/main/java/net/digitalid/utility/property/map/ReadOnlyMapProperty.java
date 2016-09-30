@@ -52,15 +52,15 @@ public interface ReadOnlyMapProperty<K, V, R extends ReadOnlyMap<@Nonnull @Valid
     /* -------------------------------------------------- Getters -------------------------------------------------- */
     
     /**
-     * Returns the value for the given key.
-     */
-    @Pure
-    public @NonCapturable @Nullable @Valid V get(@NonCaptured @Unmodified @Nonnull @Valid("key") K key);
-    
-    /**
      * Returns a read-only map with the key-value pairs of this property.
      */
     @Pure
     public @Nonnull @NonFrozen R get() throws X;
+    
+    /**
+     * Returns the value for the given key of this property.
+     */
+    @Pure
+    public @NonCapturable @Nullable @Valid V get(@NonCaptured @Unmodified @Nonnull @Valid("key") K key) throws X;
     
 }

@@ -66,12 +66,12 @@ public abstract class WritableVolatileMapProperty<K, V, R extends ReadOnlyMap<@N
     public boolean add(@Captured @Nonnull @Valid("key") K key, @Captured @Nonnull @Valid V value) throws ReentranceException {
         lock.lock();
         try {
-            if (getMap().get(key) == null) {
+            if (getMap().containsKey(key)) {
+                return false;
+            } else {
                 getMap().put(key, value);
                 notifyObservers(key, value, true);
                 return true;
-            } else {
-                return false;
             }
         } finally {
             lock.unlock();
