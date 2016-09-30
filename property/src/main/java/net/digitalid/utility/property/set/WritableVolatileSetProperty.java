@@ -52,7 +52,7 @@ public abstract class WritableVolatileSetProperty<V, R extends ReadOnlySet<@Nonn
     
     @Impure
     @Override
-    public synchronized boolean add(@Captured @Nonnull @Valid V value) throws ReentranceException {
+    public boolean add(@Captured @Nonnull @Valid V value) throws ReentranceException {
         lock.lock();
         try {
             final boolean notAlreadyContained = getSet().add(value);
@@ -65,7 +65,7 @@ public abstract class WritableVolatileSetProperty<V, R extends ReadOnlySet<@Nonn
     
     @Impure
     @Override
-    public synchronized boolean remove(@NonCaptured @Unmodified @Nonnull @Valid V value) throws ReentranceException {
+    public boolean remove(@NonCaptured @Unmodified @Nonnull @Valid V value) throws ReentranceException {
         lock.lock();
         try {
             final boolean contained = getSet().remove(value);

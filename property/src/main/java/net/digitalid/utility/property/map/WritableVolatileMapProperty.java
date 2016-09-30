@@ -63,7 +63,7 @@ public abstract class WritableVolatileMapProperty<K, V, R extends ReadOnlyMap<@N
     
     @Impure
     @Override
-    public synchronized boolean add(@Captured @Nonnull @Valid("key") K key, @Captured @Nonnull @Valid V value) throws ReentranceException {
+    public boolean add(@Captured @Nonnull @Valid("key") K key, @Captured @Nonnull @Valid V value) throws ReentranceException {
         lock.lock();
         try {
             if (getMap().get(key) == null) {
@@ -80,7 +80,7 @@ public abstract class WritableVolatileMapProperty<K, V, R extends ReadOnlyMap<@N
     
     @Impure
     @Override
-    public synchronized @Capturable @Nullable @Valid V remove(@NonCaptured @Unmodified @Nonnull @Valid("key") K key) throws ReentranceException {
+    public @Capturable @Nullable @Valid V remove(@NonCaptured @Unmodified @Nonnull @Valid("key") K key) throws ReentranceException {
         lock.lock();
         try {
             final @Nullable V value = getMap().remove(key);
