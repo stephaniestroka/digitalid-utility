@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
@@ -105,6 +106,21 @@ public abstract class ElementInformationImplementation implements ElementInforma
     }
     
     /* -------------------------------------------------- Object -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public boolean equals(@Nullable Object object) {
+        if (object == this) { return true; }
+        if (object == null || !(object instanceof ElementInformation)) { return false; }
+        final @Nonnull ElementInformation that = (ElementInformation) object;
+        return this.getName().equals(that.getName());
+    }
+    
+    @Pure
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
     
     @Pure
     @Override

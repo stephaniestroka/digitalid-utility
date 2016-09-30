@@ -24,6 +24,7 @@ import net.digitalid.utility.generator.information.filter.MethodSignatureMatcher
 import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.method.MethodParameterInformation;
+import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.validation.annotations.generation.NonRepresentative;
 
 /**
@@ -101,8 +102,12 @@ public final class ClassInformation extends InstantiableTypeInformation {
                     }
                 }
             }
+            
             // TODO: what if the constructor already declared generated representing fields? In that case we would duplicate the parameters.
-            return FiniteIterable.of(representingFieldInformation).combine(generatedRepresentingFieldInformation).filter(field -> !field.hasAnnotation(NonRepresentative.class));
+            // Kaspar fixed this (temporarily?) by implementing a name-based 'equals(object)' method in the 'ElementInformationImplementation' class and applying the 'distinct()' method to the 'FiniteIterable'.
+            final @Nonnull FiniteIterable<@Nonnull FieldInformation> result = FiniteIterable.of(representingFieldInformation).combine(generatedRepresentingFieldInformation).filter(field -> !field.hasAnnotation(NonRepresentative.class)).distinct();
+            ProcessingLog.debugging("Representing field information: " + result.map(field -> field.getName()).join());
+            return result;
         }
         return FiniteIterable.of(Collections.emptyList());
     }
