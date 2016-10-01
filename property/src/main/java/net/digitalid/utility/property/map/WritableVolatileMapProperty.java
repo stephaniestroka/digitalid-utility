@@ -15,7 +15,7 @@ import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collections.map.FreezableMap;
 import net.digitalid.utility.collections.map.ReadOnlyMap;
 import net.digitalid.utility.concurrency.exceptions.ReentranceException;
-import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
@@ -98,10 +98,10 @@ public abstract class WritableVolatileMapProperty<K, V, R extends ReadOnlyMap<@N
     @CallSuper
     public void validate() {
         super.validate();
-        Require.that(!get().keySet().containsNull()).orThrow("None of the keys may be null.");
-        Require.that(!get().values().containsNull()).orThrow("None of the values may be null.");
-        Require.that(get().keySet().matchAll(getKeyValidator())).orThrow("Each key has to be valid.");
-        Require.that(get().values().matchAll(getValueValidator())).orThrow("Each value has to be valid.");
+        Validate.that(!get().keySet().containsNull()).orThrow("None of the keys may be null.");
+        Validate.that(!get().values().containsNull()).orThrow("None of the values may be null.");
+        Validate.that(get().keySet().matchAll(getKeyValidator())).orThrow("Each key has to be valid.");
+        Validate.that(get().values().matchAll(getValueValidator())).orThrow("Each value has to be valid.");
     }
     
 }

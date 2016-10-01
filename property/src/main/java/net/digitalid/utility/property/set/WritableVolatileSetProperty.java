@@ -12,7 +12,7 @@ import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.concurrency.exceptions.ReentranceException;
-import net.digitalid.utility.contracts.Require;
+import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
@@ -83,8 +83,8 @@ public abstract class WritableVolatileSetProperty<V, R extends ReadOnlySet<@Nonn
     @CallSuper
     public void validate() {
         super.validate();
-        Require.that(!get().containsNull()).orThrow("None of the values may be null.");
-        Require.that(get().matchAll(getValueValidator())).orThrow("Each value has to be valid.");
+        Validate.that(!get().containsNull()).orThrow("None of the values may be null.");
+        Validate.that(get().matchAll(getValueValidator())).orThrow("Each value has to be valid.");
     }
     
 }
