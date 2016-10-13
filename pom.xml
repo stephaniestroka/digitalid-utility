@@ -65,11 +65,6 @@
         <module>generator</module>
         <module>collections</module>
         <module>concurrency</module>
-        <module>auxiliary</module>
-        <module>group</module>
-        <module>math</module>
-        <module>time</module>
-        <module>cryptography</module>
         <module>property</module>
         <module>console</module>
         <module>parent</module>

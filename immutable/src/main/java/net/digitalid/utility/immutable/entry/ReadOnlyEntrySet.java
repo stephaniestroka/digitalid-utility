@@ -11,8 +11,8 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.ownership.Shared;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.functional.iterables.CollectionIterable;
@@ -27,11 +27,11 @@ public class ReadOnlyEntrySet<K, V> implements Set<Map.@Nonnull Entry<K, V>>, Co
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
-    private final @Referenced @Nonnull Set<Map.@Nonnull Entry<K, V>> set;
+    private final @Shared @Nonnull Set<Map.@Nonnull Entry<K, V>> set;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ReadOnlyEntrySet(@Nonnull Set<Map.@Nonnull Entry<K, V>> set) {
+    protected ReadOnlyEntrySet(@Shared @Unmodified @Nonnull Set<Map.@Nonnull Entry<K, V>> set) {
         this.set = set;
     }
     
@@ -39,7 +39,7 @@ public class ReadOnlyEntrySet<K, V> implements Set<Map.@Nonnull Entry<K, V>>, Co
      * Returns a new read-only entry set that is backed by the given set.
      */
     @Pure
-    public static <K, V> @Nonnull ReadOnlyEntrySet<K, V> with(@Referenced @Nonnull Set<Map.@Nonnull Entry<K, V>> set) {
+    public static <K, V> @Nonnull ReadOnlyEntrySet<K, V> with(@Shared @Unmodified @Nonnull Set<Map.@Nonnull Entry<K, V>> set) {
         return new ReadOnlyEntrySet<>(set);
     }
     
