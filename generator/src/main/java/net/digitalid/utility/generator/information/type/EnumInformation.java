@@ -4,7 +4,6 @@ import java.util.Collections;
 
 import javax.annotation.Nonnull;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 
 import net.digitalid.utility.functional.iterables.FiniteIterable;

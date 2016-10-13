@@ -16,7 +16,6 @@ import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 
 import net.digitalid.utility.annotations.method.Impure;
-import net.digitalid.utility.conversion.converter.ValueCollector;
 import net.digitalid.utility.conversion.converter.ValueCollectorImplementation;
 import net.digitalid.utility.conversion.converter.types.CustomType;
 import net.digitalid.utility.functional.failable.FailableUnaryFunction;

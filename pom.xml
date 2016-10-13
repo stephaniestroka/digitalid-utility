@@ -176,6 +176,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.19.1</version>
                 <configuration>
+                    <testFailureIgnore>false</testFailureIgnore>
+                    <trimStackTrace>false</trimStackTrace>
                     <skipTests>${tests.skip}</skipTests>
                 </configuration>
             </plugin>

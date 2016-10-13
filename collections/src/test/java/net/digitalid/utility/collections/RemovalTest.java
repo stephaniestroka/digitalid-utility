@@ -6,14 +6,14 @@ import net.digitalid.utility.collections.list.FreezableLinkedList;
 import net.digitalid.utility.collections.set.FreezableHashSet;
 import net.digitalid.utility.collections.set.FreezableLinkedHashSet;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.testing.CustomTest;
+import net.digitalid.utility.testing.RootTest;
 
 import org.junit.Test;
 
 /**
  * Tests that the implementations of the tested methods do not call remove on the (read-only) iterator.
  */
-public class RemovalTest extends CustomTest {
+public class RemovalTest extends RootTest {
     
     /* -------------------------------------------------- Remove -------------------------------------------------- */
     

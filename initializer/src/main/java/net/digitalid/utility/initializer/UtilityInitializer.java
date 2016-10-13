@@ -55,7 +55,7 @@ public class UtilityInitializer {
     public static void initializeDirectory() {
         if (!Files.directory.isSet()) {
             final @Nonnull @Absolute @ExistentParent File directory = Files.relativeToWorkingDirectory(System.getProperty("user.home") + "/.digitalid/");
-            if (directory.mkdir()) {
+            if (directory.isDirectory() || directory.mkdir()) {
                 Files.directory.set(directory);
                 Log.verbose("Set the configuration directory to '~/.digitalid/'.");
             } else {

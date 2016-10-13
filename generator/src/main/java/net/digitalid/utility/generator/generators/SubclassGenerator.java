@@ -45,7 +45,6 @@ import net.digitalid.utility.tuples.Quartet;
 import net.digitalid.utility.tuples.Triplet;
 import net.digitalid.utility.validation.annotations.generation.Derive;
 import net.digitalid.utility.validation.annotations.generation.Normalize;
-import net.digitalid.utility.validation.annotations.generation.OrderOfAssignment;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.processing.AnnotationHandlerUtility;
 import net.digitalid.utility.validation.validator.MethodAnnotationValidator;

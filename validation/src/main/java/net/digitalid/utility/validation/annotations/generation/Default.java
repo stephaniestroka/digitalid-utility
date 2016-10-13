@@ -18,7 +18,7 @@ import net.digitalid.utility.validation.validators.GenerationValidator;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(GenerationValidator.class)
-@Target({ElementType.PARAMETER, ElementType.METHOD})
+@Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
 public @interface Default {
     
     /**

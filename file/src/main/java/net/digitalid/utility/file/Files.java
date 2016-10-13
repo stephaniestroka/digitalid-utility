@@ -73,7 +73,7 @@ public abstract class Files {
     @Impure
     public static void createParentDirectories(@Nonnull @Absolute File file) {
         final @Nullable File directory = file.getParentFile();
-        if (directory != null && !directory.exists() && !directory.mkdirs()) {
+        if (directory != null && !directory.isDirectory() && !directory.mkdirs()) {
             throw UnexpectedFailureException.with("Could not create the missing parent directories of $.", file.getAbsolutePath());
         }
     }
