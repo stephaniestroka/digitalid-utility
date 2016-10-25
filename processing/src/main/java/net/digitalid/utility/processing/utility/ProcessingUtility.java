@@ -77,7 +77,9 @@ public class ProcessingUtility {
      */
     @Pure
     public static boolean isDeclaredInDigitalIDLibrary(@Nonnull Element element) {
-        return getQualifiedPackageName(element).startsWith("net.digitalid.");
+        return getQualifiedPackageName(element).startsWith("net.digitalid.utility") || 
+                getQualifiedPackageName(element).startsWith("net.digitalid.database") ||
+                getQualifiedPackageName(element).startsWith("net.digitalid.core");
     }
     
     /* -------------------------------------------------- Surrounding Type -------------------------------------------------- */
