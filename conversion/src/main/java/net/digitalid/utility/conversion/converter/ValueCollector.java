@@ -16,7 +16,8 @@ import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 
 import net.digitalid.utility.annotations.method.Impure;
-import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.conversion.converter.types.CustomType;
 import net.digitalid.utility.functional.failable.FailableUnaryFunction;
 import net.digitalid.utility.logging.exceptions.ExternalException;
@@ -25,8 +26,9 @@ import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.size.Size;
 
 /**
- *
+ * @see SelectionResult
  */
+@TODO(task = "Rename to Encoder.", date = "2016-10-13", author = Author.KASPAR_ETTER)
 public interface ValueCollector<X extends ExternalException> {
     
     /* -------------------------------------------------- Setters -------------------------------------------------- */

@@ -14,7 +14,7 @@ import net.digitalid.utility.validation.annotations.type.Utility;
  * @see Evaluate
  */
 @Utility
-public class Get {
+public abstract class Get {
     
     /**
      * Returns the given nullable value if it is not null or the given default value otherwise.

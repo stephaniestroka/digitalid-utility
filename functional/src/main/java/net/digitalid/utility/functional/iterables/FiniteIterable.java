@@ -22,8 +22,8 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.ownership.Shared;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.state.Modifiable;
 import net.digitalid.utility.circumfixes.Circumfix;
@@ -69,7 +69,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      * Wraps the given collection as a finite iterable or returns null if the collection is null.
      */
     @Pure
-    public static <E> FiniteIterable<E> of(@Referenced @Unmodified Collection<? extends E> collection) {
+    public static <E> FiniteIterable<E> of(@Shared @Unmodified Collection<? extends E> collection) {
         return collection == null ? null : new CollectionBasedIterable<>(collection);
     }
     
@@ -78,7 +78,7 @@ public interface FiniteIterable<E> extends FunctionalIterable<E>, Countable {
      */
     @Pure
     @SafeVarargs
-    public static <E> @Nonnull FiniteIterable<E> of(@Referenced @Unmodified @Nonnull E... elements) {
+    public static <E> @Nonnull FiniteIterable<E> of(@Shared @Unmodified @Nonnull E... elements) {
         return () -> ReadOnlyArrayIterator.with(elements);
     }
     

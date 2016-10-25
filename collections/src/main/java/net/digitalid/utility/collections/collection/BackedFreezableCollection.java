@@ -10,8 +10,8 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.ownership.Shared;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.collections.iterator.FreezableIterator;
 import net.digitalid.utility.collections.list.BackedFreezableList;
@@ -46,7 +46,7 @@ public abstract class BackedFreezableCollection<E> extends RootClass implements 
     /**
      * Stores a reference to the underlying freezable.
      */
-    protected final @Referenced @Nonnull FreezableInterface freezable;
+    protected final @Shared @Nonnull FreezableInterface freezable;
     
     /**
      * Stores the underlying collection.
@@ -64,7 +64,7 @@ public abstract class BackedFreezableCollection<E> extends RootClass implements 
      * Returns a new freezable collection backed by the given freezable and collection.
      */
     @Pure
-    public static @Capturable <E> @Nonnull BackedFreezableCollection<E> with(@Referenced @Modified @Nonnull FreezableInterface freezable, @Captured @Nonnull Collection<E> collection) {
+    public static @Capturable <E> @Nonnull BackedFreezableCollection<E> with(@Shared @Modified @Nonnull FreezableInterface freezable, @Captured @Nonnull Collection<E> collection) {
         return new BackedFreezableCollectionSubclass<>(freezable, collection);
     }
     

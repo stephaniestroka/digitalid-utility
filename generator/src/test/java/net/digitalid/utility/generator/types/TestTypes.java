@@ -1,4 +1,4 @@
-package net.digitalid.utility.testing;
+package net.digitalid.utility.generator.types;
 
 /**
  * This class allows to test the assignability of nested classes.

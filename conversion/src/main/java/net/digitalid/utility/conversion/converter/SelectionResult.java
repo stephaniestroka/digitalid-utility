@@ -13,6 +13,8 @@ import javax.annotation.Nullable;
 import javax.crypto.Cipher;
 
 import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.functional.failable.FailableProducer;
 import net.digitalid.utility.logging.exceptions.ExternalException;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
@@ -21,6 +23,7 @@ import net.digitalid.utility.validation.annotations.size.Size;
 /**
  * The selection result is used to recover values from another data source, e.g. an SQL data base or an XDF block.
  */
+@TODO(task = "Rename to Decoder.", date = "2016-10-13", author = Author.KASPAR_ETTER)
 public interface SelectionResult<X extends ExternalException> {
     
     /* -------------------------------------------------- Getters -------------------------------------------------- */

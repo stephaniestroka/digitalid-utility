@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.generator.annotations.interceptors.Caught;
-import net.digitalid.utility.testing.CustomTest;
+import net.digitalid.utility.testing.RootTest;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 import org.junit.Test;
@@ -23,7 +23,7 @@ class CaughtException {
     
 }
 
-public class CaughtTest extends CustomTest {
+public class CaughtTest extends RootTest {
     
     // Test interceptors on methods with and without return types and in the former case also generics.
     

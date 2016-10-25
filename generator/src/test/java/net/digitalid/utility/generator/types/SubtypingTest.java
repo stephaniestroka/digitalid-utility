@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.testing.TestTypes;
 import net.digitalid.utility.validation.annotations.testing.NotSubtypeOf;
 import net.digitalid.utility.validation.annotations.testing.SubtypeOf;
 import net.digitalid.utility.validation.annotations.type.Immutable;

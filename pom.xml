@@ -65,11 +65,6 @@
         <module>generator</module>
         <module>collections</module>
         <module>concurrency</module>
-        <module>auxiliary</module>
-        <module>group</module>
-        <module>math</module>
-        <module>time</module>
-        <module>cryptography</module>
         <module>property</module>
         <module>console</module>
         <module>parent</module>
@@ -181,6 +176,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.19.1</version>
                 <configuration>
+                    <testFailureIgnore>false</testFailureIgnore>
+                    <trimStackTrace>false</trimStackTrace>
                     <skipTests>${tests.skip}</skipTests>
                 </configuration>
             </plugin>

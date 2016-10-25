@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
-import net.digitalid.utility.annotations.parameter.Referenced;
+import net.digitalid.utility.annotations.ownership.Shared;
 import net.digitalid.utility.collections.collection.FreezableCollection;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
@@ -37,7 +37,7 @@ public abstract class FreezableIterator<E> implements Iterator<E> {
      * Returns a new freezable iterator backed by the given iterator and freezable collection.
      */
     @Pure
-    public static <E> @Nonnull FreezableIterator<E> with(@Captured @Nonnull Iterator<E> iterator, @Referenced @Nonnull FreezableCollection<E> collection) {
+    public static <E> @Nonnull FreezableIterator<E> with(@Captured @Nonnull Iterator<E> iterator, @Shared @Nonnull FreezableCollection<E> collection) {
         return new FreezableIteratorSubclass<E>(iterator, collection);
     }
     

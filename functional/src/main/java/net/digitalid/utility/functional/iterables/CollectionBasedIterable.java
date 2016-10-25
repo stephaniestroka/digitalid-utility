@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
-import net.digitalid.utility.annotations.parameter.Referenced;
+import net.digitalid.utility.annotations.ownership.Shared;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterableIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
@@ -21,11 +21,11 @@ public class CollectionBasedIterable<E> implements CollectionIterable<E> {
     
     /* -------------------------------------------------- Collection -------------------------------------------------- */
     
-    private final @Referenced @Nonnull Collection<? extends E> collection;
+    private final @Shared @Nonnull Collection<? extends E> collection;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected CollectionBasedIterable(@Referenced @Unmodified @Nonnull Collection<? extends E> collection) {
+    protected CollectionBasedIterable(@Shared @Unmodified @Nonnull Collection<? extends E> collection) {
         this.collection = collection;
     }
     

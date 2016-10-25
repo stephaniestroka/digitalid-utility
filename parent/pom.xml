@@ -21,27 +21,12 @@
         </dependency>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-threading</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-concurrency</artifactId>
+            <artifactId>utility-console</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-initializer</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-cryptography</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-console</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

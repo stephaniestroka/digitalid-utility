@@ -8,8 +8,8 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
+import net.digitalid.utility.annotations.ownership.Shared;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.collections.collection.BackedFreezableCollection;
 import net.digitalid.utility.freezable.FreezableInterface;
@@ -49,7 +49,7 @@ public abstract class BackedFreezableSet<E> extends BackedFreezableCollection<E>
      * Returns a new freezable set backed by the given freezable and set.
      */
     @Pure
-    public static @Capturable <E> @Nonnull BackedFreezableSet<E> with(@Referenced @Modified @Nonnull FreezableInterface freezable, @Captured @Nonnull Set<E> set) {
+    public static @Capturable <E> @Nonnull BackedFreezableSet<E> with(@Shared @Modified @Nonnull FreezableInterface freezable, @Captured @Nonnull Set<E> set) {
         return new BackedFreezableSetSubclass<>(freezable, set);
     }
     

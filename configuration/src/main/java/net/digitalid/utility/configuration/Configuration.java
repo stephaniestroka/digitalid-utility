@@ -18,6 +18,7 @@ import net.digitalid.utility.annotations.state.Modifiable;
 import net.digitalid.utility.configuration.exceptions.CyclicDependenciesException;
 import net.digitalid.utility.configuration.exceptions.InitializedConfigurationException;
 import net.digitalid.utility.configuration.exceptions.MaskingInitializationException;
+import net.digitalid.utility.configuration.exceptions.RepeatedInitializationException;
 import net.digitalid.utility.configuration.exceptions.UninitializedConfigurationException;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
@@ -188,12 +189,20 @@ public class Configuration<P> {
     }
     
     /**
+     * Stores whether all configurations have been initialized.
+     */
+    private static boolean initializedAll = false;
+    
+    /**
      * Initializes all configurations of this library.
+     * <p>
+     * <em>Important:</em> Call this method exactly once!
      * 
      * @throws InitializationException if a problem occurs.
      */
     @Impure
     public static void initializeAllConfigurations() {
+        if (initializedAll) { throw RepeatedInitializationException.withNoArguments(); }
         for (@Nonnull Initializer initializer : ServiceLoader.load(Initializer.class)) {
             initializer.toString(); // Just to remove the unused variable warning.
         }
@@ -203,6 +212,8 @@ public class Configuration<P> {
             }
         } catch (@Nonnull Exception exception) {
             throw MaskingInitializationException.with(exception);
+        } finally {
+            initializedAll = true;
         }
     }
     
@@ -256,7 +267,7 @@ public class Configuration<P> {
     protected void addInitializer(@Nonnull Initializer initializer) {
         Require.that(initializer != null).orThrow("The initializer may not be null.");
         
-        if (isInitialized) { throw InitializedConfigurationException.with(this); }
+        if (initialized) { throw InitializedConfigurationException.with(this); }
         initializers.add(initializer);
     }
     
@@ -331,7 +342,7 @@ public class Configuration<P> {
     public @NonCapturable @Nonnull Configuration<P> addDependency(@Nonnull Configuration<?> dependency) {
         Require.that(dependency != null).orThrow("The dependency may not be null.");
         
-        if (isInitialized) { throw InitializedConfigurationException.with(this); }
+        if (initialized) { throw InitializedConfigurationException.with(this); }
         if (dependency.dependsOn(this)) { throw CyclicDependenciesException.with(this, dependency); }
         dependencies.add(dependency);
         return this;
@@ -342,7 +353,7 @@ public class Configuration<P> {
     /**
      * Stores whether this configuration has been initialized.
      */
-    private boolean isInitialized = false;
+    private boolean initialized = false;
     
     /**
      * Initializes all dependencies and executes all initializers of this configuration.
@@ -351,10 +362,13 @@ public class Configuration<P> {
      */
     @Impure
     public void initialize() throws Exception {
-        if (!isInitialized) {
-            for (@Nonnull Configuration<?> dependency : dependencies) { dependency.initialize(); }
-            for (@Nonnull Initializer initializer : initializers) { initializer.execute(); }
-            this.isInitialized = true;
+        if (!initialized) {
+            try {
+                for (@Nonnull Configuration<?> dependency : dependencies) { dependency.initialize(); }
+                for (@Nonnull Initializer initializer : initializers) { initializer.execute(); }
+            } finally {
+                this.initialized = true;
+            }
         }
     }
     

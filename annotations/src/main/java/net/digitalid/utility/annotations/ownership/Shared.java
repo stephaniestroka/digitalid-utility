@@ -1,4 +1,4 @@
-package net.digitalid.utility.annotations.parameter;
+package net.digitalid.utility.annotations.ownership;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -20,4 +20,4 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER, ElementType.FIELD})
-public @interface Referenced {}
+public @interface Shared {}

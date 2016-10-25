@@ -12,8 +12,8 @@ import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.ownership.Shared;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.annotations.parameter.Referenced;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.collections.collection.BackedFreezableCollection;
@@ -57,7 +57,7 @@ public abstract class BackedFreezableList<E> extends BackedFreezableCollection<E
      * Returns a new freezable list backed by the given freezable and list.
      */
     @Pure
-    public static @Capturable <E> @Nonnull BackedFreezableList<E> with(@Referenced @Modified @Nonnull FreezableInterface freezable, @Captured @Nonnull List<E> list) {
+    public static @Capturable <E> @Nonnull BackedFreezableList<E> with(@Shared @Modified @Nonnull FreezableInterface freezable, @Captured @Nonnull List<E> list) {
         return new BackedFreezableListSubclass<>(freezable, list);
     }
     
