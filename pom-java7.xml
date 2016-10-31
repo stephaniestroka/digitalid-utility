@@ -63,7 +63,7 @@
         <module>concurrency-java7</module>
         <module>property-java7</module>
         <module>console-java7</module>
-        <module>parent-java7</module>
+        <module>all-java7</module>
     </modules>
     
     <repositories>
