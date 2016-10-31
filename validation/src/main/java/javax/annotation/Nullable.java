@@ -16,5 +16,5 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Target(ElementType.TYPE_USE)
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 public @interface Nullable {}

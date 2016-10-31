@@ -20,7 +20,7 @@ import net.digitalid.utility.validation.validators.IterableValidator;
  */
 @Documented
 @Target(ElementType.TYPE_USE)
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @ValueValidator(NullableElements.Validator.class)
 public @interface NullableElements {
     

@@ -29,7 +29,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  */
 @Documented
 @Target(ElementType.TYPE_USE)
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @ValueValidator(Nonnull.Validator.class)
 public @interface Nonnull {
     

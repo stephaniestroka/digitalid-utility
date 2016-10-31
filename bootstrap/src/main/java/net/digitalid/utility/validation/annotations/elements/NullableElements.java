@@ -16,5 +16,5 @@ import javax.annotation.Nullable;
  */
 @Documented
 @Target(ElementType.TYPE_USE)
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 public @interface NullableElements {}
