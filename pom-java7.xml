@@ -32,6 +32,7 @@
     
     <modules>
         <module>taglets-java7</module>
+        <module>android-java7</module>
         <module>bootstrap-java7</module>
         <module>collaboration-java7</module>
         <module>annotations-java7</module>

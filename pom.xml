@@ -37,6 +37,7 @@
     <modules>
         <module>taglets</module>
         <module>bootstrap</module>
+        <module>android</module>
         <module>collaboration</module>
         <module>annotations</module>
         <module>interfaces</module>
