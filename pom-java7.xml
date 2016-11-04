@@ -47,6 +47,7 @@
         <module>configuration-java7</module>
         <module>file-java7</module>
         <module>logging-java7</module>
+        <module>processing-testset-java7</module>
         <module>processing-java7</module>
         <module>validation-java7</module>
         <module>testing-java7</module>

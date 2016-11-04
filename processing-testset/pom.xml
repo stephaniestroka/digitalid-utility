@@ -4,7 +4,7 @@
     http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>utility-processing</artifactId>
+    <artifactId>utility-processing-testset</artifactId>
     <packaging>jar</packaging>
 
     <parent>
@@ -18,18 +18,6 @@
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-logging</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.testing.compile</groupId>
-            <artifactId>compile-testing</artifactId>
-            <version>0.8</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-processing-testset</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
     
