@@ -111,7 +111,7 @@ public interface FunctionalIterable<E> extends Iterable<E> {
      * @throws IndexOutOfBoundsException if the given index is negative or greater or equal to the size of this iterable.
      */
     @Pure
-    public default @NonCapturable E get(@Index int index) {
+    public default @NonCapturable E get(int index) {
         int currentIndex = 0;
         for (E element : this) {
             if (currentIndex == index) { return element; }

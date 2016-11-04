@@ -21,7 +21,7 @@ import net.digitalid.utility.validation.validators.ValueRelativeNumericalValueVa
  * @see LessThanOrEqualTo
  */
 @Documented
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(GreaterThanOrEqualTo.Validator.class)
 public @interface GreaterThanOrEqualTo {

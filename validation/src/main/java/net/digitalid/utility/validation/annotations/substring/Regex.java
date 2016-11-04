@@ -27,7 +27,7 @@ import net.digitalid.utility.validation.validators.SubstringValidator;
  * This annotation indicates that the annotated string or file matches the given regular expression.
  */
 @Documented
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(Regex.Validator.class)
 public @interface Regex {

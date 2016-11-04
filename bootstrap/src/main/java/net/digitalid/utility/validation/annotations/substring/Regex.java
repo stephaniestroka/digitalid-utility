@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
  * This annotation indicates that the annotated string or file matches the given regular expression.
  */
 @Documented
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Regex {
     

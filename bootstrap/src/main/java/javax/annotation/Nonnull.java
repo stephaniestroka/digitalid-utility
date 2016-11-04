@@ -15,6 +15,6 @@ import java.lang.annotation.Target;
  * @see Nullable
  */
 @Documented
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface Nonnull {}

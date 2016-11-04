@@ -29,7 +29,7 @@ import net.digitalid.utility.validation.validators.ModuloValidator;
  * @see Even
  */
 @Documented
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(Uneven.Validator.class)
 public @interface Uneven {

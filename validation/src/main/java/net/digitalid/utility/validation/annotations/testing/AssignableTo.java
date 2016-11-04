@@ -26,7 +26,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * 
  * @see UnassignableTo
  */
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(AssignableTo.Validator.class)
 public @interface AssignableTo {

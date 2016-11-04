@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
  * This annotation indicates that a string is a valid Java expression.
  */
 @Documented
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface JavaExpression {}

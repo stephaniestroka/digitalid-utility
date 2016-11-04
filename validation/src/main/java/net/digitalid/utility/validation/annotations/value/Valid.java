@@ -44,7 +44,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * This annotation indicates that the annotated value is valid.
  */
 @Documented
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(Valid.Validator.class)
 public @interface Valid {

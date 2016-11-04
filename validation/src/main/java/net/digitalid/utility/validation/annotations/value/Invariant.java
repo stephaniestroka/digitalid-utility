@@ -28,7 +28,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * You can use this annotation if you don't want to write a dedicated annotation for some rare case.
  */
 @Documented
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(Invariant.Validator.class)
 public @interface Invariant {

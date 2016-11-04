@@ -21,7 +21,7 @@ import net.digitalid.utility.validation.validators.SizeValidator;
  * @see MaxSize
  */
 @Documented
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(Size.Validator.class)
 public @interface Size {

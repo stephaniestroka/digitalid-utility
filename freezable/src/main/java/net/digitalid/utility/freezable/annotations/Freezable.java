@@ -38,7 +38,7 @@ import net.digitalid.utility.validation.validator.TypeAnnotationValidator;
  */
 @Inherited
 @Documented
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.RUNTIME)
 @TypeValidator(Freezable.Validator.class)
 public @interface Freezable {

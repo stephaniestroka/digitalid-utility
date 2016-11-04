@@ -27,7 +27,7 @@ import net.digitalid.utility.validation.validators.IterableValidator;
  * This annotation indicates that an {@link Iterable iterable} does not contain duplicates.
  */
 @Documented
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(UniqueElements.Validator.class)
 public @interface UniqueElements {

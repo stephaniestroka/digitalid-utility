@@ -19,7 +19,7 @@ import net.digitalid.utility.validation.validators.IterableValidator;
  * @see NonNullableElements
  */
 @Documented
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.SOURCE)
 @ValueValidator(NullableElements.Validator.class)
 public @interface NullableElements {

@@ -20,7 +20,7 @@ import net.digitalid.utility.validation.validators.SizeValidator;
  * @see NonSingle
  */
 @Documented
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(Single.Validator.class)
 public @interface Single {

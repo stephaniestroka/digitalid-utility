@@ -26,7 +26,7 @@ import net.digitalid.utility.validation.validators.FileValidator;
  * @see NonExistentParent
  */
 @Documented
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(ExistentParent.Validator.class)
 public @interface ExistentParent {

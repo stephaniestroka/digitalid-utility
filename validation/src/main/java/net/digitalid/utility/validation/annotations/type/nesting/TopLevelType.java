@@ -20,7 +20,7 @@ import net.digitalid.utility.validation.validators.NestingKindValidator;
  * @see NestingKind
  */
 @Documented
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.RUNTIME)
 @ValueValidator(TopLevelType.Validator.class)
 public @interface TopLevelType {

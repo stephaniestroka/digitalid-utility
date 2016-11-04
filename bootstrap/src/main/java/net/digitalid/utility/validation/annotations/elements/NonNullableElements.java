@@ -15,6 +15,6 @@ import javax.annotation.Nonnull;
  * @see NullableElements
  */
 @Documented
-@Target(ElementType.TYPE_USE)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface NonNullableElements {}
