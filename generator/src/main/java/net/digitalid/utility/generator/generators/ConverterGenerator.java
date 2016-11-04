@@ -1,9 +1,12 @@
 package net.digitalid.utility.generator.generators;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -303,27 +306,34 @@ public class ConverterGenerator extends JavaFileGenerator {
             final @Nonnull StringBuilder customAnnotations = new StringBuilder();
             final @Nonnull FiniteIterable<@Nonnull AnnotationMirror> annotations = representingField.getAnnotations();
             final @Nonnull String fieldName = representingField.getName();
+            // the alreadyProcessedAnnotations field is used to check whether annotations are listed multiple times, which is possible, for example if they have ElementType.TypeUse and ElementType.Field defined as Target
+            final @Nonnull Set<Class> alreadyProcessedAnnotations = new HashSet<>();
             // annotations are only collected if it isn't an enum we're processing. Enum values cannot have annotations.
             if (!(typeInformation instanceof EnumInformation)) {
                 for (@Nonnull AnnotationMirror annotation : annotations) {
-                    final @Nonnull String annotationName = ProcessingUtility.getSimpleName(annotation);
-                    final @Nonnull String qualifiedAnnotationName = ProcessingUtility.getQualifiedName(annotation.getAnnotationType());
-                    final @Nonnull String annotationValuesMap = fieldName + Strings.capitalizeFirstLetters(annotationName);
-                    if (customAnnotations.length() != 0) {
-                        customAnnotations.append(", ");
-                    }
-                    customAnnotations.append(importIfPossible(CustomAnnotation.class)).append(".with").append(Brackets.inRound(importIfPossible(qualifiedAnnotationName) + ".class, " + importIfPossible(ImmutableMap.class) + ".withMappingsOf" + Brackets.inRound(annotationValuesMap)));
-                    statements.add("final @" + importIfPossible(Nonnull.class) + " " + importIfPossible(Map.class) + Brackets.inPointy("@" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + ", @" + importIfPossible(Nullable.class) + " " + importIfPossible(Object.class)) + " " + annotationValuesMap + " = new " + importIfPossible(HashMap.class) + Brackets.inPointy("") + Brackets.inRound(""));
-                    addedMap = true;
-                    final @Nonnull Map<@Nonnull String, @Nonnull AnnotationValue> annotationValues = ProcessingUtility.getAnnotationValues(annotation);
-                    for (Map.Entry<@Nonnull String, @Nonnull AnnotationValue> entry : annotationValues.entrySet()) {
-                        @Nonnull String printValue = ProcessingUtility.getAnnotationValueAsString(entry.getValue(), this);
-                        if (printValue.startsWith("{") && printValue.contains(".class")) {
-                            final @Nonnull String nameOfVariable = annotationValuesMap + Strings.capitalizeFirstLetters(entry.getKey()) + "Classes";
-                            statements.add("Class[] " + nameOfVariable + " = " + printValue);
-                            statements.add(annotationValuesMap + ".put" + Brackets.inRound(Quotes.inDouble(entry.getKey()) + ", " + nameOfVariable));
-                        } else {
-                            statements.add(annotationValuesMap + ".put" + Brackets.inRound(Quotes.inDouble(entry.getKey()) + ", " + printValue));
+                    final @Nullable Class<@Nonnull ?> annotationClass = ProcessingUtility.getClass(annotation.getAnnotationType());
+                    Require.that(annotationClass != null).orThrow("The annotation class {} should not resolve into a null type.");
+                    if (alreadyProcessedAnnotations.add(annotationClass)) {
+                        // only add the annotation if it was not already processed before.
+                        final @Nonnull String annotationName = ProcessingUtility.getSimpleName(annotation);
+                        final @Nonnull String qualifiedAnnotationName = ProcessingUtility.getQualifiedName(annotation.getAnnotationType());
+                        final @Nonnull String annotationValuesMap = fieldName + Strings.capitalizeFirstLetters(annotationName);
+                        if (customAnnotations.length() != 0) {
+                            customAnnotations.append(", ");
+                        }
+                        customAnnotations.append(importIfPossible(CustomAnnotation.class)).append(".with").append(Brackets.inRound(importIfPossible(qualifiedAnnotationName) + ".class, " + importIfPossible(ImmutableMap.class) + ".withMappingsOf" + Brackets.inRound(annotationValuesMap)));
+                        statements.add("final @" + importIfPossible(Nonnull.class) + " " + importIfPossible(Map.class) + Brackets.inPointy("@" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + ", @" + importIfPossible(Nullable.class) + " " + importIfPossible(Object.class)) + " " + annotationValuesMap + " = new " + importIfPossible(HashMap.class) + Brackets.inPointy("") + Brackets.inRound(""));
+                        addedMap = true;
+                        final @Nonnull Map<@Nonnull String, @Nonnull AnnotationValue> annotationValues = ProcessingUtility.getAnnotationValues(annotation);
+                        for (Map.Entry<@Nonnull String, @Nonnull AnnotationValue> entry : annotationValues.entrySet()) {
+                            @Nonnull String printValue = ProcessingUtility.getAnnotationValueAsString(entry.getValue(), this);
+                            if (printValue.startsWith("{") && printValue.contains(".class")) {
+                                final @Nonnull String nameOfVariable = annotationValuesMap + Strings.capitalizeFirstLetters(entry.getKey()) + "Classes";
+                                statements.add("Class[] " + nameOfVariable + " = " + printValue);
+                                statements.add(annotationValuesMap + ".put" + Brackets.inRound(Quotes.inDouble(entry.getKey()) + ", " + nameOfVariable));
+                            } else {
+                                statements.add(annotationValuesMap + ".put" + Brackets.inRound(Quotes.inDouble(entry.getKey()) + ", " + printValue));
+                            }
                         }
                     }
                 }
