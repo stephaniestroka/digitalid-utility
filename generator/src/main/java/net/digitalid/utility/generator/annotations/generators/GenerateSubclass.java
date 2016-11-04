@@ -6,6 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.annotation.Nonnull;
+
 import net.digitalid.utility.generator.generators.SubclassGenerator;
 import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 
@@ -19,4 +21,8 @@ import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @TypeValidator(GenerateAnnotationValidator.class)
-public @interface GenerateSubclass {}
+public @interface GenerateSubclass {
+    
+    @Nonnull boolean makePublic() default false;
+    
+}

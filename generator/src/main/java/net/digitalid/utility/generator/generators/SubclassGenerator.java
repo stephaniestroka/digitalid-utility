@@ -17,6 +17,7 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.GeneratorProcessor;
+import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.ElementInformationImplementation;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleFieldInformation;
@@ -156,7 +157,11 @@ public class SubclassGenerator extends JavaFileGenerator {
      * Generates a constructor, calls the super constructor if available and initializes generated fields.
      */
     private void generateConstructor(@Nonnull String constructorDeclaration, @Nullable String superStatement) {
-        beginConstructor(constructorDeclaration);
+        @Nonnull String modifier = "";
+        if (typeInformation.getAnnotation(GenerateSubclass.class).makePublic()) {
+            modifier = "public ";
+        }
+        beginConstructor(modifier + constructorDeclaration);
         if (superStatement != null) {
             addStatement(superStatement);
             addEmptyLine();
@@ -200,7 +205,7 @@ public class SubclassGenerator extends JavaFileGenerator {
         
         final @Nonnull String superStatement = "super" + constructorInformation.getParameters().map(ElementInformationImplementation::getName).join(Brackets.ROUND);
         
-        generateConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + constructorParameter.map(element -> this.importIfPossible(element.getType()) + " " + element.getName()).join(Brackets.ROUND) + (throwTypes.isEmpty() ? "" : " throws " + throwTypes.map(this::importIfPossible).join()), superStatement);
+        generateConstructor(typeInformation.getSimpleNameOfGeneratedSubclass() + constructorParameter.map(element -> this.importIfPossible(element.getType()) + " " + element.getName()).join(Brackets.ROUND) + (throwTypes.isEmpty() ? "" : " throws " + throwTypes.map(this::importIfPossible).join()), superStatement);
     }
     
     /**
@@ -213,7 +218,7 @@ public class SubclassGenerator extends JavaFileGenerator {
                 generateConstructor(constructor);
             }
         } else if (typeInformation instanceof InterfaceInformation) {
-            generateConstructor("protected " + typeInformation.getSimpleNameOfGeneratedSubclass() + typeInformation.getRepresentingFieldInformation().map(element -> this.importIfPossible(element.getType()) + " " + element.getName()).join(Brackets.ROUND), null);
+            generateConstructor(typeInformation.getSimpleNameOfGeneratedSubclass() + typeInformation.getRepresentingFieldInformation().map(element -> this.importIfPossible(element.getType()) + " " + element.getName()).join(Brackets.ROUND), null);
         }
     }
     
@@ -241,8 +246,10 @@ public class SubclassGenerator extends JavaFileGenerator {
     private void overrideMethods() {
         if (!typeInformation.getOverriddenMethods().isEmpty()) { addSection("Overridden Methods"); }
         for (final @Nonnull MethodInformation method : typeInformation.getOverriddenMethods()) {
-            final @Nonnull String callToSuperMethod = MethodUtility.createSuperCall(method);
-            generateMethodWithStatement(method, callToSuperMethod, "result", method.getDefaultValue());
+            if (ProcessingUtility.getSurroundingType(method.getElement()).getQualifiedName().toString().startsWith("net.digitalid")) {
+                final @Nonnull String callToSuperMethod = MethodUtility.createSuperCall(method);
+                generateMethodWithStatement(method, callToSuperMethod, "result", method.getDefaultValue());
+            }
         }
     }
     
@@ -369,21 +376,27 @@ public class SubclassGenerator extends JavaFileGenerator {
      * comparison algorithm is more complex and if the fields of the type do not implement Comparable.
      */
     protected void generateCompareToMethod() {
-        if (typeInformation instanceof ClassInformation && ((ClassInformation) typeInformation).compareToMethod != null) {
+        if (ProcessingUtility.isRawSubtype(typeInformation.getElement(), Comparable.class)) {
+            if (typeInformation instanceof ClassInformation && ((ClassInformation) typeInformation).compareToMethod != null) {
+                return;
+            }
             // only generated if the compareTo method is defined somewhere, but not yet implemented
             addAnnotation(Pure.class);
             addAnnotation(Override.class);
             beginMethod("public int compareTo(@" + importIfPossible(Nonnull.class) + " " + typeInformation.getName() + " other)");
             final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = typeInformation.getRepresentingFieldInformation();
             addStatement("int result = 0");
-            for (@Nonnull FieldInformation field : representingFieldInformation) {
-                // TODO: Doesn't work for primitive values! And shouldn't the next field only be used if the comparison of the previous field was 0?
-                addStatement("result += " + field.getAccessCode() + ".compareTo(other." + field.getAccessCode() + ")");
+            for (int i = 0; i < representingFieldInformation.size(); i++) {
+                final @Nonnull FieldInformation field = representingFieldInformation.get(i);
+                long magnitude = (10 * (representingFieldInformation.size() - i)) / 10;
+                if (ProcessingUtility.isPrimitive(field.getType())) {
+                    addStatement("result += " + Brackets.inRound(field.getAccessCode() + " - other." + field.getAccessCode()) + " * " + magnitude);
+                } else {
+                    addStatement("result += " + field.getAccessCode() + ".compareTo(other." + field.getAccessCode() + ") * " + magnitude);
+                }
             }
             addStatement("return result");
             endMethod();
-        } else {
-            ProcessingLog.debugging("compareTo method not found for class $", typeInformation.getName());
         }
     }
     
@@ -410,7 +423,12 @@ public class SubclassGenerator extends JavaFileGenerator {
         
         this.typeInformation = typeInformation;
         try {
-            beginClass("class " + typeInformation.getSimpleNameOfGeneratedSubclass() + importWithBounds(typeInformation.getTypeArguments()) + (typeInformation.getElement().getKind() == ElementKind.CLASS ? " extends " : " implements ") + importIfPossible(typeInformation.getType()));
+            Require.that(typeInformation.getAnnotation(GenerateSubclass.class) != null).orThrow("The SubclassGenerator should not have been called if the annotation @GenerateSubclass is missing.");
+            @Nonnull String modifier = "";
+            if (typeInformation.getAnnotation(GenerateSubclass.class).makePublic()) {
+                modifier = "public ";
+            }
+            beginClass(modifier + "class " + typeInformation.getSimpleNameOfGeneratedSubclass() + importWithBounds(typeInformation.getTypeArguments()) + (typeInformation.getElement().getKind() == ElementKind.CLASS ? " extends " : " implements ") + importIfPossible(typeInformation.getType()));
             
             generateFields();
             generateConstructors();
