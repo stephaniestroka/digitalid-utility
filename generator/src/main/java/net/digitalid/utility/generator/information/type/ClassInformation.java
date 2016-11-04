@@ -6,17 +6,21 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.state.Unmodifiable;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.ConverterGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
+import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedRepresentingFieldInformation;
@@ -25,6 +29,7 @@ import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.method.MethodParameterInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.generation.NonRepresentative;
 
 /**
@@ -136,18 +141,31 @@ public final class ClassInformation extends InstantiableTypeInformation {
     protected ClassInformation(@Nonnull TypeElement typeElement, @Nonnull DeclaredType containingType) {
         super(typeElement, containingType);
     
-        final @Nonnull Predicate<MethodInformation> equalsPredicate = MethodSignatureMatcher.of("equals", Object.class).and(method -> !method.isFinal()).and(method -> !method.isAbstract());
-        final @Nonnull Predicate<MethodInformation> hashCodePredicate = MethodSignatureMatcher.of("hashCode").and(method -> !method.isFinal()).and(method -> !method.isAbstract());
-        final @Nonnull Predicate<MethodInformation> toStringPredicate = MethodSignatureMatcher.of("toString").and(method -> !method.isFinal()).and(method -> !method.isAbstract());
-        final @Nonnull Predicate<MethodInformation> compareToPredicate = MethodSignatureMatcher.of("compareTo", "?").and(method -> !method.isFinal()).and(MethodInformation::isAbstract);
+        final @Nonnull Predicate<MethodInformation> equalsPredicate = MethodSignatureMatcher.of("equals", Object.class).and(element -> !element.isAbstract());
+        final @Nonnull Predicate<MethodInformation> hashCodePredicate = MethodSignatureMatcher.of("hashCode").and(element -> !element.isAbstract());
+        final @Nonnull Predicate<MethodInformation> toStringPredicate = MethodSignatureMatcher.of("toString").and(element -> !element.isAbstract());
+        // TODO: How do we detect if a default method in an interface already implements this method?
+        final @Nonnull Predicate<MethodInformation> compareToPredicate = MethodSignatureMatcher.of("compareTo", "?").and(element -> !element.isAbstract());
         final @Nonnull Predicate<MethodInformation> clonePredicate = MethodSignatureMatcher.of("clone").and(method -> !method.isFinal());
         final @Nonnull Predicate<MethodInformation> validatePredicate = MethodSignatureMatcher.of("validate").and(method -> !method.isFinal());
-        this.equalsMethod = methodInformationIterable.findFirst(equalsPredicate);
-        this.hashCodeMethod = methodInformationIterable.findFirst(hashCodePredicate);
-        this.toStringMethod = methodInformationIterable.findFirst(toStringPredicate);
-        this.compareToMethod = methodInformationIterable.findFirst(compareToPredicate);
-        this.cloneMethod = methodInformationIterable.findFirst(clonePredicate);
-        this.validateMethod = methodInformationIterable.findFirst(validatePredicate);
+        final @Nonnull FiniteIterable<@Nonnull MethodInformation> equalsMethods = methodInformationIterable.filter(equalsPredicate);
+        Require.that(equalsMethods.size() <= 1).orThrow("Expected at most one equals method in $", ProcessingUtility.getQualifiedName(typeElement.asType()));
+        this.equalsMethod = equalsMethods.getFirstOrNull();
+        final @Nonnull FiniteIterable<@Nonnull MethodInformation> hashCodeMethods = methodInformationIterable.filter(hashCodePredicate);
+        Require.that(hashCodeMethods.size() <= 1).orThrow("Expected at most one hashCode method in $", ProcessingUtility.getQualifiedName(typeElement.asType()));
+        this.hashCodeMethod = hashCodeMethods.getFirstOrNull();
+        final @Nonnull FiniteIterable<@Nonnull MethodInformation> toStringMethods = methodInformationIterable.filter(toStringPredicate);
+        Require.that(toStringMethods.size() <= 1).orThrow("Expected at most one toString method in $", ProcessingUtility.getQualifiedName(typeElement.asType()));
+        this.toStringMethod = toStringMethods.getFirstOrNull();
+        final @Nonnull FiniteIterable<@Nonnull MethodInformation> compareToMethods = methodInformationIterable.filter(compareToPredicate);
+        Require.that(compareToMethods.size() <= 1).orThrow("Expected at most one compareTo method in $", ProcessingUtility.getQualifiedName(typeElement.asType()));
+        this.compareToMethod = compareToMethods.getFirstOrNull();
+        final @Nonnull FiniteIterable<@Nonnull MethodInformation> cloneMethods = methodInformationIterable.filter(clonePredicate);
+        Require.that(cloneMethods.size() <= 1).orThrow("Expected at most one clone method in $", ProcessingUtility.getQualifiedName(typeElement.asType()));
+        this.cloneMethod = cloneMethods.getFirstOrNull();
+        final @Nonnull FiniteIterable<@Nonnull MethodInformation> validateMethods = methodInformationIterable.filter(validatePredicate);
+        Require.that(validateMethods.size() <= 1).orThrow("Expected at most one validate method in $", ProcessingUtility.getQualifiedName(typeElement.asType()));
+        this.validateMethod = validateMethods.getFirstOrNull();
         
         this.overriddenMethods = methodInformationIterable.filter(method -> !method.isDeclaredInRuntimeEnvironment()).filter(method -> !method.isFinal()).filter(method -> !method.isAbstract()).filter(method -> !method.isStatic()).filter(method -> !method.isPrivate()).filter(equalsPredicate.negate().and(hashCodePredicate.negate()).and(toStringPredicate.negate()).and(compareToPredicate.negate()).and(clonePredicate.negate()).and(validatePredicate.negate()));
     
