@@ -51,17 +51,21 @@ public @interface Logged {
         @Pure
         @Override
         protected void implementInterceptorMethod(@Nonnull JavaFileGenerator javaFileGenerator, @Nonnull MethodInformation method, @Nonnull String statement, @Nullable String resultVariable, @Nullable String defaultValue) {
-            // TODO: The following statement does not work for methods without a return type!
-            javaFileGenerator.addStatement(method.getReturnType(javaFileGenerator) + " " + resultVariable + " = " + defaultValue);
+            if (resultVariable != null && method.hasReturnType()) {
+                javaFileGenerator.addStatement(method.getReturnType(javaFileGenerator) + " " + resultVariable + " = " + defaultValue);
+            }
             javaFileGenerator.beginTry();
-            javaFileGenerator.importIfPossible(Log.class); // TODO: importIfPossible only imports the argument *if possible*! You should replace any "Log." string with 'javaFileGenerator.importIfPossible(Log.class) + "."'.
-            javaFileGenerator.addStatement("Log.verbose(\"" + method.getName() + "() {'\")");
-            javaFileGenerator.addStatement(resultVariable + " = " + statement);
-            javaFileGenerator.endTryOrCatchBeginFinally();
-            if (resultVariable != null) {
-                javaFileGenerator.addStatement("Log.verbose(\"} = (\" + " + resultVariable + " + \")\")");
+            javaFileGenerator.addStatement(javaFileGenerator.importIfPossible(Log.class) + ".verbose(\"" + method.getName() + "() {'\")");
+            if (resultVariable != null && method.hasReturnType()) {
+                javaFileGenerator.addStatement(resultVariable + " = " + statement);
             } else {
-                javaFileGenerator.addStatement("Log.verbose(\"}\")");
+                javaFileGenerator.addStatement(statement);
+            }
+            javaFileGenerator.endTryOrCatchBeginFinally();
+            if (resultVariable != null && method.hasReturnType()) {
+                javaFileGenerator.addStatement(javaFileGenerator.importIfPossible(Log.class) + ".verbose(\"} = (\" + " + resultVariable + " + \")\")");
+            } else {
+                javaFileGenerator.addStatement(javaFileGenerator.importIfPossible(Log.class) + ".verbose(\"}\")");
             }
             javaFileGenerator.endFinally();
             if (resultVariable != null && method.hasReturnType()) {
