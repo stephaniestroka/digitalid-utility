@@ -215,22 +215,8 @@ public class MethodInformation extends ExecutableInformation {
             if (isSetter() && isPure()) { ProcessingLog.error("A setter may not be '@Pure':", SourcePosition.of(element)); }
         }
         
-        // TODO: Shouldn't this rather be the usage check of the recover annotation?
-        if (isRecover()) {
-            @Nullable String errorMessage = null;
-            if (!isStatic()) { errorMessage = "The annotated method has to be static:"; }
-            if (element.getReturnType().getKind() != TypeKind.DECLARED) { errorMessage = "The return type has to be a declared type:"; }
-            final @Nonnull String qualifiedReturnTypeName = ((QualifiedNameable) ((DeclaredType) element.getReturnType()).asElement()).getQualifiedName().toString();
-            final @Nonnull String qualifiedEnclosingClassName = ((QualifiedNameable) element.getEnclosingElement()).getQualifiedName().toString();
-            if (!qualifiedReturnTypeName.equals(qualifiedEnclosingClassName)) { errorMessage = "The return type has to be the enclosing class:"; } // TODO: Subtype is probably enough.
-            if (errorMessage != null) { ProcessingLog.error(errorMessage, SourcePosition.of(element)); }
-            ProcessingLog.verbose("Found the recover method", SourcePosition.of(element));
-        }
-        
         this.methodValidators = AnnotationHandlerUtility.getMethodValidators(this.getElement());
         this.returnValueValidators = AnnotationHandlerUtility.getValueValidators(this.getElement());
-        ProcessingLog.debugging("Method validators for method $: $", this.getElement(), methodValidators);
-        ProcessingLog.debugging("Return value validators for method $: $", this.getElement(), returnValueValidators);
         
         // TODO: This is just a temporary hack to ensure that the annotations on the parameters are checked in any case.
         for (@Nonnull VariableElement parameter : element.getParameters()) {
