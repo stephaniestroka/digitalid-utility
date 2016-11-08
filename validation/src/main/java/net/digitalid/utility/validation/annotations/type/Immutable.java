@@ -10,13 +10,13 @@ import java.lang.annotation.Target;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.method.PureWithSideEffects;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.processing.logging.ErrorLogger;
@@ -59,14 +59,14 @@ public @interface Immutable {
         @Pure
         @Override
         public void checkUsage(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
-            for (@Nonnull ExecutableElement method : ProcessingUtility.getAllMethods((TypeElement) element)) {
-                if (ProcessingUtility.isDeclaredInDigitalIDLibrary(method) && !ProcessingUtility.hasAnnotation(method, Pure.class) && method.getEnclosingElement().getKind() != ElementKind.ENUM) {
-                    errorLogger.log("The immutable type $ may only contain pure methods.", SourcePosition.of(method), element);
+            for (@Nonnull ExecutableElement method : ProcessingUtility.getAllMethods((TypeElement) element).filter(ProcessingUtility::isDeclaredInDigitalIDLibrary).filterNot(method -> method.getModifiers().contains(Modifier.STATIC))) {
+                if (!ProcessingUtility.hasAnnotation(method, Pure.class) && !ProcessingUtility.hasAnnotation(method, PureWithSideEffects.class)) {
+                    errorLogger.log("The immutable type $ may only contain pure non-static methods.", SourcePosition.of(method), element);
                 }
             }
-            for (@Nonnull VariableElement field : ProcessingUtility.getAllFields((TypeElement) element)) {
-                if (ProcessingUtility.isDeclaredInDigitalIDLibrary(field) && !field.getModifiers().contains(Modifier.FINAL)) {
-                    errorLogger.log("The immutable type $ may only contain final fields.", SourcePosition.of(field), element);
+            for (@Nonnull VariableElement field : ProcessingUtility.getAllFields((TypeElement) element).filter(ProcessingUtility::isDeclaredInDigitalIDLibrary).filterNot(field -> field.getModifiers().contains(Modifier.STATIC))) {
+                if (!field.getModifiers().contains(Modifier.FINAL)) {
+                    errorLogger.log("The immutable type $ may only contain final non-static fields.", SourcePosition.of(field), element);
                 }
             }
         }

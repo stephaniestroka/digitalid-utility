@@ -12,7 +12,9 @@ import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.logging.exceptions.ExternalException;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
+@Immutable
 public interface Converter<T, E> {
     
     @Pure

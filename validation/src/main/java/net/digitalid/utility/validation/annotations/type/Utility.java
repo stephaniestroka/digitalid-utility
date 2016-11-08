@@ -52,8 +52,8 @@ public @interface Utility {
             if (!element.getModifiers().contains(Modifier.ABSTRACT)) {
                 errorLogger.log("By convention, the utility type $ has to be abstract.", SourcePosition.of(element), element);
             }
-            for (@Nonnull Element member : ProcessingUtility.getAllMembers((TypeElement) element)) {
-                if (ProcessingUtility.isDeclaredInDigitalIDLibrary(member) && member.getKind() != ElementKind.CONSTRUCTOR && !member.getModifiers().contains(Modifier.STATIC)) {
+            for (@Nonnull Element member : ProcessingUtility.getAllMembers((TypeElement) element).filter(ProcessingUtility::isDeclaredInDigitalIDLibrary)) {
+                if (member.getKind() != ElementKind.CONSTRUCTOR && !member.getModifiers().contains(Modifier.STATIC)) {
                     errorLogger.log("The utility type $ may only have static fields and methods.", SourcePosition.of(member), element);
                 }
             }

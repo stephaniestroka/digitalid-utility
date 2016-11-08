@@ -10,10 +10,11 @@ import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 
 /**
- * This annotation indicates that the annotated method has no side-effects (other than caching) on the called object (or class).
+ * This annotation indicates that the annotated method has no side effects (other than caching) on the called object (or class).
  * A pure method may, however, modify its parameters, which is indicated by the {@link Modified} and {@link Unmodified} annotations.
  * A pure method is guaranteed to return the same result on repeated invocations (unless other threads modify the object in the meantime).
  * 
+ * @see PureWithSideEffects
  * @see Impure
  */
 @Documented

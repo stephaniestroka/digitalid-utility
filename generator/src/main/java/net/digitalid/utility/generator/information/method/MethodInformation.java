@@ -9,7 +9,6 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
@@ -19,6 +18,7 @@ import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.method.PureWithSideEffects;
 import net.digitalid.utility.collaboration.annotations.TODO;
 import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.collaboration.enumerations.Priority;
@@ -134,7 +134,7 @@ public class MethodInformation extends ExecutableInformation {
      */
     @Pure
     public boolean isPure() {
-        return hasAnnotation(Pure.class);
+        return hasAnnotation(Pure.class) || hasAnnotation(PureWithSideEffects.class);
     }
     
     /**

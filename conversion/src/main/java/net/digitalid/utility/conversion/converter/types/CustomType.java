@@ -352,6 +352,7 @@ public class CustomType {
      */
     public static @Nonnull String getTypeName(@Nonnull TypeMirror representingFieldType, @Nonnull TypeImporter typeImporter) {
         @Nonnull CustomType customType = CustomType.of(representingFieldType);
+        // TODO: ProcessingUtility.getTypeElement(representingFieldType) is null for generic types but checking this only here leads to new problems (namely "The name 'TConverter' has to be qualified.").
         if (customType == CustomType.TUPLE && ProcessingUtility.getTypeElement(representingFieldType).getKind() == ElementKind.ENUM) {
             customType = CustomType.STRING;
         } 

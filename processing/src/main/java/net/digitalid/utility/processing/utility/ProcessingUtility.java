@@ -34,6 +34,8 @@ import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.circumfixes.Quotes;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.ImmutableMap;
@@ -76,10 +78,11 @@ public class ProcessingUtility {
      * Returns whether the given element is declared in the Digital ID library (DID SDK).
      */
     @Pure
+    @TODO(task = "Change the prefix back to 'net.digitalid.'.", date = "2016-11-08", author = Author.KASPAR_ETTER)
     public static boolean isDeclaredInDigitalIDLibrary(@Nonnull Element element) {
-        return getQualifiedPackageName(element).startsWith("net.digitalid.utility") || 
-                getQualifiedPackageName(element).startsWith("net.digitalid.database") ||
-                getQualifiedPackageName(element).startsWith("net.digitalid.core");
+        return getQualifiedPackageName(element).startsWith("net.digitalid.utility.") || 
+                getQualifiedPackageName(element).startsWith("net.digitalid.database.") ||
+                getQualifiedPackageName(element).startsWith("net.digitalid.core.");
     }
     
     /* -------------------------------------------------- Surrounding Type -------------------------------------------------- */
