@@ -1,6 +1,5 @@
 package net.digitalid.utility.generator.generators;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -267,7 +266,7 @@ public class ConverterGenerator extends JavaFileGenerator {
         if (externallyProvidedFields.size() > 1) {
             int i = 0;
             for (@Nonnull FieldInformation externallyProvidedField : externallyProvidedFields) {
-                addStatement("final " + importIfPossible(externallyProvidedField.getType()) + " " + externallyProvidedField.getName() + " = provided.get" + i + "()");
+                addStatement("final " + importIfPossible(externallyProvidedField.getType()) + " " + externallyProvidedField.getName() + " = provided.get" + i++ + "()");
             }
         }
         final @Nonnull FiniteIterable<FieldInformation> constructorParameters = filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
