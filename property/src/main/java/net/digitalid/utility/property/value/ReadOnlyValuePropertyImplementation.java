@@ -1,6 +1,5 @@
 package net.digitalid.utility.property.value;
 
-
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Impure;

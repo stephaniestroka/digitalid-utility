@@ -8,11 +8,13 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.concurrency.exceptions.ReentranceException;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.validation.annotations.generation.Derive;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
@@ -34,61 +36,66 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 @GenerateSubclass
 public abstract class NonReentrantLock extends RootClass implements Lock {
     
+    /* -------------------------------------------------- Lock -------------------------------------------------- */
+    
     /**
-     * This class delegates the implementation to a fair reentrant lock.
+     * Returns the fair reentrant lock which is used to implement this non-reentrant lock.
+     * This method intentionally allows to acquire the lock reentrantly for special cases.
      */
-    private final @Nonnull ReentrantLock reentrantLock = new ReentrantLock(true);
+    @Pure
+    @Derive("new ReentrantLock(true)")
+    public abstract @Nonnull ReentrantLock getReentrantLock();
     
     @Impure
     @Override
     public void lock() throws ReentranceException {
-        if (reentrantLock.isHeldByCurrentThread()) {
+        if (getReentrantLock().isHeldByCurrentThread()) {
             throw ReentranceException.withNoArguments();
         } else {
-            reentrantLock.lock();
+            getReentrantLock().lock();
         }
     }
     
     @Impure
     @Override
     public void lockInterruptibly() throws ReentranceException, InterruptedException {
-        if (reentrantLock.isHeldByCurrentThread()) {
+        if (getReentrantLock().isHeldByCurrentThread()) {
             throw ReentranceException.withNoArguments();
         } else {
-            reentrantLock.lockInterruptibly();
+            getReentrantLock().lockInterruptibly();
         }
     }
     
     @Impure
     @Override
     public boolean tryLock() throws ReentranceException {
-        if (reentrantLock.isHeldByCurrentThread()) {
+        if (getReentrantLock().isHeldByCurrentThread()) {
             throw ReentranceException.withNoArguments();
         } else {
-            return reentrantLock.tryLock();
+            return getReentrantLock().tryLock();
         }
     }
     
     @Impure
     @Override
     public boolean tryLock(long time, @Nonnull TimeUnit unit) throws ReentranceException, InterruptedException {
-        if (reentrantLock.isHeldByCurrentThread()) {
+        if (getReentrantLock().isHeldByCurrentThread()) {
             throw ReentranceException.withNoArguments();
         } else {
-            return reentrantLock.tryLock(time, unit);
+            return getReentrantLock().tryLock(time, unit);
         }
     }
     
     @Impure
     @Override
     public void unlock() {
-        reentrantLock.unlock();
+        getReentrantLock().unlock();
     }
     
     @Impure
     @Override
     public @Nonnull Condition newCondition() {
-        return reentrantLock.newCondition();
+        return getReentrantLock().newCondition();
     }
     
 }

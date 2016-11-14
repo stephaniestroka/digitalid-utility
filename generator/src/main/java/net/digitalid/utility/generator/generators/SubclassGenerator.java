@@ -178,11 +178,11 @@ public class SubclassGenerator extends JavaFileGenerator {
         for (@Nonnull FieldInformation field : typeInformation.derivedFieldInformation.sorted(OrderOfAssignmentComparator.INSTANCE)) {
             addStatement("this." + field.getName() + " = " + field.getAnnotation(Derive.class).value());
         }
-        if (shouldGenerateValidateCall()) {
-            addStatement("validate()");
-        }
         if (shouldGenerateInitializeCall()) {
             addStatement("initialize()");
+        }
+        if (shouldGenerateValidateCall()) {
+            addStatement("validate()");
         }
         endConstructor();
     }
