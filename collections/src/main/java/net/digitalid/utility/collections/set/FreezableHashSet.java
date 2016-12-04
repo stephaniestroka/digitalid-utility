@@ -72,7 +72,7 @@ public abstract class FreezableHashSet<E> extends HashSet<E> implements Freezabl
      */
     @Pure
     @SafeVarargs
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableHashSet<E> withElements(@NonCaptured @Unmodified E... elements) {
+    public static @Capturable <E> @NonFrozen FreezableHashSet<E> withElements(@NonCaptured @Unmodified E... elements) {
         return elements == null ? null : new FreezableHashSetSubclass<>(elements.length, Arrays.asList(elements));
     }
     

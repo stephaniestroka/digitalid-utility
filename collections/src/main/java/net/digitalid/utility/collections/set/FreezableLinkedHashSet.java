@@ -72,7 +72,7 @@ public abstract class FreezableLinkedHashSet<E> extends LinkedHashSet<E> impleme
      */
     @Pure
     @SafeVarargs
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableLinkedHashSet<E> withElements(@NonCaptured @Unmodified E... elements) {
+    public static @Capturable <E> @NonFrozen FreezableLinkedHashSet<E> withElements(@NonCaptured @Unmodified E... elements) {
         return elements == null ? null : new FreezableLinkedHashSetSubclass<>(elements.length, Arrays.asList(elements));
     }
     

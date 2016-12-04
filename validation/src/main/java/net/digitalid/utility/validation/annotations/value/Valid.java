@@ -160,7 +160,7 @@ public @interface Valid {
             }
             final @Nonnull String annotationValue = suffix.isEmpty() ? "" : Brackets.inRound(Quotes.inDouble(suffix));
             if (inConstructor) { errorLogger.log("The annotation '@Valid" + annotationValue + "' may only be used on constructor parameters of types that have a 'public static boolean isValid" + suffix + "(value)' method for the corresponding type.", SourcePosition.of(element, annotationMirror)); }
-            else { errorLogger.log("The annotation '@Valid" + annotationValue + "' may only be used in types that have a corresponding 'public (static) boolean isValid" + suffix + "(value)' method or on method parameters where the first method parameter has such a method.", SourcePosition.of(element, annotationMirror)); }
+            else { errorLogger.log("The annotation '@Valid" + annotationValue + "' may only be used in types that have a corresponding non-private '(static) boolean isValid" + suffix + "(value)' method or on method parameters where the first method parameter has such a method.", SourcePosition.of(element, annotationMirror)); }
         }
         
         @Pure

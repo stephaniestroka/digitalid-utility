@@ -15,7 +15,6 @@ import net.digitalid.utility.functional.iterators.PruningIterator;
 import net.digitalid.utility.functional.iterators.ReadOnlyIterator;
 import net.digitalid.utility.functional.iterators.ZippingIterator;
 import net.digitalid.utility.tuples.Pair;
-import net.digitalid.utility.validation.annotations.index.Index;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
