@@ -10,6 +10,8 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.type.ThreadSafe;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.concurrency.exceptions.ReentranceException;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
@@ -34,6 +36,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 @ThreadSafe
 @GenerateBuilder
 @GenerateSubclass
+@TODO(task = "Generate the reentrance check as a precondition instead of the current checked exception.", date = "2016-12-05", author = Author.KASPAR_ETTER)
 public abstract class NonReentrantLock extends RootClass implements Lock {
     
     /* -------------------------------------------------- Lock -------------------------------------------------- */

@@ -1,6 +1,5 @@
 package net.digitalid.utility.generator;
 
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.processing.RoundEnvironment;
@@ -27,6 +26,7 @@ import net.digitalid.utility.generator.information.type.InterfaceInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.CustomProcessor;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.validation.annotations.type.Mutable;
@@ -66,7 +66,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * - @GenerateBuilder without a @GenerateSubclass should not be allowed on interfaces.
  */
 @Mutable
-@SupportedOptions({"release"})
+@SupportedOptions("production")
 @SupportedAnnotations(prefix = "")
 public class GeneratorProcessor extends CustomProcessor {
     
@@ -118,6 +118,7 @@ public class GeneratorProcessor extends CustomProcessor {
     @Impure
     @Override
     public void processFirstRound(@Nonnull FiniteIterable<@Nonnull ? extends TypeElement> annotations, @Nonnull RoundEnvironment roundEnvironment) {
+        ProcessingLog.information("The code is generated in " + (StaticProcessingEnvironment.environment.get().getOptions().containsKey("production") ? "production" : "development" ) + " mode.");
         for (@Nonnull Element rootElement : roundEnvironment.getRootElements()) {
             ProcessingLog.information("Processing element $ of kind $", rootElement.getSimpleName(), rootElement.getKind());
             if (rootElement.getKind() == ElementKind.CLASS || rootElement.getKind() == ElementKind.INTERFACE || rootElement.getKind() == ElementKind.ENUM) {

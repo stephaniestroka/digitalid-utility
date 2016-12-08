@@ -250,7 +250,7 @@ public class Strings {
     @Pure
     public static @Nonnull String toString(@NonCaptured @Unmodified @Nullable Object object) {
         if (object == null) { return "null"; }
-        else { return object.getClass().getSimpleName() + FiniteIterable.of(object.getClass().getDeclaredFields()).map(field -> field.getName() + ": " + Quotes.inCode(getFieldValueOrErrorMessage(field, object))).join(Brackets.ROUND); }
+        else { return object.getClass().getSimpleName() + FiniteIterable.of(object.getClass().getDeclaredFields()).filterNot(field -> field.getName().startsWith("$")).map(field -> field.getName() + ": " + Quotes.inCode(getFieldValueOrErrorMessage(field, object))).join(Brackets.ROUND); }
     }
     
     /* -------------------------------------------------- Cardinal Numbers -------------------------------------------------- */
@@ -276,7 +276,9 @@ public class Strings {
      */
     @Pure
     public static @Nonnull String getOrdinal(@Positive int number) {
-        if (number >= 1 && number <= 13) { return ordinalNumbersWithEnglishRoot.get(number - 1); }
+        if (number >= 1 && number <= 13) {
+            return ordinalNumbersWithEnglishRoot.get(number - 1);
+        }
         final int mod10 = number % 10;
         if (mod10 == 1) { return String.valueOf(number) + "st"; }
         if (mod10 == 2) { return String.valueOf(number) + "nd"; }

@@ -146,7 +146,7 @@ public abstract class CustomProcessor implements Processor {
             return annotationsConsumed;
         } catch (@Nonnull Throwable throwable) {
             Log.error("The compilation failed due to the following problem:", throwable);
-            ProcessingLog.error("An unexpected compilation error occurred: $. Please consult the log file under target/processor-logs/GeneratorProcessor.log for details. ", ExceptionUtility.getThrowableSummary(throwable));
+            ProcessingLog.error("An unexpected compilation error occurred: $. Please consult the log file under target/processor-logs/GeneratorProcessor.log for details.", ExceptionUtility.getThrowableSummary(throwable));
             throw throwable;
         }
     }
