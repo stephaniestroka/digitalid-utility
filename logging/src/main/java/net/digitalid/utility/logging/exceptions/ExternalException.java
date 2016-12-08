@@ -19,7 +19,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * @see InternalException
  */
 @Immutable
-public abstract class ExternalException extends Exception {
+public /* TODO: abstract */ class ExternalException extends Exception {
     
     /* -------------------------------------------------- Arguments -------------------------------------------------- */
     
@@ -51,6 +51,34 @@ public abstract class ExternalException extends Exception {
     
     protected ExternalException(@Nullable Exception cause) {
         this(null, cause);
+    }
+    
+    // TODO: The following methods were just added for convenience. This class should be made abstract again with the new exception hierarchy!
+    
+    /**
+     * Returns an external exception with the given message and cause.
+     * Each dollar sign in the message is replaced with the corresponding argument.
+     */
+    @Pure
+    public static @Nonnull ExternalException with(@Nullable String message, @Nullable Exception cause, @Nonnull @NullableElements Object... arguments) {
+        return new ExternalException(message, cause, arguments);
+    }
+    
+    /**
+     * Returns an external exception with the given message.
+     * Each dollar sign in the message is replaced with the corresponding argument.
+     */
+    @Pure
+    public static @Nonnull ExternalException with(@Nullable String message, @Nonnull @NullableElements Object... arguments) {
+        return new ExternalException(message, null, arguments);
+    }
+    
+    /**
+     * Returns an external exception with the given cause.
+     */
+    @Pure
+    public static @Nonnull ExternalException with(@Nullable Exception cause) {
+        return new ExternalException(null, cause);
     }
     
 }
