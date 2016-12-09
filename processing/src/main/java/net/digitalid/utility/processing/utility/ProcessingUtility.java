@@ -48,7 +48,6 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.annotations.type.Utility;
 import net.digitalid.utility.validation.annotations.type.kind.EnumType;
 
-
 /**
  * This class provides useful methods for annotation processing.
  */

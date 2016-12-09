@@ -26,7 +26,7 @@ import net.digitalid.utility.validation.annotations.type.Utility;
  * This class provides useful operations on strings.
  */
 @Utility
-public class Strings {
+public abstract class Strings {
     
     /* -------------------------------------------------- Formatting -------------------------------------------------- */
     
@@ -151,7 +151,8 @@ public class Strings {
      */
     @Pure
     public static @Nonnull String substringFromLast(@Nonnull String string, @Nonnull @NonEmpty String delimiter) {
-        return string.substring(string.lastIndexOf(delimiter) + 1);
+        final int index = string.lastIndexOf(delimiter);
+        return index >= 0 ? string.substring(string.lastIndexOf(delimiter) + delimiter.length()) : string;
     }
     
     /**

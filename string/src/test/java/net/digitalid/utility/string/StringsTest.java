@@ -46,16 +46,32 @@ public class StringsTest {
     }
     
     @Test
-    public void testSubstringFromLast() {
+    public void testSubstringFromLastChar() {
+        assertEquals("", Strings.substringFromLast("", '.'));
+        assertEquals("net", Strings.substringFromLast("www.digitalid.net", '.'));
+        assertEquals("test", Strings.substringFromLast("test", '.'));
+    }
+    
+    @Test
+    public void testSubstringFromLastString() {
         assertEquals("", Strings.substringFromLast("", "."));
         assertEquals("net", Strings.substringFromLast("www.digitalid.net", "."));
+        assertEquals(".net", Strings.substringFromLast("www.digitalid.net", "id"));
         assertEquals("test", Strings.substringFromLast("test", "."));
     }
     
     @Test
-    public void testSubstringUntilFirst() {
+    public void testSubstringUntilFirstChar() {
+        assertEquals("", Strings.substringUntilFirst("", '.'));
+        assertEquals("www", Strings.substringUntilFirst("www.digitalid.net", '.'));
+        assertEquals("test", Strings.substringUntilFirst("test", '.'));
+    }
+    
+    @Test
+    public void testSubstringUntilFirstString() {
         assertEquals("", Strings.substringUntilFirst("", "."));
         assertEquals("www", Strings.substringUntilFirst("www.digitalid.net", "."));
+        assertEquals("www.", Strings.substringUntilFirst("www.digitalid.net", "di"));
         assertEquals("test", Strings.substringUntilFirst("test", "."));
     }
     

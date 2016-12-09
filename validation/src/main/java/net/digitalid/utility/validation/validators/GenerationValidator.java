@@ -43,7 +43,7 @@ public class GenerationValidator implements ValueAnnotationValidator {
             }
         } else if (element.getKind() == ElementKind.METHOD) {
             final @Nonnull ExecutableElement method = (ExecutableElement) element;
-            if (!method.getModifiers().contains(Modifier.ABSTRACT) || !ProcessingUtility.isGetter(method)) {
+            if (!method.getModifiers().contains(Modifier.ABSTRACT)/* || !ProcessingUtility.isGetter(method)*/) { // TODO: @Default also has to be allowed on generated properties.
                 errorLogger.log("The generation annotation may only be used on abstract getters.", SourcePosition.of(element, annotationMirror));
             }
         } else {
