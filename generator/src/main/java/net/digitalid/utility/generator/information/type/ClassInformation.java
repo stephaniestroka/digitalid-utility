@@ -6,11 +6,9 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.state.Unmodifiable;
@@ -20,7 +18,6 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.ConverterGenerator;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
-import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.field.DirectlyAccessibleDeclaredFieldInformation;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.field.GeneratedRepresentingFieldInformation;

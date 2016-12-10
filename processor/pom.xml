@@ -1,17 +1,17 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
-    <artifactId>utility-processor</artifactId>
-    <packaging>jar</packaging>
     
     <parent>
         <groupId>net.digitalid.utility</groupId>
         <artifactId>utility</artifactId>
         <version>1.0.0</version>
     </parent>
+    
+    <artifactId>utility-processor</artifactId>
+    
+    <properties>
+        <maven.compiler.argument>-proc:none</maven.compiler.argument>
+    </properties>
     
     <dependencies>
         <dependency>
@@ -20,27 +20,5 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
-    
-    <build>
-    	<plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
-                <configuration>
-                    <fork>true</fork>
-                    <verbose>true</verbose>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                    <executable>${maven.compiler.executable}</executable>
-                    <compilerVersion>${maven.compiler.version}</compilerVersion>
-                    <!-- NetBeans seems to need the following line sometimes: -->
-                    <generatedSourcesDirectory>target/generated-sources/annotations</generatedSourcesDirectory>
-                    <!-- Disable processing because the definition in META-INF/services breaks javac. -->
-                    <compilerArgument>-proc:none</compilerArgument>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     
 </project>

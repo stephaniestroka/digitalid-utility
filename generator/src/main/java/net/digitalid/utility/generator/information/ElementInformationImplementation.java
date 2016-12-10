@@ -17,7 +17,6 @@ import net.digitalid.utility.generator.information.field.FieldInformationImpleme
 import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.immutable.ImmutableSet;
-import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 

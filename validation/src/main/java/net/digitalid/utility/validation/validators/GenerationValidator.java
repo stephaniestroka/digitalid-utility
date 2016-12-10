@@ -1,6 +1,5 @@
 package net.digitalid.utility.validation.validators;
 
-
 import javax.annotation.Nonnull;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
