@@ -20,11 +20,11 @@ import net.digitalid.utility.validation.annotations.value.Valid;
 @GenerateBuilder
 @GenerateSubclass
 @Mutable(ReadOnlyVolatileSimpleMapProperty.class)
-public abstract class WritableVolatileSimpleMapProperty<K, V> extends WritableVolatileMapProperty<K, V, ReadOnlyMap<@Nonnull @Valid("key") K, @Nonnull @Valid V>, FreezableMap<@Nonnull @Valid("key") K, @Nonnull @Valid V>> implements ReadOnlyVolatileSimpleMapProperty<K, V> {
+public abstract class WritableVolatileSimpleMapProperty<KEY, VALUE> extends WritableVolatileMapProperty<KEY, VALUE, ReadOnlyMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>, FreezableMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>> implements ReadOnlyVolatileSimpleMapProperty<KEY, VALUE> {
     
     @Pure
     @Override
     @Default("net.digitalid.utility.collections.map.FreezableLinkedHashMapBuilder.build()")
-    protected abstract @Nonnull @NonFrozen FreezableMap<@Nonnull @Valid("key") K, @Nonnull @Valid V> getMap();
+    protected abstract @Nonnull @NonFrozen FreezableMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE> getMap();
     
 }

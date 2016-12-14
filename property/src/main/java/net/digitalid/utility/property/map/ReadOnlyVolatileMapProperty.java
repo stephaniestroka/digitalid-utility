@@ -4,8 +4,6 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collections.map.ReadOnlyMap;
-import net.digitalid.utility.validation.annotations.type.Functional;
-import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
@@ -16,15 +14,4 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  */
 @ThreadSafe
 @ReadOnly(WritableVolatileMapProperty.class)
-public interface ReadOnlyVolatileMapProperty<K, V, R extends ReadOnlyMap<@Nonnull @Valid("key") K, @Nonnull @Valid V>> extends ReadOnlyMapProperty<K, V, R, RuntimeException, ReadOnlyVolatileMapProperty.Observer<K, V, R>, ReadOnlyVolatileMapProperty<K, V, R>> {
-    
-    /* -------------------------------------------------- Observer -------------------------------------------------- */
-    
-    /**
-     * Objects that implement this interface can be used to {@link #register(net.digitalid.utility.property.Property.Observer) observe} {@link ReadOnlyVolatileMapProperty read-only volatile map properties}.
-     */
-    @Mutable
-    @Functional
-    public static interface Observer<K, V, R extends ReadOnlyMap<@Nonnull @Valid("key") K, @Nonnull @Valid V>> extends ReadOnlyMapProperty.Observer<K, V, R, RuntimeException, ReadOnlyVolatileMapProperty.Observer<K, V, R>, ReadOnlyVolatileMapProperty<K, V, R>> {}
-    
-}
+public interface ReadOnlyVolatileMapProperty<KEY, VALUE, READONLY_MAP extends ReadOnlyMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>> extends ReadOnlyMapProperty<KEY, VALUE, READONLY_MAP, RuntimeException, VolatileMapObserver<KEY, VALUE, READONLY_MAP>, ReadOnlyVolatileMapProperty<KEY, VALUE, READONLY_MAP>> {}

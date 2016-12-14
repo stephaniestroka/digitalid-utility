@@ -34,25 +34,25 @@ import net.digitalid.utility.validation.annotations.value.Valid;
 @GenerateBuilder
 @GenerateSubclass
 @Mutable(ReadOnlyVolatileSetProperty.class)
-public abstract class WritableVolatileSetProperty<V, R extends ReadOnlySet<@Nonnull @Valid V>, F extends FreezableSet<@Nonnull @Valid V>> extends WritableSetPropertyImplementation<V, R, RuntimeException, ReadOnlyVolatileSetProperty.Observer<V, R>, ReadOnlyVolatileSetProperty<V, R>> implements ReadOnlyVolatileSetProperty<V, R> {
+public abstract class WritableVolatileSetProperty<VALUE, READONLY_SET extends ReadOnlySet<@Nonnull @Valid VALUE>, FREEZABLE_SET extends FreezableSet<@Nonnull @Valid VALUE>> extends WritableSetPropertyImplementation<VALUE, READONLY_SET, RuntimeException, VolatileSetObserver<VALUE, READONLY_SET>, ReadOnlyVolatileSetProperty<VALUE, READONLY_SET>> implements ReadOnlyVolatileSetProperty<VALUE, READONLY_SET> {
     
     /* -------------------------------------------------- Set -------------------------------------------------- */
     
     @Pure
-    protected abstract @Nonnull @NonFrozen F getSet();
+    protected abstract @Nonnull @NonFrozen FREEZABLE_SET getSet();
     
     @Pure
     @Override
     @SuppressWarnings("unchecked")
-    public @Nonnull @NonFrozen R get() {
-        return (R) getSet();
+    public @Nonnull @NonFrozen READONLY_SET get() {
+        return (READONLY_SET) getSet();
     }
     
     /* -------------------------------------------------- Operations -------------------------------------------------- */
     
     @Impure
     @Override
-    public boolean add(@Captured @Nonnull @Valid V value) throws ReentranceException {
+    public boolean add(@Captured @Nonnull @Valid VALUE value) throws ReentranceException {
         lock.lock();
         try {
             final boolean notAlreadyContained = getSet().add(value);
@@ -65,7 +65,7 @@ public abstract class WritableVolatileSetProperty<V, R extends ReadOnlySet<@Nonn
     
     @Impure
     @Override
-    public boolean remove(@NonCaptured @Unmodified @Nonnull @Valid V value) throws ReentranceException {
+    public boolean remove(@NonCaptured @Unmodified @Nonnull @Valid VALUE value) throws ReentranceException {
         lock.lock();
         try {
             final boolean contained = getSet().remove(value);

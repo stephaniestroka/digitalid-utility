@@ -22,7 +22,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  */
 @Mutable
 @ThreadSafe
-public abstract class ReadOnlySetPropertyImplementation<V, R extends ReadOnlySet<@Nonnull @Valid V>, X extends Exception, O extends ReadOnlySetProperty.Observer<V, R, X, O, P>, P extends ReadOnlySetProperty<V, R, X, O, P>> extends PropertyImplementation<O, ReadOnlySetProperty.Observer<V, R, X, O, P>> implements ReadOnlySetProperty<V, R, X, O, P> {
+public abstract class ReadOnlySetPropertyImplementation<VALUE, READONLY_SET extends ReadOnlySet<@Nonnull @Valid VALUE>, EXCEPTION extends Exception, OBSERVER extends SetObserver<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlySetProperty<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY>> extends PropertyImplementation<OBSERVER, SetObserver<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY>> implements ReadOnlySetProperty<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY> {
     
     /* -------------------------------------------------- Asynchronous Observer -------------------------------------------------- */
     
@@ -30,15 +30,15 @@ public abstract class ReadOnlySetPropertyImplementation<V, R extends ReadOnlySet
      * An asynchronous observer executes the notifications on a separate thread sequentially.
      */
     @Immutable
-    public static class AsynchronousObserver<V, R extends ReadOnlySet<@Nonnull @Valid V>, X extends Exception, O extends ReadOnlySetProperty.Observer<V, R, X, O, P>, P extends ReadOnlySetProperty<V, R, X, O, P>> extends PropertyImplementation.AsynchronousObserver<O> implements ReadOnlySetProperty.Observer<V, R, X, O, P> {
+    public static class AsynchronousObserver<VALUE, READONLY_SET extends ReadOnlySet<@Nonnull @Valid VALUE>, EXCEPTION extends Exception, OBSERVER extends SetObserver<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlySetProperty<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY>> extends PropertyImplementation.AsynchronousObserver<OBSERVER> implements SetObserver<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY> {
         
-        protected AsynchronousObserver(@Captured @Modified @Nonnull O observer) {
+        protected AsynchronousObserver(@Captured @Modified @Nonnull OBSERVER observer) {
             super(observer);
         }
         
         @Impure
         @Override
-        public void notify(@Nonnull P property, @NonCaptured @Unmodified @Nonnull @Valid V value, boolean added){
+        public void notify(@Nonnull PROPERTY property, @NonCaptured @Unmodified @Nonnull @Valid VALUE value, boolean added){
             executorService.submit(() -> observer.notify(property, value, added));
         }
         
@@ -48,13 +48,13 @@ public abstract class ReadOnlySetPropertyImplementation<V, R extends ReadOnlySet
     
     @Impure
     @Override
-    public boolean registerOnGuiThread(@Captured @Nonnull O observer) {
+    public boolean registerOnGuiThread(@Captured @Nonnull OBSERVER observer) {
         return observers.put(observer, (property, value, added) -> Threading.runOnGuiThread(() -> observer.notify(property, value, added))) == null;
     }
     
     @Impure
     @Override
-    public boolean registerOnNewThread(@Captured @Nonnull O observer) {
+    public boolean registerOnNewThread(@Captured @Nonnull OBSERVER observer) {
         return observers.put(observer, new AsynchronousObserver<>(observer)) == null;
     }
     

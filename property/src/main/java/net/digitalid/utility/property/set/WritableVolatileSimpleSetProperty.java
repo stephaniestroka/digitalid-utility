@@ -20,11 +20,11 @@ import net.digitalid.utility.validation.annotations.value.Valid;
 @GenerateBuilder
 @GenerateSubclass
 @Mutable(ReadOnlyVolatileSimpleSetProperty.class)
-public abstract class WritableVolatileSimpleSetProperty<V> extends WritableVolatileSetProperty<V, ReadOnlySet<@Nonnull @Valid V>, FreezableSet<@Nonnull @Valid V>> implements ReadOnlyVolatileSimpleSetProperty<V> {
+public abstract class WritableVolatileSimpleSetProperty<VALUE> extends WritableVolatileSetProperty<VALUE, ReadOnlySet<@Nonnull @Valid VALUE>, FreezableSet<@Nonnull @Valid VALUE>> implements ReadOnlyVolatileSimpleSetProperty<VALUE> {
     
     @Pure
     @Override
     @Default("net.digitalid.utility.collections.set.FreezableLinkedHashSetBuilder.build()")
-    protected abstract @Nonnull @NonFrozen FreezableSet<@Nonnull @Valid V> getSet();
+    protected abstract @Nonnull @NonFrozen FreezableSet<@Nonnull @Valid VALUE> getSet();
     
 }

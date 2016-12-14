@@ -23,24 +23,24 @@ import net.digitalid.utility.validation.annotations.value.Valid;
 @GenerateBuilder
 @GenerateSubclass
 @Mutable(ReadOnlyVolatileValueProperty.class)
-public abstract class WritableVolatileValueProperty<V> extends WritableValuePropertyImplementation<V, RuntimeException, ReadOnlyVolatileValueProperty.Observer<V>, ReadOnlyVolatileValueProperty<V>> implements ReadOnlyVolatileValueProperty<V> {
+public abstract class WritableVolatileValueProperty<VALUE> extends WritableValuePropertyImplementation<VALUE, RuntimeException, VolatileValueObserver<VALUE>, ReadOnlyVolatileValueProperty<VALUE>> implements ReadOnlyVolatileValueProperty<VALUE> {
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     
-    private @Valid V value;
+    private @Valid VALUE value;
     
     @Pure
     @Override
-    public @NonCapturable @Valid V get() {
+    public @NonCapturable @Valid VALUE get() {
         return value;
     }
     
     @Impure
     @Override
-    public @Capturable @Valid V set(@Captured @Valid V newValue) throws ReentranceException {
+    public @Capturable @Valid VALUE set(@Captured @Valid VALUE newValue) throws ReentranceException {
         lock.lock();
         try {
-            final @Valid V oldValue = this.value;
+            final @Valid VALUE oldValue = this.value;
             this.value = newValue;
             if (!Objects.equals(newValue, oldValue)) { notifyObservers(oldValue, newValue); }
             return oldValue;
@@ -51,7 +51,7 @@ public abstract class WritableVolatileValueProperty<V> extends WritableValueProp
     
     /* -------------------------------------------------- Constructor -------------------------------------------------- */
     
-    protected WritableVolatileValueProperty(@Captured V value) {
+    protected WritableVolatileValueProperty(@Captured VALUE value) {
         this.value = value;
     }
     

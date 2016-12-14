@@ -19,7 +19,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  */
 @Mutable
 @ThreadSafe
-public abstract class WritableValuePropertyImplementation<V, X extends Exception, O extends ReadOnlyValueProperty.Observer<V, X, O, P>, P extends ReadOnlyValueProperty<V, X, O, P>> extends ReadOnlyValuePropertyImplementation<V, X, O, P> implements WritableValueProperty<V, X, O, P> {
+public abstract class WritableValuePropertyImplementation<VALUE, EXCEPTION extends Exception, OBSERVER extends ValueObserver<VALUE, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlyValueProperty<VALUE, EXCEPTION, OBSERVER, PROPERTY>> extends ReadOnlyValuePropertyImplementation<VALUE, EXCEPTION, OBSERVER, PROPERTY> implements WritableValueProperty<VALUE, EXCEPTION, OBSERVER, PROPERTY> {
     
     /* -------------------------------------------------- Notification -------------------------------------------------- */
     
@@ -31,13 +31,13 @@ public abstract class WritableValuePropertyImplementation<V, X extends Exception
      */
     @Impure
     @SuppressWarnings("unchecked")
-    protected void notifyObservers(@NonCaptured @Unmodified @Valid V oldValue, @NonCaptured @Unmodified @Valid V newValue) throws X {
+    protected void notifyObservers(@NonCaptured @Unmodified @Valid VALUE oldValue, @NonCaptured @Unmodified @Valid VALUE newValue) throws EXCEPTION {
         Require.that(!Objects.equals(newValue, oldValue)).orThrow("The new value $ may not be the same as the old value $.", newValue, oldValue);
         Require.that(Objects.equals(newValue, get())).orThrow("The new value $ has to be set for this property but the value was $.", newValue, get());
         
         if (!observers.isEmpty()) {
-            for (ReadOnlyValueProperty.@Nonnull Observer<V, X, O, P> observer : observers.values()) {
-                observer.notify((P) this, oldValue, newValue);
+            for (@Nonnull ValueObserver<VALUE, EXCEPTION, OBSERVER, PROPERTY> observer : observers.values()) {
+                observer.notify((PROPERTY) this, oldValue, newValue);
             }
         }
     }

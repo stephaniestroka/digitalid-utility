@@ -18,7 +18,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  */
 @Mutable
 @ThreadSafe
-public abstract class WritableSetPropertyImplementation<V, R extends ReadOnlySet<@Nonnull @Valid V>, X extends Exception, O extends ReadOnlySetProperty.Observer<V, R, X, O, P>, P extends ReadOnlySetProperty<V, R, X, O, P>> extends ReadOnlySetPropertyImplementation<V, R, X, O, P> implements WritableSetProperty<V, R, X, O, P> {
+public abstract class WritableSetPropertyImplementation<VALUE, READONLY_SET extends ReadOnlySet<@Nonnull @Valid VALUE>, EXCEPTION extends Exception, OBSERVER extends SetObserver<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlySetProperty<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY>> extends ReadOnlySetPropertyImplementation<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY> implements WritableSetProperty<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY> {
     
     /* -------------------------------------------------- Notification -------------------------------------------------- */
     
@@ -32,13 +32,13 @@ public abstract class WritableSetPropertyImplementation<V, R extends ReadOnlySet
      */
     @Impure
     @SuppressWarnings("unchecked")
-    protected void notifyObservers(@NonCaptured @Unmodified @Nonnull @Valid V value, boolean added) throws X {
+    protected void notifyObservers(@NonCaptured @Unmodified @Nonnull @Valid VALUE value, boolean added) throws EXCEPTION {
         Require.that(!added || get().contains(value)).orThrow("If the value $ was added, this property has to contain it now.", value);
         Require.that(added || !get().contains(value)).orThrow("If the value $ was removed, this property may no longer contain it.", value);
         
         if (!observers.isEmpty()) {
-            for (ReadOnlySetProperty.@Nonnull Observer<V, R, X, O, P> observer : observers.values()) {
-                observer.notify((P) this, value, added);
+            for (@Nonnull SetObserver<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY> observer : observers.values()) {
+                observer.notify((PROPERTY) this, value, added);
             }
         }
     }

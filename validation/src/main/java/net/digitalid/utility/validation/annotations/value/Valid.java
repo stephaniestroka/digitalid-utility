@@ -19,6 +19,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
@@ -38,7 +39,6 @@ import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
-
 
 /**
  * This annotation indicates that the annotated value is valid.
@@ -155,7 +155,8 @@ public @interface Valid {
             final boolean inConstructor = enclosingElement.getKind() == ElementKind.CONSTRUCTOR;
             if (hasMethodToCheckValidity((DeclaredType) ProcessingUtility.getSurroundingType(element).asType(), elementType, inConstructor, suffix)) { return; }
             if (enclosingElement.getKind() == ElementKind.METHOD) {
-                final @Nonnull TypeMirror typeOfFirstParameter = ((ExecutableElement) enclosingElement).getParameters().get(0).asType();
+                @Nonnull TypeMirror typeOfFirstParameter = ((ExecutableElement) enclosingElement).getParameters().get(0).asType();
+                if (typeOfFirstParameter.getKind() == TypeKind.TYPEVAR) { typeOfFirstParameter = ((TypeVariable) typeOfFirstParameter).getUpperBound(); }
                 if (typeOfFirstParameter.getKind() == TypeKind.DECLARED && hasMethodToCheckValidity((DeclaredType) typeOfFirstParameter, elementType, false, suffix)) { return; }
             }
             final @Nonnull String annotationValue = suffix.isEmpty() ? "" : Brackets.inRound(Quotes.inDouble(suffix));

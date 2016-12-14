@@ -16,6 +16,8 @@ import net.digitalid.utility.concurrency.lock.NonReentrantLock;
 import net.digitalid.utility.concurrency.lock.NonReentrantLockBuilder;
 import net.digitalid.utility.concurrency.map.ConcurrentHashMap;
 import net.digitalid.utility.concurrency.map.ConcurrentHashMapBuilder;
+import net.digitalid.utility.property.map.ReadOnlyMapPropertyImplementation;
+import net.digitalid.utility.property.set.ReadOnlySetPropertyImplementation;
 import net.digitalid.utility.property.value.ReadOnlyValuePropertyImplementation;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.threading.NamedThreadFactory;
@@ -25,11 +27,13 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 /**
  * This class implements the observer registration of {@link Property properties}.
  * 
+ * @see ReadOnlyMapPropertyImplementation
+ * @see ReadOnlySetPropertyImplementation
  * @see ReadOnlyValuePropertyImplementation
  */
 @Mutable
 @ThreadSafe
-public abstract class PropertyImplementation<O extends Property.Observer, Q extends Property.Observer> extends RootClass implements Property<O> {
+public abstract class PropertyImplementation<OBSERVER extends Observer, GENERIC_OBSERVER extends Observer> extends RootClass implements Property<OBSERVER> {
     
     /* -------------------------------------------------- Asynchronous Observer -------------------------------------------------- */
     
@@ -37,15 +41,15 @@ public abstract class PropertyImplementation<O extends Property.Observer, Q exte
      * An asynchronous observer executes the notifications on a separate thread sequentially.
      */
     @Immutable
-    public static class AsynchronousObserver<O extends Property.Observer> implements Property.Observer {
+    public static class AsynchronousObserver<OBSERVER extends Observer> implements Observer {
         
         private final static @Nonnull ThreadFactory threadFactory = NamedThreadFactory.with("Observer");
         
         protected final @Nonnull ExecutorService executorService = Executors.newSingleThreadExecutor(threadFactory);
         
-        protected final @Nonnull O observer;
+        protected final @Nonnull OBSERVER observer;
         
-        protected AsynchronousObserver(@Captured @Modified @Nonnull O observer) {
+        protected AsynchronousObserver(@Captured @Modified @Nonnull OBSERVER observer) {
             this.observer = observer;
         }
         
@@ -56,24 +60,24 @@ public abstract class PropertyImplementation<O extends Property.Observer, Q exte
     /**
      * Stores the registered observers mapped to the respective observer that is executed instead.
      */
-    protected final @Nonnull ConcurrentHashMap<@Nonnull O, @Nonnull Q> observers = ConcurrentHashMapBuilder.buildWithInitialCapacity(1);
+    protected final @Nonnull ConcurrentHashMap<@Nonnull OBSERVER, @Nonnull GENERIC_OBSERVER> observers = ConcurrentHashMapBuilder.buildWithInitialCapacity(1);
     
     @Impure
     @Override
     @SuppressWarnings("unchecked")
-    public boolean register(@Captured @Nonnull O observer) {
-        return observers.put(observer, (Q) observer) == null;
+    public boolean register(@Captured @Nonnull OBSERVER observer) {
+        return observers.put(observer, (GENERIC_OBSERVER) observer) == null;
     }
     
     @Impure
     @Override
-    public boolean deregister(@NonCaptured @Nonnull O observer) {
+    public boolean deregister(@NonCaptured @Nonnull OBSERVER observer) {
         return observers.remove(observer) != null;
     }
     
     @Pure
     @Override
-    public boolean isRegistered(@NonCaptured @Nonnull O observer) {
+    public boolean isRegistered(@NonCaptured @Nonnull OBSERVER observer) {
         return observers.containsKey(observer);
     }
     

@@ -22,7 +22,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  */
 @Mutable
 @ThreadSafe
-public abstract class ReadOnlyMapPropertyImplementation<K, V, R extends ReadOnlyMap<@Nonnull @Valid("key") K, @Nonnull @Valid V>, X extends Exception, O extends ReadOnlyMapProperty.Observer<K, V, R, X, O, P>, P extends ReadOnlyMapProperty<K, V, R, X, O, P>> extends PropertyImplementation<O, ReadOnlyMapProperty.Observer<K, V, R, X, O, P>> implements ReadOnlyMapProperty<K, V, R, X, O, P> {
+public abstract class ReadOnlyMapPropertyImplementation<KEY, VALUE, READONLY_MAP extends ReadOnlyMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>, EXCEPTION extends Exception, OBSERVER extends MapObserver<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlyMapProperty<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY>> extends PropertyImplementation<OBSERVER, MapObserver<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY>> implements ReadOnlyMapProperty<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY> {
     
     /* -------------------------------------------------- Asynchronous Observer -------------------------------------------------- */
     
@@ -30,15 +30,15 @@ public abstract class ReadOnlyMapPropertyImplementation<K, V, R extends ReadOnly
      * An asynchronous observer executes the notifications on a separate thread sequentially.
      */
     @Immutable
-    public static class AsynchronousObserver<K, V, R extends ReadOnlyMap<@Nonnull @Valid("key") K, @Nonnull @Valid V>, X extends Exception, O extends ReadOnlyMapProperty.Observer<K, V, R, X, O, P>, P extends ReadOnlyMapProperty<K, V, R, X, O, P>> extends PropertyImplementation.AsynchronousObserver<O> implements ReadOnlyMapProperty.Observer<K, V, R, X, O, P> {
+    public static class AsynchronousObserver<KEY, VALUE, READONLY_MAP extends ReadOnlyMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>, EXCEPTION extends Exception, OBSERVER extends MapObserver<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlyMapProperty<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY>> extends PropertyImplementation.AsynchronousObserver<OBSERVER> implements MapObserver<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY> {
         
-        protected AsynchronousObserver(@Captured @Modified @Nonnull O observer) {
+        protected AsynchronousObserver(@Captured @Modified @Nonnull OBSERVER observer) {
             super(observer);
         }
         
         @Impure
         @Override
-        public void notify(@Nonnull P property, @NonCaptured @Unmodified @Nonnull @Valid("key") K key, @NonCaptured @Unmodified @Nonnull @Valid V value, boolean added) {
+        public void notify(@Nonnull PROPERTY property, @NonCaptured @Unmodified @Nonnull @Valid("key") KEY key, @NonCaptured @Unmodified @Nonnull @Valid VALUE value, boolean added) {
             executorService.submit(() -> observer.notify(property, key, value, added));
         }
         
@@ -48,13 +48,13 @@ public abstract class ReadOnlyMapPropertyImplementation<K, V, R extends ReadOnly
     
     @Impure
     @Override
-    public boolean registerOnGuiThread(@Captured @Nonnull O observer) {
+    public boolean registerOnGuiThread(@Captured @Nonnull OBSERVER observer) {
         return observers.put(observer, (property, key, value, added) -> Threading.runOnGuiThread(() -> observer.notify(property, key, value, added))) == null;
     }
     
     @Impure
     @Override
-    public boolean registerOnNewThread(@Captured @Nonnull O observer) {
+    public boolean registerOnNewThread(@Captured @Nonnull OBSERVER observer) {
         return observers.put(observer, new AsynchronousObserver<>(observer)) == null;
     }
     

@@ -37,25 +37,25 @@ import net.digitalid.utility.validation.annotations.value.Valid;
 @GenerateBuilder
 @GenerateSubclass
 @Mutable(ReadOnlyVolatileMapProperty.class)
-public abstract class WritableVolatileMapProperty<K, V, R extends ReadOnlyMap<@Nonnull @Valid("key") K, @Nonnull @Valid V>, F extends FreezableMap<@Nonnull @Valid("key") K, @Nonnull @Valid V>> extends WritableMapPropertyImplementation<K, V, R, RuntimeException, ReadOnlyVolatileMapProperty.Observer<K, V, R>, ReadOnlyVolatileMapProperty<K, V, R>> implements ReadOnlyVolatileMapProperty<K, V, R> {
+public abstract class WritableVolatileMapProperty<KEY, VALUE, READONLY_MAP extends ReadOnlyMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>, FREEZABLE_MAP extends FreezableMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>> extends WritableMapPropertyImplementation<KEY, VALUE, READONLY_MAP, RuntimeException, VolatileMapObserver<KEY, VALUE, READONLY_MAP>, ReadOnlyVolatileMapProperty<KEY, VALUE, READONLY_MAP>> implements ReadOnlyVolatileMapProperty<KEY, VALUE, READONLY_MAP> {
     
     /* -------------------------------------------------- Map -------------------------------------------------- */
     
     @Pure
-    protected abstract @Nonnull @NonFrozen F getMap();
+    protected abstract @Nonnull @NonFrozen FREEZABLE_MAP getMap();
     
     @Pure
     @Override
     @SuppressWarnings("unchecked")
-    public @Nonnull @NonFrozen R get() {
-        return (R) getMap();
+    public @Nonnull @NonFrozen READONLY_MAP get() {
+        return (READONLY_MAP) getMap();
     }
     
     /* -------------------------------------------------- Getter -------------------------------------------------- */
     
     @Pure
     @Override
-    public @NonCapturable @Nullable @Valid V get(@NonCaptured @Unmodified @Nonnull @Valid("key") K key) {
+    public @NonCapturable @Nullable @Valid VALUE get(@NonCaptured @Unmodified @Nonnull @Valid("key") KEY key) {
         return getMap().get(key);
     }
     
@@ -63,7 +63,7 @@ public abstract class WritableVolatileMapProperty<K, V, R extends ReadOnlyMap<@N
     
     @Impure
     @Override
-    public boolean add(@Captured @Nonnull @Valid("key") K key, @Captured @Nonnull @Valid V value) throws ReentranceException {
+    public boolean add(@Captured @Nonnull @Valid("key") KEY key, @Captured @Nonnull @Valid VALUE value) throws ReentranceException {
         lock.lock();
         try {
             if (getMap().containsKey(key)) {
@@ -80,10 +80,10 @@ public abstract class WritableVolatileMapProperty<K, V, R extends ReadOnlyMap<@N
     
     @Impure
     @Override
-    public @Capturable @Nullable @Valid V remove(@NonCaptured @Unmodified @Nonnull @Valid("key") K key) throws ReentranceException {
+    public @Capturable @Nullable @Valid VALUE remove(@NonCaptured @Unmodified @Nonnull @Valid("key") KEY key) throws ReentranceException {
         lock.lock();
         try {
-            final @Nullable V value = getMap().remove(key);
+            final @Nullable VALUE value = getMap().remove(key);
             if (value != null) { notifyObservers(key, value, false); }
             return value;
         } finally {

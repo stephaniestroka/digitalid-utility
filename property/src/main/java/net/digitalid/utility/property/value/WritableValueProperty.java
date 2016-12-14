@@ -16,7 +16,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  */
 @ThreadSafe
 @Mutable(ReadOnlyValueProperty.class)
-public interface WritableValueProperty<V, X extends Exception, O extends ReadOnlyValueProperty.Observer<V, X, O, P>, P extends ReadOnlyValueProperty<V, X, O, P>> extends ReadOnlyValueProperty<V, X, O, P> {
+public interface WritableValueProperty<VALUE, EXCEPTION extends Exception, OBSERVER extends ValueObserver<VALUE, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlyValueProperty<VALUE, EXCEPTION, OBSERVER, PROPERTY>> extends ReadOnlyValueProperty<VALUE, EXCEPTION, OBSERVER, PROPERTY> {
     
     /* -------------------------------------------------- Setter -------------------------------------------------- */
     
@@ -28,6 +28,6 @@ public interface WritableValueProperty<V, X extends Exception, O extends ReadOnl
      * @throws ReentranceException if this method is called by an observer of this property.
      */
     @Impure
-    public @Capturable @Valid V set(@Captured @Valid V value) throws X, ReentranceException;
+    public @Capturable @Valid VALUE set(@Captured @Valid VALUE value) throws EXCEPTION, ReentranceException;
     
 }

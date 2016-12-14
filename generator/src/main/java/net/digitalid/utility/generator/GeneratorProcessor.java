@@ -93,7 +93,7 @@ public class GeneratorProcessor extends CustomProcessor {
             if (!typeElement.getModifiers().contains(Modifier.FINAL)) {
                 if (typeInformation.hasAnnotation(GenerateSubclass.class)) {
                     assert (!(typeElement.getKind() == ElementKind.ENUM)) : "Enums cannot have subclasses";
-    
+                    
                     SubclassGenerator.generateSubclassOf(typeInformation);
                 }
             } else if (typeInformation.hasAnnotation(GenerateSubclass.class)) {

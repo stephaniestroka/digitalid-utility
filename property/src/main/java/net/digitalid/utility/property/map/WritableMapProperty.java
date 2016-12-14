@@ -22,7 +22,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  */
 @ThreadSafe
 @Mutable(ReadOnlyMapProperty.class)
-public interface WritableMapProperty<K, V, R extends ReadOnlyMap<@Nonnull @Valid("key") K, @Nonnull @Valid V>, X extends Exception, O extends ReadOnlyMapProperty.Observer<K, V, R, X, O, P>, P extends ReadOnlyMapProperty<K, V, R, X, O, P>> extends ReadOnlyMapProperty<K, V, R, X, O, P> {
+public interface WritableMapProperty<KEY, VALUE, READONLY_MAP extends ReadOnlyMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>, EXCEPTION extends Exception, OBSERVER extends MapObserver<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlyMapProperty<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY>> extends ReadOnlyMapProperty<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY> {
     
     /* -------------------------------------------------- Operations -------------------------------------------------- */
     
@@ -32,7 +32,7 @@ public interface WritableMapProperty<K, V, R extends ReadOnlyMap<@Nonnull @Valid
      * @return {@code true} if the key-value pair was successfully added and {@code false} if the key was already in use.
      */
     @Impure
-    public abstract boolean add(@Captured @Nonnull @Valid("key") K key, @Captured @Nonnull @Valid V value) throws X, ReentranceException;
+    public abstract boolean add(@Captured @Nonnull @Valid("key") KEY key, @Captured @Nonnull @Valid VALUE value) throws EXCEPTION, ReentranceException;
     
     /**
      * Removes the value indexed by the given key from this property.
@@ -40,6 +40,6 @@ public interface WritableMapProperty<K, V, R extends ReadOnlyMap<@Nonnull @Valid
      * @return the value that was previously associated with the given key or null if the key was not in use.
      */
     @Impure
-    public abstract @Capturable @Nullable @Valid V remove(@NonCaptured @Unmodified @Nonnull @Valid("key") K key) throws X, ReentranceException;
+    public abstract @Capturable @Nullable @Valid VALUE remove(@NonCaptured @Unmodified @Nonnull @Valid("key") KEY key) throws EXCEPTION, ReentranceException;
     
 }

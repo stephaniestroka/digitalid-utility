@@ -21,7 +21,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  */
 @Mutable
 @ThreadSafe
-public abstract class ReadOnlyValuePropertyImplementation<V, X extends Exception, O extends ReadOnlyValueProperty.Observer<V, X, O, P>, P extends ReadOnlyValueProperty<V, X, O, P>> extends PropertyImplementation<O, ReadOnlyValueProperty.Observer<V, X, O, P>> implements ReadOnlyValueProperty<V, X, O, P> {
+public abstract class ReadOnlyValuePropertyImplementation<VALUE, EXCEPTION extends Exception, OBSERVER extends ValueObserver<VALUE, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlyValueProperty<VALUE, EXCEPTION, OBSERVER, PROPERTY>> extends PropertyImplementation<OBSERVER, ValueObserver<VALUE, EXCEPTION, OBSERVER, PROPERTY>> implements ReadOnlyValueProperty<VALUE, EXCEPTION, OBSERVER, PROPERTY> {
     
     /* -------------------------------------------------- Asynchronous Observer -------------------------------------------------- */
     
@@ -29,15 +29,15 @@ public abstract class ReadOnlyValuePropertyImplementation<V, X extends Exception
      * An asynchronous observer executes the notifications on a separate thread sequentially.
      */
     @Immutable
-    public static class AsynchronousObserver<V, X extends Exception, O extends ReadOnlyValueProperty.Observer<V, X, O, P>, P extends ReadOnlyValueProperty<V, X, O, P>> extends PropertyImplementation.AsynchronousObserver<O> implements ReadOnlyValueProperty.Observer<V, X, O, P> {
+    public static class AsynchronousObserver<VALUE, EXCEPTION extends Exception, OBSERVER extends ValueObserver<VALUE, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlyValueProperty<VALUE, EXCEPTION, OBSERVER, PROPERTY>> extends PropertyImplementation.AsynchronousObserver<OBSERVER> implements ValueObserver<VALUE, EXCEPTION, OBSERVER, PROPERTY> {
         
-        protected AsynchronousObserver(@Captured @Modified @Nonnull O observer) {
+        protected AsynchronousObserver(@Captured @Modified @Nonnull OBSERVER observer) {
             super(observer);
         }
         
         @Impure
         @Override
-        public void notify(@Nonnull P property, @NonCaptured @Unmodified @Valid V oldValue, @NonCaptured @Unmodified @Valid V newValue) {
+        public void notify(@Nonnull PROPERTY property, @NonCaptured @Unmodified @Valid VALUE oldValue, @NonCaptured @Unmodified @Valid VALUE newValue) {
             executorService.submit(() -> observer.notify(property, oldValue, newValue));
         }
         
@@ -47,13 +47,13 @@ public abstract class ReadOnlyValuePropertyImplementation<V, X extends Exception
     
     @Impure
     @Override
-    public boolean registerOnGuiThread(@Captured @Nonnull O observer) {
+    public boolean registerOnGuiThread(@Captured @Nonnull OBSERVER observer) {
         return observers.put(observer, (property, oldValue, newValue) -> Threading.runOnGuiThread(() -> observer.notify(property, oldValue, newValue))) == null;
     }
     
     @Impure
     @Override
-    public boolean registerOnNewThread(@Captured @Nonnull O observer) {
+    public boolean registerOnNewThread(@Captured @Nonnull OBSERVER observer) {
         return observers.put(observer, new AsynchronousObserver<>(observer)) == null;
     }
     

@@ -464,7 +464,7 @@ public class ProcessingUtility {
     @Pure
     public static @Nonnull TypeMirror getBoxedType(@Nonnull TypeMirror typeMirror) {
         if (isPrimitive(typeMirror)) {
-            return ProcessingUtility.getType(StaticProcessingEnvironment.getTypeUtils().boxedClass((PrimitiveType) typeMirror));
+            return getType(StaticProcessingEnvironment.getTypeUtils().boxedClass((PrimitiveType) typeMirror));
         } else {
             return typeMirror;
         }
@@ -681,7 +681,7 @@ public class ProcessingUtility {
      */
     @Pure
     public static boolean isRawSubtype(@Nonnull Element element, @Nonnull Class<?> type) {
-        return ProcessingUtility.isRawSubtype(getType(element), type);
+        return isRawSubtype(getType(element), type);
     }
     
     /* -------------------------------------------------- Getters and Setters -------------------------------------------------- */
@@ -813,8 +813,7 @@ public class ProcessingUtility {
         if (correspond(sourceType, targetType)) {
             return sourceType;
         } else {
-            final @Nonnull List<@Nonnull ? extends TypeMirror> supertypes = StaticProcessingEnvironment.getTypeUtils().directSupertypes(sourceType);
-            for (@Nonnull TypeMirror supertype : supertypes) {
+            for (@Nonnull TypeMirror supertype : StaticProcessingEnvironment.getTypeUtils().directSupertypes(sourceType)) {
                 final @Nullable DeclaredType result = getSupertype((DeclaredType) supertype, targetType);
                 if (result != null) { return result; }
             }
@@ -833,7 +832,7 @@ public class ProcessingUtility {
         if (type.getKind() == TypeKind.ARRAY) {
             return ((ArrayType) type).getComponentType();
         } else if (type.getKind() == TypeKind.DECLARED) {
-            final @Nullable DeclaredType supertype = ProcessingUtility.getSupertype((DeclaredType) type, Iterable.class);
+            final @Nullable DeclaredType supertype = getSupertype((DeclaredType) type, Iterable.class);
             if (supertype != null) {
                 return supertype.getTypeArguments().get(0);
             } else {
