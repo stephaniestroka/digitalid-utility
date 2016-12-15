@@ -25,7 +25,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
 /**
  * This writable property stores a map of key-value pairs in volatile memory.
  * 
- * <em>Important:</em> Make sure that {@code F} is a sub-type of {@code R}!
+ * <em>Important:</em> Make sure that {@code FREEZABLE_MAP} is a sub-type of {@code READONLY_MAP}!
  * Unfortunately, this cannot be enforced with the limited Java generics.
  * 
  * @invariant !get().keySet().containsNull() : "None of the keys may be null.";
