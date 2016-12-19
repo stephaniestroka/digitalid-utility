@@ -262,7 +262,7 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     /**
      * Returns a string that can be used in generated code to instantiate this type.
      */
-    public @Nonnull String getInstantiationCode(boolean useBuilderIfAvailable, boolean useSubclassIfAvailable, boolean useRecoverMethodIfAvailable) {
+    public @Nonnull String getInstantiationCode(boolean useBuilderIfAvailable, boolean useSubclassIfAvailable, boolean useRecoverMethodIfAvailable, @Nullable FiniteIterable<@Nonnull FieldInformation> variables) {
         // The expected result is:
         // - the call to the generated builder, if useBuilderIfAvailable flag is set to true and the @GenerateBuilder annotation is available for the type, 
         // - the call to the recover method, if useRecoverMethodIfAvailable is true and a @Recover annotated method is available, or
@@ -272,10 +272,8 @@ public abstract class TypeInformation extends ElementInformationImplementation {
             final @Nonnull StringBuilder assignedParameters = new StringBuilder();
             final @Nonnull StringBuilder optionalParameters = new StringBuilder();
             for (@Nonnull VariableElementInformation constructorParameter : getConstructorParameters()) {
-                if (constructorParameter.isMandatory()) {
-                    assignedParameters.append(".with").append(Strings.capitalizeFirstLetters(constructorParameter.getName())).append("(").append(constructorParameter.getName()).append(")");
-                } else {
-                    optionalParameters.append(".with").append(Strings.capitalizeFirstLetters(constructorParameter.getName())).append("(").append(constructorParameter.getName()).append(")");
+                if (variables == null || variables.map(FieldInformation::getName).contains(constructorParameter.getName())) {
+                    (constructorParameter.isMandatory() ? assignedParameters : optionalParameters).append(".with").append(Strings.capitalizeFirstLetters(constructorParameter.getName())).append("(").append(constructorParameter.getName()).append(")");
                 }
             }
             assignedParameters.append(optionalParameters);

@@ -158,7 +158,7 @@ public class MethodInformation extends ExecutableInformation {
      */
     @Pure
     public boolean isTest() {
-        return hasAnnotation("org.junit.Test");
+        return hasAnnotation("org.junit.Test") || hasAnnotation("org.junit.BeforeClass") || hasAnnotation("org.junit.AfterClass");
     }
     
     @Pure

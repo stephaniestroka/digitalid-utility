@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.method.PureWithSideEffects;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.file.Files;
@@ -38,9 +38,18 @@ public class UtilityInitializer {
     public static final @Nonnull Configuration<String> configuration = Configuration.with("");
     
     /**
+     * Initializes the main thread as early as possible.
+     */
+    @PureWithSideEffects
+    @Initialize(target = UtilityInitializer.class)
+    public static void initializeMainThread() throws FileNotFoundException {
+        Thread.currentThread().setName("Main");
+    }
+    
+    /**
      * Initializes the default uncaught exception handler as early as possible.
      */
-    @Impure
+    @PureWithSideEffects
     @Initialize(target = UtilityInitializer.class)
     public static void initializeDefaultUncaughtExceptionHandler() throws FileNotFoundException {
         // NetBeans 8.1 crashes if you use type annotations on anonymous classes and lambda expressions!
@@ -50,7 +59,7 @@ public class UtilityInitializer {
     /**
      * Initializes the configuration directory with '~/.digitalid/'.
      */
-    @Impure
+    @PureWithSideEffects
     @Initialize(target = Files.class, dependencies = {UtilityInitializer.class})
     public static void initializeDirectory() {
         if (!Files.directory.isSet()) {
@@ -69,7 +78,7 @@ public class UtilityInitializer {
     /**
      * Initializes the logging filter with a configuration-based logging filter.
      */
-    @Impure
+    @PureWithSideEffects
     @Initialize(target = LoggingFilter.class, dependencies = {Files.class})
     public static void initializeLoggingFilter() throws InvalidConfigurationException {
         if (LoggingFilter.filter.get() instanceof LevelBasedLoggingFilter) {
@@ -83,7 +92,7 @@ public class UtilityInitializer {
     /**
      * Initializes the logger with a rotating file logger.
      */
-    @Impure
+    @PureWithSideEffects
     @Initialize(target = Logger.class, dependencies = {Files.class})
     public static void initializeLogger() throws FileNotFoundException {
         if (Logger.logger.get() instanceof StandardOutputLogger) {

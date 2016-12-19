@@ -3,8 +3,6 @@ package net.digitalid.utility.threading;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.collaboration.annotations.TODO;
-import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -52,7 +50,6 @@ public interface Threading {
     /**
      * Stores the main thread.
      */
-    @TODO(task = "Nothing guarantees so far that this class is initialized on the main thread.", date = "2016-09-27", author = Author.KASPAR_ETTER)
     public static final @Nonnull Thread MAIN = Thread.currentThread();
     
     /**

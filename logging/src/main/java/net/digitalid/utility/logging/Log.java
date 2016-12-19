@@ -14,7 +14,7 @@ import net.digitalid.utility.validation.annotations.type.Utility;
  * This class makes it easier to {@link Logger#log(net.digitalid.utility.logging.Level, java.lang.CharSequence, java.lang.Throwable, java.lang.Object...) log} messages.
  */
 @Utility
-public final class Log {
+public abstract class Log {
     
     /* -------------------------------------------------- Fatal -------------------------------------------------- */
     
@@ -24,7 +24,7 @@ public final class Log {
      */
     @Impure
     public static void fatal(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
-        Logger.log(Level.FATAL, message, throwable);
+        Logger.log(Level.FATAL, message, throwable, arguments);
     }
     
     /**
@@ -33,7 +33,7 @@ public final class Log {
      */
     @Impure
     public static void fatal(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
-        Logger.log(Level.FATAL, message, null);
+        Logger.log(Level.FATAL, message, null, arguments);
     }
     
     /* -------------------------------------------------- Error -------------------------------------------------- */
@@ -44,7 +44,7 @@ public final class Log {
      */
     @Impure
     public static void error(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
-        Logger.log(Level.ERROR, message, throwable);
+        Logger.log(Level.ERROR, message, throwable, arguments);
     }
     
     /**
@@ -53,7 +53,7 @@ public final class Log {
      */
     @Impure
     public static void error(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
-        Logger.log(Level.ERROR, message, null);
+        Logger.log(Level.ERROR, message, null, arguments);
     }
     
     /* -------------------------------------------------- Warning -------------------------------------------------- */
@@ -64,7 +64,7 @@ public final class Log {
      */
     @Impure
     public static void warning(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
-        Logger.log(Level.WARNING, message, throwable);
+        Logger.log(Level.WARNING, message, throwable, arguments);
     }
     
     /**
@@ -73,7 +73,7 @@ public final class Log {
      */
     @Impure
     public static void warning(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
-        Logger.log(Level.WARNING, message, null);
+        Logger.log(Level.WARNING, message, null, arguments);
     }
     
     /* -------------------------------------------------- Information -------------------------------------------------- */
@@ -84,7 +84,7 @@ public final class Log {
      */
     @Impure
     public static void information(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
-        Logger.log(Level.INFORMATION, message, throwable);
+        Logger.log(Level.INFORMATION, message, throwable, arguments);
     }
     
     /**
@@ -93,7 +93,7 @@ public final class Log {
      */
     @Impure
     public static void information(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
-        Logger.log(Level.INFORMATION, message, null);
+        Logger.log(Level.INFORMATION, message, null, arguments);
     }
     
     /* -------------------------------------------------- Debugging -------------------------------------------------- */
@@ -104,7 +104,7 @@ public final class Log {
      */
     @Impure
     public static void debugging(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
-        Logger.log(Level.DEBUGGING, message, throwable);
+        Logger.log(Level.DEBUGGING, message, throwable, arguments);
     }
     
     /**
@@ -113,7 +113,7 @@ public final class Log {
      */
     @Impure
     public static void debugging(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
-        Logger.log(Level.DEBUGGING, message, null);
+        Logger.log(Level.DEBUGGING, message, null, arguments);
     }
     
     /* -------------------------------------------------- Verbose -------------------------------------------------- */
@@ -124,7 +124,7 @@ public final class Log {
      */
     @Impure
     public static void verbose(@Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
-        Logger.log(Level.VERBOSE, message, throwable);
+        Logger.log(Level.VERBOSE, message, throwable, arguments);
     }
     
     /**
@@ -133,7 +133,7 @@ public final class Log {
      */
     @Impure
     public static void verbose(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
-        Logger.log(Level.VERBOSE, message, null);
+        Logger.log(Level.VERBOSE, message, null, arguments);
     }
     
 }

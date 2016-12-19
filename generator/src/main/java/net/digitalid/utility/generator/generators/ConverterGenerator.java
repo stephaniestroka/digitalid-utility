@@ -279,7 +279,7 @@ public class ConverterGenerator extends JavaFileGenerator {
                 addStatement("final " + importIfPossible(constructorParameter.getType()) + " " + constructorParameter.getName() + " = " + generateSelectionResultCall(constructorParameter.getType(), provide));
             }
         }
-        addStatement(typeInformation.getInstantiationCode(true, true, true));
+        addStatement(typeInformation.getInstantiationCode(true, true, true, externallyProvidedFields.combine(constructorParameters)));
         endMethod();
     }
     
