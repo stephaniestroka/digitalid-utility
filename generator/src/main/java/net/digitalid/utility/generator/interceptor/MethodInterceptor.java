@@ -15,7 +15,7 @@ import net.digitalid.utility.validation.validator.MethodAnnotationValidator;
 public abstract class MethodInterceptor implements MethodAnnotationValidator {
     
     @Pure
-    protected abstract @Nonnull String getPrefix();
+    protected @Nonnull String getPrefix() { return "implemented"; }
     
     @Pure
     public void generateFieldsRequiredByMethod(@Nonnull JavaFileGenerator javaFileGenerator, @Nonnull MethodInformation method, @Nonnull TypeInformation typeInformation) {}
