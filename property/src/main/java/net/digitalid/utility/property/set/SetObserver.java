@@ -13,7 +13,9 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
- * Objects that implement this interface can be used to {@link #register(net.digitalid.utility.property.Observer) observe} {@link ReadOnlySetProperty set properties}.
+ * Objects that implement this interface can be used to {@link Property#register(net.digitalid.utility.property.Observer) observe} {@link ReadOnlySetProperty set properties}.
+ * 
+ * @see VolatileSetObserver
  */
 @Mutable
 @Functional

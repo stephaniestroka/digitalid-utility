@@ -12,7 +12,9 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
 /**
- * Objects that implement this interface can be used to {@link #register(net.digitalid.utility.property.Observer) observe} {@link ReadOnlyMapProperty map properties}.
+ * Objects that implement this interface can be used to {@link Property#register(net.digitalid.utility.property.Observer) observe} {@link ReadOnlyMapProperty map properties}.
+ * 
+ * @see VolatileMapObserver
  */
 @Mutable
 public interface MapObserver<KEY, VALUE, READONLY_MAP extends ReadOnlyMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>, EXCEPTION extends Exception, OBSERVER extends MapObserver<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlyMapProperty<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY>> extends Observer {
