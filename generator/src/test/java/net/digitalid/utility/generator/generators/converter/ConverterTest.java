@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.conversion.converter.CustomField;
+import net.digitalid.utility.conversion.converter.Representation;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.generator.annotations.generators.GenerateConverter;
 import net.digitalid.utility.immutable.ImmutableList;
@@ -195,7 +196,7 @@ public class ConverterTest extends RootTest {
     @Test
     public void testFieldsOfClass() {
         final @Nonnull TestDeclaration testDeclaration = new TestDeclaration();
-        final @Nonnull ImmutableList<@Nonnull CustomField> fields = VariousFieldsConverter.INSTANCE.getFields();
+        final @Nonnull ImmutableList<@Nonnull CustomField> fields = VariousFieldsConverter.INSTANCE.getFields(Representation.EXTERNAL);
         for (@Nonnull CustomField field : fields) {
             testDeclaration.setField(field);
         }
@@ -211,7 +212,7 @@ public class ConverterTest extends RootTest {
     @Test
     public void testValueCollectionOfClass() throws Exception {
         final @Nonnull VariousFields variousFields = new VariousFields(true, 5, "bla");
-        final @Nonnull TestValueCollector testValueCollector = new TestValueCollector();
+        final @Nonnull TestEncoder testValueCollector = new TestEncoder();
         VariousFieldsConverter.INSTANCE.convert(variousFields, testValueCollector);
         assertEquals(3, testValueCollector.collectedValues.size());
         assertEquals(Pair.of(true, boolean.class), testValueCollector.collectedValues.get(0));
@@ -225,7 +226,7 @@ public class ConverterTest extends RootTest {
         testQueue.add(true);
         testQueue.add(5);
         testQueue.add("bla");
-        final @Nonnull TestSelectionResult testSelectionResult = new TestSelectionResult(testQueue);
+        final @Nonnull TestDecoder testSelectionResult = new TestDecoder(testQueue);
         final @Nonnull VariousFields recoveredObject = VariousFieldsConverter.INSTANCE.recover(testSelectionResult, null);
         assertEquals(true, recoveredObject.flag);
         assertEquals(5, recoveredObject.size);
@@ -235,7 +236,7 @@ public class ConverterTest extends RootTest {
     @Test
     public void testFieldsOfEnum() {
         final @Nonnull TestDeclaration testDeclaration = new TestDeclaration();
-        final @Nonnull ImmutableList<@Nonnull CustomField> fields = SimpleEnumConverter.INSTANCE.getFields();
+        final @Nonnull ImmutableList<@Nonnull CustomField> fields = SimpleEnumConverter.INSTANCE.getFields(Representation.EXTERNAL);
         for (@Nonnull CustomField field : fields) {
             testDeclaration.setField(field);
         }
@@ -245,7 +246,7 @@ public class ConverterTest extends RootTest {
     
     @Test
     public void testValueCollectionOfEnum() throws Exception {
-        final @Nonnull TestValueCollector testValueCollector = new TestValueCollector();
+        final @Nonnull TestEncoder testValueCollector = new TestEncoder();
         SimpleEnumConverter.INSTANCE.convert(SimpleEnum.COMET, testValueCollector);
         assertEquals(1, testValueCollector.collectedValues.size());
         assertEquals(Pair.of("COMET", String.class), testValueCollector.collectedValues.get(0));
@@ -255,7 +256,7 @@ public class ConverterTest extends RootTest {
     public void testSelectionResultOfEnum() throws Exception {
         final Queue<@Nonnull Object> testQueue = new LinkedList<>();
         testQueue.add(SimpleEnum.COMET.name());
-        final @Nonnull TestSelectionResult testSelectionResult = new TestSelectionResult(testQueue);
+        final @Nonnull TestDecoder testSelectionResult = new TestDecoder(testQueue);
         final @Nonnull SimpleEnum recoveredObject = SimpleEnumConverter.INSTANCE.recover(testSelectionResult, null);
         assertEquals(SimpleEnum.COMET, recoveredObject);
     }
@@ -263,7 +264,7 @@ public class ConverterTest extends RootTest {
     @Test
     public void testFieldsOfEnumWithRecoverMethod() {
         final @Nonnull TestDeclaration testDeclaration = new TestDeclaration();
-        final @Nonnull ImmutableList<@Nonnull CustomField> fields = EnumWithRecoverMethodConverter.INSTANCE.getFields();
+        final @Nonnull ImmutableList<@Nonnull CustomField> fields = EnumWithRecoverMethodConverter.INSTANCE.getFields(Representation.EXTERNAL);
         for (@Nonnull CustomField field : fields) {
             testDeclaration.setField(field);
         }
@@ -273,7 +274,7 @@ public class ConverterTest extends RootTest {
 
     @Test
     public void testValueCollectionOfEnumWithRecoverMethod() throws Exception {
-        final @Nonnull TestValueCollector testValueCollector = new TestValueCollector();
+        final @Nonnull TestEncoder testValueCollector = new TestEncoder();
         EnumWithRecoverMethodConverter.INSTANCE.convert(EnumWithRecoverMethod.ONE, testValueCollector);
         assertEquals(1, testValueCollector.collectedValues.size());
         assertEquals(Pair.of(1, int.class), testValueCollector.collectedValues.get(0));
@@ -283,7 +284,7 @@ public class ConverterTest extends RootTest {
     public void testSelectionResultOfEnumWithRecoverMethod() throws Exception {
         final Queue<@Nonnull Object> testQueue = new LinkedList<>();
         testQueue.add(3);
-        final @Nonnull TestSelectionResult testSelectionResult = new TestSelectionResult(testQueue);
+        final @Nonnull TestDecoder testSelectionResult = new TestDecoder(testQueue);
         final @Nonnull EnumWithRecoverMethod recoveredObject = EnumWithRecoverMethodConverter.INSTANCE.recover(testSelectionResult, null);
         assertEquals(EnumWithRecoverMethod.THREE, recoveredObject);
     }
@@ -291,7 +292,7 @@ public class ConverterTest extends RootTest {
     @Test
     public void testFieldsOfEnumWithRecoverMethodAndNonDirectlyAccessibleField() {
         final @Nonnull TestDeclaration testDeclaration = new TestDeclaration();
-        final @Nonnull ImmutableList<@Nonnull CustomField> fields = EnumWithRecoverMethodAndNonDirectlyAccessibleFieldConverter.INSTANCE.getFields();
+        final @Nonnull ImmutableList<@Nonnull CustomField> fields = EnumWithRecoverMethodAndNonDirectlyAccessibleFieldConverter.INSTANCE.getFields(Representation.EXTERNAL);
         for (@Nonnull CustomField field : fields) {
             testDeclaration.setField(field);
         }
@@ -300,7 +301,7 @@ public class ConverterTest extends RootTest {
 
     @Test
     public void testValueCollectionOfEnumWithRecoverMethodAndNonDirectlyAccessibleField() throws Exception {
-        final @Nonnull TestValueCollector testValueCollector = new TestValueCollector();
+        final @Nonnull TestEncoder testValueCollector = new TestEncoder();
         EnumWithRecoverMethodAndNonDirectlyAccessibleFieldConverter.INSTANCE.convert(EnumWithRecoverMethodAndNonDirectlyAccessibleField.ONE, testValueCollector);
         assertEquals(1, testValueCollector.collectedValues.size());
         assertEquals(Pair.of((byte) 1, byte.class), testValueCollector.collectedValues.get(0));
@@ -310,7 +311,7 @@ public class ConverterTest extends RootTest {
     public void testSelectionResultOfEnumWithRecoverMethodAndNonDirectlyAccessibleField() throws Exception {
         final Queue<@Nonnull Object> testQueue = new LinkedList<>();
         testQueue.add((byte) 3);
-        final @Nonnull TestSelectionResult testSelectionResult = new TestSelectionResult(testQueue);
+        final @Nonnull TestDecoder testSelectionResult = new TestDecoder(testQueue);
         final @Nonnull EnumWithRecoverMethodAndNonDirectlyAccessibleField recoveredObject = EnumWithRecoverMethodAndNonDirectlyAccessibleFieldConverter.INSTANCE.recover(testSelectionResult, null);
         assertEquals(EnumWithRecoverMethodAndNonDirectlyAccessibleField.THREE, recoveredObject);
     }

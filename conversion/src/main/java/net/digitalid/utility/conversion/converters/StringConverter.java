@@ -11,12 +11,14 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.conversion.converter.Converter;
 import net.digitalid.utility.conversion.converter.CustomAnnotation;
 import net.digitalid.utility.conversion.converter.CustomField;
-import net.digitalid.utility.conversion.converter.SelectionResult;
-import net.digitalid.utility.conversion.converter.ValueCollector;
+import net.digitalid.utility.conversion.converter.Decoder;
+import net.digitalid.utility.conversion.converter.Encoder;
+import net.digitalid.utility.conversion.converter.Representation;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.logging.exceptions.ExternalException;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
+import net.digitalid.utility.validation.annotations.string.DomainName;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
 import static net.digitalid.utility.conversion.converter.types.CustomType.STRING;
@@ -37,7 +39,7 @@ public class StringConverter implements Converter<String, Void> {
     
     @Pure
     @Override
-    public @Nonnull ImmutableList<@Nonnull CustomField> getFields() {
+    public @Nonnull ImmutableList<@Nonnull CustomField> getFields(@Nonnull Representation representation) {
         return fields;
     }
     
@@ -49,16 +51,22 @@ public class StringConverter implements Converter<String, Void> {
     
     @Pure
     @Override
-    public <X extends ExternalException> int convert(@NonCaptured @Unmodified @Nullable String string, @NonCaptured @Modified @Nonnull ValueCollector<X> valueCollector) throws X {
+    public @Nonnull @DomainName String getPackage() {
+        return "java.lang";
+    }
+    
+    @Pure
+    @Override
+    public <EXCEPTION extends ExternalException> int convert(@NonCaptured @Unmodified @Nullable String string, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION {
         int i = 1;
-        i *= valueCollector.setNullableString(string);
+        i *= encoder.setNullableString(string);
         return i;
     }
     
     @Pure
     @Override
-    public @Capturable <X extends ExternalException> @Nullable String recover(@NonCaptured @Modified @Nonnull SelectionResult<X> selectionResult, Void externallyProvided) throws X {
-        return selectionResult.getString();
+    public @Capturable <EXCEPTION extends ExternalException> @Nullable String recover(@NonCaptured @Modified @Nonnull Decoder<EXCEPTION> decoder, Void externallyProvided) throws EXCEPTION {
+        return decoder.getString();
     }
     
 }

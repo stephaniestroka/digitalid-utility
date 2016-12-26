@@ -26,8 +26,9 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.conversion.converter.Converter;
 import net.digitalid.utility.conversion.converter.CustomAnnotation;
 import net.digitalid.utility.conversion.converter.CustomField;
-import net.digitalid.utility.conversion.converter.SelectionResult;
-import net.digitalid.utility.conversion.converter.ValueCollector;
+import net.digitalid.utility.conversion.converter.Decoder;
+import net.digitalid.utility.conversion.converter.Encoder;
+import net.digitalid.utility.conversion.converter.Representation;
 import net.digitalid.utility.conversion.converter.types.CustomType;
 import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
@@ -150,12 +151,12 @@ public class ConverterGenerator extends JavaFileGenerator {
     /**
      * Returns a generated call to the value collector from the given type and field access strings and the optionally given value collector call for composite types.
      */
-    private @Nonnull String getValueCollectorStatement(@Nonnull TypeMirror fieldType, @Nonnull String fieldAccess, @Nullable String valueCollectorCall, @Nullable String iterableItemName) {
+    private @Nonnull String getValueCollectorStatement(@Nonnull TypeMirror fieldType, @Nonnull String fieldAccess, @Nullable String encoderCall, @Nullable String iterableItemName) {
         final @Nonnull CustomType customType = CustomType.of(fieldType);
         final @Nonnull String customTypePrefix = "Nullable" + Strings.capitalizeFirstLetters(customType.getTypeName().toLowerCase());
         
-        Require.that(valueCollectorCall == null && iterableItemName == null || valueCollectorCall != null && iterableItemName != null).orThrow("The parameters valueCollectorCall and iterableItemName must either both be null or non-null.");
-        return "valueCollector.set" + customTypePrefix + "(" + Strings.lowercaseFirstCharacter(typeInformation.getName()) + " == null ? null : " + fieldAccess + (valueCollectorCall == null ? "" : ", (" + iterableItemName + ") -> " + valueCollectorCall) + ")";
+        Require.that(encoderCall == null && iterableItemName == null || encoderCall != null && iterableItemName != null).orThrow("The parameters encoderCall and iterableItemName must either both be null or non-null.");
+        return "encoder.set" + customTypePrefix + "(" + Strings.lowercaseFirstCharacter(typeInformation.getName()) + " == null ? null : " + fieldAccess + (encoderCall == null ? "" : ", (" + iterableItemName + ") -> " + encoderCall) + ")";
     }
     
     /**
@@ -175,7 +176,7 @@ public class ConverterGenerator extends JavaFileGenerator {
                 return getValueCollectorStatement(ProcessingUtility.getTypeMirror(String.class), fieldAccess);
             } else {
                 final @Nonnull String converterInstance = importConverterType(fieldType) + ".INSTANCE";
-                return converterInstance + ".convert(" + Strings.lowercaseFirstCharacter(typeInformation.getName()) + " == null ? null : " + fieldAccess + ", valueCollector)";
+                return converterInstance + ".convert(" + Strings.lowercaseFirstCharacter(typeInformation.getName()) + " == null ? null : " + fieldAccess + ", encoder)";
             }
         } else {
             return getValueCollectorStatement(fieldType, fieldAccess);
@@ -188,8 +189,8 @@ public class ConverterGenerator extends JavaFileGenerator {
     private void generateConvert() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
-        beginMethod("public " + Brackets.inPointy("X extends " + importIfPossible(ExternalException.class)) + " int convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(ValueCollector.class) + Brackets.inPointy("X") + " valueCollector) throws X");
-//        beginMethod("public void convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(ValueCollector.class) + " valueCollector)");
+        beginMethod("public " + Brackets.inPointy("X extends " + importIfPossible(ExternalException.class)) + " int convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(Encoder.class) + Brackets.inPointy("X") + " encoder) throws X");
+//        beginMethod("public void convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(ValueCollector.class) + " encoder)");
         addStatement("int i = 1");
         final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
         for (@Nonnull FieldInformation field : representingFieldInformation) {
@@ -212,8 +213,8 @@ public class ConverterGenerator extends JavaFileGenerator {
     /**
      * Returns a generated call to the selection result from the given type string and the optionally given selection result call for composite types.
      */
-    private @Nonnull String getSelectionResultStatement(@Nonnull String typeAsString, @Nullable String selectionResultCall) {
-        return "selectionResult.get" + typeAsString + "(" + (selectionResultCall == null ? "" : "() -> " + selectionResultCall) + ")";
+    private @Nonnull String getSelectionResultStatement(@Nonnull String typeAsString, @Nullable String decoderCall) {
+        return "decoder.get" + typeAsString + "(" + (decoderCall == null ? "" : "() -> " + decoderCall) + ")";
     }
     
     /**
@@ -232,7 +233,7 @@ public class ConverterGenerator extends JavaFileGenerator {
                 return getSelectionResultStatement("String");
             } else {
                 final @Nonnull String converterInstance = importConverterType(fieldType) + ".INSTANCE";
-                return converterInstance + ".recover(selectionResult, " + provideParameterName + ")";
+                return converterInstance + ".recover(decoder, " + provideParameterName + ")";
             }
         } else {
             return getSelectionResultStatement(customTypeName);
@@ -260,7 +261,7 @@ public class ConverterGenerator extends JavaFileGenerator {
     protected void generateRecoverMethod() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
-        beginMethod("public @" + importIfPossible(Capturable.class) + " " + Brackets.inPointy("X extends " + importIfPossible(ExternalException.class)) + " @" + importIfPossible(Nonnull.class) + " " + typeInformation.getName() + " recover(@" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " " + importIfPossible(SelectionResult.class) + Brackets.inPointy("X") + " selectionResult, " + getExternallyProvidedParameterDeclarationsAsString(getExternallyProvidedParameterNameAsString()) + ") throws X");
+        beginMethod("public @" + importIfPossible(Capturable.class) + " " + Brackets.inPointy("X extends " + importIfPossible(ExternalException.class)) + " @" + importIfPossible(Nonnull.class) + " " + typeInformation.getName() + " recover(@" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " " + importIfPossible(Decoder.class) + Brackets.inPointy("X") + " decoder, " + getExternallyProvidedParameterDeclarationsAsString(getExternallyProvidedParameterNameAsString()) + ") throws X");
         final @Nonnull FiniteIterable<@Nonnull FieldInformation> externallyProvidedFields = filterExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
         
         if (externallyProvidedFields.size() > 1) {
@@ -361,18 +362,28 @@ public class ConverterGenerator extends JavaFileGenerator {
     private void generateGetFields() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
-        beginMethod("public @" + importIfPossible(Nonnull.class) + " " + importIfPossible(ImmutableList.class) + Brackets.inPointy("@" + importIfPossible(Nonnull.class) + " " + importIfPossible(CustomField.class)) + " getFields()");
+        beginMethod("public @" + importIfPossible(Nonnull.class) + " " + importIfPossible(ImmutableList.class) + Brackets.inPointy("@" + importIfPossible(Nonnull.class) + " " + importIfPossible(CustomField.class)) + " getFields(@" + importIfPossible(Nonnull.class) + " " + importIfPossible(Representation.class) + " representation)");
         addStatement("return fields");
         endMethod();
     }
     
-    /* -------------------------------------------------- Get Name -------------------------------------------------- */
+    /* -------------------------------------------------- Name -------------------------------------------------- */
     
     private void generateGetName() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
         beginMethod("public @" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + " getName()");
         addStatement("return " + Quotes.inDouble(typeInformation.getName()));
+        endMethod();
+    }
+    
+    /* -------------------------------------------------- Package -------------------------------------------------- */
+    
+    private void generateGetPackage() {
+        addAnnotation(Pure.class);
+        addAnnotation(Override.class);
+        beginMethod("public @" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + " getPackage()");
+        addStatement("return " + Quotes.inDouble(typeInformation.getQualifiedPackageName()));
         endMethod();
     }
     
@@ -389,10 +400,11 @@ public class ConverterGenerator extends JavaFileGenerator {
         try {
             beginClass("public class " + typeInformation.getSimpleNameOfGeneratedConverter() + importWithBounds(typeInformation.getTypeArguments()) + " implements " + importIfPossible(Converter.class) + "<" + typeInformation.getName() + ", " + getExternallyProvidedParameterDeclarationsAsString("") + ">");
             
+            generateGetName();
+            generateGetPackage();
             generateInstanceField();
             generateFields();
             generateGetFields();
-            generateGetName();
             generateConvert();
             generateRecoverMethod();
             

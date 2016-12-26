@@ -16,7 +16,9 @@ import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 
 import net.digitalid.utility.annotations.method.Impure;
-import net.digitalid.utility.conversion.converter.ValueCollectorImplementation;
+import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.conversion.converter.EncoderImplementation;
+import net.digitalid.utility.conversion.converter.Representation;
 import net.digitalid.utility.conversion.converter.types.CustomType;
 import net.digitalid.utility.functional.failable.FailableUnaryFunction;
 import net.digitalid.utility.logging.exceptions.ExternalException;
@@ -26,7 +28,13 @@ import net.digitalid.utility.validation.annotations.size.Size;
 /**
  * The value collector that is used to test the functionality of the converter.
  */
-class TestValueCollector extends ValueCollectorImplementation<ExternalException> {
+class TestEncoder extends EncoderImplementation<ExternalException> {
+    
+    @Pure
+    @Override
+    public @Nonnull Representation getRepresentation() {
+        return Representation.EXTERNAL;
+    }
     
     List<@Nonnull Pair<@Nonnull Object, @Nonnull Class<?>>> collectedValues = new ArrayList<>();
     

@@ -10,30 +10,72 @@ import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
-import net.digitalid.utility.collaboration.annotations.TODO;
-import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.logging.exceptions.ExternalException;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
+import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
+import net.digitalid.utility.validation.annotations.string.DomainName;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
+/**
+ * A converter stores type-specific information and allows to convert and recover objects from that type without reflection.
+ */
 @Immutable
 public interface Converter<@Unspecifiable TYPE, @Specifiable PROVIDED> {
     
+    /* -------------------------------------------------- Name -------------------------------------------------- */
+    
+    /**
+     * Returns the name of the type which is modeled and converted.
+     */
     @Pure
-    @TODO(task = "Rename to getSimpleName() and introduce getQualifiedName() (both of which can also be dynamic, which is important for synchronized property actions). Alternatively (and probably better), getName() and getPackage()?", date = "2016-12-20", author = Author.KASPAR_ETTER)
     public @Nonnull @CodeIdentifier @MaxSize(63) String getName();
     
-    @Pure
-    public @Nonnull ImmutableList<@Nonnull CustomField> getFields();
+    /* -------------------------------------------------- Package -------------------------------------------------- */
     
+    /**
+     * Returns the package in which the type is declared.
+     */
     @Pure
-    @TODO(task = "Rename method to 'encode'.", date = "2016-12-20", author = Author.KASPAR_ETTER)
-    public <EXCEPTION extends ExternalException> int convert(@NonCaptured @Unmodified @Nullable TYPE object, @NonCaptured @Modified @Nonnull ValueCollector<EXCEPTION> valueCollector) throws EXCEPTION;
+    public @Nonnull @DomainName String getPackage();
     
+    /* -------------------------------------------------- Fields -------------------------------------------------- */
+    
+    /**
+     * Returns the fields of the modeled type for the given representation.
+     */
     @Pure
-    @TODO(task = "Rename method to 'decode'.", date = "2016-12-20", author = Author.KASPAR_ETTER)
-    public @Capturable <EXCEPTION extends ExternalException> @Nullable TYPE recover(@NonCaptured @Modified @Nonnull SelectionResult<EXCEPTION> selectionResult, PROVIDED provided) throws EXCEPTION;
+    public @Nonnull ImmutableList<@Nonnull CustomField> getFields(@Nonnull Representation representation);
+    
+    /* -------------------------------------------------- Inheritance -------------------------------------------------- */
+    
+    /**
+     * Returns the converter of the supertype or null if the modeled type has no convertible supertype.
+     */
+    @Pure
+    public default @Nullable Converter<? super TYPE, PROVIDED> getSupertypeConverter() { return null; }
+    
+    /**
+     * Returns the converters of the subtypes or null if the modeled type has no convertible subtypes.
+     */
+    @Pure
+    public default @Nullable @NonEmpty ImmutableList<@Nonnull Converter<? extends TYPE, PROVIDED>> getSubtypeConverters() { return null; }
+    
+    /* -------------------------------------------------- Convert -------------------------------------------------- */
+    
+    /**
+     * Converts the given object of the modeled type and returns the number of rows created.
+     */
+    @Pure
+    public <EXCEPTION extends ExternalException> int convert(@NonCaptured @Unmodified @Nullable TYPE object, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION;
+    
+    /* -------------------------------------------------- Recover -------------------------------------------------- */
+    
+    /**
+     * Recovers an object of the modeled type with the provided object.
+     */
+    @Pure
+    public @Capturable <EXCEPTION extends ExternalException> @Nullable TYPE recover(@NonCaptured @Modified @Nonnull Decoder<EXCEPTION> decoder, PROVIDED provided) throws EXCEPTION;
     
 }
