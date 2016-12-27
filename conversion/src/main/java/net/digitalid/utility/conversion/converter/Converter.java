@@ -27,10 +27,10 @@ public interface Converter<@Unspecifiable TYPE, @Specifiable PROVIDED> {
     /* -------------------------------------------------- Type -------------------------------------------------- */
     
     /**
-     * Returns the type which is modeled and converted.
+     * Returns the type which is modeled and whose instances are converted.
      */
     @Pure
-    public @Nonnull Class<TYPE> getType();
+    public @Nonnull Class<? super TYPE> getType();
     
     /* -------------------------------------------------- Name -------------------------------------------------- */
     
@@ -38,15 +38,15 @@ public interface Converter<@Unspecifiable TYPE, @Specifiable PROVIDED> {
      * Returns the name of the type which is modeled and converted.
      */
     @Pure
-    public @Nonnull @CodeIdentifier @MaxSize(63) String getName();
+    public @Nonnull @CodeIdentifier @MaxSize(63) String getTypeName();
     
     /* -------------------------------------------------- Package -------------------------------------------------- */
     
     /**
-     * Returns the package in which the type is declared.
+     * Returns the name of the package in which the type is declared.
      */
     @Pure
-    public @Nonnull @DomainName String getPackage();
+    public @Nonnull @DomainName String getTypePackage();
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     

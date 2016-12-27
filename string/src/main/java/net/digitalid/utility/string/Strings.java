@@ -139,6 +139,23 @@ public abstract class Strings {
     /* -------------------------------------------------- Substrings -------------------------------------------------- */
     
     /**
+     * Returns the substring from the first occurrence of the given delimiter in the given string or the given string if the delimiter is not found.
+     */
+    @Pure
+    public static @Nonnull String substringFromFirst(@Nonnull String string, char delimiter) {
+        return string.substring(string.indexOf(delimiter) + 1);
+    }
+    
+    /**
+     * Returns the substring from the first occurrence of the given delimiter in the given string or the given string if the delimiter is not found.
+     */
+    @Pure
+    public static @Nonnull String substringFromFirst(@Nonnull String string, @Nonnull @NonEmpty String delimiter) {
+        final int index = string.indexOf(delimiter);
+        return index >= 0 ? string.substring(index + delimiter.length()) : string;
+    }
+    
+    /**
      * Returns the substring from the last occurrence of the given delimiter in the given string or the given string if the delimiter is not found.
      */
     @Pure
@@ -152,7 +169,7 @@ public abstract class Strings {
     @Pure
     public static @Nonnull String substringFromLast(@Nonnull String string, @Nonnull @NonEmpty String delimiter) {
         final int index = string.lastIndexOf(delimiter);
-        return index >= 0 ? string.substring(string.lastIndexOf(delimiter) + delimiter.length()) : string;
+        return index >= 0 ? string.substring(index + delimiter.length()) : string;
     }
     
     /**
@@ -170,6 +187,24 @@ public abstract class Strings {
     @Pure
     public static @Nonnull String substringUntilFirst(@Nonnull String string, @Nonnull @NonEmpty String delimiter) {
         final int index = string.indexOf(delimiter);
+        return index >= 0 ? string.substring(0, index) : string;
+    }
+    
+    /**
+     * Returns the substring until the last occurrence of the given delimiter in the given string or the given string if the delimiter is not found.
+     */
+    @Pure
+    public static @Nonnull String substringUntilLast(@Nonnull String string, char delimiter) {
+        final int index = string.lastIndexOf(delimiter);
+        return index >= 0 ? string.substring(0, index) : string;
+    }
+    
+    /**
+     * Returns the substring until the last occurrence of the given delimiter in the given string or the given string if the delimiter is not found.
+     */
+    @Pure
+    public static @Nonnull String substringUntilLast(@Nonnull String string, @Nonnull @NonEmpty String delimiter) {
+        final int index = string.lastIndexOf(delimiter);
         return index >= 0 ? string.substring(0, index) : string;
     }
     

@@ -45,7 +45,7 @@ public class StringConverter implements Converter<String, Void> {
     
     @Pure
     @Override
-    public @Nonnull @CodeIdentifier @MaxSize(63) String getName() {
+    public @Nonnull @CodeIdentifier @MaxSize(63) String getTypeName() {
         return "String";
     }
     
@@ -53,7 +53,7 @@ public class StringConverter implements Converter<String, Void> {
     
     @Pure
     @Override
-    public @Nonnull @DomainName String getPackage() {
+    public @Nonnull @DomainName String getTypePackage() {
         return "java.lang";
     }
     
