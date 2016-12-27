@@ -189,7 +189,7 @@ public class ConverterGenerator extends JavaFileGenerator {
     private void generateConvert() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
-        beginMethod("public " + Brackets.inPointy("X extends " + importIfPossible(ExternalException.class)) + " int convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(Encoder.class) + Brackets.inPointy("X") + " encoder) throws X");
+        beginMethod("public " + Brackets.inPointy("EXCEPTION extends " + importIfPossible(ExternalException.class)) + " int convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(Encoder.class) + Brackets.inPointy("EXCEPTION") + " encoder) throws EXCEPTION");
 //        beginMethod("public void convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(ValueCollector.class) + " encoder)");
         addStatement("int i = 1");
         final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
@@ -261,7 +261,7 @@ public class ConverterGenerator extends JavaFileGenerator {
     protected void generateRecoverMethod() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
-        beginMethod("public @" + importIfPossible(Capturable.class) + " " + Brackets.inPointy("X extends " + importIfPossible(ExternalException.class)) + " @" + importIfPossible(Nonnull.class) + " " + typeInformation.getName() + " recover(@" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " " + importIfPossible(Decoder.class) + Brackets.inPointy("X") + " decoder, " + getExternallyProvidedParameterDeclarationsAsString(getExternallyProvidedParameterNameAsString()) + ") throws X");
+        beginMethod("public @" + importIfPossible(Capturable.class) + " " + Brackets.inPointy("EXCEPTION extends " + importIfPossible(ExternalException.class)) + " @" + importIfPossible(Nullable.class) + " " + typeInformation.getName() + " recover(@" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " " + importIfPossible(Decoder.class) + Brackets.inPointy("EXCEPTION") + " decoder, " + getExternallyProvidedParameterDeclarationsAsString(getExternallyProvidedParameterNameAsString()) + ") throws EXCEPTION");
         final @Nonnull FiniteIterable<@Nonnull FieldInformation> externallyProvidedFields = filterExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
         
         if (externallyProvidedFields.size() > 1) {
