@@ -367,6 +367,16 @@ public class ConverterGenerator extends JavaFileGenerator {
         endMethod();
     }
     
+    /* -------------------------------------------------- Type -------------------------------------------------- */
+    
+    private void generateGetType() {
+        addAnnotation(Pure.class);
+        addAnnotation(Override.class);
+        beginMethod("public @" + importIfPossible(Nonnull.class) + " Class<" + importIfPossible(StaticProcessingEnvironment.getTypeUtils().erasure(typeInformation.getType())) + "> getType()");
+        addStatement("return " + importIfPossible(StaticProcessingEnvironment.getTypeUtils().erasure(typeInformation.getType())) + ".class");
+        endMethod();
+    }
+    
     /* -------------------------------------------------- Name -------------------------------------------------- */
     
     private void generateGetName() {
@@ -400,9 +410,10 @@ public class ConverterGenerator extends JavaFileGenerator {
         try {
             beginClass("public class " + typeInformation.getSimpleNameOfGeneratedConverter() + importWithBounds(typeInformation.getTypeArguments()) + " implements " + importIfPossible(Converter.class) + "<" + typeInformation.getName() + ", " + getExternallyProvidedParameterDeclarationsAsString("") + ">");
             
+            generateInstanceField();
+            generateGetType();
             generateGetName();
             generateGetPackage();
-            generateInstanceField();
             generateFields();
             generateGetFields();
             generateConvert();

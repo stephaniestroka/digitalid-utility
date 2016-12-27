@@ -29,7 +29,35 @@ import static net.digitalid.utility.conversion.converter.types.CustomType.STRING
 @Stateless
 public class StringConverter implements Converter<String, Void> {
     
+    /* -------------------------------------------------- Instance -------------------------------------------------- */
+    
     public static final @Nonnull StringConverter INSTANCE = new StringConverter();
+    
+    /* -------------------------------------------------- Type -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public @Nonnull Class<String> getType() {
+        return String.class;
+    }
+    
+    /* -------------------------------------------------- Name -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public @Nonnull @CodeIdentifier @MaxSize(63) String getName() {
+        return "String";
+    }
+    
+    /* -------------------------------------------------- Package -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public @Nonnull @DomainName String getPackage() {
+        return "java.lang";
+    }
+    
+    /* -------------------------------------------------- Fields -------------------------------------------------- */
     
     private static final @Nonnull ImmutableList<@Nonnull CustomField> fields;
     
@@ -43,17 +71,7 @@ public class StringConverter implements Converter<String, Void> {
         return fields;
     }
     
-    @Pure
-    @Override
-    public @Nonnull @CodeIdentifier @MaxSize(63) String getName() {
-        return "String";
-    }
-    
-    @Pure
-    @Override
-    public @Nonnull @DomainName String getPackage() {
-        return "java.lang";
-    }
+    /* -------------------------------------------------- Convert -------------------------------------------------- */
     
     @Pure
     @Override
@@ -62,6 +80,8 @@ public class StringConverter implements Converter<String, Void> {
         i *= encoder.setNullableString(string);
         return i;
     }
+    
+    /* -------------------------------------------------- Recover -------------------------------------------------- */
     
     @Pure
     @Override

@@ -24,6 +24,14 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 @Immutable
 public interface Converter<@Unspecifiable TYPE, @Specifiable PROVIDED> {
     
+    /* -------------------------------------------------- Type -------------------------------------------------- */
+    
+    /**
+     * Returns the type which is modeled and converted.
+     */
+    @Pure
+    public @Nonnull Class<TYPE> getType();
+    
     /* -------------------------------------------------- Name -------------------------------------------------- */
     
     /**
