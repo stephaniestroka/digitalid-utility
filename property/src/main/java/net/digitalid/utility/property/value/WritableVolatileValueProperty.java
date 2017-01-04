@@ -9,10 +9,10 @@ import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCapturable;
 import net.digitalid.utility.annotations.type.ThreadSafe;
-import net.digitalid.utility.concurrency.exceptions.ReentranceException;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
+import net.digitalid.utility.validation.annotations.lock.LockNotHeldByCurrentThread;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
@@ -37,7 +37,8 @@ public abstract class WritableVolatileValueProperty<VALUE> extends WritableValue
     
     @Impure
     @Override
-    public @Capturable @Valid VALUE set(@Captured @Valid VALUE newValue) throws ReentranceException {
+    @LockNotHeldByCurrentThread
+    public @Capturable @Valid VALUE set(@Captured @Valid VALUE newValue) {
         lock.lock();
         try {
             final @Valid VALUE oldValue = this.value;

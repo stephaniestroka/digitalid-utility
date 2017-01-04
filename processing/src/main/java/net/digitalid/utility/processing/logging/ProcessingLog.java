@@ -18,7 +18,6 @@ import net.digitalid.utility.immutable.ImmutableMap;
 import net.digitalid.utility.logging.Caller;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Version;
-import net.digitalid.utility.logging.exceptions.InvalidConfigurationException;
 import net.digitalid.utility.logging.filter.ConfigurationBasedLoggingFilter;
 import net.digitalid.utility.logging.filter.LoggingFilter;
 import net.digitalid.utility.logging.filter.LoggingRule;
@@ -43,7 +42,7 @@ public abstract class ProcessingLog {
      * Initializes the output file of the logger with the given name.
      */
     @Impure
-    public static void initialize(@Nonnull String name) throws InvalidConfigurationException, FileNotFoundException {
+    public static void initialize(@Nonnull String name) throws IllegalArgumentException, FileNotFoundException {
         Caller.index.set(6);
         Version.string.set("0.7");
         LoggingFilter.filter.set(ConfigurationBasedLoggingFilter.with(Files.relativeToWorkingDirectory("config/" + name + ".conf"), LoggingRule.with(Level.INFORMATION)));

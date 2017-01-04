@@ -12,6 +12,11 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-errors</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-contracts</artifactId>
             <version>${project.version}</version>
         </dependency>

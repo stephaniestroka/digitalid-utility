@@ -8,7 +8,6 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.file.Files;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.logging.exceptions.InvalidConfigurationException;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -34,9 +33,11 @@ public class ConfigurationBasedLoggingFilter extends RuleBasedLoggingFilter {
     
     /**
      * Reloads the logging rules from the configuration file.
+     * 
+     * @throws IllegalArgumentException if a rule has an invalid level.
      */
     @Impure
-    public void reload() throws InvalidConfigurationException {
+    public void reload() throws IllegalArgumentException {
         setRules(Files.readNonCommentNonEmptyTrimmedLines(file).map(LoggingRule::decode).evaluate());
     }
     
@@ -47,7 +48,7 @@ public class ConfigurationBasedLoggingFilter extends RuleBasedLoggingFilter {
      */
     private final @Nonnull FiniteIterable<@Nonnull String> comments = FiniteIterable.of("# Only messages that match one of the following rules are logged.", "# There is one rule per line written in the following format:", "# Level-Threshold; Caller-Prefix; Thread-Prefix; Message-Regex", "# When skipping all subsequent tokens, the semicolons are optional.");
     
-    protected ConfigurationBasedLoggingFilter(@Nonnull File file, @Nonnull @NonNullableElements LoggingRule... defaultRules) throws InvalidConfigurationException {
+    protected ConfigurationBasedLoggingFilter(@Nonnull File file, @Nonnull @NonNullableElements LoggingRule... defaultRules) throws IllegalArgumentException {
         super(defaultRules);
         
         this.file = file;
@@ -60,9 +61,11 @@ public class ConfigurationBasedLoggingFilter extends RuleBasedLoggingFilter {
     
     /**
      * Returns a logging filter with the given configuration file and default rules.
+     * 
+     * @throws IllegalArgumentException if a rule has an invalid level.
      */
     @Pure
-    public static @Nonnull ConfigurationBasedLoggingFilter with(@Nonnull File file, @Nonnull @NonNullableElements LoggingRule... defaultRules) throws InvalidConfigurationException {
+    public static @Nonnull ConfigurationBasedLoggingFilter with(@Nonnull File file, @Nonnull @NonNullableElements LoggingRule... defaultRules) throws IllegalArgumentException {
         return new ConfigurationBasedLoggingFilter(file, defaultRules);
     }
     

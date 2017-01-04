@@ -22,6 +22,7 @@ public abstract class Initializer {
     /**
      * Creates and registers this initializer with the given target and dependencies.
      */
+    @SuppressWarnings("null")
     protected Initializer(@NonCaptured @Modified @Nonnull Configuration<?> target, @NonCaptured @Unmodified @Nonnull @NonNullableElements Configuration<?>... dependencies) {
         Require.that(target != null).orThrow("The target may not be null.");
         Require.that(dependencies != null).orThrow("The dependencies may not be null.");

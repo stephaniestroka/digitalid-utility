@@ -9,7 +9,6 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.file.Files;
 import net.digitalid.utility.logging.Level;
-import net.digitalid.utility.logging.exceptions.InvalidConfigurationException;
 import net.digitalid.utility.logging.filter.ConfigurationBasedLoggingFilter;
 import net.digitalid.utility.logging.filter.LoggingFilter;
 import net.digitalid.utility.logging.filter.LoggingRule;
@@ -34,7 +33,7 @@ public abstract class RootTest extends Assert {
      */
     @Impure
     @BeforeClass
-    public static void initializeLogger() throws InvalidConfigurationException, FileNotFoundException {
+    public static void initializeLogger() throws IllegalArgumentException, FileNotFoundException {
         if (!initialized) {
             final @Nonnull @Absolute File projectDirectory = new File("").getAbsoluteFile();
             final @Nonnull String callerPrefix = "net.digitalid." + projectDirectory.getParentFile().getName() + "." + projectDirectory.getName();

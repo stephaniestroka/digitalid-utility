@@ -7,7 +7,7 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * This class stores whether a constraint is fulfilled or violated based on a condition.
  */
 @Immutable
-public class Constraint {
+public abstract class Constraint {
     
     /* -------------------------------------------------- Condition -------------------------------------------------- */
     

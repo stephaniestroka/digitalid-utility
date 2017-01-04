@@ -10,14 +10,14 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.configuration.Initializer;
-import net.digitalid.utility.configuration.exceptions.InitializationException;
+import net.digitalid.utility.configuration.errors.InitializerError;
 import net.digitalid.utility.initialization.InitializationProcessor;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 
 /**
  * This annotation indicates that a method should be run during the initialization of the library.
  * The annotated method has to be static and may neither have parameters nor a return value.
- * If the annotated method throws an exception, the initialization is aborted with an {@link InitializationException}.
+ * If the annotated method throws an exception, the initialization is aborted with an {@link InitializerError}.
  * 
  * @see InitializationProcessor
  */

@@ -9,7 +9,7 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
+import net.digitalid.utility.contracts.exceptions.PreconditionException;
 import net.digitalid.utility.logging.Log;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processor.generator.annotations.NonWrittenRecipient;
@@ -46,7 +46,7 @@ public abstract class FileGenerator extends RootClass {
     }
     
     /**
-     * Throws a {@link PreconditionViolationException} if this file has already been written.
+     * Throws a {@link PreconditionException} if this file has already been written.
      */
     @Pure
     protected void requireNotWritten() {

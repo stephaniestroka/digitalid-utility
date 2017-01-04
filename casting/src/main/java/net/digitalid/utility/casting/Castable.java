@@ -3,7 +3,7 @@ package net.digitalid.utility.casting;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.casting.exceptions.InvalidClassCastException;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.validation.annotations.method.Chainable;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -16,14 +16,15 @@ public interface Castable {
     /* -------------------------------------------------- Casting -------------------------------------------------- */
     
     /**
-     * Casts this object to the given target class, if possible.
+     * Casts this object to the given target class.
      * 
-     * @throws InvalidClassCastException if this object cannot be cast to the given target class.
+     * @require targetClass.isInstance(this) : "This object is an instance of the given target class.";
      */
     @Pure
-    public default @Chainable <T> @Nonnull T castTo(@Nonnull Class<T> targetClass) throws InvalidClassCastException {
-        if (targetClass.isInstance(this)) { return targetClass.cast(this); }
-        else { throw InvalidClassCastException.get(this, targetClass); }
+    public default @Chainable <T> @Nonnull T castTo(@Nonnull Class<T> targetClass) {
+        Require.that(targetClass.isInstance(this)).orThrow("This object $ has to be an instance of the target class $.", this, targetClass);
+        
+        return targetClass.cast(this);
     }
     
 }

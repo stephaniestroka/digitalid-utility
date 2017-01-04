@@ -8,7 +8,7 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collections.set.ReadOnlySet;
-import net.digitalid.utility.concurrency.exceptions.ReentranceException;
+import net.digitalid.utility.validation.annotations.lock.LockNotHeldByCurrentThread;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
@@ -30,7 +30,8 @@ public interface WritableSetProperty<VALUE, READONLY_SET extends ReadOnlySet<@No
      * @return whether the given value was not already stored.
      */
     @Impure
-    public abstract boolean add(@Captured @Nonnull @Valid VALUE value) throws EXCEPTION, ReentranceException;
+    @LockNotHeldByCurrentThread
+    public abstract boolean add(@Captured @Nonnull @Valid VALUE value) throws EXCEPTION;
     
     /**
      * Removes the given value from the values of this property.
@@ -38,6 +39,7 @@ public interface WritableSetProperty<VALUE, READONLY_SET extends ReadOnlySet<@No
      * @return whether the given value was actually stored.
      */
     @Impure
-    public abstract boolean remove(@NonCaptured @Unmodified @Nonnull @Valid VALUE value) throws EXCEPTION, ReentranceException;
+    @LockNotHeldByCurrentThread
+    public abstract boolean remove(@NonCaptured @Unmodified @Nonnull @Valid VALUE value) throws EXCEPTION;
     
 }

@@ -3,6 +3,8 @@ package net.digitalid.utility.functional.failable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
@@ -12,11 +14,11 @@ import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * This functional interface models a failable method that consumes objects of type {@code T} without returning a result.
+ * This functional interface models a failable method that consumes objects of type {@code TYPE} without returning a result.
  */
 @Mutable
 @Functional
-public interface FailableConsumer<T, X extends Exception> {
+public interface FailableConsumer<@Specifiable TYPE, @Unspecifiable EXCEPTION extends Exception> {
     
     /* -------------------------------------------------- Consumption -------------------------------------------------- */
     
@@ -24,7 +26,7 @@ public interface FailableConsumer<T, X extends Exception> {
      * Consumes the given object.
      */
     @Impure
-    public void consume(@Captured T object) throws X;
+    public void consume(@Captured TYPE object) throws EXCEPTION;
     
     /* -------------------------------------------------- Suppression -------------------------------------------------- */
     
@@ -32,7 +34,7 @@ public interface FailableConsumer<T, X extends Exception> {
      * Returns a consumer that suppresses the exceptions of this consumer and passes them to the given exception handler instead.
      */
     @Pure
-    public default @Capturable @Nonnull Consumer<T> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
+    public default @Capturable @Nonnull Consumer<TYPE> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
         return object -> {
             try {
                 consume(object);
@@ -46,7 +48,7 @@ public interface FailableConsumer<T, X extends Exception> {
      * Returns a consumer that suppresses the exceptions of this consumer.
      */
     @Pure
-    public default @Capturable @Nonnull Consumer<T> suppressExceptions() {
+    public default @Capturable @Nonnull Consumer<TYPE> suppressExceptions() {
         return suppressExceptions(Consumer.DO_NOTHING);
     }
     
@@ -56,7 +58,7 @@ public interface FailableConsumer<T, X extends Exception> {
      * Returns the composition of the given consumers with a flexible exception type.
      */
     @Pure
-    public static @Capturable <T, X extends Exception> @Nonnull FailableConsumer<T, X> compose(@Captured @Nonnull FailableConsumer<? super T, ? extends X> consumer0, @Captured @Nonnull FailableConsumer<? super T, ? extends X> consumer1) {
+    public static @Capturable <@Specifiable TYPE, @Unspecifiable EXCEPTION extends Exception> @Nonnull FailableConsumer<TYPE, EXCEPTION> compose(@Captured @Nonnull FailableConsumer<? super TYPE, ? extends EXCEPTION> consumer0, @Captured @Nonnull FailableConsumer<? super TYPE, ? extends EXCEPTION> consumer1) {
         return object -> { consumer0.consume(object); consumer1.consume(object); };
     }
     
@@ -67,7 +69,7 @@ public interface FailableConsumer<T, X extends Exception> {
      * @see #compose(net.digitalid.utility.functional.failable.FailableConsumer, net.digitalid.utility.functional.failable.FailableConsumer)
      */
     @Pure
-    public default @Capturable <S extends T> @Nonnull FailableConsumer<S, X> before(@Captured @Nonnull FailableConsumer<? super S, ? extends X> consumer) {
+    public default @Capturable <@Specifiable SUBTYPE extends TYPE> @Nonnull FailableConsumer<SUBTYPE, EXCEPTION> before(@Captured @Nonnull FailableConsumer<? super SUBTYPE, ? extends EXCEPTION> consumer) {
         return object -> { consume(object); consumer.consume(object); };
     }
     
@@ -78,7 +80,7 @@ public interface FailableConsumer<T, X extends Exception> {
      * @see #compose(net.digitalid.utility.functional.failable.FailableConsumer, net.digitalid.utility.functional.failable.FailableConsumer)
      */
     @Pure
-    public default @Capturable <S extends T> @Nonnull FailableConsumer<S, X> after(@Captured @Nonnull FailableConsumer<? super S, ? extends X> consumer) {
+    public default @Capturable <@Specifiable SUBTYPE extends TYPE> @Nonnull FailableConsumer<SUBTYPE, EXCEPTION> after(@Captured @Nonnull FailableConsumer<? super SUBTYPE, ? extends EXCEPTION> consumer) {
         return object -> { consumer.consume(object); consume(object); };
     }
     
@@ -87,7 +89,7 @@ public interface FailableConsumer<T, X extends Exception> {
      * Unfortunately, it is not possible to make the exception type flexible as well.
      */
     @Pure
-    public default @Capturable <I> @Nonnull FailableConsumer<I, X> after(@Nonnull FailableUnaryFunction<? super I, ? extends T, ? extends X> function) {
+    public default @Capturable <@Specifiable INPUT> @Nonnull FailableConsumer<INPUT, EXCEPTION> after(@Nonnull FailableUnaryFunction<? super INPUT, ? extends TYPE, ? extends EXCEPTION> function) {
         return object -> consume(function.evaluate(object));
     }
     
@@ -98,7 +100,8 @@ public interface FailableConsumer<T, X extends Exception> {
      * This method may only be called if this consumer is side-effect-free.
      */
     @Pure
-    public default @Nonnull FailableUnaryFunction<T, @Nullable Void, X> asFunction() {
+    @SuppressWarnings("null")
+    public default @Nonnull FailableUnaryFunction<TYPE, @Nullable Void, EXCEPTION> asFunction() {
         return object -> { consume(object); return null; };
     }
     
@@ -108,7 +111,7 @@ public interface FailableConsumer<T, X extends Exception> {
      * Returns a consumer that synchronizes on this consumer.
      */
     @Pure
-    public default @Nonnull FailableConsumer<T, X> synchronize() {
+    public default @Nonnull FailableConsumer<TYPE, EXCEPTION> synchronize() {
         return object -> {
             synchronized (this) {
                 consume(object);

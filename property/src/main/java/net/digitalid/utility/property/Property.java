@@ -7,6 +7,7 @@ import net.digitalid.utility.annotations.method.PureWithSideEffects;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.type.ThreadSafe;
+import net.digitalid.utility.interfaces.Locking;
 import net.digitalid.utility.property.map.ReadOnlyMapProperty;
 import net.digitalid.utility.property.set.ReadOnlySetProperty;
 import net.digitalid.utility.property.value.ReadOnlyValueProperty;
@@ -23,7 +24,7 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  */
 @ReadOnly // This interface is mutable regarding the observers but read-only properties must be able to inherit from this interface.
 @ThreadSafe
-public interface Property<OBSERVER extends Observer> extends RootInterface {
+public interface Property<OBSERVER extends Observer> extends RootInterface, Locking {
     
     /* -------------------------------------------------- Observers -------------------------------------------------- */
     

@@ -10,7 +10,6 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.logging.Level;
-import net.digitalid.utility.logging.exceptions.InvalidConfigurationException;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -156,16 +155,13 @@ public class LoggingRule {
     
     /**
      * Decodes the given line and returns the corresponding rule.
+     * 
+     * @throws IllegalArgumentException if a rule has an invalid level.
      */
     @Pure
-    public static @Nonnull LoggingRule decode(@Nonnull String line) throws InvalidConfigurationException {
+    public static @Nonnull LoggingRule decode(@Nonnull String line) throws IllegalArgumentException {
         final @Nonnull @NonNullableElements String[] tokens = line.split(";", 4);
-        final @Nonnull Level threshold;
-        try {
-            threshold = Level.valueOf(tokens[0].trim().toUpperCase());
-        } catch (@Nonnull IllegalArgumentException exception) {
-            throw InvalidConfigurationException.with("The token $ does not denote a level.", exception, tokens[0]);
-        }
+        final @Nonnull Level threshold = Level.valueOf(tokens[0].trim().toUpperCase());
         final @Nullable String callerPrefix = getNonEmpty(tokens, 1);
         final @Nullable String threadPrefix = getNonEmpty(tokens, 2);
         final @Nullable String messageRegex = getNonEmpty(tokens, 3);

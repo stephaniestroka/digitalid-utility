@@ -6,6 +6,9 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.immutable.ImmutableList;
+import net.digitalid.utility.immutable.ImmutableMap;
+import net.digitalid.utility.immutable.ImmutableSet;
 
 import org.junit.Test;
 
@@ -24,7 +27,7 @@ public class ComplexClassTest {
         listOfIntegers.add(1);
         listOfIntegers.add(2);
         listOfIntegers.add(3);
-        return ComplexClassBuilder.withText("This is a test").withSimpleClass(simpleClass).withListOfIntegers(listOfIntegers).withArrayOfStrings(arrayOfStrings);
+        return ComplexClassBuilder.withText("This is a test").withValue(42).withNonnullString("nonnull").withSimpleClass(simpleClass).withListOfIntegers(listOfIntegers).withSetOfSimpleClass(ImmutableSet.withElements(null, null)).withArrayOfStrings(arrayOfStrings).withListWithNonnullStrings(ImmutableList.withElements("nonnull")).withListWithNullableStrings(ImmutableList.withElements(null, null)).withMapWithNonnullStrings(ImmutableMap.with("nonnull", "nonnull")).withMapWithNullableStrings(ImmutableMap.with(null, null));
     }
     
     @Test
@@ -78,7 +81,7 @@ public class ComplexClassTest {
     public void shouldProduceSameToString() throws Exception {
         final @Nonnull ComplexClass complexClass = prepareBuilder().build();
     
-        expecting("string representation", Object::toString).of(complexClass).toBe("ComplexClass(text: \"This is a test\", simpleClass: SimpleClass(number: 1), listOfIntegers: [1, 2, 3], setOfSimpleClass: null, arrayOfStrings: [first, second, third])");
+        expecting("string representation", Object::toString).of(complexClass).toBe("ComplexClass(text: \"This is a test\", value: 42, nonnullString: \"nonnull\", nullableString: \"null\", simpleClass: SimpleClass(number: 1), listOfIntegers: [1, 2, 3], setOfSimpleClass: [null], arrayOfStrings: [first, second, third], listWithNonnullStrings: [nonnull], listWithNullableStrings: [null, null], mapWithNonnullStrings: {nonnull=nonnull}, mapWithNullableStrings: {null=null})");
     }
     
     @Test

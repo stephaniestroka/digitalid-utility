@@ -89,4 +89,10 @@ public abstract class PropertyImplementation<OBSERVER extends Observer, GENERIC_
      */
     protected final @Nonnull NonReentrantLock lock = NonReentrantLockBuilder.build();
     
+    @Pure
+    @Override
+    public boolean isLockHeldByCurrentThread() {
+        return lock.isLockHeldByCurrentThread();
+    }
+    
 }

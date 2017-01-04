@@ -4,14 +4,15 @@ import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.validation.annotations.elements.UniqueElements;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
 
 /**
  * This class declares the target types for iterable annotations.
  * 
- * @see net.digitalid.utility.validation.annotations.elements
  * @see OrderingValidator
+ * @see UniqueElements
  */
 @Stateless
 public abstract class IterableValidator implements ValueAnnotationValidator {

@@ -12,7 +12,7 @@
     <dependencies>
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-string</artifactId>
+            <artifactId>utility-throwable</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

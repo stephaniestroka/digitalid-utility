@@ -6,8 +6,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Impure;
-import net.digitalid.utility.conversion.converter.CustomField;
-import net.digitalid.utility.conversion.converter.Declaration;
+import net.digitalid.utility.conversion.model.CustomField;
+import net.digitalid.utility.conversion.model.Declaration;
 
 /**
  * The declaration that is used to test the functionality of the converter.

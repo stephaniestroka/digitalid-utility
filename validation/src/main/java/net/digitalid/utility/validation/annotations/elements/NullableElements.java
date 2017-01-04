@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
-import net.digitalid.utility.validation.validators.IterableValidator;
+import net.digitalid.utility.validation.validators.ElementsValidator;
 
 /**
  * This annotation indicates that the elements of an {@link Iterable iterable} or array are {@link Nullable nullable}.
@@ -30,6 +30,6 @@ public @interface NullableElements {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends IterableValidator {}
+    public static class Validator extends ElementsValidator {}
     
 }

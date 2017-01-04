@@ -28,7 +28,9 @@
         <module>functional</module>
         <module>immutable</module>
         <module>string</module>
+        <module>throwable</module>
         <module>exceptions</module>
+        <module>errors</module>
         <module>contracts</module>
         <module>configuration</module>
         <module>file</module>
@@ -47,11 +49,16 @@
         <module>initializer</module>
         <module>conversion</module>
         <module>generator</module>
+        <module>templates</module>
         <module>collections</module>
         <module>concurrency</module>
         <module>property</module>
         <module>console</module>
         <module>all</module>
     </modules>
+    
+    <properties>
+        <jacoco.skip>true</jacoco.skip> <!-- java.lang.instrument.IllegalClassFormatException: Error while instrumenting class net/digitalid/utility/generator/generators/converter/EnumWithRecoverMethodAndNonDirectlyAccessibleFieldConverter. -->
+    </properties>
     
 </project>

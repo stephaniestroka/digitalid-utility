@@ -9,6 +9,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
@@ -29,12 +30,12 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  * This class implements an immutable list.
  */
 @Immutable
-public class ImmutableList<E> extends ArrayList<E> implements CollectionIterable<E> {
+public class ImmutableList<@Specifiable ELEMENT> extends ArrayList<ELEMENT> implements CollectionIterable<ELEMENT> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ImmutableList(@NonCaptured @Unmodified @Nonnull Iterable<? extends E> iterable) {
-        for (E element : iterable) {
+    protected ImmutableList(@NonCaptured @Unmodified @Nonnull Iterable<? extends ELEMENT> iterable) {
+        for (ELEMENT element : iterable) {
             super.add(element);
         }
     }
@@ -70,25 +71,25 @@ public class ImmutableList<E> extends ArrayList<E> implements CollectionIterable
     
     @Pure
     @Override
-    public @Capturable @Nonnull ReadOnlyIterator<E> iterator() {
+    public @Capturable @Nonnull ReadOnlyIterator<ELEMENT> iterator() {
         return ReadOnlyIterableIterator.with(super.iterator());
     }
     
     @Pure
     @Override
-    public @Capturable @Nonnull ReadOnlyListIterator<E> listIterator() {
+    public @Capturable @Nonnull ReadOnlyListIterator<ELEMENT> listIterator() {
         return ReadOnlyListIterator.with(super.listIterator());
     }
     
     @Pure
     @Override
-    public @Capturable @Nonnull ReadOnlyListIterator<E> listIterator(@IndexForInsertion int index) {
+    public @Capturable @Nonnull ReadOnlyListIterator<ELEMENT> listIterator(@IndexForInsertion int index) {
         return ReadOnlyListIterator.with(super.listIterator(index));
     }
     
     @Pure
     @Override
-    public @Unmodifiable @Nonnull List<E> subList(@Index int fromIndex, @IndexForInsertion int toIndex) {
+    public @Unmodifiable @Nonnull List<ELEMENT> subList(@Index int fromIndex, @IndexForInsertion int toIndex) {
         return Collections.unmodifiableList(super.subList(fromIndex, toIndex));
     }
     
@@ -96,25 +97,25 @@ public class ImmutableList<E> extends ArrayList<E> implements CollectionIterable
     
     @Pure
     @Override
-    public final boolean add(@Captured E e) {
+    public final boolean add(@Captured ELEMENT e) {
         throw new UnsupportedOperationException();
     }
     
     @Pure
     @Override
-    public final void add(@IndexForInsertion int index, @Captured E element) {
+    public final void add(@IndexForInsertion int index, @Captured ELEMENT element) {
         throw new UnsupportedOperationException();
     }
     
     @Pure
     @Override
-    public final boolean addAll(@NonCaptured @Unmodified @Nonnull Collection<? extends E> c) {
+    public final boolean addAll(@NonCaptured @Unmodified @Nonnull Collection<? extends ELEMENT> c) {
         throw new UnsupportedOperationException();
     }
     
     @Pure
     @Override
-    public final boolean addAll(@IndexForInsertion int index, @NonCaptured @Unmodified @Nonnull Collection<? extends E> c) {
+    public final boolean addAll(@IndexForInsertion int index, @NonCaptured @Unmodified @Nonnull Collection<? extends ELEMENT> c) {
         throw new UnsupportedOperationException();
     }
     
@@ -122,13 +123,13 @@ public class ImmutableList<E> extends ArrayList<E> implements CollectionIterable
     
     @Pure
     @Override
-    public final E remove(@Index int index) {
+    public final ELEMENT remove(@Index int index) {
         throw new UnsupportedOperationException();
     }
     
     @Pure
     @Override
-    public final boolean remove(@NonCaptured @Unmodified @Nullable Object o) {
+    public final boolean remove(@NonCaptured @Unmodified @Nullable Object object) {
         throw new UnsupportedOperationException();
     }
     
@@ -140,13 +141,13 @@ public class ImmutableList<E> extends ArrayList<E> implements CollectionIterable
     
     @Pure
     @Override
-    public final boolean removeAll(@NonCaptured @Unmodified @Nonnull Collection<?> c) {
+    public final boolean removeAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
         throw new UnsupportedOperationException();
     }
     
     @Pure
     @Override
-    public final boolean retainAll(@NonCaptured @Unmodified @Nonnull Collection<?> c) {
+    public final boolean retainAll(@NonCaptured @Unmodified @Nonnull Collection<?> collection) {
         throw new UnsupportedOperationException();
     }
     
@@ -160,7 +161,7 @@ public class ImmutableList<E> extends ArrayList<E> implements CollectionIterable
     
     @Pure
     @Override
-    public final E set(@Index int index, @Captured E element) {
+    public final ELEMENT set(@Index int index, @Captured ELEMENT element) {
         throw new UnsupportedOperationException();
     }
     

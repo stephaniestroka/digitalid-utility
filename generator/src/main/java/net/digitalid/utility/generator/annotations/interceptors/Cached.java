@@ -13,7 +13,6 @@ import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.circumfixes.Brackets;
-import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.annotations.meta.Interceptor;
 import net.digitalid.utility.generator.generators.SubclassGenerator;
@@ -22,6 +21,7 @@ import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.method.MethodParameterInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.interceptor.MethodInterceptor;
+import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.tuples.Tuple;
@@ -74,7 +74,7 @@ public @interface Cached {
                     final @Nonnull TypeMirror typeMirror = ProcessingUtility.getBoxedType(parameters.getFirst().getType());
                     keyType = ProcessingUtility.getClass(typeMirror);
                 } else {
-                    throw UnexpectedFailureException.with("Cannot create a cache for more than 8 parameters (method: $).", method.getName());
+                    ProcessingLog.error("Cannot create a cache for more than 8 parameters (method: $).", method.getName());
                 }
                 keyTypeAsString = javaFileGenerator.importIfPossible(keyType);
             } else {
@@ -98,7 +98,8 @@ public @interface Cached {
                 } else if (parameters.size() == 1) {
                     keyAccess = parameters.getFirst().getName();
                 } else {
-                    throw UnexpectedFailureException.with("Cannot cache method results for more than 8 parameters (method: $).", method.getName());
+                    ProcessingLog.error("Cannot cache method results for more than 8 parameters (method: $).", method.getName());
+                    keyAccess = "";
                 }
             }
             final @Nonnull String cacheName = getCacheName(javaFileGenerator, method);

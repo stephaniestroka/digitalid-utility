@@ -2,17 +2,17 @@ package net.digitalid.utility.initializer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.PureWithSideEffects;
 import net.digitalid.utility.configuration.Configuration;
-import net.digitalid.utility.exceptions.UnexpectedFailureException;
+import net.digitalid.utility.exceptions.UncheckedExceptionBuilder;
 import net.digitalid.utility.file.Files;
 import net.digitalid.utility.initialization.annotations.Initialize;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.Log;
-import net.digitalid.utility.logging.exceptions.InvalidConfigurationException;
 import net.digitalid.utility.logging.filter.ConfigurationBasedLoggingFilter;
 import net.digitalid.utility.logging.filter.LevelBasedLoggingFilter;
 import net.digitalid.utility.logging.filter.LoggingFilter;
@@ -68,7 +68,7 @@ public class UtilityInitializer {
                 Files.directory.set(directory);
                 Log.verbose("Set the configuration directory to '~/.digitalid/'.");
             } else {
-                throw UnexpectedFailureException.with("Could not create the directory '~/.digitalid/'.");
+                throw UncheckedExceptionBuilder.withCause(new IOException("Could not create the directory '~/.digitalid/'.")).build();
             }
         } else {
             Log.verbose("Did not set the configuration directory to '~/.digitalid/' because it is already set to $.", Files.directory.get().getAbsolutePath());
@@ -77,10 +77,12 @@ public class UtilityInitializer {
     
     /**
      * Initializes the logging filter with a configuration-based logging filter.
+     * 
+     * @throws IllegalArgumentException if a rule has an invalid level.
      */
     @PureWithSideEffects
     @Initialize(target = LoggingFilter.class, dependencies = {Files.class})
-    public static void initializeLoggingFilter() throws InvalidConfigurationException {
+    public static void initializeLoggingFilter() throws IllegalArgumentException {
         if (LoggingFilter.filter.get() instanceof LevelBasedLoggingFilter) {
             LoggingFilter.filter.set(ConfigurationBasedLoggingFilter.with(Files.relativeToConfigurationDirectory("configs/logging.conf"), LoggingRule.with(Level.INFORMATION)));
             Log.verbose("Replaced the default level-based logging filter with a configuration-based logging filter.");

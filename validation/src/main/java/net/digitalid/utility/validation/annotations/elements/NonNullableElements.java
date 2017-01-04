@@ -5,6 +5,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,12 +16,11 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.annotations.parameter.Unmodified;
-import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.validation.annotations.meta.ValueValidator;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 import net.digitalid.utility.validation.contract.Contract;
-import net.digitalid.utility.validation.validators.IterableValidator;
+import net.digitalid.utility.validation.validators.ElementsValidator;
 
 /**
  * This annotation indicates that the elements of an {@link Iterable iterable} or array are {@link Nonnull non-nullable}.
@@ -40,15 +40,7 @@ public @interface NonNullableElements {
      * This class checks the use of and generates the contract for the surrounding annotation.
      */
     @Stateless
-    public static class Validator extends IterableValidator {
-        
-        private static final @Nonnull FiniteIterable<@Nonnull Class<?>> targetTypes = FiniteIterable.of(Iterable.class, Object[].class);
-        
-        @Pure
-        @Override
-        public @Nonnull FiniteIterable<@Nonnull Class<?>> getTargetTypes() {
-            return targetTypes;
-        }
+    public static class Validator extends ElementsValidator {
         
         /**
          * Returns whether all elements in the given iterable are non-null.
@@ -72,6 +64,14 @@ public @interface NonNullableElements {
                 if (element == null) { return false; }
             }
             return true;
+        }
+        
+        /**
+         * Returns whether all keys and values in the given map are non-null.
+         */
+        @Pure
+        public static boolean validate(@NonCaptured @Unmodified @Nullable Map<?, ?> map) {
+            return map == null || !map.containsKey(null) && !map.containsValue(null);
         }
         
         @Pure

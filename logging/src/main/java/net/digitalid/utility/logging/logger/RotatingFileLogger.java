@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
-import net.digitalid.utility.exceptions.UnexpectedFailureException;
+import net.digitalid.utility.exceptions.UncheckedExceptionBuilder;
 import net.digitalid.utility.file.Files;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.validation.annotations.file.existence.ExistentParent;
@@ -65,7 +65,7 @@ public class RotatingFileLogger extends FileLogger {
         try {
             setFile(getCurrentFile());
         } catch (@Nonnull FileNotFoundException exception) {
-            throw UnexpectedFailureException.with("Could not open or create the log file $.", exception, getCurrentFile().getAbsolutePath());
+            throw UncheckedExceptionBuilder.withCause(exception).build();
         }
     }
     

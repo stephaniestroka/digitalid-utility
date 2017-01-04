@@ -14,7 +14,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
+import net.digitalid.utility.contracts.exceptions.PreconditionException;
 import net.digitalid.utility.file.Files;
 import net.digitalid.utility.freezable.FreezableInterface;
 import net.digitalid.utility.freezable.ReadOnlyInterface;
@@ -933,7 +933,7 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
         try {
             INSTANCE.setEmptyOrSingleRecipient();
             fail("The recipient is not empty or single.");
-        } catch (@Nonnull PreconditionViolationException exception) {}
+        } catch (@Nonnull PreconditionException exception) {}
     }
     
     /* -------------------------------------------------- String -------------------------------------------------- */
@@ -1155,7 +1155,7 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
     public void testMainThread() {
         try {
             INSTANCE.setMainThread();
-        } catch (@Nonnull PreconditionViolationException exception) {
+        } catch (@Nonnull PreconditionException exception) {
             fail("The test is running on the main thread.");
         }
         new Thread() {
@@ -1164,7 +1164,7 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
                 try {
                     INSTANCE.setMainThread();
                     fail("This is not the main thread.");
-                } catch (@Nonnull PreconditionViolationException exception) {}
+                } catch (@Nonnull PreconditionException exception) {}
             }
         }.start();
     }
@@ -1236,7 +1236,7 @@ public class ContractGenerationTest extends ContractTest implements Countable, V
         try {
             INSTANCE.setNonFrozenRecipient();
             fail("The recipient is frozen.");
-        } catch (@Nonnull PreconditionViolationException exception) {}
+        } catch (@Nonnull PreconditionException exception) {}
     }
     
 }

@@ -1,5 +1,7 @@
 package net.digitalid.utility.concurrency.lock;
 
+import net.digitalid.utility.interfaces.Locking;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -10,9 +12,8 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.type.ThreadSafe;
-import net.digitalid.utility.collaboration.annotations.TODO;
-import net.digitalid.utility.collaboration.enumerations.Author;
-import net.digitalid.utility.concurrency.exceptions.ReentranceException;
+import net.digitalid.utility.validation.annotations.lock.LockNotHeldByCurrentThread;
+import net.digitalid.utility.contracts.exceptions.PreconditionException;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.rootclass.RootClass;
@@ -20,7 +21,7 @@ import net.digitalid.utility.validation.annotations.generation.Derive;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * This class implements a non-reentrant lock which throws a {@link ReentranceException} if a thread tries to acquire a non-reentrant lock that it already holds.
+ * This class implements a non-reentrant lock which throws a {@link PreconditionException} if a thread tries to acquire a non-reentrant lock that it already holds.
  * <p>
  * It is highly recommended that you always follow a (successful) call to one of the lock methods immediately with a try-finally block like
  * <pre>{@code
@@ -36,8 +37,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 @ThreadSafe
 @GenerateBuilder
 @GenerateSubclass
-@TODO(task = "Generate the reentrance check as a precondition instead of the current checked exception.", date = "2016-12-05", author = Author.KASPAR_ETTER)
-public abstract class NonReentrantLock extends RootClass implements Lock {
+public abstract class NonReentrantLock extends RootClass implements Lock, Locking {
     
     /* -------------------------------------------------- Lock -------------------------------------------------- */
     
@@ -51,42 +51,30 @@ public abstract class NonReentrantLock extends RootClass implements Lock {
     
     @Impure
     @Override
-    public void lock() throws ReentranceException {
-        if (getReentrantLock().isHeldByCurrentThread()) {
-            throw ReentranceException.withNoArguments();
-        } else {
-            getReentrantLock().lock();
-        }
+    @LockNotHeldByCurrentThread
+    public void lock() {
+        getReentrantLock().lock();
     }
     
     @Impure
     @Override
-    public void lockInterruptibly() throws ReentranceException, InterruptedException {
-        if (getReentrantLock().isHeldByCurrentThread()) {
-            throw ReentranceException.withNoArguments();
-        } else {
-            getReentrantLock().lockInterruptibly();
-        }
+    @LockNotHeldByCurrentThread
+    public void lockInterruptibly() throws InterruptedException {
+        getReentrantLock().lockInterruptibly();
     }
     
     @Impure
     @Override
-    public boolean tryLock() throws ReentranceException {
-        if (getReentrantLock().isHeldByCurrentThread()) {
-            throw ReentranceException.withNoArguments();
-        } else {
-            return getReentrantLock().tryLock();
-        }
+    @LockNotHeldByCurrentThread
+    public boolean tryLock() {
+        return getReentrantLock().tryLock();
     }
     
     @Impure
     @Override
-    public boolean tryLock(long time, @Nonnull TimeUnit unit) throws ReentranceException, InterruptedException {
-        if (getReentrantLock().isHeldByCurrentThread()) {
-            throw ReentranceException.withNoArguments();
-        } else {
-            return getReentrantLock().tryLock(time, unit);
-        }
+    @LockNotHeldByCurrentThread
+    public boolean tryLock(long time, @Nonnull TimeUnit unit) throws InterruptedException {
+        return getReentrantLock().tryLock(time, unit);
     }
     
     @Impure
@@ -99,6 +87,14 @@ public abstract class NonReentrantLock extends RootClass implements Lock {
     @Override
     public @Nonnull Condition newCondition() {
         return getReentrantLock().newCondition();
+    }
+    
+    /* -------------------------------------------------- Locking -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public boolean isLockHeldByCurrentThread() {
+        return getReentrantLock().isHeldByCurrentThread();
     }
     
 }

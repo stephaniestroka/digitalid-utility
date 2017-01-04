@@ -6,7 +6,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
 import net.digitalid.utility.circumfixes.Quotes;
-import net.digitalid.utility.contracts.exceptions.PreconditionViolationException;
+import net.digitalid.utility.contracts.exceptions.PreconditionException;
 import net.digitalid.utility.functional.failable.FailableConsumer;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
@@ -20,13 +20,13 @@ public abstract class ContractTest extends RootTest {
     protected static <T, X extends Exception> void test(@NonCaptured @Modified @Nonnull FailableConsumer<? super T, ? extends X> consumer, T positive, T negative) throws X {
         try {
             consumer.consume(positive);
-        } catch (@Nonnull PreconditionViolationException exception) {
+        } catch (@Nonnull PreconditionException exception) {
             fail("The positive sample " + Quotes.inSingle(positive) + " should not fail.");
         }
         try {
             consumer.consume(negative); 
             fail("The negative sample " + Quotes.inSingle(negative) + " should fail.");
-        } catch (@Nonnull PreconditionViolationException exception) {}
+        } catch (@Nonnull PreconditionException exception) {}
     }
     
     @Pure
@@ -35,7 +35,7 @@ public abstract class ContractTest extends RootTest {
         for (T positive : positives) {
             try {
                 consumer.consume(positive);
-            } catch (@Nonnull PreconditionViolationException exception) {
+            } catch (@Nonnull PreconditionException exception) {
                 fail("The positive sample " + Quotes.inSingle(positive) + " should not fail.");
             }
         }
@@ -48,7 +48,7 @@ public abstract class ContractTest extends RootTest {
             try {
                 consumer.consume(negative);
                 fail("The negative sample " + Quotes.inSingle(negative) + " should fail.");
-            } catch (@Nonnull PreconditionViolationException exception) {}
+            } catch (@Nonnull PreconditionException exception) {}
         }
     }
     

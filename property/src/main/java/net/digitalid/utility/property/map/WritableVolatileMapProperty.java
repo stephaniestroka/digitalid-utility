@@ -14,11 +14,11 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collections.map.FreezableMap;
 import net.digitalid.utility.collections.map.ReadOnlyMap;
-import net.digitalid.utility.concurrency.exceptions.ReentranceException;
 import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
+import net.digitalid.utility.validation.annotations.lock.LockNotHeldByCurrentThread;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
@@ -63,7 +63,8 @@ public abstract class WritableVolatileMapProperty<KEY, VALUE, READONLY_MAP exten
     
     @Impure
     @Override
-    public boolean add(@Captured @Nonnull @Valid("key") KEY key, @Captured @Nonnull @Valid VALUE value) throws ReentranceException {
+    @LockNotHeldByCurrentThread
+    public boolean add(@Captured @Nonnull @Valid("key") KEY key, @Captured @Nonnull @Valid VALUE value) {
         lock.lock();
         try {
             if (getMap().containsKey(key)) {
@@ -80,7 +81,8 @@ public abstract class WritableVolatileMapProperty<KEY, VALUE, READONLY_MAP exten
     
     @Impure
     @Override
-    public @Capturable @Nullable @Valid VALUE remove(@NonCaptured @Unmodified @Nonnull @Valid("key") KEY key) throws ReentranceException {
+    @LockNotHeldByCurrentThread
+    public @Capturable @Nullable @Valid VALUE remove(@NonCaptured @Unmodified @Nonnull @Valid("key") KEY key) {
         lock.lock();
         try {
             final @Nullable VALUE value = getMap().remove(key);

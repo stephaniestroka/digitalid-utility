@@ -14,8 +14,9 @@ import javax.annotation.Nullable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.configuration.Configuration;
-import net.digitalid.utility.exceptions.UnexpectedFailureException;
+import net.digitalid.utility.exceptions.UncheckedExceptionBuilder;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.validation.annotations.file.existence.Existent;
 import net.digitalid.utility.validation.annotations.file.existence.ExistentParent;
 import net.digitalid.utility.validation.annotations.file.kind.Directory;
@@ -74,7 +75,9 @@ public abstract class Files {
     public static void createParentDirectories(@Nonnull @Absolute File file) {
         final @Nullable File directory = file.getParentFile();
         if (directory != null && !directory.isDirectory() && !directory.mkdirs()) {
-            throw UnexpectedFailureException.with("Could not create the missing parent directories of $.", file.getAbsolutePath());
+            @SuppressWarnings({"ThrowableInstanceNotThrown", "ThrowableInstanceNeverThrown"})
+            final @Nonnull IOException exception = new IOException(Strings.format("Could not create the missing parent directories of $.", file.getAbsolutePath()));
+            throw UncheckedExceptionBuilder.withCause(exception).build();
         }
     }
     
@@ -119,7 +122,7 @@ public abstract class Files {
                 lines.add(line);
             }
         } catch (@Nonnull IOException exception) {
-            throw UnexpectedFailureException.with(exception);
+            throw UncheckedExceptionBuilder.withCause(exception).build();
         }
         return FiniteIterable.of(lines);
     }
@@ -158,7 +161,7 @@ public abstract class Files {
         try (@Nonnull BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             lines.doForEach(line -> { writer.write(line); writer.newLine(); });
         } catch (@Nonnull IOException exception) {
-            throw UnexpectedFailureException.with(exception);
+            throw UncheckedExceptionBuilder.withCause(exception).build();
         }
     }
     

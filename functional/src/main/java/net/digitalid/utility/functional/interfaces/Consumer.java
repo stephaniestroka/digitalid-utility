@@ -3,6 +3,7 @@ package net.digitalid.utility.functional.interfaces;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
@@ -15,7 +16,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  */
 @Mutable
 @Functional
-public interface Consumer<T> extends FailableConsumer<T, RuntimeException> {
+public interface Consumer<@Specifiable TYPE> extends FailableConsumer<TYPE, RuntimeException> {
     
     /* -------------------------------------------------- Composition -------------------------------------------------- */
     
@@ -23,7 +24,7 @@ public interface Consumer<T> extends FailableConsumer<T, RuntimeException> {
      * Returns the composition of this consumer followed by the given consumer.
      */
     @Pure
-    public default @Capturable @Nonnull Consumer<T> before(@Captured @Nonnull Consumer<? super T> consumer) {
+    public default @Capturable @Nonnull Consumer<TYPE> before(@Captured @Nonnull Consumer<? super TYPE> consumer) {
         return object -> { consume(object); consumer.consume(object); };
     }
     
@@ -31,7 +32,7 @@ public interface Consumer<T> extends FailableConsumer<T, RuntimeException> {
      * Returns the composition of the given consumer followed by this consumer.
      */
     @Pure
-    public default @Capturable @Nonnull Consumer<T> after(@Captured @Nonnull Consumer<? super T> consumer) {
+    public default @Capturable @Nonnull Consumer<TYPE> after(@Captured @Nonnull Consumer<? super TYPE> consumer) {
         return object -> { consumer.consume(object); consume(object); };
     }
     
@@ -39,7 +40,7 @@ public interface Consumer<T> extends FailableConsumer<T, RuntimeException> {
      * Returns the composition of the given function followed by this consumer.
      */
     @Pure
-    public default @Capturable <I> @Nonnull Consumer<I> after(@Nonnull UnaryFunction<? super I, ? extends T> function) {
+    public default @Capturable <@Specifiable INPUT> @Nonnull Consumer<INPUT> after(@Nonnull UnaryFunction<? super INPUT, ? extends TYPE> function) {
         return object -> consume(function.evaluate(object));
     }
     
@@ -47,7 +48,8 @@ public interface Consumer<T> extends FailableConsumer<T, RuntimeException> {
     
     @Pure
     @Override
-    public default @Nonnull UnaryFunction<T, @Nullable Void> asFunction() {
+    @SuppressWarnings("null")
+    public default @Nonnull UnaryFunction<TYPE, @Nullable Void> asFunction() {
         return object -> { consume(object); return null; };
     }
     
@@ -55,7 +57,7 @@ public interface Consumer<T> extends FailableConsumer<T, RuntimeException> {
     
     @Pure
     @Override
-    public default @Nonnull Consumer<T> synchronize() {
+    public default @Nonnull Consumer<TYPE> synchronize() {
         return object -> {
             synchronized (this) {
                 consume(object);

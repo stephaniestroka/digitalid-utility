@@ -3,6 +3,8 @@ package net.digitalid.utility.generator.generators;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +14,8 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import net.digitalid.utility.annotations.method.Impure;
@@ -23,31 +27,36 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.conversion.converter.Converter;
-import net.digitalid.utility.conversion.converter.CustomAnnotation;
-import net.digitalid.utility.conversion.converter.CustomField;
-import net.digitalid.utility.conversion.converter.Decoder;
-import net.digitalid.utility.conversion.converter.Encoder;
-import net.digitalid.utility.conversion.converter.Representation;
-import net.digitalid.utility.conversion.converter.types.CustomType;
-import net.digitalid.utility.exceptions.UnexpectedFailureException;
+import net.digitalid.utility.conversion.collectors.ArrayCollector;
+import net.digitalid.utility.conversion.collectors.CollectionCollector;
+import net.digitalid.utility.conversion.enumerations.Representation;
+import net.digitalid.utility.conversion.exceptions.ConnectionException;
+import net.digitalid.utility.conversion.exceptions.RecoveryException;
+import net.digitalid.utility.conversion.interfaces.Converter;
+import net.digitalid.utility.conversion.interfaces.Decoder;
+import net.digitalid.utility.conversion.interfaces.Encoder;
+import net.digitalid.utility.conversion.model.CustomAnnotation;
+import net.digitalid.utility.conversion.model.CustomField;
+import net.digitalid.utility.conversion.model.CustomType;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.GeneratorProcessor;
-import net.digitalid.utility.generator.information.field.EnumValueInformation;
+import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.type.EnumInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.immutable.ImmutableMap;
-import net.digitalid.utility.logging.exceptions.ExternalException;
 import net.digitalid.utility.processing.logging.ProcessingLog;
+import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Tuple;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.generation.Provide;
 import net.digitalid.utility.validation.annotations.generation.Provided;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
  * This class generates a converter with the provided type information.
@@ -55,16 +64,19 @@ import net.digitalid.utility.validation.annotations.generation.Provided;
  * @see GeneratorProcessor
  * @see TypeInformation
  */
+@Mutable
 public class ConverterGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Converter Import -------------------------------------------------- */
     
     /**
-     * Returns the name of the converter an imports it if possible.
+     * Returns the imported name (if possible) of the converter of the given type.
      */
     @Impure
-    public @Nonnull String importConverterType(@Nonnull TypeMirror fieldType) {
-        return importIfPossible(ProcessingUtility.getQualifiedName(fieldType) + "Converter");
+    public @Nonnull String importConverterType(@Nonnull TypeMirror type) {
+        @Nonnull String qualifiedName = ProcessingUtility.getQualifiedName(type);
+        if (!qualifiedName.startsWith("net.digitalid")) { qualifiedName = qualifiedName.replace(Strings.substringUntilLast(qualifiedName, '.'), "net.digitalid.utility.conversion.converters"); }
+        return importIfPossible(qualifiedName + "Converter") + ".INSTANCE";
     }
     
     /* -------------------------------------------------- Type Information -------------------------------------------------- */
@@ -109,7 +121,7 @@ public class ConverterGenerator extends JavaFileGenerator {
                 case 1:
                     return importIfPossible(externallyProvidedFields.getFirst().getType()) + postFix;
                 default:
-                    throw UnexpectedFailureException.with("Cannot accept more than 8 externally provided parameters.");
+                    throw FailedClassGenerationException.with("Cannot accept more than 8 externally provided parameters.");
             }
         }
         return importIfPossible(tupleType) + Brackets.inPointy(parameterTypes) + postFix;
@@ -135,68 +147,109 @@ public class ConverterGenerator extends JavaFileGenerator {
             case 8:
                 return "provided";
             default:
-                throw UnexpectedFailureException.with("Cannot accept more than 8 externally provided parameters.");
+                throw FailedClassGenerationException.with("Cannot accept more than 8 externally provided parameters.");
         }
     }
     
     /* -------------------------------------------------- Value Collector -------------------------------------------------- */
     
     /**
-     * Returns a generated call to the value collector from the given type and field access strings.
+     * Returns the name of the variable that is used in the {@link Converter#convert(java.lang.Object, net.digitalid.utility.conversion.interfaces.Encoder)} method.
      */
-    private @Nonnull String getValueCollectorStatement(@Nonnull TypeMirror fieldType, @Nonnull String fieldAccess) {
-        return getValueCollectorStatement(fieldType, fieldAccess, null, null);
+    @Pure
+    private final @Nonnull String getObjectVariableName() {
+        return Strings.lowercaseFirstCharacter(typeInformation.getName());
     }
     
-    /**
-     * Returns a generated call to the value collector from the given type and field access strings and the optionally given value collector call for composite types.
-     */
-    private @Nonnull String getValueCollectorStatement(@Nonnull TypeMirror fieldType, @Nonnull String fieldAccess, @Nullable String encoderCall, @Nullable String iterableItemName) {
-        final @Nonnull CustomType customType = CustomType.of(fieldType);
-        final @Nonnull String customTypePrefix = "Nullable" + Strings.capitalizeFirstLetters(customType.getTypeName().toLowerCase());
-        
-        Require.that(encoderCall == null && iterableItemName == null || encoderCall != null && iterableItemName != null).orThrow("The parameters encoderCall and iterableItemName must either both be null or non-null.");
-        return "encoder.set" + customTypePrefix + "(" + Strings.lowercaseFirstCharacter(typeInformation.getName()) + " == null ? null : " + fieldAccess + (encoderCall == null ? "" : ", (" + iterableItemName + ") -> " + encoderCall) + ")";
-    }
+//    /**
+//     * Returns a generated call to the value collector from the given type and field access strings and the optionally given value collector call for composite types.
+//     */
+//    @Pure
+//    private @Nonnull String getValueCollectorStatement(@Nonnull TypeMirror fieldType, @Nonnull String fieldAccess, @Nullable String encoderCall, @Nullable String iterableItemName) {
+//        final @Nonnull CustomType customType = CustomType.of(fieldType);
+//        final @Nonnull String customTypePrefix = Strings.uppercaseFirstCharacter(customType.getTypeName().toLowerCase());
+//        
+//        Require.that(encoderCall == null && iterableItemName == null || encoderCall != null && iterableItemName != null).orThrow("The parameters encoderCall and iterableItemName must either both be null or non-null.");
+//        return "encoder.encode" + customTypePrefix + "(" + fieldAccess + (encoderCall == null ? "" : ", (" + iterableItemName + ") -> " + encoderCall) + ")";
+//    }
+//    
+//    /**
+//     * Returns a generated call to the value collector from the given type and field access strings.
+//     */
+//    private @Nonnull String getValueCollectorStatement(@Nonnull TypeMirror fieldType, @Nonnull String fieldAccess) {
+//        return getValueCollectorStatement(fieldType, fieldAccess, null, null);
+//    }
+//    
+//    /**
+//     * Returns a generated statement that adds the field value to the value collector.
+//     */
+//    @SuppressWarnings("AssignmentToMethodParameter")
+//    private @Nonnull String generateValueCollectorCall(@Nonnull String fieldAccess, @Nonnull TypeMirror fieldType, int round) {
+//        final @Nonnull CustomType customType = CustomType.of(fieldType);
+//        
+//        if (customType.isCompositeType()) {
+//            final @Nullable TypeMirror componentType = ProcessingUtility.getComponentType(fieldType);
+//            Require.that(componentType != null).orThrow("The field type is not an array or list");
+//            final @Nonnull String entryName = "entry" + round;
+//            return getValueCollectorStatement(fieldType, fieldAccess, generateValueCollectorCall(entryName, componentType, ++round), entryName);
+//        } else if (customType.isObjectType()) {
+//            if (StaticProcessingEnvironment.getTypeUtils().isAssignable(fieldType, typeInformation.getType()) && ProcessingUtility.getTypeElement(fieldType).getKind() == ElementKind.ENUM) {
+//                return getValueCollectorStatement(ProcessingUtility.getTypeMirror(String.class), fieldAccess);
+//            } else {
+//                final @Nonnull String converterInstance = importConverterType(fieldType);
+//                return converterInstance + ".convert(" + Strings.lowercaseFirstCharacter(typeInformation.getName()) + " == null ? null : " + fieldAccess + ", encoder)";
+//            }
+//        } else {
+//            return getValueCollectorStatement(fieldType, fieldAccess);
+//        }
+//    }
     
-    /**
-     * Returns a generated statement that adds the field value to the value collector.
-     */
-    @SuppressWarnings("AssignmentToMethodParameter")
-    private @Nonnull String generateValueCollectorCall(@Nonnull String fieldAccess, @Nonnull TypeMirror fieldType, int round) {
-        final @Nonnull CustomType customType = CustomType.of(fieldType);
+    @Impure
+    private void addEncodingStatement(@Nonnull FieldInformation field) {
+        final @Nonnull TypeMirror type = field.getType();
+        final @Nonnull String access = getObjectVariableName() + "." + field.getAccessCode();
         
-        if (customType.isCompositeType()) {
-            final @Nullable TypeMirror componentType = ProcessingUtility.getComponentType(fieldType);
-            Require.that(componentType != null).orThrow("The field type is not an array or list");
-            final @Nonnull String entryName = "entry" + round;
-            return getValueCollectorStatement(fieldType, fieldAccess, generateValueCollectorCall(entryName, componentType, ++round), entryName);
-        } else if (customType.isObjectType()) {
-            if (StaticProcessingEnvironment.getTypeUtils().isAssignable(fieldType, typeInformation.getType()) && ProcessingUtility.getTypeElement(fieldType).getKind() == ElementKind.ENUM) {
-                return getValueCollectorStatement(ProcessingUtility.getTypeMirror(String.class), fieldAccess);
-            } else {
-                final @Nonnull String converterInstance = importConverterType(fieldType) + ".INSTANCE";
-                return converterInstance + ".convert(" + Strings.lowercaseFirstCharacter(typeInformation.getName()) + " == null ? null : " + fieldAccess + ", encoder)";
+        if ((type.getKind() == TypeKind.ARRAY || ProcessingUtility.isRawSubtype(type, Iterable.class) || ProcessingUtility.isRawSubtype(type, Map.class)) && !field.hasAnnotation(Nonnull.class)) {
+            ProcessingLog.error("Cannot convert an array, iterable or map that is nullable.", SourcePosition.of(field.getElement()));
+        }
+        
+        if (type.getKind().isPrimitive()) {
+            addStatement("encoder.encode" + Strings.uppercaseFirstCharacter(CustomType.of(type).getTypeName().toLowerCase()) + "(" + access + ")");
+        } else if (ProcessingUtility.isRawSubtype(type, Map.class)) {
+            final @Nullable DeclaredType supertype = ProcessingUtility.getSupertype((DeclaredType) type, Map.class);
+            if (supertype != null) {
+                final boolean nullable = !field.hasAnnotation(NonNullableElements.class);
+                final @Nonnull List<@Nonnull ? extends TypeMirror> typeArguments = supertype.getTypeArguments();
+                addStatement("i *= encoder.encodeMap" + (nullable ? "WithNullableValues" : "") + "(" + importConverterType(typeArguments.get(0)) + ", " + importConverterType(typeArguments.get(1)) + ", " + access + ")");
             }
+        } else if (type.getKind() == TypeKind.ARRAY || ProcessingUtility.isRawSubtype(type, Iterable.class)) {
+            final @Nullable TypeMirror componentType = ProcessingUtility.getComponentType(type);
+            if (componentType != null) {
+                final boolean unordered = ProcessingUtility.isRawSubtype(type, Set.class);
+                final boolean nullable = !field.hasAnnotation(NonNullableElements.class);
+                addStatement("i *= encoder.encode" + (unordered ? "Unordered" : "Ordered") + "Iterable" + (nullable ? "WithNullableElements" : "") + "(" + importConverterType(componentType) + ", " + importIfPossible(FiniteIterable.class) + ".of(" + access + "))");
+            }
+        } else if (ProcessingUtility.getTypeElement(type).getKind() == ElementKind.ENUM && StaticProcessingEnvironment.getTypeUtils().isAssignable(type, typeInformation.getType())) {
+            addStatement("i *= encoder.encodeObject(" + importIfPossible("net.digitalid.utility.conversion.converters.StringConverter") + ".INSTANCE, " + access + ")" );
         } else {
-            return getValueCollectorStatement(fieldType, fieldAccess);
+            addStatement("i *= encoder.encode" + (field.hasAnnotation(Nullable.class) ? "Nullable" : "") + "Object(" + importConverterType(type) + ", " + access + ")" );
         }
     }
     
     /**
      * Generates the convert method. Every representing field value is collected by a value collector.
      */
-    private void generateConvert() {
+    @Impure
+    private void generateConvertMethod() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
-        beginMethod("public " + Brackets.inPointy("EXCEPTION extends " + importIfPossible(ExternalException.class)) + " int convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(Encoder.class) + Brackets.inPointy("EXCEPTION") + " encoder) throws EXCEPTION");
-//        beginMethod("public void convert(@" + importIfPossible(Nullable.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " " + typeInformation.getName() + " " + Strings.lowercaseFirstCharacter(typeInformation.getName()) + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(ValueCollector.class) + " encoder)");
+        beginMethod("public " + Brackets.inPointy("EXCEPTION extends " + importIfPossible(ConnectionException.class)) + " int convert(@" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " @" + importIfPossible(Nonnull.class) + " " + typeInformation.getName() + " " + getObjectVariableName() + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(Encoder.class) + Brackets.inPointy("EXCEPTION") + " encoder) throws EXCEPTION");
         addStatement("int i = 1");
-        final @Nonnull FiniteIterable<FieldInformation> representingFieldInformation = filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
-        for (@Nonnull FieldInformation field : representingFieldInformation) {
-            final @Nonnull String fieldAccess = Strings.lowercaseFirstCharacter(typeInformation.getName()) + "." + field.getAccessCode();
-            addStatement("i *= " + generateValueCollectorCall(fieldAccess, field.getType(), 1));
-        }
+        filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation()).doForEach(this::addEncodingStatement);
+//        for (@Nonnull FieldInformation field : fields) {
+//            final @Nonnull String fieldAccess = objectVariableName + "." + field.getAccessCode();
+//            addStatement("i *= " + generateValueCollectorCall(fieldAccess, field.getType(), 1));
+//        }
         addStatement("return i");
         endMethod();
     }
@@ -204,22 +257,25 @@ public class ConverterGenerator extends JavaFileGenerator {
     /* -------------------------------------------------- Recovery -------------------------------------------------- */
     
     /**
+     * Returns a generated call to the selection result from the given type string and the optionally given selection result call for composite types.
+     */
+    @Pure
+    private @Nonnull String getSelectionResultStatement(@Nonnull String typeAsString, @Nullable String decoderCall) {
+        return "decoder.decode" + typeAsString + "(" + (decoderCall == null ? "" : "() -> " + decoderCall) + ")";
+    }
+    
+    /**
      * Returns a generated call to the selection result from the given type string.
      */
+    @Pure
     private @Nonnull String getSelectionResultStatement(@Nonnull String typeAsString) {
         return getSelectionResultStatement(typeAsString, null);
     }
     
     /**
-     * Returns a generated call to the selection result from the given type string and the optionally given selection result call for composite types.
-     */
-    private @Nonnull String getSelectionResultStatement(@Nonnull String typeAsString, @Nullable String decoderCall) {
-        return "decoder.get" + typeAsString + "(" + (decoderCall == null ? "" : "() -> " + decoderCall) + ")";
-    }
-    
-    /**
      * Returns a generated statement that reads the field value from the selection result.
      */
+    @Impure
     private @Nonnull String generateSelectionResultCall(@Nonnull TypeMirror fieldType, @Nonnull String provideParameterName) {
         final @Nonnull CustomType customType = CustomType.of(fieldType);
         final @Nonnull String customTypeName = Strings.capitalizeFirstLetters(customType.getTypeName().toLowerCase());
@@ -232,7 +288,7 @@ public class ConverterGenerator extends JavaFileGenerator {
             if (StaticProcessingEnvironment.getTypeUtils().isAssignable(fieldType, typeInformation.getType()) && ProcessingUtility.getTypeElement(fieldType).getKind() == ElementKind.ENUM) {
                 return getSelectionResultStatement("String");
             } else {
-                final @Nonnull String converterInstance = importConverterType(fieldType) + ".INSTANCE";
+                final @Nonnull String converterInstance = importConverterType(fieldType);
                 return converterInstance + ".recover(decoder, " + provideParameterName + ")";
             }
         } else {
@@ -240,6 +296,7 @@ public class ConverterGenerator extends JavaFileGenerator {
         }
     }
     
+    @Pure
     private @Nonnull String getAssignmentPrefix(@Nonnull TypeMirror fieldType) {
         if (CustomType.of(fieldType).isCompositeType() && ProcessingUtility.getQualifiedName(fieldType).startsWith("net.digitalid.utility.collections.")) {
             return ProcessingUtility.getSimpleName(fieldType) + ".withElementsOf(";
@@ -247,6 +304,7 @@ public class ConverterGenerator extends JavaFileGenerator {
         return "";
     }
     
+    @Pure
     private @Nonnull String getAssignmentPostfix(@Nonnull TypeMirror fieldType) {
         if (CustomType.of(fieldType).isCompositeType() && ProcessingUtility.getQualifiedName(fieldType).startsWith("net.digitalid.utility.collections.")) {
             return ")";
@@ -255,13 +313,47 @@ public class ConverterGenerator extends JavaFileGenerator {
         }
     }
     
+    @Impure
+    private void addDecodingStatement(@Nonnull FieldInformation field) {
+        final @Nonnull TypeMirror type = field.getType();
+        final @Nonnull String provided = field.hasAnnotation(Provide.class) ? field.getAnnotation(Provide.class).value() : "null";
+        
+        if (type.getKind().isPrimitive()) {
+            addStatement("final " + importIfPossible(field.getType()) + " " + field.getName() + " = decoder.decode" + Strings.uppercaseFirstCharacter(CustomType.of(type).getTypeName().toLowerCase()) + "()");
+        } else if (ProcessingUtility.isRawSubtype(type, Map.class)) {
+            final @Nullable DeclaredType supertype = ProcessingUtility.getSupertype((DeclaredType) type, Map.class);
+            if (supertype != null) {
+                final boolean nullable = !field.hasAnnotation(NonNullableElements.class);
+                final @Nonnull List<@Nonnull ? extends TypeMirror> typeArguments = supertype.getTypeArguments();
+                addStatement("final " + importIfPossible(field.getType()) + " " + field.getName() + " = decoder.decodeMap" + (nullable ? "WithNullableValues" : "") + "(" + importConverterType(typeArguments.get(0)) + ", " + provided + ", " + importConverterType(typeArguments.get(1)) + ", " + provided + ", new " + importIfPossible(LinkedHashMap.class) + "<>())"); // TODO: Find a way to be more flexible than hard-coding LinkedHashMap.
+            }
+        } else if (type.getKind() == TypeKind.ARRAY || ProcessingUtility.isRawSubtype(type, Iterable.class)) {
+            final @Nullable TypeMirror componentType = ProcessingUtility.getComponentType(type);
+            if (componentType != null) {
+                final boolean unordered = ProcessingUtility.isRawSubtype(type, Set.class);
+                final boolean nullable = !field.hasAnnotation(NonNullableElements.class);
+                final @Nonnull String collector;
+                if (type.getKind() == TypeKind.ARRAY) { collector = importIfPossible(ArrayCollector.class) + "::with"; }
+                else if (ProcessingUtility.isRawSubtype(type, List.class)) { collector = "size -> " + importIfPossible(CollectionCollector.class) + ".with(new " + importIfPossible(ArrayList.class) + "<>(size))"; }
+                else if (ProcessingUtility.isRawSubtype(type, Set.class)) { collector = "size -> " + importIfPossible(CollectionCollector.class) + ".with(new " + importIfPossible(LinkedHashSet.class) + "<>(size))"; }
+                else { collector = "null"; }
+                addStatement("final " + importIfPossible(field.getType()) + " " + field.getName() + " = decoder.decode" + (unordered ? "Unordered" : "Ordered") + "Iterable" + (nullable ? "WithNullableElements" : "") + "(" + importConverterType(componentType) + ", " + provided + ", " + collector + ")");
+            }
+        } else if (ProcessingUtility.getTypeElement(type).getKind() == ElementKind.ENUM && StaticProcessingEnvironment.getTypeUtils().isAssignable(type, typeInformation.getType())) {
+            addStatement("final @" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + " value = decoder.decodeObject(" + importIfPossible("net.digitalid.utility.conversion.converters.StringConverter") + ".INSTANCE, " + provided + ")" );
+        } else {
+            addStatement("final " + importIfPossible(field.getType()) + " " + field.getName() + " = decoder.decode" + (field.hasAnnotation(Nullable.class) ? "Nullable" : "") + "Object(" + importConverterType(type) + ", " + provided + ")" );
+        }
+    }
+    
     /**
      * Generates a recover method for every representing field of the type and calls the builder.
      */
+    @Impure
     protected void generateRecoverMethod() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
-        beginMethod("public @" + importIfPossible(Capturable.class) + " " + Brackets.inPointy("EXCEPTION extends " + importIfPossible(ExternalException.class)) + " @" + importIfPossible(Nullable.class) + " " + typeInformation.getName() + " recover(@" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " " + importIfPossible(Decoder.class) + Brackets.inPointy("EXCEPTION") + " decoder, " + getExternallyProvidedParameterDeclarationsAsString(getExternallyProvidedParameterNameAsString()) + ") throws EXCEPTION");
+        beginMethod("public @" + importIfPossible(Capturable.class) + " " + Brackets.inPointy("EXCEPTION extends " + importIfPossible(ConnectionException.class)) + " @" + importIfPossible(Nullable.class) + " " + typeInformation.getName() + " recover(@" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " " + importIfPossible(Decoder.class) + Brackets.inPointy("EXCEPTION") + " decoder, " + getExternallyProvidedParameterDeclarationsAsString(getExternallyProvidedParameterNameAsString()) + ") throws EXCEPTION, " + importIfPossible(RecoveryException.class));
         final @Nonnull FiniteIterable<@Nonnull FieldInformation> externallyProvidedFields = filterExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
         
         if (externallyProvidedFields.size() > 1) {
@@ -270,17 +362,20 @@ public class ConverterGenerator extends JavaFileGenerator {
                 addStatement("final " + importIfPossible(externallyProvidedField.getType()) + " " + externallyProvidedField.getName() + " = provided.get" + i++ + "()");
             }
         }
-        final @Nonnull FiniteIterable<FieldInformation> constructorParameters = filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
         
-        for (@Nonnull FieldInformation constructorParameter : constructorParameters) {
-            final @Nonnull String provide = constructorParameter.hasAnnotation(Provide.class) ? constructorParameter.getAnnotation(Provide.class).value() : "null";
-            if (constructorParameter instanceof EnumValueInformation) {
-                addStatement("final @" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + " value = " + generateSelectionResultCall(constructorParameter.getType(), provide));
-            } else {
-                addStatement("final " + importIfPossible(constructorParameter.getType()) + " " + constructorParameter.getName() + " = " + generateSelectionResultCall(constructorParameter.getType(), provide));
-            }
-        }
-        addStatement(typeInformation.getInstantiationCode(true, true, true, externallyProvidedFields.combine(constructorParameters)));
+        final @Nonnull FiniteIterable<@Nonnull FieldInformation> fields = filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
+        
+//        for (@Nonnull FieldInformation constructorParameter : fields) {
+//            final @Nonnull String provide = constructorParameter.hasAnnotation(Provide.class) ? constructorParameter.getAnnotation(Provide.class).value() : "null";
+//            if (constructorParameter instanceof EnumValueInformation) {
+//                addStatement("final @" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + " value = " + generateSelectionResultCall(constructorParameter.getType(), provide));
+//            } else {
+//                addStatement("final " + importIfPossible(constructorParameter.getType()) + " " + constructorParameter.getName() + " = " + generateSelectionResultCall(constructorParameter.getType(), provide));
+//            }
+//        }
+        
+        fields.doForEach(this::addDecodingStatement);
+        addStatement(typeInformation.getInstantiationCode(true, true, true, externallyProvidedFields.combine(fields)));
         endMethod();
     }
     
@@ -289,6 +384,7 @@ public class ConverterGenerator extends JavaFileGenerator {
     /**
      * Generates a static final instance field for this converter.
      */
+    @Impure
     private void generateInstanceField() {
         addField("public static final @" + importIfPossible(Nonnull.class) + " " + typeInformation.getSimpleNameOfGeneratedConverter() + " INSTANCE = new " + typeInformation.getSimpleNameOfGeneratedConverter() + "()");
     }
@@ -298,6 +394,7 @@ public class ConverterGenerator extends JavaFileGenerator {
     /**
      * Generates the custom fields from the representing fields of the type.
      */
+    @Impure
     private void generateFields() {
         final @Nonnull StringBuilder fieldsString = new StringBuilder();
         final @Nonnull List<@Nonnull String> statements = new ArrayList<>();
@@ -359,6 +456,7 @@ public class ConverterGenerator extends JavaFileGenerator {
     /**
      * Generates the declare method that iterates through the representing fields and sets the field in the declaration object.
      */
+    @Impure
     private void generateGetFields() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
@@ -369,6 +467,7 @@ public class ConverterGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Type -------------------------------------------------- */
     
+    @Impure
     private void generateGetType() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
@@ -379,6 +478,7 @@ public class ConverterGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Name -------------------------------------------------- */
     
+    @Impure
     private void generateGetTypeName() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
@@ -389,6 +489,7 @@ public class ConverterGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Package -------------------------------------------------- */
     
+    @Impure
     private void generateGetTypePackage() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
@@ -407,27 +508,24 @@ public class ConverterGenerator extends JavaFileGenerator {
     
         this.typeInformation = typeInformation;
     
-        try {
-            beginClass("public class " + typeInformation.getSimpleNameOfGeneratedConverter() + importWithBounds(typeInformation.getTypeArguments()) + " implements " + importIfPossible(Converter.class) + "<" + typeInformation.getName() + ", " + getExternallyProvidedParameterDeclarationsAsString("") + ">");
-            
-            generateInstanceField();
-            generateGetType();
-            generateGetTypeName();
-            generateGetTypePackage();
-            generateFields();
-            generateGetFields();
-            generateConvert();
-            generateRecoverMethod();
-            
-            endClass();
-        } catch (Exception e) {
-            throw UnexpectedFailureException.with(e.getMessage(), e);
-        }
+        beginClass("public class " + typeInformation.getSimpleNameOfGeneratedConverter() + importWithBounds(typeInformation.getTypeArguments()) + " implements " + importIfPossible(Converter.class) + "<" + typeInformation.getName() + ", " + getExternallyProvidedParameterDeclarationsAsString("") + ">");
+        
+        generateInstanceField();
+        generateGetType();
+        generateGetTypeName();
+        generateGetTypePackage();
+        generateFields();
+        generateGetFields();
+        generateConvertMethod();
+        generateRecoverMethod();
+        
+        endClass();
     }
     
     /**
      * Generates a new converter class for the given type information.
      */
+    @Impure
     public static void generateConverterFor(@Nonnull TypeInformation typeInformation) {
         ProcessingLog.debugging("generateConverterFor(" + typeInformation + ")");
         new ConverterGenerator(typeInformation).write();

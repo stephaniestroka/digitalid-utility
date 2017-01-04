@@ -8,7 +8,7 @@ import javax.lang.model.element.Element;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
-import net.digitalid.utility.contracts.exceptions.ContractViolationException;
+import net.digitalid.utility.contracts.exceptions.ContractException;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.string.Strings;
@@ -43,7 +43,7 @@ public class Contract {
     private final @Nonnull String message;
     
     /**
-     * Returns the message with which a {@link ContractViolationException} is thrown if the condition is violated.
+     * Returns the message with which a {@link ContractException} is thrown if the condition is violated.
      */
     @Pure
     public @Nonnull String getMessage() {

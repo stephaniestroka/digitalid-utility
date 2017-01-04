@@ -7,11 +7,13 @@ import java.util.Queue;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.conversion.converter.CustomField;
-import net.digitalid.utility.conversion.converter.Representation;
-import net.digitalid.utility.exceptions.UnexpectedFailureException;
+import net.digitalid.utility.conversion.enumerations.Representation;
+import net.digitalid.utility.conversion.exceptions.RecoveryException;
+import net.digitalid.utility.conversion.exceptions.RecoveryExceptionBuilder;
+import net.digitalid.utility.conversion.model.CustomField;
 import net.digitalid.utility.generator.annotations.generators.GenerateConverter;
 import net.digitalid.utility.immutable.ImmutableList;
+import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.testing.RootTest;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.generation.Provide;
@@ -22,7 +24,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
 
 import org.junit.Test;
 
-import static net.digitalid.utility.conversion.converter.types.CustomType.*;
+import static net.digitalid.utility.conversion.model.CustomType.*;
 
 @Immutable
 @GenerateConverter
@@ -124,7 +126,7 @@ enum EnumWithRecoverMethod {
     }
     
     @Recover
-    public static @Nonnull EnumWithRecoverMethod of(int id) {
+    public static @Nonnull EnumWithRecoverMethod of(int id) throws RecoveryException {
         switch (id) {
             case 0:
                 return ZERO;
@@ -135,7 +137,7 @@ enum EnumWithRecoverMethod {
             case 3:
                 return THREE;
         }
-        throw UnexpectedFailureException.with("Unexpected id $ found", id);
+        throw RecoveryExceptionBuilder.withMessage(Strings.format("Unexpected id $ found.", id)).build();
     }
     
 }
@@ -164,7 +166,7 @@ enum EnumWithRecoverMethodAndNonDirectlyAccessibleField {
     }
     
     @Recover
-    public static @Nonnull EnumWithRecoverMethodAndNonDirectlyAccessibleField of(byte value) {
+    public static @Nonnull EnumWithRecoverMethodAndNonDirectlyAccessibleField of(byte value) throws RecoveryException {
         switch (value) {
             case 0:
                 return ZERO;
@@ -175,7 +177,7 @@ enum EnumWithRecoverMethodAndNonDirectlyAccessibleField {
             case 3:
                 return THREE;
         }
-        throw UnexpectedFailureException.with("Unexpected id $ found", value);
+        throw RecoveryExceptionBuilder.withMessage(Strings.format("Unexpected value $ found.", value)).build();
     }
     
 }
@@ -210,24 +212,24 @@ public class ConverterTest extends RootTest {
     }
     
     @Test
-    public void testValueCollectionOfClass() throws Exception {
+    public void testEncodingOfClass() throws Exception {
         final @Nonnull VariousFields variousFields = new VariousFields(true, 5, "bla");
-        final @Nonnull TestEncoder testValueCollector = new TestEncoder();
-        VariousFieldsConverter.INSTANCE.convert(variousFields, testValueCollector);
-        assertEquals(3, testValueCollector.collectedValues.size());
-        assertEquals(Pair.of(true, boolean.class), testValueCollector.collectedValues.get(0));
-        assertEquals(Pair.of(5, int.class), testValueCollector.collectedValues.get(1));
-        assertEquals(Pair.of("bla", String.class), testValueCollector.collectedValues.get(2));
+        final @Nonnull TestEncoder testEncoder = new TestEncoder();
+        VariousFieldsConverter.INSTANCE.convert(variousFields, testEncoder);
+        assertEquals(3, testEncoder.encodedValues.size());
+        assertEquals(Pair.of(true, boolean.class), testEncoder.encodedValues.get(0));
+        assertEquals(Pair.of(5, int.class), testEncoder.encodedValues.get(1));
+        assertEquals(Pair.of("bla", String.class), testEncoder.encodedValues.get(2));
     }
     
     @Test
-    public void testSelectionResultOfClass() throws Exception {
+    public void testDecodingOfClass() throws Exception {
         final Queue<@Nonnull Object> testQueue = new LinkedList<>();
         testQueue.add(true);
         testQueue.add(5);
         testQueue.add("bla");
-        final @Nonnull TestDecoder testSelectionResult = new TestDecoder(testQueue);
-        final @Nonnull VariousFields recoveredObject = VariousFieldsConverter.INSTANCE.recover(testSelectionResult, null);
+        final @Nonnull TestDecoder testDecoder = new TestDecoder(testQueue);
+        final @Nonnull VariousFields recoveredObject = VariousFieldsConverter.INSTANCE.recover(testDecoder, null);
         assertEquals(true, recoveredObject.flag);
         assertEquals(5, recoveredObject.size);
         assertEquals("bla", recoveredObject.text);
@@ -245,19 +247,19 @@ public class ConverterTest extends RootTest {
     }
     
     @Test
-    public void testValueCollectionOfEnum() throws Exception {
-        final @Nonnull TestEncoder testValueCollector = new TestEncoder();
-        SimpleEnumConverter.INSTANCE.convert(SimpleEnum.COMET, testValueCollector);
-        assertEquals(1, testValueCollector.collectedValues.size());
-        assertEquals(Pair.of("COMET", String.class), testValueCollector.collectedValues.get(0));
+    public void testEncodingOfEnum() throws Exception {
+        final @Nonnull TestEncoder testEncoder = new TestEncoder();
+        SimpleEnumConverter.INSTANCE.convert(SimpleEnum.COMET, testEncoder);
+        assertEquals(1, testEncoder.encodedValues.size());
+        assertEquals(Pair.of("COMET", String.class), testEncoder.encodedValues.get(0));
     }
     
     @Test
-    public void testSelectionResultOfEnum() throws Exception {
+    public void testDecodingOfEnum() throws Exception {
         final Queue<@Nonnull Object> testQueue = new LinkedList<>();
         testQueue.add(SimpleEnum.COMET.name());
-        final @Nonnull TestDecoder testSelectionResult = new TestDecoder(testQueue);
-        final @Nonnull SimpleEnum recoveredObject = SimpleEnumConverter.INSTANCE.recover(testSelectionResult, null);
+        final @Nonnull TestDecoder testDecoder = new TestDecoder(testQueue);
+        final @Nonnull SimpleEnum recoveredObject = SimpleEnumConverter.INSTANCE.recover(testDecoder, null);
         assertEquals(SimpleEnum.COMET, recoveredObject);
     }
     
@@ -273,19 +275,19 @@ public class ConverterTest extends RootTest {
     }
 
     @Test
-    public void testValueCollectionOfEnumWithRecoverMethod() throws Exception {
-        final @Nonnull TestEncoder testValueCollector = new TestEncoder();
-        EnumWithRecoverMethodConverter.INSTANCE.convert(EnumWithRecoverMethod.ONE, testValueCollector);
-        assertEquals(1, testValueCollector.collectedValues.size());
-        assertEquals(Pair.of(1, int.class), testValueCollector.collectedValues.get(0));
+    public void testEncodingOfEnumWithRecoverMethod() throws Exception {
+        final @Nonnull TestEncoder testEncoder = new TestEncoder();
+        EnumWithRecoverMethodConverter.INSTANCE.convert(EnumWithRecoverMethod.ONE, testEncoder);
+        assertEquals(1, testEncoder.encodedValues.size());
+        assertEquals(Pair.of(1, int.class), testEncoder.encodedValues.get(0));
     }
 
     @Test
-    public void testSelectionResultOfEnumWithRecoverMethod() throws Exception {
+    public void testDecodingOfEnumWithRecoverMethod() throws Exception {
         final Queue<@Nonnull Object> testQueue = new LinkedList<>();
         testQueue.add(3);
-        final @Nonnull TestDecoder testSelectionResult = new TestDecoder(testQueue);
-        final @Nonnull EnumWithRecoverMethod recoveredObject = EnumWithRecoverMethodConverter.INSTANCE.recover(testSelectionResult, null);
+        final @Nonnull TestDecoder testDecoder = new TestDecoder(testQueue);
+        final @Nonnull EnumWithRecoverMethod recoveredObject = EnumWithRecoverMethodConverter.INSTANCE.recover(testDecoder, null);
         assertEquals(EnumWithRecoverMethod.THREE, recoveredObject);
     }
     
@@ -300,19 +302,19 @@ public class ConverterTest extends RootTest {
     }
 
     @Test
-    public void testValueCollectionOfEnumWithRecoverMethodAndNonDirectlyAccessibleField() throws Exception {
-        final @Nonnull TestEncoder testValueCollector = new TestEncoder();
-        EnumWithRecoverMethodAndNonDirectlyAccessibleFieldConverter.INSTANCE.convert(EnumWithRecoverMethodAndNonDirectlyAccessibleField.ONE, testValueCollector);
-        assertEquals(1, testValueCollector.collectedValues.size());
-        assertEquals(Pair.of((byte) 1, byte.class), testValueCollector.collectedValues.get(0));
+    public void testEncodingOfEnumWithRecoverMethodAndNonDirectlyAccessibleField() throws Exception {
+        final @Nonnull TestEncoder testEncoder = new TestEncoder();
+        EnumWithRecoverMethodAndNonDirectlyAccessibleFieldConverter.INSTANCE.convert(EnumWithRecoverMethodAndNonDirectlyAccessibleField.ONE, testEncoder);
+        assertEquals(1, testEncoder.encodedValues.size());
+        assertEquals(Pair.of((byte) 1, byte.class), testEncoder.encodedValues.get(0));
     }
 
     @Test
-    public void testSelectionResultOfEnumWithRecoverMethodAndNonDirectlyAccessibleField() throws Exception {
+    public void testDecodingOfEnumWithRecoverMethodAndNonDirectlyAccessibleField() throws Exception {
         final Queue<@Nonnull Object> testQueue = new LinkedList<>();
         testQueue.add((byte) 3);
-        final @Nonnull TestDecoder testSelectionResult = new TestDecoder(testQueue);
-        final @Nonnull EnumWithRecoverMethodAndNonDirectlyAccessibleField recoveredObject = EnumWithRecoverMethodAndNonDirectlyAccessibleFieldConverter.INSTANCE.recover(testSelectionResult, null);
+        final @Nonnull TestDecoder testDecoder = new TestDecoder(testQueue);
+        final @Nonnull EnumWithRecoverMethodAndNonDirectlyAccessibleField recoveredObject = EnumWithRecoverMethodAndNonDirectlyAccessibleFieldConverter.INSTANCE.recover(testDecoder, null);
         assertEquals(EnumWithRecoverMethodAndNonDirectlyAccessibleField.THREE, recoveredObject);
     }
     

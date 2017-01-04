@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.console.exceptions.EscapeOptionException;
-import net.digitalid.utility.exceptions.UnexpectedFailureException;
+import net.digitalid.utility.exceptions.UncheckedExceptionBuilder;
 import net.digitalid.utility.property.set.WritableVolatileSimpleSetProperty;
 import net.digitalid.utility.property.set.WritableVolatileSimpleSetPropertyBuilder;
 import net.digitalid.utility.validation.annotations.type.Utility;
@@ -74,7 +74,7 @@ public abstract class Console {
             if (input == null) { throw new IOException("The end of the standard input has been reached."); }
             return input;
         } catch (@Nonnull IOException exception) {
-            throw UnexpectedFailureException.with("Could not read from the standard input.", exception);
+            throw UncheckedExceptionBuilder.withCause(exception).build();
         }
     }
     

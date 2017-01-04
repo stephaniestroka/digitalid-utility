@@ -3,6 +3,8 @@ package net.digitalid.utility.functional.failable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
@@ -12,10 +14,10 @@ import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * A failable collector consumes objects of type {@code T} and produces a result of type {@code R}.
+ * A failable collector consumes objects of type {@code TYPE} and produces a result of type {@code RESULT}.
  */
 @Mutable
-public interface FailableCollector<T, R, X extends Exception, Y extends Exception> extends FailableConsumer<T, X> {
+public interface FailableCollector<@Specifiable TYPE, @Specifiable RESULT, @Unspecifiable COLLECT_EXCEPTION extends Exception, @Unspecifiable RESULT_EXCEPTION extends Exception> extends FailableConsumer<TYPE, COLLECT_EXCEPTION> {
     
     /* -------------------------------------------------- Result -------------------------------------------------- */
     
@@ -23,7 +25,7 @@ public interface FailableCollector<T, R, X extends Exception, Y extends Exceptio
      * Returns the result of this collector.
      */
     @Pure
-    public @Capturable R getResult() throws Y;
+    public @Capturable RESULT getResult() throws RESULT_EXCEPTION;
     
     /* -------------------------------------------------- Suppression -------------------------------------------------- */
     
@@ -31,12 +33,12 @@ public interface FailableCollector<T, R, X extends Exception, Y extends Exceptio
      * Returns a collector that suppresses the exceptions of this collector, passes them to the given exception handler and returns the given default result instead.
      */
     @Pure
-    public default @Capturable @Nonnull Collector<T, R> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, @Captured R defaultResult) {
-        return new Collector<T, R>() {
+    public default @Capturable @Nonnull Collector<TYPE, RESULT> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, @Captured RESULT defaultResult) {
+        return new Collector<TYPE, RESULT>() {
             
             @Impure
             @Override
-            public void consume(@Captured T object) {
+            public void consume(@Captured TYPE object) {
                 try {
                     FailableCollector.this.consume(object);
                 } catch (@Nonnull Exception exception) {
@@ -46,7 +48,7 @@ public interface FailableCollector<T, R, X extends Exception, Y extends Exceptio
             
             @Pure
             @Override
-            public @Capturable R getResult() {
+            public @Capturable RESULT getResult() {
                 try {
                     return FailableCollector.this.getResult();
                 } catch (@Nonnull Exception exception) {
@@ -63,7 +65,7 @@ public interface FailableCollector<T, R, X extends Exception, Y extends Exceptio
      */
     @Pure
     @Override
-    public default @Capturable @Nonnull Collector<T, @Nullable R> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
+    public default @Capturable @Nonnull Collector<TYPE, @Nullable RESULT> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
         return suppressExceptions(handler, null);
     }
     
@@ -71,7 +73,7 @@ public interface FailableCollector<T, R, X extends Exception, Y extends Exceptio
      * Returns a collector that suppresses the exceptions of this collector and returns the given default result instead.
      */
     @Pure
-    public default @Capturable @Nonnull Collector<T, R> suppressExceptions(@Captured R defaultResult) {
+    public default @Capturable @Nonnull Collector<TYPE, RESULT> suppressExceptions(@Captured RESULT defaultResult) {
         return suppressExceptions(Consumer.DO_NOTHING, defaultResult);
     }
     
@@ -80,7 +82,7 @@ public interface FailableCollector<T, R, X extends Exception, Y extends Exceptio
      */
     @Pure
     @Override
-    public default @Capturable @Nonnull Collector<T, @Nullable R> suppressExceptions() {
+    public default @Capturable @Nonnull Collector<TYPE, @Nullable RESULT> suppressExceptions() {
         return suppressExceptions(Consumer.DO_NOTHING, null);
     }
     
@@ -88,12 +90,12 @@ public interface FailableCollector<T, R, X extends Exception, Y extends Exceptio
     
     @Pure
     @Override
-    public default @Nonnull FailableCollector<T, R, X, Y> synchronize() {
-        return new FailableCollector<T, R, X, Y>() {
+    public default @Nonnull FailableCollector<TYPE, RESULT, COLLECT_EXCEPTION, RESULT_EXCEPTION> synchronize() {
+        return new FailableCollector<TYPE, RESULT, COLLECT_EXCEPTION, RESULT_EXCEPTION>() {
             
             @Impure
             @Override
-            public void consume(@Captured T object) throws X {
+            public void consume(@Captured TYPE object) throws COLLECT_EXCEPTION {
                 synchronized (FailableCollector.this) {
                     FailableCollector.this.consume(object);
                 }
@@ -101,7 +103,7 @@ public interface FailableCollector<T, R, X extends Exception, Y extends Exceptio
             
             @Pure
             @Override
-            public @Capturable R getResult() throws Y {
+            public @Capturable RESULT getResult() throws RESULT_EXCEPTION {
                 synchronized (FailableCollector.this) {
                     return FailableCollector.this.getResult();
                 }

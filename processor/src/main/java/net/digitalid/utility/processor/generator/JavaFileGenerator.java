@@ -41,7 +41,7 @@ import net.digitalid.utility.contracts.Constraint;
 import net.digitalid.utility.contracts.Ensure;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.contracts.Validate;
-import net.digitalid.utility.exceptions.UnexpectedValueException;
+import net.digitalid.utility.exceptions.CaseExceptionBuilder;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.processing.logging.ProcessingLog;
@@ -195,7 +195,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
         }
         
         // The empty prefix of the last import group should always be matched.
-        throw UnexpectedValueException.with("qualifiedClassName", qualifiedName);
+        throw CaseExceptionBuilder.withVariable("qualifiedClassName").withValue(qualifiedName).build();
     }
     
     /**

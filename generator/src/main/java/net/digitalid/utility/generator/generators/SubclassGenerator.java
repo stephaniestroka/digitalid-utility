@@ -14,7 +14,6 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.contracts.Require;
-import net.digitalid.utility.exceptions.UnexpectedFailureException;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.GeneratorProcessor;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
@@ -422,24 +421,20 @@ public class SubclassGenerator extends JavaFileGenerator {
         super(typeInformation.getQualifiedNameOfGeneratedSubclass(), typeInformation.getElement());
         
         this.typeInformation = typeInformation;
-        try {
-            Require.that(typeInformation.getAnnotation(GenerateSubclass.class) != null).orThrow("The SubclassGenerator should not have been called if the annotation @GenerateSubclass is missing.");
-            @Nonnull String modifier = "";
-            if (typeInformation.getAnnotation(GenerateSubclass.class).makePublic()) {
-                modifier = "public ";
-            }
-            beginClass(modifier + "class " + typeInformation.getSimpleNameOfGeneratedSubclass() + importWithBounds(typeInformation.getTypeArguments()) + (typeInformation.getElement().getKind() == ElementKind.CLASS ? " extends " : " implements ") + importIfPossible(typeInformation.getType()));
-            
-            generateFields();
-            generateConstructors();
-            overrideMethods();
-            implementMethods();
-            generateMethods();
-            
-            endClass();
-        } catch (Exception e) {
-            throw UnexpectedFailureException.with(e.getMessage(), e);
+        Require.that(typeInformation.getAnnotation(GenerateSubclass.class) != null).orThrow("The SubclassGenerator should not have been called if the annotation @GenerateSubclass is missing.");
+        @Nonnull String modifier = "";
+        if (typeInformation.getAnnotation(GenerateSubclass.class).makePublic()) {
+            modifier = "public ";
         }
+        beginClass(modifier + "class " + typeInformation.getSimpleNameOfGeneratedSubclass() + importWithBounds(typeInformation.getTypeArguments()) + (typeInformation.getElement().getKind() == ElementKind.CLASS ? " extends " : " implements ") + importIfPossible(typeInformation.getType()));
+
+        generateFields();
+        generateConstructors();
+        overrideMethods();
+        implementMethods();
+        generateMethods();
+
+        endClass();
     }
     
     /**

@@ -10,7 +10,7 @@ import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collections.map.ReadOnlyMap;
-import net.digitalid.utility.concurrency.exceptions.ReentranceException;
+import net.digitalid.utility.validation.annotations.lock.LockNotHeldByCurrentThread;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
@@ -32,7 +32,8 @@ public interface WritableMapProperty<KEY, VALUE, READONLY_MAP extends ReadOnlyMa
      * @return {@code true} if the key-value pair was successfully added and {@code false} if the key was already in use.
      */
     @Impure
-    public abstract boolean add(@Captured @Nonnull @Valid("key") KEY key, @Captured @Nonnull @Valid VALUE value) throws EXCEPTION, ReentranceException;
+    @LockNotHeldByCurrentThread
+    public abstract boolean add(@Captured @Nonnull @Valid("key") KEY key, @Captured @Nonnull @Valid VALUE value) throws EXCEPTION;
     
     /**
      * Removes the value indexed by the given key from this property.
@@ -40,6 +41,7 @@ public interface WritableMapProperty<KEY, VALUE, READONLY_MAP extends ReadOnlyMa
      * @return the value that was previously associated with the given key or null if the key was not in use.
      */
     @Impure
-    public abstract @Capturable @Nullable @Valid VALUE remove(@NonCaptured @Unmodified @Nonnull @Valid("key") KEY key) throws EXCEPTION, ReentranceException;
+    @LockNotHeldByCurrentThread
+    public abstract @Capturable @Nullable @Valid VALUE remove(@NonCaptured @Unmodified @Nonnull @Valid("key") KEY key) throws EXCEPTION;
     
 }

@@ -11,11 +11,11 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collections.set.FreezableSet;
 import net.digitalid.utility.collections.set.ReadOnlySet;
-import net.digitalid.utility.concurrency.exceptions.ReentranceException;
 import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
+import net.digitalid.utility.validation.annotations.lock.LockNotHeldByCurrentThread;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
@@ -52,7 +52,8 @@ public abstract class WritableVolatileSetProperty<VALUE, READONLY_SET extends Re
     
     @Impure
     @Override
-    public boolean add(@Captured @Nonnull @Valid VALUE value) throws ReentranceException {
+    @LockNotHeldByCurrentThread
+    public boolean add(@Captured @Nonnull @Valid VALUE value) {
         lock.lock();
         try {
             final boolean notAlreadyContained = getSet().add(value);
@@ -65,7 +66,8 @@ public abstract class WritableVolatileSetProperty<VALUE, READONLY_SET extends Re
     
     @Impure
     @Override
-    public boolean remove(@NonCaptured @Unmodified @Nonnull @Valid VALUE value) throws ReentranceException {
+    @LockNotHeldByCurrentThread
+    public boolean remove(@NonCaptured @Unmodified @Nonnull @Valid VALUE value) {
         lock.lock();
         try {
             final boolean contained = getSet().remove(value);

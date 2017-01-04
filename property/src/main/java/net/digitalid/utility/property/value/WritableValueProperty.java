@@ -4,7 +4,7 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.type.ThreadSafe;
-import net.digitalid.utility.concurrency.exceptions.ReentranceException;
+import net.digitalid.utility.validation.annotations.lock.LockNotHeldByCurrentThread;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
@@ -28,6 +28,7 @@ public interface WritableValueProperty<VALUE, EXCEPTION extends Exception, OBSER
      * @throws ReentranceException if this method is called by an observer of this property.
      */
     @Impure
-    public @Capturable @Valid VALUE set(@Captured @Valid VALUE value) throws EXCEPTION, ReentranceException;
+    @LockNotHeldByCurrentThread
+    public @Capturable @Valid VALUE set(@Captured @Valid VALUE value) throws EXCEPTION;
     
 }

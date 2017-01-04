@@ -31,14 +31,13 @@ import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.annotations.state.Unmodifiable;
 import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.circumfixes.Quotes;
-import net.digitalid.utility.exceptions.utility.ExceptionUtility;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.logging.Log;
-import net.digitalid.utility.logging.exceptions.InvalidConfigurationException;
 import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.annotations.SupportedAnnotations;
 import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.throwable.Throwables;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.type.Mutable;
@@ -124,7 +123,7 @@ public abstract class CustomProcessor implements Processor {
         try {
             try {
                 ProcessingLog.initialize(getClass().getSimpleName());
-            } catch (@Nonnull InvalidConfigurationException exception) {
+            } catch (@Nonnull IllegalArgumentException exception) {
                 Log.error("The logging configuration is invalid:", exception);
             } catch (@Nonnull FileNotFoundException exception) {
                 Log.error("Could not find the logging file:", exception);
@@ -146,7 +145,7 @@ public abstract class CustomProcessor implements Processor {
             return annotationsConsumed;
         } catch (@Nonnull Throwable throwable) {
             Log.error("The compilation failed due to the following problem:", throwable);
-            ProcessingLog.error("An unexpected compilation error occurred: $. Please consult the log file under target/processor-logs/GeneratorProcessor.log for details.", ExceptionUtility.getThrowableSummary(throwable));
+            ProcessingLog.error("An unexpected compilation error occurred: $. Please consult the log file under target/processor-logs/GeneratorProcessor.log for details.", Throwables.getSummary(throwable));
             throw throwable;
         }
     }

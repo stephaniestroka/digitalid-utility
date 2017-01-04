@@ -2,33 +2,39 @@ package net.digitalid.utility.generator.generators.converter;
 
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.crypto.Cipher;
-import javax.crypto.CipherOutputStream;
 
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.conversion.converter.EncoderImplementation;
-import net.digitalid.utility.conversion.converter.Representation;
-import net.digitalid.utility.conversion.converter.types.CustomType;
-import net.digitalid.utility.functional.failable.FailableUnaryFunction;
-import net.digitalid.utility.logging.exceptions.ExternalException;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
+import net.digitalid.utility.conversion.enumerations.Representation;
+import net.digitalid.utility.conversion.exceptions.ConnectionException;
+import net.digitalid.utility.conversion.interfaces.Converter;
+import net.digitalid.utility.conversion.interfaces.Encoder;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.tuples.Pair;
+import net.digitalid.utility.validation.annotations.method.Ensures;
+import net.digitalid.utility.validation.annotations.method.Requires;
 import net.digitalid.utility.validation.annotations.size.Size;
+import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * The value collector that is used to test the functionality of the converter.
+ * The encoder that is used to test the functionality of the converter.
  */
-class TestEncoder extends EncoderImplementation<ExternalException> {
+@Mutable
+public class TestEncoder implements Encoder<ConnectionException> {
+    
+    /* -------------------------------------------------- Representation -------------------------------------------------- */
     
     @Pure
     @Override
@@ -36,189 +42,234 @@ class TestEncoder extends EncoderImplementation<ExternalException> {
         return Representation.EXTERNAL;
     }
     
-    List<@Nonnull Pair<@Nonnull Object, @Nonnull Class<?>>> collectedValues = new ArrayList<>();
+    /* -------------------------------------------------- Objects -------------------------------------------------- */
     
     @Impure
     @Override
-    public @Nonnull Integer setEmpty() {
-        collectedValues.add(Pair.of(null, boolean.class));
-        return 1;
+    public <@Unspecifiable TYPE> int encodeObject(@Nonnull Converter<TYPE, ?> converter, @NonCaptured @Unmodified @Nonnull TYPE object) throws ConnectionException {
+        return converter.convert(object, this);
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setBoolean(boolean value) {
-        collectedValues.add(Pair.of(value, boolean.class));
-        return 1;
+    public <@Unspecifiable TYPE> int encodeNullableObject(@Nonnull Converter<TYPE, ?> converter, @NonCaptured @Unmodified @Nullable TYPE object) throws ConnectionException {
+        encodeBoolean(object != null);
+        if (object != null) { return encodeObject(converter, object); }
+        else { return 1; }
+    }
+    
+    /* -------------------------------------------------- Values -------------------------------------------------- */
+    
+    protected final @Nonnull List<@Nonnull Pair<@Nonnull Object, @Nonnull Class<?>>> encodedValues = new ArrayList<>();
+    
+    @Impure
+    @Override
+    public void encodeBoolean(boolean value) {
+        encodedValues.add(Pair.of(value, boolean.class));
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setInteger08(byte value) {
-        collectedValues.add(Pair.of(value, byte.class));
-        return 1;
+    public void encodeInteger08(byte value) {
+        encodedValues.add(Pair.of(value, byte.class));
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setInteger16(short value) {
-        collectedValues.add(Pair.of(value, short.class));
-        return 1;
+    public void encodeInteger16(short value) {
+        encodedValues.add(Pair.of(value, short.class));
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setInteger32(int value) {
-        collectedValues.add(Pair.of(value, int.class));
-        return 1;
+    public void encodeInteger32(int value) {
+        encodedValues.add(Pair.of(value, int.class));
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setInteger64(long value) {
-        collectedValues.add(Pair.of(value, long.class));
-        return 1;
+    public void encodeInteger64(long value) {
+        encodedValues.add(Pair.of(value, long.class));
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setInteger(@Nonnull BigInteger value) {
-        collectedValues.add(Pair.of(value, BigInteger.class));
-        return 1;
+    public void encodeInteger(@Nonnull BigInteger value) {
+        encodedValues.add(Pair.of(value, BigInteger.class));
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setDecimal32(float value) {
-        collectedValues.add(Pair.of(value, float.class));
-        return 1;
+    public void encodeDecimal32(float value) {
+        encodedValues.add(Pair.of(value, float.class));
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setDecimal64(double value) {
-        collectedValues.add(Pair.of(value, double.class));
-        return 1;
+    public void encodeDecimal64(double value) {
+        encodedValues.add(Pair.of(value, double.class));
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setString01(char value) {
-        collectedValues.add(Pair.of(value, char.class));
-        return 1;
+    public void encodeString01(char value) {
+        encodedValues.add(Pair.of(value, char.class));
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setString64(@Nonnull String value) {
-        collectedValues.add(Pair.of(value, String.class));
-        return 1;
+    public void encodeString64(@Nonnull String value) {
+        encodedValues.add(Pair.of(value, String.class));
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setString(@Nonnull String value) {
-        collectedValues.add(Pair.of(value, String.class));
-        return 1;
+    public void encodeString(@Nonnull String value) {
+        encodedValues.add(Pair.of(value, String.class));
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setBinary128(@Nonnull @Size(16) byte[] value) {
-        collectedValues.add(Pair.of(value, byte[].class));
-        return 1;
+    public void encodeBinary128(@Nonnull @Size(16) byte[] value) {
+        encodedValues.add(Pair.of(value, byte[].class));
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setBinary256(@Nonnull @Size(32) byte[] value) {
-        collectedValues.add(Pair.of(value, byte[].class));
-        return 1;
+    public void encodeBinary256(@Nonnull @Size(32) byte[] value) {
+        encodedValues.add(Pair.of(value, byte[].class));
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setBinary(@Nonnull byte[] value) {
-        collectedValues.add(Pair.of(value, byte[].class));
-        return 1;
+    public void encodeBinary(@Nonnull byte[] value) {
+        encodedValues.add(Pair.of(value, byte[].class));
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setBinaryStream(@Nonnull InputStream stream, int length) {
-        collectedValues.add(Pair.of(stream, InputStream.class));
-        return 1;
+    public void encodeBinaryStream(@Nonnull InputStream stream, int length) {
+        encodedValues.add(Pair.of(stream, InputStream.class));
+    }
+    
+    /* -------------------------------------------------- Collections -------------------------------------------------- */
+    
+    @Impure
+    @Override
+    public <@Unspecifiable TYPE> int encodeOrderedIterable(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nonnull TYPE> iterable) throws ConnectionException {
+        encodedValues.add(Pair.of(iterable, Iterable.class));
+        return iterable.size();
     }
     
     @Impure
     @Override
-    public <T> @Nonnull Integer setList(@Nonnull List<T> list, @Nonnull FailableUnaryFunction<T, @Nonnull Integer, ExternalException> entityCollector) {
-        collectedValues.add(Pair.of(list, List.class));
-        return 1;
+    public <@Unspecifiable TYPE> int encodeOrderedIterableWithNullableElements(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nullable TYPE> iterable) throws ConnectionException {
+        encodedValues.add(Pair.of(iterable, Iterable.class));
+        return iterable.size();
     }
     
     @Impure
     @Override
-    public <T> @Nonnull Integer setArray(@Nonnull T[] value, @Nonnull FailableUnaryFunction<T, @Nonnull Integer, ExternalException> entityCollector) {
-        collectedValues.add(Pair.of(value, Object[].class));
-        return 1;
+    public <@Unspecifiable TYPE> int encodeUnorderedIterable(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nonnull TYPE> iterable) throws ConnectionException {
+        encodedValues.add(Pair.of(iterable, Iterable.class));
+        return iterable.size();
     }
     
     @Impure
     @Override
-    public <T> @Nonnull Integer setSet(@Nonnull Set<T> value, @Nonnull FailableUnaryFunction<T, @Nonnull Integer, ExternalException> entityCollector) {
-        collectedValues.add(Pair.of(value, Set.class));
-        return 1;
+    public <@Unspecifiable TYPE> int encodeUnorderedIterableWithNullableElements(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nullable TYPE> iterable) throws ConnectionException {
+        encodedValues.add(Pair.of(iterable, Iterable.class));
+        return iterable.size();
     }
     
     @Impure
     @Override
-    public <K, V> @Nonnull Integer setMap(@Nonnull Map<K, V> value, @Nonnull FailableUnaryFunction<K, @Nonnull Integer, ExternalException> genericTypeKey, @Nonnull FailableUnaryFunction<V, @Nonnull Integer, ExternalException> genericTypeValue) {
-        collectedValues.add(Pair.of(value, Map.class));
-        return 1;
+    public <@Unspecifiable KEY, @Unspecifiable VALUE> int encodeMap(@Nonnull Converter<KEY, ?> keyConverter, @Nonnull Converter<VALUE, ?> valueConverter, @Nonnull Map<@Nonnull KEY, @Nonnull VALUE> map) throws ConnectionException {
+        encodedValues.add(Pair.of(map, Map.class));
+        return map.size();
     }
     
     @Impure
     @Override
-    public @Nonnull Integer setNull(@Nonnull CustomType customType) {
-        collectedValues.add(Pair.of(null, Object.class));
-        return 1;
+    public <@Unspecifiable KEY, @Unspecifiable VALUE> int encodeMapWithNullableValues(@Nonnull Converter<KEY, ?> keyConverter, @Nonnull Converter<VALUE, ?> valueConverter, @Nonnull Map<@Nullable KEY, @Nullable VALUE> map) throws ConnectionException {
+        encodedValues.add(Pair.of(map, Map.class));
+        return map.size();
+    }
+    
+    /* -------------------------------------------------- Hashing -------------------------------------------------- */
+    
+    private boolean hashing = false;
+    
+    @Pure
+    @Override
+    public boolean isHashing() {
+        return hashing;
     }
     
     @Impure
     @Override
-    public void setEncryptionCipher(@Nonnull Cipher cipher) {
-        collectedValues.add(Pair.of(cipher, Cipher.class));
+    @Ensures(condition = "isHashing()", message = "The encoder has to be hashing.")
+    public void startHashing(@Nonnull MessageDigest digest) {
+        encodedValues.add(Pair.of(digest, MessageDigest.class));
+        this.hashing = true;
     }
     
     @Impure
     @Override
-    public @Nonnull CipherOutputStream popEncryptionCipher() {
-        return null;
+    @Requires(condition = "isHashing()", message = "The encoder has to be hashing.")
+    public @Nonnull byte[] stopHashing() {
+        this.hashing = false;
+        return new byte[32];
+    }
+    
+    /* -------------------------------------------------- Compressing -------------------------------------------------- */
+    
+    private boolean compressing = false;
+    
+    @Pure
+    @Override
+    public boolean isCompressing() {
+        return compressing;
     }
     
     @Impure
     @Override
-    public void setSignatureDigest(@Nonnull MessageDigest digest) {
-        collectedValues.add(Pair.of(digest, MessageDigest.class));
+    @Ensures(condition = "isCompressing()", message = "The encoder has to be compressing.")
+    public void startCompressing(@Nonnull Deflater deflater) {
+        encodedValues.add(Pair.of(deflater, Deflater.class));
+        this.compressing = true;
     }
     
     @Impure
     @Override
-    public @Nonnull DigestOutputStream popSignatureDigest() {
-        return null;
+    @Requires(condition = "isCompressing()", message = "The encoder has to be compressing.")
+    public void stopCompressing() throws ConnectionException {
+        this.compressing = false;
+    }
+    
+    /* -------------------------------------------------- Encrypting -------------------------------------------------- */
+    
+    private boolean encrypting = false;
+    
+    @Pure
+    @Override
+    public boolean isEncrypting() {
+        return encrypting;
     }
     
     @Impure
     @Override
-    public void setCompression(@Nonnull Deflater deflater) {
-        collectedValues.add(Pair.of(deflater, Deflater.class));
+    @Ensures(condition = "isEncrypting()", message = "The encoder has to be encrypting.")
+    public void startEncrypting(@Nonnull Cipher cipher) {
+        encodedValues.add(Pair.of(cipher, Cipher.class));
+        this.encrypting = true;
     }
     
     @Impure
     @Override
-    public @Nonnull DeflaterOutputStream popCompression() throws ExternalException {
-        return null;
+    @Requires(condition = "isEncrypting()", message = "The encoder has to be encrypting.")
+    public void stopEncrypting() throws ConnectionException {
+        this.encrypting = false;
     }
     
 }
