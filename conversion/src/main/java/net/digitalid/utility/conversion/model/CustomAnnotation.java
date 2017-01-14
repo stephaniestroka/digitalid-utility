@@ -7,10 +7,12 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.immutable.ImmutableMap;
+import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This class stores information about the field annotations parsed during compile-time. Type-use annotations and field annotations are treated equally.
  */
+@Immutable
 public class CustomAnnotation {
     
     /* -------------------------------------------------- Annotation Type -------------------------------------------------- */

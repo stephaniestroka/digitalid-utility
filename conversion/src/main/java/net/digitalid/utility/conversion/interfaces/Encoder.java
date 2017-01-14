@@ -25,7 +25,7 @@ import net.digitalid.utility.validation.annotations.size.Size;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * The encoder encodes values to a data sink like an SQL database or an XDF stream.
+ * An encoder encodes values to a data sink like an SQL database or an XDF stream.
  * 
  * @see Decoder
  */

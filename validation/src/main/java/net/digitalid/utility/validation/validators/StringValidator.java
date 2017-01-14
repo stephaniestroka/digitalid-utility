@@ -13,7 +13,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  * @see net.digitalid.utility.validation.annotations.string
  */
 @Stateless
-public abstract class StringValidator implements ValueAnnotationValidator {
+public class StringValidator implements ValueAnnotationValidator {
     
     /* -------------------------------------------------- Target Types -------------------------------------------------- */
     

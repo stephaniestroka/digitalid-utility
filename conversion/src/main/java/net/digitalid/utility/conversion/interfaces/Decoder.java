@@ -28,7 +28,7 @@ import net.digitalid.utility.validation.annotations.size.Size;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * The decoder decodes values from a data source like an SQL database or an XDF stream.
+ * A decoder decodes values from a data source like an SQL database or an XDF stream.
  * 
  * @see Encoder
  */
@@ -93,7 +93,7 @@ public interface Decoder<EXCEPTION extends ConnectionException> {
      * Decodes and returns an integer value.
      */
     @Impure
-    public @Nullable BigInteger decodeInteger() throws EXCEPTION;
+    public @Nonnull BigInteger decodeInteger() throws EXCEPTION;
     
     /**
      * Decodes and returns a float value.

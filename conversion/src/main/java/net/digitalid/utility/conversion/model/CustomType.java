@@ -34,14 +34,14 @@ public class CustomType {
      * A custom type that holds a composite type.
      */
     public static class IterableType extends CustomType {
-    
+        
         /**
          * Creates a custom type.
          */
         private IterableType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName) {
             super(predicate, typeName);
         }
-    
+        
         /**
          * Creates a new instance of a composite type with the given custom type.
          */
@@ -49,7 +49,7 @@ public class CustomType {
         public @Nonnull IterableType of(@Nonnull CustomType compositeType) {
             return new CompositeType(super.predicate, super.typeName, compositeType);
         }
-    
+        
         /* -------------------------------------------------- Composite Type -------------------------------------------------- */
         
         /**
@@ -63,12 +63,12 @@ public class CustomType {
     }
     
     public static class CompositeType extends IterableType {
-    
+        
         /**
          * The composite type.
          */
         private final @Nonnull CustomType compositeType;
-    
+        
         /**
          * Returns the composite type.
          */
@@ -89,14 +89,14 @@ public class CustomType {
      * A custom type that maps a type to another type.
      */
     public static class MapType extends CustomType {
-    
+        
         /**
          * Creates a custom type.
          */
         private MapType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName) {
             super(predicate, typeName);
         }
-    
+        
         /**
          * Creates a new instance of a composite type with the given custom type.
          */
@@ -104,7 +104,7 @@ public class CustomType {
         public @Nonnull MapType of(@Nonnull CustomType keyType, @Nonnull CustomType valueType) {
             return new KeyValueType(super.predicate, super.typeName, keyType, valueType);
         }
-    
+        
         /* -------------------------------------------------- Composite Type -------------------------------------------------- */
         
         /**
@@ -118,7 +118,7 @@ public class CustomType {
     }
     
     public static class KeyValueType extends MapType {
-    
+        
         /**
          * The key type.
          */
@@ -142,7 +142,7 @@ public class CustomType {
         public @Nonnull CustomType getValueType() {
             return valueType;
         }
-    
+        
         private KeyValueType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName, @Nonnull CustomType keyType, @Nonnull CustomType valueType) {
             super(predicate, typeName);
             this.keyType = keyType;
@@ -164,7 +164,7 @@ public class CustomType {
         private TupleType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName) {
             super(predicate, typeName);
         }
-    
+        
         /**
          * Creates a new instance of a custom converter type with the given converter.
          */
@@ -172,7 +172,7 @@ public class CustomType {
         public @Nonnull CustomConverterType of(@Nonnull Converter<?, ?> converter) {
             return new CustomConverterType(super.predicate, super.typeName, converter);
         }
-    
+        
         /**
          * Returns true, because the type is an object type.
          */
@@ -184,19 +184,19 @@ public class CustomType {
     }
     
     public static class CustomConverterType extends TupleType {
-    
+        
         /**
          * The object converter.
          */
         private final @Nonnull Converter<?, ?> converter;
-    
+        
         /**
          * Returns the object converter.
          */
         public @Nonnull Converter<?, ?> getConverter() {
             return converter;
         }
-    
+        
         /**
          * Creates a new custom converter type.
          */
