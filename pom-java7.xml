@@ -1,8 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>net.digitalid</groupId>
+        <artifactId>master</artifactId>
+        <version>1.0.0</version>
+    </parent>
     
     <groupId>net.digitalid.utility</groupId>
     <artifactId>utility</artifactId>
@@ -12,28 +15,24 @@
     <name>Digital ID Utility</name>
     <description>This project provides utility classes for the Digital ID library.</description>
     <url>https://code.digitalid.net/digitalid/utility</url>
-    
-    <organization>
-        <name>Synacts GmbH</name>
-        <url>https://www.synacts.com</url>
-    </organization>
-    
-    <licenses>
-        <license>
-            <name>To be determined</name>
-            <url>https://www.synacts.com/company/#become-partner</url>
-            <comments>Until the license is determined, all rights are reserved by Synacts GmbH.</comments>
-        </license>
-    </licenses>
-    
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-    
+
+    <repositories>
+        <repository>
+            <id>digitalid-releases</id>
+            <name>Digital ID Releases</name>
+            <url>https://repo.digitalid.net/content/repositories/releases/</url>
+        </repository>
+        <repository>
+            <id>digitalid-snapshots</id>
+            <name>Digital ID Snapshots</name>
+            <url>https://repo.digitalid.net/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
+
     <modules>
         <module>taglets-java7</module>
-        <module>android-java7</module>
         <module>bootstrap-java7</module>
+        <module>android-java7</module>
         <module>collaboration-java7</module>
         <module>annotations-java7</module>
         <module>interfaces-java7</module>
@@ -42,7 +41,9 @@
         <module>functional-java7</module>
         <module>immutable-java7</module>
         <module>string-java7</module>
+        <module>throwable-java7</module>
         <module>exceptions-java7</module>
+        <module>errors-java7</module>
         <module>contracts-java7</module>
         <module>configuration-java7</module>
         <module>file-java7</module>
@@ -61,6 +62,7 @@
         <module>initializer-java7</module>
         <module>conversion-java7</module>
         <module>generator-java7</module>
+        <module>templates-java7</module>
         <module>collections-java7</module>
         <module>concurrency-java7</module>
         <module>property-java7</module>
@@ -68,38 +70,8 @@
         <module>all-java7</module>
     </modules>
     
-    <repositories>
-        <repository>
-            <id>digitalid-releases</id>
-            <name>Digital ID Releases</name>
-            <url>https://repo.digitalid.net/content/repositories/releases/</url>
-        </repository>
-        <repository>
-            <id>digitalid-snapshots</id>
-            <name>Digital ID Snapshots</name>
-            <url>https://repo.digitalid.net/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
-    
-    <distributionManagement>
-        <repository>
-            <id>digitalid-deployment</id>
-            <name>Final Releases</name>
-            <url>https://repo.digitalid.net/content/repositories/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>digitalid-deployment</id>
-            <name>Snapshot Releases</name>
-            <url>https://repo.digitalid.net/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
-    
-    <pluginRepositories>
-        <pluginRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>sonatype-nexus-snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </pluginRepository>
-    </pluginRepositories>
+    <properties>
+        <jacoco.skip>true</jacoco.skip> <!-- java.lang.instrument.IllegalClassFormatException: Error while instrumenting class net/digitalid/utility/generator/generators/converter/EnumWithRecoverMethodAndNonDirectlyAccessibleFieldConverter. -->
+    </properties>
     
 </project>
