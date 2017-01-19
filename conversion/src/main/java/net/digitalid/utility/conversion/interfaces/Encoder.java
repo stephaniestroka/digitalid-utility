@@ -30,7 +30,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * @see Decoder
  */
 @Mutable
-public interface Encoder<EXCEPTION extends ConnectionException> {
+public interface Encoder<@Unspecifiable EXCEPTION extends ConnectionException> {
     
     /* -------------------------------------------------- Representation -------------------------------------------------- */
     
