@@ -70,9 +70,8 @@ public class StringConverter implements Converter<String, Void> {
     
     @Pure
     @Override
-    public <EXCEPTION extends ConnectionException> int convert(@NonCaptured @Unmodified @Nonnull String string, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION {
+    public <EXCEPTION extends ConnectionException> void convert(@NonCaptured @Unmodified @Nonnull String string, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION {
         encoder.encodeString(string);
-        return 1;
     }
     
     /* -------------------------------------------------- Recover -------------------------------------------------- */

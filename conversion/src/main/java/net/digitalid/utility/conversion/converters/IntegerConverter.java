@@ -69,9 +69,8 @@ public class IntegerConverter implements Converter<Integer, Void> {
     
     @Pure
     @Override
-    public <EXCEPTION extends ConnectionException> int convert(@NonCaptured @Unmodified @Nonnull Integer integer, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION {
+    public <EXCEPTION extends ConnectionException> void convert(@NonCaptured @Unmodified @Nonnull Integer integer, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION {
         encoder.encodeInteger32(integer);
-        return 1;
     }
     
     /* -------------------------------------------------- Recover -------------------------------------------------- */

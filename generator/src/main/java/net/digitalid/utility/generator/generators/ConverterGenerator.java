@@ -220,19 +220,19 @@ public class ConverterGenerator extends JavaFileGenerator {
             if (supertype != null) {
                 final boolean nullable = !field.hasAnnotation(NonNullableElements.class);
                 final @Nonnull List<@Nonnull ? extends TypeMirror> typeArguments = supertype.getTypeArguments();
-                addStatement("i *= encoder.encodeMap" + (nullable ? "WithNullableValues" : "") + "(" + importConverterType(typeArguments.get(0)) + ", " + importConverterType(typeArguments.get(1)) + ", " + access + ")");
+                addStatement("encoder.encodeMap" + (nullable ? "WithNullableValues" : "") + "(" + importConverterType(typeArguments.get(0)) + ", " + importConverterType(typeArguments.get(1)) + ", " + access + ")");
             }
         } else if (type.getKind() == TypeKind.ARRAY || ProcessingUtility.isRawSubtype(type, Iterable.class)) {
             final @Nullable TypeMirror componentType = ProcessingUtility.getComponentType(type);
             if (componentType != null) {
                 final boolean unordered = ProcessingUtility.isRawSubtype(type, Set.class);
                 final boolean nullable = !field.hasAnnotation(NonNullableElements.class);
-                addStatement("i *= encoder.encode" + (unordered ? "Unordered" : "Ordered") + "Iterable" + (nullable ? "WithNullableElements" : "") + "(" + importConverterType(componentType) + ", " + importIfPossible(FiniteIterable.class) + ".of(" + access + "))");
+                addStatement("encoder.encode" + (unordered ? "Unordered" : "Ordered") + "Iterable" + (nullable ? "WithNullableElements" : "") + "(" + importConverterType(componentType) + ", " + importIfPossible(FiniteIterable.class) + ".of(" + access + "))");
             }
         } else if (ProcessingUtility.getTypeElement(type).getKind() == ElementKind.ENUM && StaticProcessingEnvironment.getTypeUtils().isAssignable(type, typeInformation.getType())) {
-            addStatement("i *= encoder.encodeObject(" + importIfPossible("net.digitalid.utility.conversion.converters.StringConverter") + ".INSTANCE, " + access + ")" );
+            addStatement("encoder.encodeObject(" + importIfPossible("net.digitalid.utility.conversion.converters.StringConverter") + ".INSTANCE, " + access + ")" );
         } else {
-            addStatement("i *= encoder.encode" + (field.hasAnnotation(Nullable.class) ? "Nullable" : "") + "Object(" + importConverterType(type) + ", " + access + ")" );
+            addStatement("encoder.encode" + (field.hasAnnotation(Nullable.class) ? "Nullable" : "") + "Object(" + importConverterType(type) + ", " + access + ")" );
         }
     }
     
@@ -243,14 +243,12 @@ public class ConverterGenerator extends JavaFileGenerator {
     private void generateConvertMethod() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
-        beginMethod("public " + Brackets.inPointy("EXCEPTION extends " + importIfPossible(ConnectionException.class)) + " int convert(@" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " @" + importIfPossible(Nonnull.class) + " " + typeInformation.getName() + " " + getObjectVariableName() + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(Encoder.class) + Brackets.inPointy("EXCEPTION") + " encoder) throws EXCEPTION");
-        addStatement("int i = 1");
+        beginMethod("public " + Brackets.inPointy("EXCEPTION extends " + importIfPossible(ConnectionException.class)) + " void convert(@" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Unmodified.class) + " @" + importIfPossible(Nonnull.class) + " " + typeInformation.getName() + " " + getObjectVariableName() + ", @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " @" + importIfPossible(Modified.class) + " " + importIfPossible(Encoder.class) + Brackets.inPointy("EXCEPTION") + " encoder) throws EXCEPTION");
         filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation()).doForEach(this::addEncodingStatement);
 //        for (@Nonnull FieldInformation field : fields) {
 //            final @Nonnull String fieldAccess = objectVariableName + "." + field.getAccessCode();
 //            addStatement("i *= " + generateValueCollectorCall(fieldAccess, field.getType(), 1));
 //        }
-        addStatement("return i");
         endMethod();
     }
     

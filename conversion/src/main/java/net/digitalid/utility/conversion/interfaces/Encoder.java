@@ -43,16 +43,16 @@ public interface Encoder<@Unspecifiable EXCEPTION extends ConnectionException> {
     /* -------------------------------------------------- Objects -------------------------------------------------- */
     
     /**
-     * Encodes the given non-nullable object with the given converter and returns the number of created entries.
+     * Encodes the given non-nullable object with the given converter.
      */
     @Impure
-    public <@Unspecifiable TYPE> int encodeObject(@Nonnull Converter<TYPE, ?> converter, @NonCaptured @Unmodified @Nonnull TYPE object) throws EXCEPTION;
+    public <@Unspecifiable TYPE> void encodeObject(@Nonnull Converter<TYPE, ?> converter, @NonCaptured @Unmodified @Nonnull TYPE object) throws EXCEPTION;
     
     /**
-     * Encodes the given nullable object with the given converter and returns the number of created entries.
+     * Encodes the given nullable object with the given converter.
      */
     @Impure
-    public <@Unspecifiable TYPE> int encodeNullableObject(@Nonnull Converter<TYPE, ?> converter, @NonCaptured @Unmodified @Nullable TYPE object) throws EXCEPTION;
+    public <@Unspecifiable TYPE> void encodeNullableObject(@Nonnull Converter<TYPE, ?> converter, @NonCaptured @Unmodified @Nullable TYPE object) throws EXCEPTION;
     
     /* -------------------------------------------------- Values -------------------------------------------------- */
     

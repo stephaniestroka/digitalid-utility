@@ -46,16 +46,15 @@ public class TestEncoder implements Encoder<ConnectionException> {
     
     @Impure
     @Override
-    public <@Unspecifiable TYPE> int encodeObject(@Nonnull Converter<TYPE, ?> converter, @NonCaptured @Unmodified @Nonnull TYPE object) throws ConnectionException {
-        return converter.convert(object, this);
+    public <@Unspecifiable TYPE> void encodeObject(@Nonnull Converter<TYPE, ?> converter, @NonCaptured @Unmodified @Nonnull TYPE object) throws ConnectionException {
+        converter.convert(object, this);
     }
     
     @Impure
     @Override
-    public <@Unspecifiable TYPE> int encodeNullableObject(@Nonnull Converter<TYPE, ?> converter, @NonCaptured @Unmodified @Nullable TYPE object) throws ConnectionException {
+    public <@Unspecifiable TYPE> void encodeNullableObject(@Nonnull Converter<TYPE, ?> converter, @NonCaptured @Unmodified @Nullable TYPE object) throws ConnectionException {
         encodeBoolean(object != null);
-        if (object != null) { return encodeObject(converter, object); }
-        else { return 1; }
+        if (object != null) { encodeObject(converter, object); }
     }
     
     /* -------------------------------------------------- Values -------------------------------------------------- */
