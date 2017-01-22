@@ -149,40 +149,40 @@ public interface Encoder<@Unspecifiable EXCEPTION extends ConnectionException> {
     /* -------------------------------------------------- Collections -------------------------------------------------- */
     
     /**
-     * Encodes the non-nullable elements of given iterable with the given converter in the given order and returns the number of created entries.
+     * Encodes the non-nullable elements of given iterable with the given converter in the given order.
      */
     @Impure
-    public <@Unspecifiable TYPE> int encodeOrderedIterable(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nonnull TYPE> iterable) throws EXCEPTION;
+    public <@Unspecifiable TYPE> void encodeOrderedIterable(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nonnull TYPE> iterable) throws EXCEPTION;
     
     /**
-     * Encodes the nullable elements of given iterable with the given converter in the given order and returns the number of created entries.
+     * Encodes the nullable elements of given iterable with the given converter in the given order.
      */
     @Impure
-    public <@Unspecifiable TYPE> int encodeOrderedIterableWithNullableElements(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nullable TYPE> iterable) throws EXCEPTION;
+    public <@Unspecifiable TYPE> void encodeOrderedIterableWithNullableElements(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nullable TYPE> iterable) throws EXCEPTION;
     
     /**
-     * Encodes the non-nullable elements of the given iterable with the given converter without preserving the order and returns the number of created entries.
+     * Encodes the non-nullable elements of the given iterable with the given converter without preserving the order.
      */
     @Impure
-    public <@Unspecifiable TYPE> int encodeUnorderedIterable(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nonnull TYPE> iterable) throws EXCEPTION;
+    public <@Unspecifiable TYPE> void encodeUnorderedIterable(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nonnull TYPE> iterable) throws EXCEPTION;
     
     /**
-     * Encodes the nullable elements of the given iterable with the given converter without preserving the order and returns the number of created entries.
+     * Encodes the nullable elements of the given iterable with the given converter without preserving the order.
      */
     @Impure
-    public <@Unspecifiable TYPE> int encodeUnorderedIterableWithNullableElements(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nullable TYPE> iterable) throws EXCEPTION;
+    public <@Unspecifiable TYPE> void encodeUnorderedIterableWithNullableElements(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nullable TYPE> iterable) throws EXCEPTION;
     
     /**
-     * Encodes the non-nullable key-value pairs of the given map with the given converters and returns the number of created entries.
+     * Encodes the non-nullable key-value pairs of the given map with the given converters.
      */
     @Impure
-    public <@Unspecifiable KEY, @Unspecifiable VALUE> int encodeMap(@Nonnull Converter<KEY, ?> keyConverter, @Nonnull Converter<VALUE, ?> valueConverter, @Nonnull Map<@Nonnull KEY, @Nonnull VALUE> map) throws EXCEPTION;
+    public <@Unspecifiable KEY, @Unspecifiable VALUE> void encodeMap(@Nonnull Converter<KEY, ?> keyConverter, @Nonnull Converter<VALUE, ?> valueConverter, @Nonnull Map<@Nonnull KEY, @Nonnull VALUE> map) throws EXCEPTION;
     
     /**
-     * Encodes the nullable key-value pairs of the given map with the given converters and returns the number of created entries.
+     * Encodes the nullable key-value pairs of the given map with the given converters.
      */
     @Impure
-    public <@Unspecifiable KEY, @Unspecifiable VALUE> int encodeMapWithNullableValues(@Nonnull Converter<KEY, ?> keyConverter, @Nonnull Converter<VALUE, ?> valueConverter, @Nonnull Map<@Nullable KEY, @Nullable VALUE> map) throws EXCEPTION;
+    public <@Unspecifiable KEY, @Unspecifiable VALUE> void encodeMapWithNullableValues(@Nonnull Converter<KEY, ?> keyConverter, @Nonnull Converter<VALUE, ?> valueConverter, @Nonnull Map<@Nullable KEY, @Nullable VALUE> map) throws EXCEPTION;
     
     /* -------------------------------------------------- Hashing -------------------------------------------------- */
     

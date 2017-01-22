@@ -155,44 +155,38 @@ public class TestEncoder implements Encoder<ConnectionException> {
     
     @Impure
     @Override
-    public <@Unspecifiable TYPE> int encodeOrderedIterable(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nonnull TYPE> iterable) throws ConnectionException {
+    public <@Unspecifiable TYPE> void encodeOrderedIterable(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nonnull TYPE> iterable) throws ConnectionException {
         encodedValues.add(Pair.of(iterable, Iterable.class));
-        return iterable.size();
     }
     
     @Impure
     @Override
-    public <@Unspecifiable TYPE> int encodeOrderedIterableWithNullableElements(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nullable TYPE> iterable) throws ConnectionException {
+    public <@Unspecifiable TYPE> void encodeOrderedIterableWithNullableElements(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nullable TYPE> iterable) throws ConnectionException {
         encodedValues.add(Pair.of(iterable, Iterable.class));
-        return iterable.size();
     }
     
     @Impure
     @Override
-    public <@Unspecifiable TYPE> int encodeUnorderedIterable(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nonnull TYPE> iterable) throws ConnectionException {
+    public <@Unspecifiable TYPE> void encodeUnorderedIterable(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nonnull TYPE> iterable) throws ConnectionException {
         encodedValues.add(Pair.of(iterable, Iterable.class));
-        return iterable.size();
     }
     
     @Impure
     @Override
-    public <@Unspecifiable TYPE> int encodeUnorderedIterableWithNullableElements(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nullable TYPE> iterable) throws ConnectionException {
+    public <@Unspecifiable TYPE> void encodeUnorderedIterableWithNullableElements(@Nonnull Converter<TYPE, ?> converter, @Nonnull FiniteIterable<@Nullable TYPE> iterable) throws ConnectionException {
         encodedValues.add(Pair.of(iterable, Iterable.class));
-        return iterable.size();
     }
     
     @Impure
     @Override
-    public <@Unspecifiable KEY, @Unspecifiable VALUE> int encodeMap(@Nonnull Converter<KEY, ?> keyConverter, @Nonnull Converter<VALUE, ?> valueConverter, @Nonnull Map<@Nonnull KEY, @Nonnull VALUE> map) throws ConnectionException {
+    public <@Unspecifiable KEY, @Unspecifiable VALUE> void encodeMap(@Nonnull Converter<KEY, ?> keyConverter, @Nonnull Converter<VALUE, ?> valueConverter, @Nonnull Map<@Nonnull KEY, @Nonnull VALUE> map) throws ConnectionException {
         encodedValues.add(Pair.of(map, Map.class));
-        return map.size();
     }
     
     @Impure
     @Override
-    public <@Unspecifiable KEY, @Unspecifiable VALUE> int encodeMapWithNullableValues(@Nonnull Converter<KEY, ?> keyConverter, @Nonnull Converter<VALUE, ?> valueConverter, @Nonnull Map<@Nullable KEY, @Nullable VALUE> map) throws ConnectionException {
+    public <@Unspecifiable KEY, @Unspecifiable VALUE> void encodeMapWithNullableValues(@Nonnull Converter<KEY, ?> keyConverter, @Nonnull Converter<VALUE, ?> valueConverter, @Nonnull Map<@Nullable KEY, @Nullable VALUE> map) throws ConnectionException {
         encodedValues.add(Pair.of(map, Map.class));
-        return map.size();
     }
     
     /* -------------------------------------------------- Hashing -------------------------------------------------- */
