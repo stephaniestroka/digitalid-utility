@@ -331,10 +331,19 @@ public class ConverterGenerator extends JavaFileGenerator {
                 final boolean unordered = ProcessingUtility.isRawSubtype(type, Set.class);
                 final boolean nullable = !field.hasAnnotation(NonNullableElements.class);
                 final @Nonnull String collector;
+                final @Nonnull String typeName = ProcessingUtility.getSimpleName(type);
                 if (type.getKind() == TypeKind.ARRAY) { collector = importIfPossible(ArrayCollector.class) + "::with"; }
-                else if (ProcessingUtility.isRawSubtype(type, List.class)) { collector = "size -> " + importIfPossible(CollectionCollector.class) + ".with(new " + importIfPossible(ArrayList.class) + "<>(size))"; }
-                else if (ProcessingUtility.isRawSubtype(type, Set.class)) { collector = "size -> " + importIfPossible(CollectionCollector.class) + ".with(new " + importIfPossible(LinkedHashSet.class) + "<>(size))"; }
-                else { collector = "null"; }
+                else if (ProcessingUtility.isRawSubtype(type, List.class)) {
+                    final @Nonnull String collection;
+                    if (!typeName.startsWith("Freezable") && !typeName.startsWith("ReadOnly")) { collection = "new " + importIfPossible(ArrayList.class) + "<>(size)"; }
+                    else { collection = importIfPossible("net.digitalid.utility.collections.list.FreezableArrayList") + ".withInitialCapacity(size)"; }
+                    collector = "size -> " + importIfPossible(CollectionCollector.class) + ".with(" + collection + ")";
+                } else if (ProcessingUtility.isRawSubtype(type, Set.class)) {
+                    final @Nonnull String collection;
+                    if (!typeName.startsWith("Freezable") && !typeName.startsWith("ReadOnly")) { collection = "new " + importIfPossible(LinkedHashSet.class) + "<>(size)"; }
+                    else { collection = importIfPossible("net.digitalid.utility.collections.set.FreezableLinkedHashSet") + ".withInitialCapacity(size)"; }
+                    collector = "size -> " + importIfPossible(CollectionCollector.class) + ".with(" + collection + ")";
+                } else { collector = "null"; }
                 addStatement("final " + importIfPossible(field.getType()) + " " + field.getName() + " = decoder.decode" + (unordered ? "Unordered" : "Ordered") + "Iterable" + (nullable ? "WithNullableElements" : "") + "(" + importConverterType(componentType) + ", " + provided + ", " + collector + ")");
             }
         } else if (ProcessingUtility.getTypeElement(type).getKind() == ElementKind.ENUM && StaticProcessingEnvironment.getTypeUtils().isAssignable(type, typeInformation.getType())) {
