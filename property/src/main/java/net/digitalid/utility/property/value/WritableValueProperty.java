@@ -1,5 +1,7 @@
 package net.digitalid.utility.property.value;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
@@ -16,7 +18,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  */
 @ThreadSafe
 @Mutable(ReadOnlyValueProperty.class)
-public interface WritableValueProperty<VALUE, EXCEPTION extends Exception, OBSERVER extends ValueObserver<VALUE, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlyValueProperty<VALUE, EXCEPTION, OBSERVER, PROPERTY>> extends ReadOnlyValueProperty<VALUE, EXCEPTION, OBSERVER, PROPERTY> {
+public interface WritableValueProperty<@Specifiable VALUE, @Unspecifiable EXCEPTION1 extends Exception, @Unspecifiable EXCEPTION2 extends Exception, @Unspecifiable OBSERVER extends ValueObserver<VALUE, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY>, @Unspecifiable PROPERTY extends ReadOnlyValueProperty<VALUE, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY>> extends ReadOnlyValueProperty<VALUE, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY> {
     
     /* -------------------------------------------------- Setter -------------------------------------------------- */
     
@@ -29,6 +31,6 @@ public interface WritableValueProperty<VALUE, EXCEPTION extends Exception, OBSER
      */
     @Impure
     @LockNotHeldByCurrentThread
-    public @Capturable @Valid VALUE set(@Captured @Valid VALUE value) throws EXCEPTION;
+    public @Capturable @Valid VALUE set(@Captured @Valid VALUE value) throws EXCEPTION1, EXCEPTION2;
     
 }

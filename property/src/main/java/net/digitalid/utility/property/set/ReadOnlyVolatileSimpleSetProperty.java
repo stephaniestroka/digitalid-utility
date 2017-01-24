@@ -2,6 +2,7 @@ package net.digitalid.utility.property.set;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
@@ -14,4 +15,4 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  */
 @ThreadSafe
 @ReadOnly(WritableVolatileSimpleSetProperty.class)
-public interface ReadOnlyVolatileSimpleSetProperty<V> extends ReadOnlyVolatileSetProperty<V, ReadOnlySet<@Nonnull @Valid V>> {}
+public interface ReadOnlyVolatileSimpleSetProperty<@Unspecifiable VALUE> extends ReadOnlyVolatileSetProperty<VALUE, ReadOnlySet<@Nonnull @Valid VALUE>> {}

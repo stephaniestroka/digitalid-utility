@@ -2,6 +2,7 @@ package net.digitalid.utility.property.set;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
@@ -18,7 +19,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  */
 @Mutable
 @ThreadSafe
-public abstract class WritableSetPropertyImplementation<VALUE, READONLY_SET extends ReadOnlySet<@Nonnull @Valid VALUE>, EXCEPTION extends Exception, OBSERVER extends SetObserver<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlySetProperty<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY>> extends ReadOnlySetPropertyImplementation<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY> implements WritableSetProperty<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY> {
+public abstract class WritableSetPropertyImplementation<@Unspecifiable VALUE, @Unspecifiable READONLY_SET extends ReadOnlySet<@Nonnull @Valid VALUE>, @Unspecifiable EXCEPTION1 extends Exception, @Unspecifiable EXCEPTION2 extends Exception, @Unspecifiable OBSERVER extends SetObserver<VALUE, READONLY_SET, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY>, @Unspecifiable PROPERTY extends ReadOnlySetProperty<VALUE, READONLY_SET, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY>> extends ReadOnlySetPropertyImplementation<VALUE, READONLY_SET, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY> implements WritableSetProperty<VALUE, READONLY_SET, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY> {
     
     /* -------------------------------------------------- Notification -------------------------------------------------- */
     
@@ -32,12 +33,12 @@ public abstract class WritableSetPropertyImplementation<VALUE, READONLY_SET exte
      */
     @Impure
     @SuppressWarnings("unchecked")
-    protected void notifyObservers(@NonCaptured @Unmodified @Nonnull @Valid VALUE value, boolean added) throws EXCEPTION {
+    protected void notifyObservers(@NonCaptured @Unmodified @Nonnull @Valid VALUE value, boolean added) throws EXCEPTION1, EXCEPTION2 {
         Require.that(!added || get().contains(value)).orThrow("If the value $ was added, this property has to contain it now.", value);
         Require.that(added || !get().contains(value)).orThrow("If the value $ was removed, this property may no longer contain it.", value);
         
         if (!observers.isEmpty()) {
-            for (@Nonnull SetObserver<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY> observer : observers.values()) {
+            for (@Nonnull SetObserver<VALUE, READONLY_SET, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY> observer : observers.values()) {
                 observer.notify((PROPERTY) this, value, added);
             }
         }

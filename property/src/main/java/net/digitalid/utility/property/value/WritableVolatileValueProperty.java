@@ -2,6 +2,7 @@ package net.digitalid.utility.property.value;
 
 import java.util.Objects;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.annotations.method.CallSuper;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
@@ -23,7 +24,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
 @GenerateBuilder
 @GenerateSubclass
 @Mutable(ReadOnlyVolatileValueProperty.class)
-public abstract class WritableVolatileValueProperty<VALUE> extends WritableValuePropertyImplementation<VALUE, RuntimeException, VolatileValueObserver<VALUE>, ReadOnlyVolatileValueProperty<VALUE>> implements ReadOnlyVolatileValueProperty<VALUE> {
+public abstract class WritableVolatileValueProperty<@Specifiable VALUE> extends WritableValuePropertyImplementation<VALUE, RuntimeException, RuntimeException, VolatileValueObserver<VALUE>, ReadOnlyVolatileValueProperty<VALUE>> implements ReadOnlyVolatileValueProperty<VALUE> {
     
     /* -------------------------------------------------- Value -------------------------------------------------- */
     

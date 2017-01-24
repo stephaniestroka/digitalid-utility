@@ -2,6 +2,7 @@ package net.digitalid.utility.property.set;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collaboration.annotations.TODO;
@@ -23,7 +24,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
 @ThreadSafe
 @ReadOnly(WritableSetProperty.class)
 @TODO(task = "Restrict the ReadOnlySet to a SynchronizedReadOnlySet.", date = "2016-09-27", author = Author.KASPAR_ETTER, assignee = Author.KASPAR_ETTER, priority = Priority.MIDDLE)
-public interface ReadOnlySetProperty<VALUE, READONLY_SET extends ReadOnlySet<@Nonnull @Valid VALUE>, EXCEPTION extends Exception, OBSERVER extends SetObserver<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlySetProperty<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY>> extends Property<OBSERVER>, Valid.Value<VALUE> {
+public interface ReadOnlySetProperty<@Unspecifiable VALUE, @Unspecifiable READONLY_SET extends ReadOnlySet<@Nonnull @Valid VALUE>, @Unspecifiable EXCEPTION1 extends Exception, @Unspecifiable EXCEPTION2 extends Exception, @Unspecifiable OBSERVER extends SetObserver<VALUE, READONLY_SET, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY>, @Unspecifiable PROPERTY extends ReadOnlySetProperty<VALUE, READONLY_SET, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY>> extends Property<OBSERVER>, Valid.Value<VALUE> {
     
     /* -------------------------------------------------- Getter -------------------------------------------------- */
     
@@ -31,6 +32,6 @@ public interface ReadOnlySetProperty<VALUE, READONLY_SET extends ReadOnlySet<@No
      * Returns a read-only set with the values of this property.
      */
     @Pure
-    public @Nonnull @NonFrozen READONLY_SET get() throws EXCEPTION;
+    public @Nonnull @NonFrozen READONLY_SET get() throws EXCEPTION1, EXCEPTION2;
     
 }

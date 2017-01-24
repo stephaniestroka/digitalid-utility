@@ -2,6 +2,7 @@ package net.digitalid.utility.property.map;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Unmodified;
@@ -18,7 +19,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  */
 @Mutable
 @ThreadSafe
-public abstract class WritableMapPropertyImplementation<KEY, VALUE, READONLY_MAP extends ReadOnlyMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>, EXCEPTION extends Exception, OBSERVER extends MapObserver<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlyMapProperty<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY>> extends ReadOnlyMapPropertyImplementation<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY> implements WritableMapProperty<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY> {
+public abstract class WritableMapPropertyImplementation<@Unspecifiable KEY, @Unspecifiable VALUE, @Unspecifiable READONLY_MAP extends ReadOnlyMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>, @Unspecifiable EXCEPTION1 extends Exception, @Unspecifiable EXCEPTION2 extends Exception, @Unspecifiable OBSERVER extends MapObserver<KEY, VALUE, READONLY_MAP, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY>, @Unspecifiable PROPERTY extends ReadOnlyMapProperty<KEY, VALUE, READONLY_MAP, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY>> extends ReadOnlyMapPropertyImplementation<KEY, VALUE, READONLY_MAP, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY> implements WritableMapProperty<KEY, VALUE, READONLY_MAP, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY> {
     
     /* -------------------------------------------------- Notification -------------------------------------------------- */
     
@@ -29,12 +30,12 @@ public abstract class WritableMapPropertyImplementation<KEY, VALUE, READONLY_MAP
      */
     @Impure
     @SuppressWarnings("unchecked")
-    protected void notifyObservers(@NonCaptured @Unmodified @Nonnull @Valid("key") KEY key, @NonCaptured @Unmodified @Nonnull @Valid VALUE value, boolean added) throws EXCEPTION {
+    protected void notifyObservers(@NonCaptured @Unmodified @Nonnull @Valid("key") KEY key, @NonCaptured @Unmodified @Nonnull @Valid VALUE value, boolean added) throws EXCEPTION1, EXCEPTION2 {
         Require.that(!added || value.equals(get(key))).orThrow("If the pair was added, The key $ now has to map to the value $ but mapped to $ instead.", key, value, get(key));
         Require.that(added || get(key) == null).orThrow("If the pair was removed, the key $ may no longer map to a value but still mapped to $.", key, get(key));
         
         if (!observers.isEmpty()) {
-            for (@Nonnull MapObserver<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY> observer : observers.values()) {
+            for (@Nonnull MapObserver<KEY, VALUE, READONLY_MAP, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY> observer : observers.values()) {
                 observer.notify((PROPERTY) this, key, value, added);
             }
         }

@@ -2,6 +2,7 @@ package net.digitalid.utility.property.map;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collections.map.FreezableMap;
@@ -20,7 +21,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
 @GenerateBuilder
 @GenerateSubclass
 @Mutable(ReadOnlyVolatileSimpleMapProperty.class)
-public abstract class WritableVolatileSimpleMapProperty<KEY, VALUE> extends WritableVolatileMapProperty<KEY, VALUE, ReadOnlyMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>, FreezableMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>> implements ReadOnlyVolatileSimpleMapProperty<KEY, VALUE> {
+public abstract class WritableVolatileSimpleMapProperty<@Unspecifiable KEY, @Unspecifiable VALUE> extends WritableVolatileMapProperty<KEY, VALUE, ReadOnlyMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>, FreezableMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>> implements ReadOnlyVolatileSimpleMapProperty<KEY, VALUE> {
     
     @Pure
     @Override

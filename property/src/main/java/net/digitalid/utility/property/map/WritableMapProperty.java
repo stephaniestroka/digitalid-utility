@@ -3,6 +3,7 @@ package net.digitalid.utility.property.map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Captured;
@@ -22,7 +23,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  */
 @ThreadSafe
 @Mutable(ReadOnlyMapProperty.class)
-public interface WritableMapProperty<KEY, VALUE, READONLY_MAP extends ReadOnlyMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>, EXCEPTION extends Exception, OBSERVER extends MapObserver<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlyMapProperty<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY>> extends ReadOnlyMapProperty<KEY, VALUE, READONLY_MAP, EXCEPTION, OBSERVER, PROPERTY> {
+public interface WritableMapProperty<@Unspecifiable KEY, @Unspecifiable VALUE, @Unspecifiable READONLY_MAP extends ReadOnlyMap<@Nonnull @Valid("key") KEY, @Nonnull @Valid VALUE>, @Unspecifiable EXCEPTION1 extends Exception, @Unspecifiable EXCEPTION2 extends Exception, @Unspecifiable OBSERVER extends MapObserver<KEY, VALUE, READONLY_MAP, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY>, @Unspecifiable PROPERTY extends ReadOnlyMapProperty<KEY, VALUE, READONLY_MAP, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY>> extends ReadOnlyMapProperty<KEY, VALUE, READONLY_MAP, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY> {
     
     /* -------------------------------------------------- Operations -------------------------------------------------- */
     
@@ -33,7 +34,7 @@ public interface WritableMapProperty<KEY, VALUE, READONLY_MAP extends ReadOnlyMa
      */
     @Impure
     @LockNotHeldByCurrentThread
-    public abstract boolean add(@Captured @Nonnull @Valid("key") KEY key, @Captured @Nonnull @Valid VALUE value) throws EXCEPTION;
+    public abstract boolean add(@Captured @Nonnull @Valid("key") KEY key, @Captured @Nonnull @Valid VALUE value) throws EXCEPTION1, EXCEPTION2;
     
     /**
      * Removes the value indexed by the given key from this property.
@@ -42,6 +43,6 @@ public interface WritableMapProperty<KEY, VALUE, READONLY_MAP extends ReadOnlyMa
      */
     @Impure
     @LockNotHeldByCurrentThread
-    public abstract @Capturable @Nullable @Valid VALUE remove(@NonCaptured @Unmodified @Nonnull @Valid("key") KEY key) throws EXCEPTION;
+    public abstract @Capturable @Nullable @Valid VALUE remove(@NonCaptured @Unmodified @Nonnull @Valid("key") KEY key) throws EXCEPTION1, EXCEPTION2;
     
 }

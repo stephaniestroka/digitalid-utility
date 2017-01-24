@@ -2,6 +2,7 @@ package net.digitalid.utility.property.set;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
@@ -20,7 +21,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
  */
 @ThreadSafe
 @Mutable(ReadOnlySetProperty.class)
-public interface WritableSetProperty<VALUE, READONLY_SET extends ReadOnlySet<@Nonnull @Valid VALUE>, EXCEPTION extends Exception, OBSERVER extends SetObserver<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY>, PROPERTY extends ReadOnlySetProperty<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY>> extends ReadOnlySetProperty<VALUE, READONLY_SET, EXCEPTION, OBSERVER, PROPERTY> {
+public interface WritableSetProperty<@Unspecifiable VALUE, @Unspecifiable READONLY_SET extends ReadOnlySet<@Nonnull @Valid VALUE>, @Unspecifiable EXCEPTION1 extends Exception, @Unspecifiable EXCEPTION2 extends Exception, @Unspecifiable OBSERVER extends SetObserver<VALUE, READONLY_SET, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY>, @Unspecifiable PROPERTY extends ReadOnlySetProperty<VALUE, READONLY_SET, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY>> extends ReadOnlySetProperty<VALUE, READONLY_SET, EXCEPTION1, EXCEPTION2, OBSERVER, PROPERTY> {
     
     /* -------------------------------------------------- Operations -------------------------------------------------- */
     
@@ -31,7 +32,7 @@ public interface WritableSetProperty<VALUE, READONLY_SET extends ReadOnlySet<@No
      */
     @Impure
     @LockNotHeldByCurrentThread
-    public abstract boolean add(@Captured @Nonnull @Valid VALUE value) throws EXCEPTION;
+    public abstract boolean add(@Captured @Nonnull @Valid VALUE value) throws EXCEPTION1, EXCEPTION2;
     
     /**
      * Removes the given value from the values of this property.
@@ -40,6 +41,6 @@ public interface WritableSetProperty<VALUE, READONLY_SET extends ReadOnlySet<@No
      */
     @Impure
     @LockNotHeldByCurrentThread
-    public abstract boolean remove(@NonCaptured @Unmodified @Nonnull @Valid VALUE value) throws EXCEPTION;
+    public abstract boolean remove(@NonCaptured @Unmodified @Nonnull @Valid VALUE value) throws EXCEPTION1, EXCEPTION2;
     
 }

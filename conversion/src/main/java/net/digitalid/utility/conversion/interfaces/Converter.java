@@ -32,6 +32,7 @@ public interface Converter<@Unspecifiable TYPE, @Specifiable PROVIDED> {
     
     /**
      * Returns the type which is modeled and whose instances are converted.
+     * The upper bound has to be left unspecified in order to support generic types.
      */
     @Pure
     public @Nonnull Class<? super TYPE> getType();

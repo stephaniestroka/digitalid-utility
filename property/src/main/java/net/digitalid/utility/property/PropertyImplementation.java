@@ -6,6 +6,7 @@ import java.util.concurrent.ThreadFactory;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
@@ -33,7 +34,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  */
 @Mutable
 @ThreadSafe
-public abstract class PropertyImplementation<OBSERVER extends Observer, GENERIC_OBSERVER extends Observer> extends RootClass implements Property<OBSERVER> {
+public abstract class PropertyImplementation<@Unspecifiable OBSERVER extends Observer, @Unspecifiable GENERIC_OBSERVER extends Observer> extends RootClass implements Property<OBSERVER> {
     
     /* -------------------------------------------------- Asynchronous Observer -------------------------------------------------- */
     

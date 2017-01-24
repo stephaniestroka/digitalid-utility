@@ -2,6 +2,7 @@ package net.digitalid.utility.property.set;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.type.ThreadSafe;
 import net.digitalid.utility.collections.set.FreezableSet;
@@ -20,7 +21,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
 @GenerateBuilder
 @GenerateSubclass
 @Mutable(ReadOnlyVolatileSimpleSetProperty.class)
-public abstract class WritableVolatileSimpleSetProperty<VALUE> extends WritableVolatileSetProperty<VALUE, ReadOnlySet<@Nonnull @Valid VALUE>, FreezableSet<@Nonnull @Valid VALUE>> implements ReadOnlyVolatileSimpleSetProperty<VALUE> {
+public abstract class WritableVolatileSimpleSetProperty<@Unspecifiable VALUE> extends WritableVolatileSetProperty<VALUE, ReadOnlySet<@Nonnull @Valid VALUE>, FreezableSet<@Nonnull @Valid VALUE>> implements ReadOnlyVolatileSimpleSetProperty<VALUE> {
     
     @Pure
     @Override

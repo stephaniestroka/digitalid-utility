@@ -1,5 +1,6 @@
 package net.digitalid.utility.property.value;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.property.Property;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Mutable;
@@ -9,4 +10,4 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  */
 @Mutable
 @Functional
-public interface VolatileValueObserver<VALUE> extends ValueObserver<VALUE, RuntimeException, VolatileValueObserver<VALUE>, ReadOnlyVolatileValueProperty<VALUE>> {}
+public interface VolatileValueObserver<@Specifiable VALUE> extends ValueObserver<VALUE, RuntimeException, RuntimeException, VolatileValueObserver<VALUE>, ReadOnlyVolatileValueProperty<VALUE>> {}
