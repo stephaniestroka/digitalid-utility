@@ -2,6 +2,7 @@ package net.digitalid.utility.conversion.exceptions;
 
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.digitalid.utility.validation.annotations.method.Chainable;
 
@@ -24,10 +25,20 @@ public class RecoveryExceptionBuilder {
             return this;
         }
         
+        /* -------------------------------------------------- Cause -------------------------------------------------- */
+        
+        private @Nullable Throwable cause = null;
+        
+        @Chainable
+        public @Nonnull InnerRecoveryExceptionBuilder withCause(@Nullable Throwable cause) {
+            this.cause = cause;
+            return this;
+        }
+        
         /* -------------------------------------------------- Build -------------------------------------------------- */
         
         public RecoveryException build() {
-            return new RecoveryExceptionSubclass(message);
+            return new RecoveryExceptionSubclass(message, cause);
         }
         
     }

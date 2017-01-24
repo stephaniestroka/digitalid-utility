@@ -17,12 +17,23 @@ class RecoveryExceptionSubclass extends RecoveryException {
         return result;
     }
     
+    /* -------------------------------------------------- Cause -------------------------------------------------- */
+    
+    private final @Nullable Throwable cause;
+    
+    @Override
+    public @Nullable Throwable getCause() {
+        @Nullable Throwable result = this.cause;
+        return result;
+    }
+    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    RecoveryExceptionSubclass(String message) {
+    RecoveryExceptionSubclass(String message, @Nullable Throwable cause) {
         super();
         
         this.message = message;
+        this.cause = cause;
     }
     
     /* -------------------------------------------------- Overridden Methods -------------------------------------------------- */
@@ -30,12 +41,6 @@ class RecoveryExceptionSubclass extends RecoveryException {
     @Override
     public String getSummary() {
         String result = super.getSummary();
-        return result;
-    }
-    
-    @Override
-    public @Nullable Throwable getCause() {
-        @Nullable Throwable result = super.getCause();
         return result;
     }
     
