@@ -1,7 +1,5 @@
 package net.digitalid.utility.concurrency.lock;
 
-import net.digitalid.utility.interfaces.Locking;
-
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -12,12 +10,13 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.type.ThreadSafe;
-import net.digitalid.utility.validation.annotations.lock.LockNotHeldByCurrentThread;
 import net.digitalid.utility.contracts.exceptions.PreconditionException;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
+import net.digitalid.utility.interfaces.Locking;
 import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.generation.Derive;
+import net.digitalid.utility.validation.annotations.lock.LockNotHeldByCurrentThread;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
