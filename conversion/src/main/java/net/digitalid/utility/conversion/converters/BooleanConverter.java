@@ -13,7 +13,6 @@ import net.digitalid.utility.conversion.exceptions.ConnectionException;
 import net.digitalid.utility.conversion.interfaces.Converter;
 import net.digitalid.utility.conversion.interfaces.Decoder;
 import net.digitalid.utility.conversion.interfaces.Encoder;
-import net.digitalid.utility.conversion.model.CustomAnnotation;
 import net.digitalid.utility.conversion.model.CustomField;
 import net.digitalid.utility.conversion.model.CustomType;
 import net.digitalid.utility.immutable.ImmutableList;
@@ -23,21 +22,21 @@ import net.digitalid.utility.validation.annotations.string.DomainName;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
- * This class implements the conversion of strings.
+ * This class implements the conversion of booleans.
  */
 @Stateless
-public class StringConverter implements Converter<String, Void> {
+public class BooleanConverter implements Converter<Boolean, Void> {
     
     /* -------------------------------------------------- Instance -------------------------------------------------- */
     
-    public static final @Nonnull StringConverter INSTANCE = new StringConverter();
+    public static final @Nonnull BooleanConverter INSTANCE = new BooleanConverter();
     
     /* -------------------------------------------------- Type -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Nonnull Class<String> getType() {
-        return String.class;
+    public @Nonnull Class<Boolean> getType() {
+        return Boolean.class;
     }
     
     /* -------------------------------------------------- Name -------------------------------------------------- */
@@ -45,7 +44,7 @@ public class StringConverter implements Converter<String, Void> {
     @Pure
     @Override
     public @Nonnull @CodeIdentifier @MaxSize(63) String getTypeName() {
-        return "String";
+        return "Boolean";
     }
     
     /* -------------------------------------------------- Package -------------------------------------------------- */
@@ -58,7 +57,7 @@ public class StringConverter implements Converter<String, Void> {
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableList<@Nonnull CustomField> fields = ImmutableList.withElements(CustomField.with(CustomType.STRING, "string", ImmutableList.withElements(CustomAnnotation.with(Nonnull.class))));
+    private static final @Nonnull ImmutableList<@Nonnull CustomField> fields = ImmutableList.withElements(CustomField.with(CustomType.BOOLEAN, "value"));
     
     @Pure
     @Override
@@ -70,16 +69,16 @@ public class StringConverter implements Converter<String, Void> {
     
     @Pure
     @Override
-    public <@Unspecifiable EXCEPTION extends ConnectionException> void convert(@NonCaptured @Unmodified @Nonnull String string, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION {
-        encoder.encodeString(string);
+    public <@Unspecifiable EXCEPTION extends ConnectionException> void convert(@NonCaptured @Unmodified @Nonnull Boolean value, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION {
+        encoder.encodeBoolean(value);
     }
     
     /* -------------------------------------------------- Recover -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Capturable <@Unspecifiable EXCEPTION extends ConnectionException> @Nonnull String recover(@NonCaptured @Modified @Nonnull Decoder<EXCEPTION> decoder, Void provided) throws EXCEPTION {
-        return decoder.decodeString();
+    public @Capturable <@Unspecifiable EXCEPTION extends ConnectionException> @Nonnull Boolean recover(@NonCaptured @Modified @Nonnull Decoder<EXCEPTION> decoder, Void provided) throws EXCEPTION {
+        return decoder.decodeBoolean();
     }
     
 }

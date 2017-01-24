@@ -80,7 +80,7 @@ public interface Converter<@Unspecifiable TYPE, @Specifiable PROVIDED> {
      * Converts the given object of the modeled type and returns the number of created entries.
      */
     @Pure
-    public <EXCEPTION extends ConnectionException> void convert(@NonCaptured @Unmodified @Nonnull TYPE object, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION;
+    public <@Unspecifiable EXCEPTION extends ConnectionException> void convert(@NonCaptured @Unmodified @Nonnull TYPE object, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION;
     
     /* -------------------------------------------------- Recover -------------------------------------------------- */
     
@@ -88,6 +88,6 @@ public interface Converter<@Unspecifiable TYPE, @Specifiable PROVIDED> {
      * Recovers an object of the modeled type with the provided object.
      */
     @Pure
-    public @Capturable <EXCEPTION extends ConnectionException> @Nonnull TYPE recover(@NonCaptured @Modified @Nonnull Decoder<EXCEPTION> decoder, @Shared PROVIDED provided) throws EXCEPTION, RecoveryException;
+    public @Capturable <@Unspecifiable EXCEPTION extends ConnectionException> @Nonnull TYPE recover(@NonCaptured @Modified @Nonnull Decoder<EXCEPTION> decoder, @Shared PROVIDED provided) throws EXCEPTION, RecoveryException;
     
 }

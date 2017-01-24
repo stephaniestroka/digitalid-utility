@@ -2,6 +2,7 @@ package net.digitalid.utility.conversion.converters;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
@@ -19,7 +20,6 @@ import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
 import net.digitalid.utility.validation.annotations.string.DomainName;
 import net.digitalid.utility.validation.annotations.type.Stateless;
-
 
 /**
  * This class implements the conversion of integers.
@@ -69,7 +69,7 @@ public class IntegerConverter implements Converter<Integer, Void> {
     
     @Pure
     @Override
-    public <EXCEPTION extends ConnectionException> void convert(@NonCaptured @Unmodified @Nonnull Integer integer, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION {
+    public <@Unspecifiable EXCEPTION extends ConnectionException> void convert(@NonCaptured @Unmodified @Nonnull Integer integer, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION {
         encoder.encodeInteger32(integer);
     }
     
@@ -77,7 +77,7 @@ public class IntegerConverter implements Converter<Integer, Void> {
     
     @Pure
     @Override
-    public @Capturable <EXCEPTION extends ConnectionException> @Nonnull Integer recover(@NonCaptured @Modified @Nonnull Decoder<EXCEPTION> decoder, Void provided) throws EXCEPTION {
+    public @Capturable <@Unspecifiable EXCEPTION extends ConnectionException> @Nonnull Integer recover(@NonCaptured @Modified @Nonnull Decoder<EXCEPTION> decoder, Void provided) throws EXCEPTION {
         return decoder.decodeInteger32();
     }
     
