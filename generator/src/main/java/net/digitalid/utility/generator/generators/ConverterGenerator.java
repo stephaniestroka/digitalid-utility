@@ -225,9 +225,13 @@ public class ConverterGenerator extends JavaFileGenerator {
         } else if (type.getKind() == TypeKind.ARRAY || ProcessingUtility.isRawSubtype(type, Iterable.class)) {
             final @Nullable TypeMirror componentType = ProcessingUtility.getComponentType(type);
             if (componentType != null) {
-                final boolean unordered = ProcessingUtility.isRawSubtype(type, Set.class);
-                final boolean nullable = !field.hasAnnotation(NonNullableElements.class);
-                addStatement("encoder.encode" + (unordered ? "Unordered" : "Ordered") + "Iterable" + (nullable ? "WithNullableElements" : "") + "(" + importConverterType(componentType) + ", " + importIfPossible(FiniteIterable.class) + ".of(" + access + "))");
+                if (componentType.getKind() == TypeKind.BYTE) {
+                    addStatement("encoder.encodeBinary(" + access + ")");
+                } else {
+                    final boolean unordered = ProcessingUtility.isRawSubtype(type, Set.class);
+                    final boolean nullable = !field.hasAnnotation(NonNullableElements.class);
+                    addStatement("encoder.encode" + (unordered ? "Unordered" : "Ordered") + "Iterable" + (nullable ? "WithNullableElements" : "") + "(" + importConverterType(componentType) + ", " + importIfPossible(FiniteIterable.class) + ".of(" + access + "))");
+                }
             }
         } else if (ProcessingUtility.getTypeElement(type).getKind() == ElementKind.ENUM && StaticProcessingEnvironment.getTypeUtils().isAssignable(type, typeInformation.getType())) {
             addStatement("encoder.encodeObject(" + importIfPossible("net.digitalid.utility.conversion.converters.StringConverter") + ".INSTANCE, " + access + ")" );
@@ -328,23 +332,27 @@ public class ConverterGenerator extends JavaFileGenerator {
         } else if (type.getKind() == TypeKind.ARRAY || ProcessingUtility.isRawSubtype(type, Iterable.class)) {
             final @Nullable TypeMirror componentType = ProcessingUtility.getComponentType(type);
             if (componentType != null) {
-                final boolean unordered = ProcessingUtility.isRawSubtype(type, Set.class);
-                final boolean nullable = !field.hasAnnotation(NonNullableElements.class);
-                final @Nonnull String collector;
-                final @Nonnull String typeName = ProcessingUtility.getSimpleName(type);
-                if (type.getKind() == TypeKind.ARRAY) { collector = importIfPossible(ArrayCollector.class) + "::with"; }
-                else if (ProcessingUtility.isRawSubtype(type, List.class)) {
-                    final @Nonnull String collection;
-                    if (!typeName.startsWith("Freezable") && !typeName.startsWith("ReadOnly")) { collection = "new " + importIfPossible(ArrayList.class) + "<>(size)"; }
-                    else { collection = importIfPossible("net.digitalid.utility.collections.list.FreezableArrayList") + ".withInitialCapacity(size)"; }
-                    collector = "size -> " + importIfPossible(CollectionCollector.class) + ".with(" + collection + ")";
-                } else if (ProcessingUtility.isRawSubtype(type, Set.class)) {
-                    final @Nonnull String collection;
-                    if (!typeName.startsWith("Freezable") && !typeName.startsWith("ReadOnly")) { collection = "new " + importIfPossible(LinkedHashSet.class) + "<>(size)"; }
-                    else { collection = importIfPossible("net.digitalid.utility.collections.set.FreezableLinkedHashSet") + ".withInitialCapacity(size)"; }
-                    collector = "size -> " + importIfPossible(CollectionCollector.class) + ".with(" + collection + ")";
-                } else { collector = "null"; }
-                addStatement("final " + importIfPossible(field.getType()) + " " + field.getName() + " = decoder.decode" + (unordered ? "Unordered" : "Ordered") + "Iterable" + (nullable ? "WithNullableElements" : "") + "(" + importConverterType(componentType) + ", " + provided + ", " + collector + ")");
+                if (componentType.getKind() == TypeKind.BYTE) {
+                    addStatement("final @" + importIfPossible(Nonnull.class) + " byte[] " + field.getName() + " = decoder.decodeBinary()");
+                } else {
+                    final boolean unordered = ProcessingUtility.isRawSubtype(type, Set.class);
+                    final boolean nullable = !field.hasAnnotation(NonNullableElements.class);
+                    final @Nonnull String collector;
+                    final @Nonnull String typeName = ProcessingUtility.getSimpleName(type);
+                    if (type.getKind() == TypeKind.ARRAY) { collector = importIfPossible(ArrayCollector.class) + "::with"; }
+                    else if (ProcessingUtility.isRawSubtype(type, List.class)) {
+                        final @Nonnull String collection;
+                        if (!typeName.startsWith("Freezable") && !typeName.startsWith("ReadOnly")) { collection = "new " + importIfPossible(ArrayList.class) + "<>(size)"; }
+                        else { collection = importIfPossible("net.digitalid.utility.collections.list.FreezableArrayList") + ".withInitialCapacity(size)"; }
+                        collector = "size -> " + importIfPossible(CollectionCollector.class) + ".with(" + collection + ")";
+                    } else if (ProcessingUtility.isRawSubtype(type, Set.class)) {
+                        final @Nonnull String collection;
+                        if (!typeName.startsWith("Freezable") && !typeName.startsWith("ReadOnly")) { collection = "new " + importIfPossible(LinkedHashSet.class) + "<>(size)"; }
+                        else { collection = importIfPossible("net.digitalid.utility.collections.set.FreezableLinkedHashSet") + ".withInitialCapacity(size)"; }
+                        collector = "size -> " + importIfPossible(CollectionCollector.class) + ".with(" + collection + ")";
+                    } else { collector = "null"; }
+                    addStatement("final " + importIfPossible(field.getType()) + " " + field.getName() + " = decoder.decode" + (unordered ? "Unordered" : "Ordered") + "Iterable" + (nullable ? "WithNullableElements" : "") + "(" + importConverterType(componentType) + ", " + provided + ", " + collector + ")");
+                }
             }
         } else if (ProcessingUtility.getTypeElement(type).getKind() == ElementKind.ENUM && StaticProcessingEnvironment.getTypeUtils().isAssignable(type, typeInformation.getType())) {
             addStatement("final @" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + " value = decoder.decodeObject(" + importIfPossible("net.digitalid.utility.conversion.converters.StringConverter") + ".INSTANCE, " + provided + ")" );
