@@ -217,7 +217,7 @@ public class SubclassGenerator extends JavaFileGenerator {
                 generateConstructor(constructor);
             }
         } else if (typeInformation instanceof InterfaceInformation) {
-            generateConstructor(typeInformation.getSimpleNameOfGeneratedSubclass() + typeInformation.getRepresentingFieldInformation().map(element -> this.importIfPossible(element.getType()) + " " + element.getName()).join(Brackets.ROUND), null);
+            generateConstructor(typeInformation.getSimpleNameOfGeneratedSubclass() + typeInformation.generatedRepresentingFieldInformation.map(element -> this.importIfPossible(element.getType()) + " " + element.getName()).join(Brackets.ROUND), null);
         }
     }
     
