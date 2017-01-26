@@ -59,7 +59,7 @@ public @interface Requires {
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
             final @Nullable AnnotationValue condition = ProcessingUtility.getAnnotationValue(annotationMirror, "condition");
             final @Nullable AnnotationValue message = ProcessingUtility.getAnnotationValue(annotationMirror, "message");
-            return Contract.with(String.valueOf(condition != null ? condition.getValue() : null), String.valueOf(message != null ? message.getValue() : null), element);
+            return Contract.with(String.valueOf(condition != null ? condition.getValue() : null), String.valueOf(message != null ? message.getValue() : null));
         }
         
     }

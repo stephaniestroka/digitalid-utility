@@ -265,4 +265,10 @@ public class TestEncoder implements Encoder<ConnectionException> {
         this.encrypting = false;
     }
     
+    /* -------------------------------------------------- Closing -------------------------------------------------- */
+    
+    @Impure
+    @Override
+    public void close() throws ConnectionException {}
+    
 }

@@ -3,7 +3,6 @@ package net.digitalid.utility.processing.utility;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -213,15 +212,17 @@ public class ProcessingUtility {
      * Returns the annotation mirrors that are present on the given element or its (return) (component) type.
      */
     @Pure
+    @TODO(task = "Figure out whether and where we still need to collect the annotation mirrors of the element type and the component type in case of arrays. (This was probably necessary when we restricted annotations to 'ElementType.TYPE_USE'.)", date = "2017-01-26", author = Author.KASPAR_ETTER)
     public static @Nonnull FiniteIterable<@Nonnull AnnotationMirror> getAnnotationMirrors(@Nonnull Element element) {
-        final @Nonnull List<@Nonnull AnnotationMirror> annotationMirrors = new LinkedList<>();
-        annotationMirrors.addAll(element.getAnnotationMirrors());
-        final @Nonnull TypeMirror typeMirror = getType(element);
-        annotationMirrors.addAll(typeMirror.getAnnotationMirrors());
-        if (typeMirror.getKind() == TypeKind.ARRAY) {
-            annotationMirrors.addAll(((ArrayType) typeMirror).getComponentType().getAnnotationMirrors());
-        }
-        return FiniteIterable.of(annotationMirrors);
+//        final @Nonnull List<@Nonnull AnnotationMirror> annotationMirrors = new LinkedList<>();
+//        annotationMirrors.addAll(element.getAnnotationMirrors());
+//        final @Nonnull TypeMirror typeMirror = getType(element);
+//        annotationMirrors.addAll(typeMirror.getAnnotationMirrors());
+//        if (typeMirror.getKind() == TypeKind.ARRAY) {
+//            annotationMirrors.addAll(((ArrayType) typeMirror).getComponentType().getAnnotationMirrors());
+//        }
+//        return FiniteIterable.of(annotationMirrors);
+        return FiniteIterable.of(element.getAnnotationMirrors());
     }
     
     /**

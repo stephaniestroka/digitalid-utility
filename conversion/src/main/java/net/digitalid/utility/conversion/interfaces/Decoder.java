@@ -33,7 +33,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * @see Encoder
  */
 @Mutable
-public interface Decoder<@Unspecifiable EXCEPTION extends ConnectionException> {
+public interface Decoder<@Unspecifiable EXCEPTION extends ConnectionException> extends AutoCloseable {
     
     /* -------------------------------------------------- Representation -------------------------------------------------- */
     
@@ -252,5 +252,11 @@ public interface Decoder<@Unspecifiable EXCEPTION extends ConnectionException> {
     @Impure
     @Requires(condition = "isDecrypting()", message = "The decoder has to be decrypting.")
     public void stopDecrypting() throws EXCEPTION;
+    
+    /* -------------------------------------------------- Closing -------------------------------------------------- */
+    
+    @Impure
+    @Override
+    public abstract void close() throws EXCEPTION;
     
 }

@@ -11,6 +11,9 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeKind;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
@@ -64,7 +67,11 @@ public @interface Ensures {
         public @Nonnull Contract generateContract(@Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @NonCaptured @Modified @Nonnull TypeImporter typeImporter) {
             final @Nullable AnnotationValue condition = ProcessingUtility.getAnnotationValue(annotationMirror, "condition");
             final @Nullable AnnotationValue message = ProcessingUtility.getAnnotationValue(annotationMirror, "message");
-            return Contract.with(String.valueOf(condition != null ? condition.getValue() : null), String.valueOf(message != null ? message.getValue() : null), element);
+            if (element.getKind() == ElementKind.METHOD && ((ExecutableElement) element).getReturnType().getKind() == TypeKind.VOID) {
+                return Contract.with(String.valueOf(condition != null ? condition.getValue() : null), String.valueOf(message != null ? message.getValue() : null));
+            } else {
+                return Contract.with(String.valueOf(condition != null ? condition.getValue() : null), String.valueOf(message != null ? message.getValue() : null), element);
+            }
         }
         
     }

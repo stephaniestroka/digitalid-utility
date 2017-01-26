@@ -274,4 +274,10 @@ public class TestDecoder implements Decoder<ConnectionException> {
         this.decrypting = false;
     }
     
+    /* -------------------------------------------------- Closing -------------------------------------------------- */
+    
+    @Impure
+    @Override
+    public void close() throws ConnectionException {}
+    
 }

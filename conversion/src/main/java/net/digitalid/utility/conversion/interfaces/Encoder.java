@@ -30,7 +30,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * @see Decoder
  */
 @Mutable
-public interface Encoder<@Unspecifiable EXCEPTION extends ConnectionException> {
+public interface Encoder<@Unspecifiable EXCEPTION extends ConnectionException> extends AutoCloseable {
     
     /* -------------------------------------------------- Representation -------------------------------------------------- */
     
@@ -144,7 +144,7 @@ public interface Encoder<@Unspecifiable EXCEPTION extends ConnectionException> {
      * Encodes the bytes from the given input stream for the given length.
      */
     @Impure
-    public void encodeBinaryStream(@Nonnull InputStream stream, int length) throws EXCEPTION;
+    public void encodeBinaryStream(@Nonnull InputStream inputStream, int length) throws EXCEPTION;
     
     /* -------------------------------------------------- Collections -------------------------------------------------- */
     
@@ -249,5 +249,11 @@ public interface Encoder<@Unspecifiable EXCEPTION extends ConnectionException> {
     @Impure
     @Requires(condition = "isEncrypting()", message = "The encoder has to be encrypting.")
     public void stopEncrypting() throws EXCEPTION;
+    
+    /* -------------------------------------------------- Closing -------------------------------------------------- */
+    
+    @Impure
+    @Override
+    public void close() throws EXCEPTION;
     
 }
