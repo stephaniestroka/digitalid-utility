@@ -368,7 +368,7 @@ public class ConverterGenerator extends JavaFileGenerator {
     protected void generateRecoverMethod() {
         addAnnotation(Pure.class);
         addAnnotation(Override.class);
-        beginMethod("public @" + importIfPossible(Capturable.class) + " " + Brackets.inPointy("EXCEPTION extends " + importIfPossible(ConnectionException.class)) + " @" + importIfPossible(Nullable.class) + " " + typeInformation.getName() + " recover(@" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " " + importIfPossible(Decoder.class) + Brackets.inPointy("EXCEPTION") + " decoder, " + getExternallyProvidedParameterDeclarationsAsString(getExternallyProvidedParameterNameAsString()) + ") throws EXCEPTION, " + importIfPossible(RecoveryException.class));
+        beginMethod("public @" + importIfPossible(Capturable.class) + " " + Brackets.inPointy("EXCEPTION extends " + importIfPossible(ConnectionException.class)) + " @" + importIfPossible(Nonnull.class) + " " + typeInformation.getName() + " recover(@" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonCaptured.class) + " " + importIfPossible(Decoder.class) + Brackets.inPointy("EXCEPTION") + " decoder, " + getExternallyProvidedParameterDeclarationsAsString(getExternallyProvidedParameterNameAsString()) + ") throws EXCEPTION, " + importIfPossible(RecoveryException.class));
         final @Nonnull FiniteIterable<@Nonnull FieldInformation> externallyProvidedFields = filterExternallyProvidedFields(typeInformation.getRepresentingFieldInformation());
         
         if (externallyProvidedFields.size() > 1) {
