@@ -14,7 +14,11 @@ import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.ownership.Shared;
+import net.digitalid.utility.annotations.parameter.Modified;
+import net.digitalid.utility.collaboration.annotations.TODO;
+import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.conversion.enumerations.Representation;
 import net.digitalid.utility.conversion.exceptions.ConnectionException;
 import net.digitalid.utility.conversion.exceptions.RecoveryException;
@@ -179,13 +183,15 @@ public interface Decoder<@Unspecifiable EXCEPTION extends ConnectionException> e
      * Decodes non-nullable key-value pairs with the given converters and provided objects and returns the given empty map with the decoded key-value pairs.
      */
     @Impure
-    public <@Unspecifiable KEY, @Specifiable PROVIDED_FOR_KEY, @Unspecifiable VALUE, @Specifiable PROVIDED_FOR_VALUE> @Nonnull Map<@Nonnull KEY, @Nonnull VALUE> decodeMap(@Nonnull Converter<KEY, PROVIDED_FOR_KEY> keyConverter, @Shared PROVIDED_FOR_KEY providedForKey, @Nonnull Converter<VALUE, PROVIDED_FOR_VALUE> valueConverter, @Shared PROVIDED_FOR_VALUE providedForValue, @Nonnull @Empty Map<@Nonnull KEY, @Nonnull VALUE> emptyMap) throws EXCEPTION, RecoveryException;
+    @TODO(task = "Use also a constructor function instead of the empty map to have a suitable initial capacity.", date = "2017-01-27", author = Author.KASPAR_ETTER)
+    public <@Unspecifiable KEY, @Specifiable PROVIDED_FOR_KEY, @Unspecifiable VALUE, @Specifiable PROVIDED_FOR_VALUE> @Nonnull Map<@Nonnull KEY, @Nonnull VALUE> decodeMap(@Nonnull Converter<KEY, PROVIDED_FOR_KEY> keyConverter, @Shared PROVIDED_FOR_KEY providedForKey, @Nonnull Converter<VALUE, PROVIDED_FOR_VALUE> valueConverter, @Shared PROVIDED_FOR_VALUE providedForValue, @NonCaptured @Modified @Nonnull @Empty Map<@Nonnull KEY, @Nonnull VALUE> emptyMap) throws EXCEPTION, RecoveryException;
     
     /**
      * Decodes nullable key-value pairs with the given converters and provided objects and returns the given empty map with the decoded key-value pairs.
      */
     @Impure
-    public <@Unspecifiable KEY, @Specifiable PROVIDED_FOR_KEY, @Unspecifiable VALUE, @Specifiable PROVIDED_FOR_VALUE> @Nonnull Map<@Nullable KEY, @Nullable VALUE> decodeMapWithNullableValues(@Nonnull Converter<KEY, PROVIDED_FOR_KEY> keyConverter, @Shared PROVIDED_FOR_KEY providedForKey, @Nonnull Converter<VALUE, PROVIDED_FOR_VALUE> valueConverter, @Shared PROVIDED_FOR_VALUE providedForValue, @Nonnull @Empty Map<@Nullable KEY, @Nullable VALUE> emptyMap) throws EXCEPTION, RecoveryException;
+    @TODO(task = "Use also a constructor function instead of the empty map to have a suitable initial capacity.", date = "2017-01-27", author = Author.KASPAR_ETTER)
+    public <@Unspecifiable KEY, @Specifiable PROVIDED_FOR_KEY, @Unspecifiable VALUE, @Specifiable PROVIDED_FOR_VALUE> @Nonnull Map<@Nullable KEY, @Nullable VALUE> decodeMapWithNullableValues(@Nonnull Converter<KEY, PROVIDED_FOR_KEY> keyConverter, @Shared PROVIDED_FOR_KEY providedForKey, @Nonnull Converter<VALUE, PROVIDED_FOR_VALUE> valueConverter, @Shared PROVIDED_FOR_VALUE providedForValue, @NonCaptured @Modified @Nonnull @Empty Map<@Nullable KEY, @Nullable VALUE> emptyMap) throws EXCEPTION, RecoveryException;
     
     /* -------------------------------------------------- Hashing -------------------------------------------------- */
     
@@ -257,6 +263,6 @@ public interface Decoder<@Unspecifiable EXCEPTION extends ConnectionException> e
     
     @Impure
     @Override
-    public abstract void close() throws EXCEPTION;
+    public void close() throws EXCEPTION;
     
 }
