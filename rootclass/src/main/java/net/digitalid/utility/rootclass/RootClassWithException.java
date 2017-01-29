@@ -3,6 +3,7 @@ package net.digitalid.utility.rootclass;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.CallSuper;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Mutable;
@@ -10,10 +11,10 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 /**
  * All custom classes in the Digital ID Library extend this root class.
  * 
- * @param <X> the type of exceptions that the {@link #initialize()} method may throw.
+ * @param <EXCEPTION> the type of exceptions that the {@link #initialize()} method may throw.
  */
 @Mutable
-public abstract class RootClassWithException<X extends Exception> implements RootInterface {
+public abstract class RootClassWithException<@Unspecifiable EXCEPTION extends Exception> implements RootInterface {
     
     /* -------------------------------------------------- Initialization -------------------------------------------------- */
     
@@ -22,7 +23,7 @@ public abstract class RootClassWithException<X extends Exception> implements Roo
      */
     @Pure
     @CallSuper
-    protected void initialize() throws X {}
+    protected void initialize() throws EXCEPTION {}
     
     /* -------------------------------------------------- Object -------------------------------------------------- */
     

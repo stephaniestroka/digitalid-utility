@@ -32,6 +32,7 @@ import net.digitalid.utility.conversion.collectors.CollectionCollector;
 import net.digitalid.utility.conversion.enumerations.Representation;
 import net.digitalid.utility.conversion.exceptions.ConnectionException;
 import net.digitalid.utility.conversion.exceptions.RecoveryException;
+import net.digitalid.utility.conversion.exceptions.RecoveryExceptionBuilder;
 import net.digitalid.utility.conversion.interfaces.Converter;
 import net.digitalid.utility.conversion.interfaces.Decoder;
 import net.digitalid.utility.conversion.interfaces.Encoder;
@@ -42,6 +43,7 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.GeneratorProcessor;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.field.FieldInformation;
+import net.digitalid.utility.generator.information.method.ExecutableInformation;
 import net.digitalid.utility.generator.information.type.EnumInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.immutable.ImmutableList;
@@ -390,7 +392,14 @@ public class ConverterGenerator extends JavaFileGenerator {
 //        }
         
         fields.doForEach(this::addDecodingStatement);
+        final @Nullable ExecutableInformation recoverConstructorOrMethod = typeInformation.getRecoverConstructorOrMethod();
+        if (recoverConstructorOrMethod != null && recoverConstructorOrMethod.throwsExceptions()) { beginTry(); }
         addStatement(typeInformation.getInstantiationCode(true, true, true, externallyProvidedFields.combine(fields)));
+        if (recoverConstructorOrMethod != null && recoverConstructorOrMethod.throwsExceptions()) {
+            endTryOrCatchBeginCatch(recoverConstructorOrMethod.getElement().getThrownTypes());
+            addStatement("throw " + importIfPossible(RecoveryExceptionBuilder.class) + ".withMessage(\"Could not recover " + Strings.prependWithIndefiniteArticle(Strings.decamelize(typeInformation.getName())) + ".\").withCause(exception).build()");
+            endCatch();
+        }
         endMethod();
     }
     

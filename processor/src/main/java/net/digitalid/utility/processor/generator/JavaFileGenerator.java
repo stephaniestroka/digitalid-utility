@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -843,11 +844,10 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     }
     
     @Impure
-    @SafeVarargs
     @NonWrittenRecipient
     @OnlyPossibleIn({TRY, CATCH})
-    public final void endTryOrCatchBeginCatch(@Nonnull String exceptionName, @Nonnull @NonNullableElements @NonEmpty Class<? extends Throwable>... exceptionTypes) {
-        endAndBeginBlock("catch", "@" + importIfPossible(Nonnull.class) + " " + FiniteIterable.of(exceptionTypes).map(this::importIfPossible).join(" | ") + " " + exceptionName, CATCH, TRY, CATCH);
+    public void endTryOrCatchBeginCatch(@Nonnull String exceptionName, @Nonnull @NonNullableElements @NonEmpty FiniteIterable<String> exceptionTypes) {
+        endAndBeginBlock("catch", "@" + importIfPossible(Nonnull.class) + " " + exceptionTypes.join(" | ") + " " + exceptionName, CATCH, TRY, CATCH);
     }
     
     @Impure
@@ -855,7 +855,14 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     @NonWrittenRecipient
     @OnlyPossibleIn({TRY, CATCH})
     public final void endTryOrCatchBeginCatch(@Nonnull @NonNullableElements @NonEmpty Class<? extends Throwable>... exceptionTypes) {
-        endTryOrCatchBeginCatch("exception", exceptionTypes);
+        endTryOrCatchBeginCatch("exception", FiniteIterable.of(exceptionTypes).map(this::importIfPossible));
+    }
+    
+    @Impure
+    @NonWrittenRecipient
+    @OnlyPossibleIn({TRY, CATCH})
+    public void endTryOrCatchBeginCatch(@Nonnull @NonNullableElements @NonEmpty List<? extends TypeMirror> exceptionTypes) {
+        endTryOrCatchBeginCatch("exception", FiniteIterable.of(exceptionTypes).map(this::importIfPossible));
     }
     
     @Impure
