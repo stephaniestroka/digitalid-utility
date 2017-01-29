@@ -16,6 +16,7 @@ import net.digitalid.utility.conversion.exceptions.ConnectionException;
 import net.digitalid.utility.conversion.exceptions.RecoveryException;
 import net.digitalid.utility.conversion.model.CustomField;
 import net.digitalid.utility.immutable.ImmutableList;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
@@ -59,7 +60,7 @@ public interface Converter<@Unspecifiable TYPE, @Specifiable PROVIDED> {
      * Returns the fields of the modeled type for the given representation.
      */
     @Pure
-    public @Nonnull ImmutableList<@Nonnull CustomField> getFields(@Nonnull Representation representation);
+    public @Nonnull @NonNullableElements ImmutableList<CustomField> getFields(@Nonnull Representation representation);
     
     /* -------------------------------------------------- Inheritance -------------------------------------------------- */
     
@@ -73,7 +74,7 @@ public interface Converter<@Unspecifiable TYPE, @Specifiable PROVIDED> {
      * Returns the converters of the subtypes or null if the modeled type has no convertible subtypes.
      */
     @Pure
-    public default @Nullable @NonEmpty ImmutableList<@Nonnull Converter<? extends TYPE, PROVIDED>> getSubtypeConverters() { return null; }
+    public default @Nullable @NonNullableElements @NonEmpty ImmutableList<Converter<? extends TYPE, PROVIDED>> getSubtypeConverters() { return null; }
     
     /* -------------------------------------------------- Convert -------------------------------------------------- */
     
