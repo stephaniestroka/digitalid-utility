@@ -110,7 +110,8 @@ public class Contract {
     public static @Nonnull Contract with(@Nonnull String condition, @Nonnull String message, @Nonnull Element element, @Nonnull AnnotationMirror annotationMirror, @Nonnull String suffix) {
         final @Nonnull String name = ValueAnnotationValidator.getName(element);
         final @Nullable AnnotationValue annotationValue = ProcessingUtility.getAnnotationValue(annotationMirror);
-        final @Nonnull String value = String.valueOf(annotationValue != null ? annotationValue.getValue() : null);
+        final @Nullable Object object = annotationValue != null ? annotationValue.getValue() : null;
+        final @Nonnull String value = String.valueOf(object) + (object instanceof Long ? "l" : "");
         return new Contract(condition.replace("#", name).replace("@", value), message.replace("#", Strings.decamelize(name)).replace("@", value), name + (suffix.isEmpty() ? "" : " == null ? null : " + name + suffix));
     }
     
