@@ -10,11 +10,19 @@
     <artifactId>utility-initializer</artifactId>
     
     <dependencies>
+        
         <dependency>
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-initialization</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-threading</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
     </dependencies>
     
 </project>

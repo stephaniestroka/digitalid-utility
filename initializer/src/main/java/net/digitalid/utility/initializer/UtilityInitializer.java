@@ -3,9 +3,11 @@ package net.digitalid.utility.initializer;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ConcurrentModificationException;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.method.PureWithSideEffects;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.exceptions.UncheckedExceptionBuilder;
@@ -20,6 +22,7 @@ import net.digitalid.utility.logging.filter.LoggingRule;
 import net.digitalid.utility.logging.logger.Logger;
 import net.digitalid.utility.logging.logger.RotatingFileLogger;
 import net.digitalid.utility.logging.logger.StandardOutputLogger;
+import net.digitalid.utility.threading.Threading;
 import net.digitalid.utility.validation.annotations.file.existence.ExistentParent;
 import net.digitalid.utility.validation.annotations.file.path.Absolute;
 import net.digitalid.utility.validation.annotations.type.Utility;
@@ -104,5 +107,15 @@ public class UtilityInitializer {
             Log.verbose("Did not replace the non-default logger with a rotating file logger.");
         }
     }
+    
+    /* -------------------------------------------------- Threading -------------------------------------------------- */
+    
+    /**
+     * Ensures that the threading configuration is loaded before the configurations are initialized.
+     * This initialization was necessary to prevent a {@link ConcurrentModificationException} in {@link Configuration#initializeAllConfigurations()}.
+     */
+    @Pure
+    @Initialize(target = Threading.class)
+    public static void initializeThreading() {}
     
 }
