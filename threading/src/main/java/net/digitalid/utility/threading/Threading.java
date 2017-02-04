@@ -28,7 +28,7 @@ public interface Threading {
     /* -------------------------------------------------- Configuration -------------------------------------------------- */
     
     /**
-     * Stores the public key retriever, which has to be provided by the cache package.
+     * Stores the threading implementation which has to be provided by another package.
      */
     public static final @Nonnull Configuration<Threading> configuration = Configuration.withUnknownProvider();
     
