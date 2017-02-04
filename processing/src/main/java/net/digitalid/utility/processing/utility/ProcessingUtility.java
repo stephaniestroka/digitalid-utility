@@ -2,6 +2,7 @@ package net.digitalid.utility.processing.utility;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -825,17 +826,25 @@ public class ProcessingUtility {
     /* -------------------------------------------------- Component Type -------------------------------------------------- */
     
     /**
-     * Returns the component type of the given type if it is an array or an iterable and logs errors with the given logger otherwise.
+     * Returns the component types of the given type if it is an array or an iterable and logs errors with the given logger otherwise.
      */
     @Pure
     @LogsErrorWhenReturningNull
-    public static @Nullable TypeMirror getComponentType(@Nonnull TypeMirror type, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
+    public static @Nullable List<TypeMirror> getComponentTypes(@Nonnull TypeMirror type, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
+        final @Nonnull List<TypeMirror> list = new ArrayList<>();
         if (type.getKind() == TypeKind.ARRAY) {
-            return ((ArrayType) type).getComponentType();
+            list.add(((ArrayType) type).getComponentType());
+            return list;
         } else if (type.getKind() == TypeKind.DECLARED) {
-            final @Nullable DeclaredType supertype = getSupertype((DeclaredType) type, Iterable.class);
+            @Nullable DeclaredType supertype = getSupertype((DeclaredType) type, Iterable.class);
+            if (supertype == null) {
+                supertype = getSupertype((DeclaredType) type, Map.class);
+            }
             if (supertype != null) {
-                return supertype.getTypeArguments().get(0);
+                for (@Nonnull TypeMirror typeArgument : supertype.getTypeArguments()) {
+                    list.add(typeArgument);
+                }
+                return list;
             } else {
                 errorLogger.log("The declared type $ is not iterable.", null, type);
             }
@@ -843,6 +852,42 @@ public class ProcessingUtility {
             errorLogger.log("The type $ is neither an array nor a declared type.", null, type);
         }
         return null;
+    }
+    
+    /**
+     * Returns the component types of the given type if it is an array or an iterable.
+     */
+    @Pure
+    @LogsErrorWhenReturningNull
+    public static @Nullable List<TypeMirror> getComponentTypes(@Nonnull TypeMirror type) {
+        return getComponentTypes(type, ErrorLogger.INSTANCE);
+    }
+    
+    /**
+     * Returns the component types of the type of the given element if it is an array or an iterable and logs errors with the given logger otherwise.
+     */
+    @Pure
+    @LogsErrorWhenReturningNull
+    public static @Nullable List<TypeMirror> getComponentTypes(@Nonnull Element element, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
+        return getComponentTypes(getType(element), errorLogger);
+    }
+    
+    /**
+     * Returns the component types of the type of the given element if it is an array or an iterable.
+     */
+    @Pure
+    @LogsErrorWhenReturningNull
+    public static @Nullable List<TypeMirror> getComponentTypes(@Nonnull Element element) {
+        return getComponentTypes(element, ErrorLogger.INSTANCE);
+    }
+    
+    /**
+     * Returns the component type of the given type if it is an array or an iterable and logs errors with the given logger otherwise.
+     */
+    @Pure
+    @LogsErrorWhenReturningNull
+    public static @Nullable TypeMirror getComponentType(@Nonnull TypeMirror type, @NonCaptured @Modified @Nonnull ErrorLogger errorLogger) {
+        return getComponentTypes(type, errorLogger) == null ? null : getComponentTypes(type, errorLogger).get(0);
     }
     
     /**

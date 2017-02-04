@@ -55,6 +55,14 @@ public class LongConverter implements Converter<Long, Void> {
         return "java.lang";
     }
     
+    /* -------------------------------------------------- Primitive Converter -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public boolean isPrimitiveConverter() {
+        return true;
+    }
+    
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
     private static final @Nonnull ImmutableList<@Nonnull CustomField> fields = ImmutableList.withElements(CustomField.with(CustomType.INTEGER64, "value"));

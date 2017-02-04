@@ -7,6 +7,7 @@ import java.util.Queue;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.conversion.converters.StringConverter;
 import net.digitalid.utility.conversion.enumerations.Representation;
 import net.digitalid.utility.conversion.exceptions.RecoveryException;
 import net.digitalid.utility.conversion.exceptions.RecoveryExceptionBuilder;
@@ -206,7 +207,7 @@ public class ConverterTest extends RootTest {
         final @Nonnull CustomField[] customFieldsArray = { 
                 CustomField.with(BOOLEAN, "flag", ImmutableList.withElements()),
                 CustomField.with(INTEGER32, "size", ImmutableList.withElements()),
-                CustomField.with(STRING, "text", ImmutableList.withElements())
+                CustomField.with(TUPLE.of(StringConverter.INSTANCE), "text", ImmutableList.withElements())
         };
         assertEquals(Arrays.asList(customFieldsArray), testDeclaration.collectedFields);
     }
@@ -243,7 +244,7 @@ public class ConverterTest extends RootTest {
             testDeclaration.setField(field);
         }
         
-        assertEquals(CustomField.with(STRING, "SimpleEnum", ImmutableList.withElements()), testDeclaration.collectedFields.get(0));
+        assertEquals(CustomField.with(TUPLE.of(StringConverter.INSTANCE), "SimpleEnum", ImmutableList.withElements()), testDeclaration.collectedFields.get(0));
     }
     
     @Test

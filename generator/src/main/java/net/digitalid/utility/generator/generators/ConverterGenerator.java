@@ -71,14 +71,8 @@ public class ConverterGenerator extends JavaFileGenerator {
     
     /* -------------------------------------------------- Converter Import -------------------------------------------------- */
     
-    /**
-     * Returns the imported name (if possible) of the converter of the given type.
-     */
-    @Impure
-    public @Nonnull String importConverterType(@Nonnull TypeMirror type) {
-        @Nonnull String qualifiedName = ProcessingUtility.getQualifiedName(type);
-        if (!qualifiedName.startsWith("net.digitalid")) { qualifiedName = qualifiedName.replace(Strings.substringUntilLast(qualifiedName, '.'), "net.digitalid.utility.conversion.converters"); }
-        return importIfPossible(qualifiedName + "Converter") + ".INSTANCE";
+    private String importConverterType(@Nonnull TypeMirror typeMirror) {
+        return CustomType.importConverterType(typeMirror, this);
     }
     
     /* -------------------------------------------------- Type Information -------------------------------------------------- */

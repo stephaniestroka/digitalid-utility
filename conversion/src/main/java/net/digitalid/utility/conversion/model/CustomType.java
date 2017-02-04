@@ -12,13 +12,16 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.reference.NonRawRecipient;
 import net.digitalid.utility.circumfixes.Brackets;
+import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.conversion.interfaces.Converter;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
+import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Tuple;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 
@@ -208,23 +211,23 @@ public class CustomType {
     
     /* -------------------------------------------------- Static Instances -------------------------------------------------- */
     
-    public static final CustomType BOOLEAN = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, boolean.class) || ProcessingUtility.isRawlyAssignable(typeMirror, Boolean.class), "BOOLEAN");
+    public static final CustomType BOOLEAN = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, boolean.class), "BOOLEAN");
     
-    public static final CustomType INTEGER08 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, byte.class) || ProcessingUtility.isRawlyAssignable(typeMirror, Byte.class), "INTEGER08");
+    public static final CustomType INTEGER08 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, byte.class), "INTEGER08");
     
-    public static final CustomType INTEGER16 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, short.class) || ProcessingUtility.isRawlyAssignable(typeMirror, Short.class), "INTEGER16");
+    public static final CustomType INTEGER16 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, short.class), "INTEGER16");
     
-    public static final CustomType INTEGER32 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, int.class) || ProcessingUtility.isRawlyAssignable(typeMirror, Integer.class), "INTEGER32");
+    public static final CustomType INTEGER32 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, int.class), "INTEGER32");
     
-    public static final CustomType INTEGER64 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, long.class) || ProcessingUtility.isRawlyAssignable(typeMirror, Long.class), "INTEGER64");
+    public static final CustomType INTEGER64 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, long.class), "INTEGER64");
     
     public static final CustomType INTEGER = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, BigInteger.class), "INTEGER");
     
-    public static final CustomType DECIMAL32 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, float.class) || ProcessingUtility.isRawlyAssignable(typeMirror, Float.class), "DECIMAL32");
+    public static final CustomType DECIMAL32 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, float.class), "DECIMAL32");
     
-    public static final CustomType DECIMAL64 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, double.class) || ProcessingUtility.isRawlyAssignable(typeMirror, Double.class), "DECIMAL64");
+    public static final CustomType DECIMAL64 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, double.class), "DECIMAL64");
     
-    public static final CustomType STRING01 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, char.class) || ProcessingUtility.isRawlyAssignable(typeMirror, Character.class), "STRING01");
+    public static final CustomType STRING01 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, char.class), "STRING01");
     
     public static final CustomType STRING64 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, String.class) && typeMirror.getAnnotation(MaxSize.class) != null && typeMirror.getAnnotation(MaxSize.class).value() <= 64, "STRING64");
     
@@ -348,24 +351,41 @@ public class CustomType {
     /* -------------------------------------------------- Type Name -------------------------------------------------- */
     
     /**
+     * Returns the imported name (if possible) of the converter of the given type.
+     */
+    @Pure
+    public static @Nonnull String importConverterType(@Nonnull TypeMirror type, @Nonnull TypeImporter typeImporter) {
+        @Nonnull String qualifiedName = ProcessingUtility.getQualifiedName(type);
+        if (!qualifiedName.startsWith("net.digitalid")) {
+            qualifiedName = qualifiedName.replace(Strings.substringUntilLast(qualifiedName, '.'), "net.digitalid.utility.conversion.converters");
+        }
+        return typeImporter.importIfPossible(qualifiedName + "Converter") + ".INSTANCE";
+    }
+    
+    /**
      * Returns the custom type for the given representing field.
      */
     public static @Nonnull String getTypeName(@Nonnull TypeMirror representingFieldType, @Nonnull TypeImporter typeImporter) {
         @Nonnull CustomType customType = CustomType.of(representingFieldType);
         // TODO: ProcessingUtility.getTypeElement(representingFieldType) is null for generic types but checking this only here leads to new problems (namely "The name 'TConverter' has to be qualified.").
         if (customType == CustomType.TUPLE && ProcessingUtility.getTypeElement(representingFieldType).getKind() == ElementKind.ENUM) {
-            customType = CustomType.STRING;
-        } 
-        if (customType == CustomType.TUPLE) {
-            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(typeImporter.importIfPossible(ProcessingUtility.getQualifiedName(representingFieldType) + "Converter") + ".INSTANCE"); // TODO: The derivation of the converter was copied from ConverterGenerator#importConverterType(type) as that method is not available here. Please find a better solution!
-        } else if (customType == CustomType.SET) {
+            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(typeImporter.importIfPossible("net.digitalid.utility.conversion.converters.StringConverter") + ".INSTANCE");
+        } else if (customType == CustomType.SET || customType == CustomType.LIST || customType == CustomType.ARRAY) {
             final @Nonnull TypeMirror componentType = ProcessingUtility.getComponentType(representingFieldType);
             return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(getTypeName(componentType, typeImporter));
-        } else if (customType == CustomType.LIST) {
-            final @Nonnull TypeMirror componentType = ProcessingUtility.getComponentType(representingFieldType);
-            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(getTypeName(componentType, typeImporter));
-        } else {
+        } else if (customType == CustomType.MAP) {
+            final @Nullable List<TypeMirror> componentTypes = ProcessingUtility.getComponentTypes(representingFieldType);
+            Require.that(componentTypes.size() == 2).orThrow("Map type does not have 2 component types.");
+            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(getTypeName(componentTypes.get(0), typeImporter) + ", " + getTypeName(componentTypes.get(1), typeImporter));
+        } else if (representingFieldType.getKind().isPrimitive()) {
             return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName());
+        } else {
+            @Nonnull String typeName = customType.getTypeName();
+            @Nonnull String qualifiedName = ProcessingUtility.getQualifiedName(representingFieldType);
+            if (!qualifiedName.startsWith("net.digitalid")) {
+                typeName = TUPLE.getTypeName();
+            }
+            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + typeName) + ".of" + Brackets.inRound(importConverterType(representingFieldType, typeImporter));
         }
     }
     

@@ -57,6 +57,14 @@ public class BigIntegerConverter implements Converter<BigInteger, Void> {
         return "java.math";
     }
     
+    /* -------------------------------------------------- Primitive Converter -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public boolean isPrimitiveConverter() {
+        return true;
+    }
+    
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
     private static final @Nonnull ImmutableList<@Nonnull CustomField> fields = ImmutableList.withElements(CustomField.with(CustomType.INTEGER, "value"));

@@ -56,6 +56,14 @@ public class StringConverter implements Converter<String, Void> {
         return "java.lang";
     }
     
+    /* -------------------------------------------------- Primitive Converter -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public boolean isPrimitiveConverter() {
+        return true;
+    }
+    
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
     private static final @Nonnull ImmutableList<@Nonnull CustomField> fields = ImmutableList.withElements(CustomField.with(CustomType.STRING, "string", ImmutableList.withElements(CustomAnnotation.with(Nonnull.class))));

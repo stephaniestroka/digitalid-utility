@@ -54,6 +54,16 @@ public interface Converter<@Unspecifiable TYPE, @Specifiable PROVIDED> {
     @Pure
     public @Nonnull @DomainName String getTypePackage();
     
+    /* -------------------------------------------------- Primitive Converter -------------------------------------------------- */
+    
+    /**
+     * Returns true if the converter is one of those under net.digitalid.utility.conversion.converters.
+     */
+    @Pure
+    public default boolean isPrimitiveConverter() {
+        return false;
+    }
+    
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
     /**
