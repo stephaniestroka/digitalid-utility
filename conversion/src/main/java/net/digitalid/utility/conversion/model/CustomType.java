@@ -377,7 +377,7 @@ public class CustomType {
             final @Nullable List<TypeMirror> componentTypes = ProcessingUtility.getComponentTypes(representingFieldType);
             Require.that(componentTypes.size() == 2).orThrow("Map type does not have 2 component types.");
             return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(getTypeName(componentTypes.get(0), typeImporter) + ", " + getTypeName(componentTypes.get(1), typeImporter));
-        } else if (representingFieldType.getKind().isPrimitive()) {
+        } else if (representingFieldType.getKind().isPrimitive() || customType == BINARY || customType == BINARY128 || customType == BINARY256) {
             return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName());
         } else {
             @Nonnull String typeName = customType.getTypeName();
