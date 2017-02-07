@@ -397,4 +397,37 @@ public abstract class Strings {
         return Strings.prependWithIndefiniteArticle(word, false);
     }
     
+    /* -------------------------------------------------- Byte Arrays -------------------------------------------------- */
+    
+    private static final @Nonnull char[] hexChars = "0123456789ABCDEF".toCharArray();
+    
+    /**
+     * Returns the given bytes as a string in hexadecimal notation.
+     */
+    @Pure
+    public static @Nonnull String hex(@NonCaptured @Unmodified @Nonnull byte[] bytes) {
+        final @Nonnull char[] result = new char[bytes.length * 2];
+        for (int i = 0; i < bytes.length; i++ ) {
+            final int value = bytes[i] & 0xFF;
+            result[i * 2] = hexChars[value >>> 4];
+            result[i * 2 + 1] = hexChars[value & 0x0F];
+        }
+        return new String(result);
+    }
+    
+    /**
+     * Returns the given bytes as a string in hexadecimal notation with a space between each byte.
+     */
+    @Pure
+    public static @Nonnull String hexWithSpaces(@NonCaptured @Unmodified @Nonnull byte[] bytes) {
+        final @Nonnull char[] result = new char[bytes.length * 3];
+        for (int i = 0; i < bytes.length; i++ ) {
+            final int value = bytes[i] & 0xFF;
+            result[i * 3] = hexChars[value >>> 4];
+            result[i * 3 + 1] = hexChars[value & 0x0F];
+            result[i * 3 + 2] = ' ';
+        }
+        return new String(result);
+    }
+    
 }
