@@ -19,6 +19,7 @@ import net.digitalid.utility.validation.annotations.elements.NonNullableElements
 import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
+import net.digitalid.utility.validation.annotations.method.Requires;
 import net.digitalid.utility.validation.annotations.size.NonEmpty;
 import net.digitalid.utility.validation.annotations.type.Utility;
 
@@ -402,15 +403,40 @@ public abstract class Strings {
     private static final @Nonnull char[] hexChars = "0123456789ABCDEF".toCharArray();
     
     /**
+     * Returns the bytes at the given offset for the given length from the given array as a string in hexadecimal notation.
+     */
+    @Pure
+    @Requires(condition = "offset + length <= bytes.length", message = "The indicated section has to be in the given byte array.")
+    public static @Nonnull String hex(@NonCaptured @Unmodified @Nonnull byte[] bytes, @NonNegative int offset, @NonNegative int length) {
+        final @Nonnull char[] result = new char[length * 2];
+        for (int i = 0; i < length; i++) {
+            final int value = bytes[offset + i] & 0xFF;
+            result[i * 2] = hexChars[value >>> 4];
+            result[i * 2 + 1] = hexChars[value & 0x0F];
+        }
+        return new String(result);
+    }
+    
+    /**
      * Returns the given bytes as a string in hexadecimal notation.
      */
     @Pure
     public static @Nonnull String hex(@NonCaptured @Unmodified @Nonnull byte[] bytes) {
-        final @Nonnull char[] result = new char[bytes.length * 2];
-        for (int i = 0; i < bytes.length; i++ ) {
-            final int value = bytes[i] & 0xFF;
-            result[i * 2] = hexChars[value >>> 4];
-            result[i * 2 + 1] = hexChars[value & 0x0F];
+        return hex(bytes, 0, bytes.length);
+    }
+    
+    /**
+     * Returns the bytes at the given offset for the given length from the given array as a string in hexadecimal notation with a space between each byte.
+     */
+    @Pure
+    @Requires(condition = "offset + length <= bytes.length", message = "The indicated section has to be in the given byte array.")
+    public static @Nonnull String hexWithSpaces(@NonCaptured @Unmodified @Nonnull byte[] bytes, @NonNegative int offset, @NonNegative int length) {
+        final @Nonnull char[] result = new char[length * 3];
+        for (int i = 0; i < length; i++) {
+            final int value = bytes[offset + i] & 0xFF;
+            result[i * 3] = hexChars[value >>> 4];
+            result[i * 3 + 1] = hexChars[value & 0x0F];
+            result[i * 3 + 2] = ' ';
         }
         return new String(result);
     }
@@ -420,14 +446,7 @@ public abstract class Strings {
      */
     @Pure
     public static @Nonnull String hexWithSpaces(@NonCaptured @Unmodified @Nonnull byte[] bytes) {
-        final @Nonnull char[] result = new char[bytes.length * 3];
-        for (int i = 0; i < bytes.length; i++ ) {
-            final int value = bytes[i] & 0xFF;
-            result[i * 3] = hexChars[value >>> 4];
-            result[i * 3 + 1] = hexChars[value & 0x0F];
-            result[i * 3 + 2] = ' ';
-        }
-        return new String(result);
+        return hexWithSpaces(bytes, 0, bytes.length);
     }
     
 }
