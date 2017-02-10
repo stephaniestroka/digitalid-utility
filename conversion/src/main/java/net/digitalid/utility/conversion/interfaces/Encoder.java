@@ -219,7 +219,7 @@ public interface Encoder<@Unspecifiable EXCEPTION extends ConnectionException> e
      */
     @Impure
     @Ensures(condition = "isCompressing()", message = "The encoder has to be compressing.")
-    public void startCompressing(@Nonnull Deflater deflater);
+    public void startCompressing(@Nonnull Deflater deflater) throws EXCEPTION;
     
     /**
      * Stops compressing.

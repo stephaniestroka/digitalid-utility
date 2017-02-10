@@ -228,7 +228,7 @@ public interface Decoder<@Unspecifiable EXCEPTION extends ConnectionException> e
      */
     @Impure
     @Ensures(condition = "isDecompressing()", message = "The decoder has to be decompressing.")
-    public void startDecompressing(@Nonnull Inflater inflater);
+    public void startDecompressing(@Nonnull Inflater inflater) throws EXCEPTION;
     
     /**
      * Stops decompressing.
