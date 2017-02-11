@@ -1,7 +1,5 @@
 package net.digitalid.utility.conversion.converters;
 
-import java.math.BigInteger;
-
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.generics.Unspecifiable;
@@ -24,21 +22,21 @@ import net.digitalid.utility.validation.annotations.string.DomainName;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
- * This class implements the conversion of big integers.
+ * This class implements the conversion of longs.
  */
 @Stateless
-public class BigIntegerConverter implements Converter<BigInteger, Void> {
+public class Integer64Converter implements Converter<Long, Void> {
     
     /* -------------------------------------------------- Instance -------------------------------------------------- */
     
-    public static final @Nonnull BigIntegerConverter INSTANCE = new BigIntegerConverter();
+    public static final @Nonnull Integer64Converter INSTANCE = new Integer64Converter();
     
     /* -------------------------------------------------- Type -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Nonnull Class<BigInteger> getType() {
-        return BigInteger.class;
+    public @Nonnull Class<Long> getType() {
+        return Long.class;
     }
     
     /* -------------------------------------------------- Name -------------------------------------------------- */
@@ -46,7 +44,7 @@ public class BigIntegerConverter implements Converter<BigInteger, Void> {
     @Pure
     @Override
     public @Nonnull @CodeIdentifier @MaxSize(63) String getTypeName() {
-        return "BigInteger";
+        return "Long";
     }
     
     /* -------------------------------------------------- Package -------------------------------------------------- */
@@ -54,7 +52,7 @@ public class BigIntegerConverter implements Converter<BigInteger, Void> {
     @Pure
     @Override
     public @Nonnull @DomainName String getTypePackage() {
-        return "java.math";
+        return "java.lang";
     }
     
     /* -------------------------------------------------- Primitive Converter -------------------------------------------------- */
@@ -67,7 +65,7 @@ public class BigIntegerConverter implements Converter<BigInteger, Void> {
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableList<@Nonnull CustomField> fields = ImmutableList.withElements(CustomField.with(CustomType.INTEGER, "value"));
+    private static final @Nonnull ImmutableList<@Nonnull CustomField> fields = ImmutableList.withElements(CustomField.with(CustomType.INTEGER64, "value"));
     
     @Pure
     @Override
@@ -79,16 +77,16 @@ public class BigIntegerConverter implements Converter<BigInteger, Void> {
     
     @Pure
     @Override
-    public <@Unspecifiable EXCEPTION extends ConnectionException> void convert(@NonCaptured @Unmodified @Nonnull BigInteger number, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION {
-        encoder.encodeInteger(number);
+    public <@Unspecifiable EXCEPTION extends ConnectionException> void convert(@NonCaptured @Unmodified @Nonnull Long number, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION {
+        encoder.encodeInteger64(number);
     }
     
     /* -------------------------------------------------- Recover -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Capturable <@Unspecifiable EXCEPTION extends ConnectionException> @Nonnull BigInteger recover(@NonCaptured @Modified @Nonnull Decoder<EXCEPTION> decoder, Void provided) throws EXCEPTION {
-        return decoder.decodeInteger();
+    public @Capturable <@Unspecifiable EXCEPTION extends ConnectionException> @Nonnull Long recover(@NonCaptured @Modified @Nonnull Decoder<EXCEPTION> decoder, Void provided) throws EXCEPTION {
+        return decoder.decodeInteger64();
     }
     
 }

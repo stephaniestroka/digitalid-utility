@@ -13,6 +13,7 @@ import net.digitalid.utility.conversion.exceptions.ConnectionException;
 import net.digitalid.utility.conversion.interfaces.Converter;
 import net.digitalid.utility.conversion.interfaces.Decoder;
 import net.digitalid.utility.conversion.interfaces.Encoder;
+import net.digitalid.utility.conversion.model.CustomAnnotation;
 import net.digitalid.utility.conversion.model.CustomField;
 import net.digitalid.utility.conversion.model.CustomType;
 import net.digitalid.utility.immutable.ImmutableList;
@@ -22,21 +23,21 @@ import net.digitalid.utility.validation.annotations.string.DomainName;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
 /**
- * This class implements the conversion of longs.
+ * This class implements the conversion of strings.
  */
 @Stateless
-public class LongConverter implements Converter<Long, Void> {
+public class String64Converter implements Converter<String, Void> {
     
     /* -------------------------------------------------- Instance -------------------------------------------------- */
     
-    public static final @Nonnull LongConverter INSTANCE = new LongConverter();
+    public static final @Nonnull String64Converter INSTANCE = new String64Converter();
     
     /* -------------------------------------------------- Type -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Nonnull Class<Long> getType() {
-        return Long.class;
+    public @Nonnull Class<String> getType() {
+        return String.class;
     }
     
     /* -------------------------------------------------- Name -------------------------------------------------- */
@@ -44,7 +45,7 @@ public class LongConverter implements Converter<Long, Void> {
     @Pure
     @Override
     public @Nonnull @CodeIdentifier @MaxSize(63) String getTypeName() {
-        return "Long";
+        return "String";
     }
     
     /* -------------------------------------------------- Package -------------------------------------------------- */
@@ -65,7 +66,7 @@ public class LongConverter implements Converter<Long, Void> {
     
     /* -------------------------------------------------- Fields -------------------------------------------------- */
     
-    private static final @Nonnull ImmutableList<@Nonnull CustomField> fields = ImmutableList.withElements(CustomField.with(CustomType.INTEGER64, "value"));
+    private static final @Nonnull ImmutableList<@Nonnull CustomField> fields = ImmutableList.withElements(CustomField.with(CustomType.STRING64, "string", ImmutableList.withElements(CustomAnnotation.with(Nonnull.class))));
     
     @Pure
     @Override
@@ -77,16 +78,16 @@ public class LongConverter implements Converter<Long, Void> {
     
     @Pure
     @Override
-    public <@Unspecifiable EXCEPTION extends ConnectionException> void convert(@NonCaptured @Unmodified @Nonnull Long number, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION {
-        encoder.encodeInteger64(number);
+    public <@Unspecifiable EXCEPTION extends ConnectionException> void convert(@NonCaptured @Unmodified @Nonnull String string, @NonCaptured @Modified @Nonnull Encoder<EXCEPTION> encoder) throws EXCEPTION {
+        encoder.encodeString(string);
     }
     
     /* -------------------------------------------------- Recover -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Capturable <@Unspecifiable EXCEPTION extends ConnectionException> @Nonnull Long recover(@NonCaptured @Modified @Nonnull Decoder<EXCEPTION> decoder, Void provided) throws EXCEPTION {
-        return decoder.decodeInteger64();
+    public @Capturable <@Unspecifiable EXCEPTION extends ConnectionException> @Nonnull String recover(@NonCaptured @Modified @Nonnull Decoder<EXCEPTION> decoder, Void provided) throws EXCEPTION {
+        return decoder.decodeString();
     }
     
 }

@@ -19,6 +19,7 @@ import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.conversion.interfaces.Converter;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.string.Strings;
@@ -355,9 +356,12 @@ public class CustomType {
      */
     @Pure
     public static @Nonnull String importConverterType(@Nonnull TypeMirror type, @Nonnull TypeImporter typeImporter) {
-        @Nonnull String qualifiedName = ProcessingUtility.getQualifiedName(type);
-        if (!qualifiedName.startsWith("net.digitalid")) {
-            qualifiedName = qualifiedName.replace(Strings.substringUntilLast(qualifiedName, '.'), "net.digitalid.utility.conversion.converters");
+        final @Nullable CustomType customType = get(type);
+        final @Nonnull String qualifiedName;
+        if (customType == null || customType.isObjectType()) {
+            qualifiedName = ProcessingUtility.getQualifiedName(type);
+        } else {
+            qualifiedName = "net.digitalid.utility.conversion.converters." + Strings.uppercaseFirstCharacter(customType.getTypeName().toLowerCase());
         }
         return typeImporter.importIfPossible(qualifiedName + "Converter") + ".INSTANCE";
     }
