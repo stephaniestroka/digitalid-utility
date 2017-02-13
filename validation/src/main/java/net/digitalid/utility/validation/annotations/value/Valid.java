@@ -45,7 +45,7 @@ import net.digitalid.utility.validation.validator.ValueAnnotationValidator;
  */
 @Documented
 @Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @ValueValidator(Valid.Validator.class)
 public @interface Valid {
     
