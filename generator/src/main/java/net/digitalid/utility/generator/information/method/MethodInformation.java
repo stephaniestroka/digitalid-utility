@@ -24,6 +24,7 @@ import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.generator.annotations.meta.Interceptor;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
@@ -215,8 +216,14 @@ public class MethodInformation extends ExecutableInformation {
             if (isSetter() && isPure()) { ProcessingLog.error("A setter may not be '@Pure':", SourcePosition.of(element)); }
         }
         
-        this.methodValidators = AnnotationHandlerUtility.getMethodValidators(this.getElement());
-        this.returnValueValidators = AnnotationHandlerUtility.getValueValidators(this.getElement());
+        if (typeInformation.hasAnnotation(GenerateSubclass.class) || typeInformation.hasAnnotation(GenerateBuilder.class)) {
+            this.methodValidators = AnnotationHandlerUtility.getMethodValidators(getElement());
+            this.returnValueValidators = AnnotationHandlerUtility.getValueValidators(getElement());
+        } else {
+            this.methodValidators = new HashMap<>();
+            this.returnValueValidators = new HashMap<>();
+            ProcessingLog.verbose("Ignoring method and return value validators on method $ because neither a subclass nor a builder is generated for type $.", getName(), typeInformation.getName());
+        }
         
         // TODO: This is just a temporary hack to ensure that the annotations on the parameters are checked in any case.
         for (@Nonnull VariableElement parameter : element.getParameters()) {
