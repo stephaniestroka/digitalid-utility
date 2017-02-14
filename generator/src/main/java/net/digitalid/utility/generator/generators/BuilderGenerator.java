@@ -1,9 +1,7 @@
 package net.digitalid.utility.generator.generators;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,7 +13,6 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.ElementInformation;
 import net.digitalid.utility.generator.information.method.ExecutableInformation;
-import net.digitalid.utility.generator.information.type.InstantiableTypeInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
@@ -129,9 +126,17 @@ public class BuilderGenerator extends JavaFileGenerator {
     }
     
     /**
+     * Returns the types that are thrown by the recover constructor or method.
+     */
+    private @Nonnull @NonNullableElements FiniteIterable<? extends TypeMirror> getThrownTypes() {
+        final @Nullable ExecutableInformation recoverConstructorOrMethod = typeInformation.getRecoverConstructorOrMethod();
+        if (recoverConstructorOrMethod != null) { return FiniteIterable.of(recoverConstructorOrMethod.getElement().getThrownTypes()); }
+        else { return FiniteIterable.of(); }
+    }
+    
+    /**
      * Creates a builder that collects all fields and provides a build() method, which returns an instance of the type that the builder builds.
      */
-    // TODO: improve exception handling
     protected void createInnerClassForFields(@Nonnull String nameOfBuilder, @Nonnull @NonNullableElements List<String> interfacesForRequiredFields) throws FailedClassGenerationException {
         ProcessingLog.debugging("createInnerClassForFields()");
         
@@ -160,14 +165,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         
         addSection("Build");
         
-        final @Nonnull Set<@Nonnull TypeMirror> throwTypes = new HashSet<>();
-        if (typeInformation instanceof InstantiableTypeInformation) {
-            final @Nullable ExecutableInformation constructorOrRecoverMethod = typeInformation.getRecoverConstructorOrMethod();
-            if (constructorOrRecoverMethod != null && constructorOrRecoverMethod.throwsExceptions()) {
-                throwTypes.addAll(constructorOrRecoverMethod.getElement().getThrownTypes());
-            }
-        }
-        beginMethod("public " + typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " build()" + (throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()));
+        beginMethod("public " + typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " build()" + getThrownTypes().map(this::importIfPossible).join(" throws ", "", ""));
         
         addStatement(typeInformation.getInstantiationCode(false, true, true, null));
         
@@ -183,7 +181,6 @@ public class BuilderGenerator extends JavaFileGenerator {
      * If no required fields exits, static entry methods for all optional fields are created. Additionally,
      * a static "get()" method is created, which returns the new builder instance without calling any additional builder setters.
      */
-    // TODO: improve exception handling
     protected void createStaticEntryMethod(@Nonnull String nameOfBuilder, @Nonnull FiniteIterable<@Nonnull VariableElementInformation> requiredFields, @Nonnull List<@Nonnull String> interfacesForRequiredFields) {
         if (requiredFields.size() > 0) {
             final @Nonnull ElementInformation entryField = requiredFields.get(0);
@@ -198,14 +195,14 @@ public class BuilderGenerator extends JavaFileGenerator {
             for (@Nonnull ElementInformation optionalField : typeInformation.getConstructorParameters()) {
                 addSetterForField(optionalField, nameOfBuilder + typeInformation.getTypeArguments().join(Brackets.POINTY, ""), nameOfBuilder);
             }
-            beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + " " + typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " build()");
+            beginMethod("public static " + importWithBounds(typeInformation.getTypeArguments()) + " " + typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " build()" + getThrownTypes().map(this::importIfPossible).join(" throws ", "", ""));
             addStatement("return new " + nameOfBuilder + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + "().build()");
             endMethod();
     
             for (@Nonnull ElementInformation optionalField : typeInformation.getConstructorParameters()) {
                 final @Nonnull String methodName = Strings.capitalizeFirstLetters(optionalField.getName());
                 beginMethod(getSetterForFieldStatementString(optionalField, typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, ""), "buildWith" + methodName));
-                addStatement("return new " + nameOfBuilder + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + "().with" + methodName + Brackets.inRound(optionalField.getName()) + ".build()");
+                addStatement("return new " + nameOfBuilder + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + "().with" + methodName + Brackets.inRound(optionalField.getName()) + ".build()" + getThrownTypes().map(this::importIfPossible).join(" throws ", "", ""));
                 endMethod();
             }
         }
