@@ -17,14 +17,14 @@ import net.digitalid.utility.logging.logger.Logger;
 import net.digitalid.utility.validation.annotations.file.path.Absolute;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
-import org.junit.Assert;
+import org.assertj.core.api.Assertions;
 import org.junit.BeforeClass;
 
 /**
  * The base class for all unit tests written for Digital ID.
  */
 @Stateless
-public abstract class RootTest extends Assert {
+public abstract class RootTest extends Assertions {
     
     private static boolean initialized = false;
     

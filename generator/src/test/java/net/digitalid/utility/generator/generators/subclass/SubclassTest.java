@@ -11,6 +11,8 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 @Immutable
 @GenerateSubclass
 interface SubclassedInterface {

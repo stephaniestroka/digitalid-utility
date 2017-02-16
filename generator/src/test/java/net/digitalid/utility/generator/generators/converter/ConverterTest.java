@@ -26,6 +26,7 @@ import net.digitalid.utility.validation.annotations.value.Valid;
 import org.junit.Test;
 
 import static net.digitalid.utility.conversion.model.CustomType.*;
+import static org.junit.Assert.assertEquals;
 
 @Immutable
 @GenerateConverter

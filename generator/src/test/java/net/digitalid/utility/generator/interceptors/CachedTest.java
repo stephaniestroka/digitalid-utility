@@ -46,9 +46,9 @@ public class CachedTest extends RootTest {
     @Test
     public void testCaching() {
         final @Nonnull CachedMethodSubclass object = new CachedMethodSubclass();
-        assertTrue(object.method(0) == object.method(0));
-        assertTrue(object.method(1) == object.method(1));
-        assertTrue(object.method(0) != object.method(1));
+        assertThat(object.method(0) == object.method(0)).isTrue();
+        assertThat(object.method(1) == object.method(1)).isTrue();
+        assertThat(object.method(0) == object.method(1)).isFalse();
     }
     
 }
