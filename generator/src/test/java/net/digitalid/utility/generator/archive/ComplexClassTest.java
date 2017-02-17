@@ -6,18 +6,17 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
+import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.immutable.ImmutableMap;
 import net.digitalid.utility.immutable.ImmutableSet;
+import net.digitalid.utility.testing.RootTest;
 
 import org.junit.Test;
 
-import static net.digitalid.utility.testing.CustomAssert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * 
- */
-public class ComplexClassTest {
+public class ComplexClassTest extends RootTest {
     
     @Pure
     public ComplexClassBuilder.@Nonnull InnerComplexClassBuilder prepareBuilder() {
@@ -33,16 +32,14 @@ public class ComplexClassTest {
     @Test
     public void shouldInstantiateObject() throws Exception {
         final @Nonnull ComplexClass complexClass = prepareBuilder().build();
-        
-        expecting("instance", complexClass).toBeNonNull();
+        assertThat(complexClass).isNotNull();
     }
     
     @Test
     public void shouldBeEqual() throws Exception {
         final @Nonnull ComplexClass complexClass1 = prepareBuilder().build();
         final @Nonnull ComplexClass complexClass2 = prepareBuilder().build();
-        
-        expectingEqual("representing fields").of(complexClass1).and(complexClass2);
+        assertThat(complexClass1).isEqualTo(complexClass2);
     }
     
     @Test
@@ -53,16 +50,14 @@ public class ComplexClassTest {
         differentListOfIntegers.add(6);
         final @Nonnull ComplexClass complexClass1 = prepareBuilder().build();
         final @Nonnull ComplexClass complexClass2 = prepareBuilder().withListOfIntegers(differentListOfIntegers).build();
-        
-        expectingDifferent("representing fields").of(complexClass1).and(complexClass2);
+        assertThat(complexClass1).isNotEqualTo(complexClass2);
     }
     
     @Test
     public void shouldProduceSameHashCode() throws Exception {
         final @Nonnull ComplexClass complexClass1 = prepareBuilder().build();
         final @Nonnull ComplexClass complexClass2 = prepareBuilder().build();
-    
-        expectingEqual("hash code", Object::hashCode).of(complexClass1).and(complexClass2);
+        assertThat(complexClass1).isEqualToComparingOnlyGivenFields(complexClass2, "hashCode");
     }
     
     @Test
@@ -73,23 +68,13 @@ public class ComplexClassTest {
         differentListOfIntegers.add(6);
         final @Nonnull ComplexClass complexClass1 = prepareBuilder().build();
         final @Nonnull ComplexClass complexClass2 = prepareBuilder().withListOfIntegers(differentListOfIntegers).build();
-    
-        expectingDifferent("hash code", Object::hashCode).of(complexClass1).and(complexClass2);
+        assertThat(FiniteIterable.of(complexClass1, complexClass2)).extracting("hashCode").doesNotHaveDuplicates();
     }
     
     @Test
     public void shouldProduceSameToString() throws Exception {
         final @Nonnull ComplexClass complexClass = prepareBuilder().build();
-    
-        expecting("string representation", Object::toString).of(complexClass).toBe("ComplexClass(text: \"This is a test\", value: 42, nonnullString: \"nonnull\", nullableString: \"null\", simpleClass: SimpleClass(number: 1), listOfIntegers: [1, 2, 3], setOfSimpleClass: [null], arrayOfStrings: [first, second, third], listWithNonnullStrings: [nonnull], listWithNullableStrings: [null, null], mapWithNonnullStrings: {nonnull=nonnull}, mapWithNullableStrings: {null=null})");
-    }
-    
-    @Test
-    public void shouldProduceDifferentToString() throws Exception {
-        final @Nonnull ComplexClass complexClass1 = prepareBuilder().build();
-        final @Nonnull ComplexClass complexClass2 = prepareBuilder().withText("This is a negative test").build();
-    
-        expectingDifferent("string representation", Object::toString).of(complexClass1).and(complexClass2);
+        assertThat(complexClass).hasToString("ComplexClass(text: \"This is a test\", value: 42, nonnullString: \"nonnull\", nullableString: \"null\", simpleClass: SimpleClass(number: 1), listOfIntegers: [1, 2, 3], setOfSimpleClass: [null], arrayOfStrings: [first, second, third], listWithNonnullStrings: [nonnull], listWithNullableStrings: [null, null], mapWithNonnullStrings: {nonnull=nonnull}, mapWithNullableStrings: {null=null})");
     }
     
 }

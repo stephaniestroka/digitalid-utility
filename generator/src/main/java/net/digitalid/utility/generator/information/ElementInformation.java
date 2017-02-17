@@ -85,7 +85,8 @@ public interface ElementInformation extends RootInterface {
      */
     @Pure
     public default boolean isDeclaredInDigitalIDLibrary() {
-        return ProcessingUtility.isDeclaredInDigitalIDLibrary(getElement());
+        final @Nonnull String containingTypeName = ProcessingUtility.getSimpleName(getContainingType());
+        return ProcessingUtility.isDeclaredInDigitalIDLibrary(getElement()) && !containingTypeName.endsWith("Assert") && !containingTypeName.endsWith("Assertions");
     }
     
     /* -------------------------------------------------- Modifiers -------------------------------------------------- */

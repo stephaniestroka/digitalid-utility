@@ -10,33 +10,39 @@
     <artifactId>utility-generator</artifactId>
     
     <dependencies>
+        
         <dependency>
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-processor</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-conversion</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-freezable</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-threading</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        
         <dependency>
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-testing</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        
         <!-- TODO: Remove the following dependency!-->
         <dependency>
             <groupId>com.sun</groupId>
@@ -46,6 +52,7 @@
             <optional>true</optional>
             <systemPath>${java.home}/../lib/tools.jar</systemPath>
         </dependency>
+        
     </dependencies>
     
 </project>

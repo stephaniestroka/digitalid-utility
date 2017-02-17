@@ -2,10 +2,11 @@ package net.digitalid.utility.testing;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
 import net.digitalid.utility.annotations.parameter.Modified;
-import net.digitalid.utility.circumfixes.Quotes;
 import net.digitalid.utility.contracts.exceptions.PreconditionException;
 import net.digitalid.utility.functional.failable.FailableConsumer;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -17,37 +18,37 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
 public abstract class ContractTest extends RootTest {
     
     @Pure
-    protected static <T, X extends Exception> void test(@NonCaptured @Modified @Nonnull FailableConsumer<? super T, ? extends X> consumer, T positive, T negative) throws X {
+    protected static <@Specifiable TYPE, @Unspecifiable EXCEPTION extends Exception> void test(@NonCaptured @Modified @Nonnull FailableConsumer<? super TYPE, ? extends EXCEPTION> consumer, TYPE positive, TYPE negative) throws EXCEPTION {
         try {
             consumer.consume(positive);
         } catch (@Nonnull PreconditionException exception) {
-            fail("The positive sample " + Quotes.inSingle(positive) + " should not fail.");
+            fail("The positive sample '%s' should not fail.", positive);
         }
         try {
             consumer.consume(negative); 
-            fail("The negative sample " + Quotes.inSingle(negative) + " should fail.");
+            fail("The negative sample '%s' should fail.", negative);
         } catch (@Nonnull PreconditionException exception) {}
     }
     
     @Pure
     @SafeVarargs
-    protected static <T, X extends Exception> void testPositives(@NonCaptured @Modified @Nonnull FailableConsumer<? super T, ? extends X> consumer, @Nonnull T... positives) throws X {
-        for (T positive : positives) {
+    protected static <@Specifiable TYPE, @Unspecifiable EXCEPTION extends Exception> void testPositives(@NonCaptured @Modified @Nonnull FailableConsumer<? super TYPE, ? extends EXCEPTION> consumer, @Nonnull TYPE... positives) throws EXCEPTION {
+        for (TYPE positive : positives) {
             try {
                 consumer.consume(positive);
             } catch (@Nonnull PreconditionException exception) {
-                fail("The positive sample " + Quotes.inSingle(positive) + " should not fail.");
+                fail("The positive sample '%s' should not fail.", positive);
             }
         }
     }
     
     @Pure
     @SafeVarargs
-    protected static <T, X extends Exception> void testNegatives(@NonCaptured @Modified @Nonnull FailableConsumer<? super T, ? extends X> consumer, @Nonnull T... negatives) throws X {
-        for (T negative : negatives) {
+    protected static <@Specifiable TYPE, @Unspecifiable EXCEPTION extends Exception> void testNegatives(@NonCaptured @Modified @Nonnull FailableConsumer<? super TYPE, ? extends EXCEPTION> consumer, @Nonnull TYPE... negatives) throws EXCEPTION {
+        for (TYPE negative : negatives) {
             try {
                 consumer.consume(negative);
-                fail("The negative sample " + Quotes.inSingle(negative) + " should fail.");
+                fail("The negative sample '%s' should fail.", negative);
             } catch (@Nonnull PreconditionException exception) {}
         }
     }

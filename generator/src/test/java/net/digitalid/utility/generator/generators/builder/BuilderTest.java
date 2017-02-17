@@ -113,8 +113,8 @@ public class BuilderTest extends RootTest {
     
     @Pure
     private void testFields(@Nonnull AbstractFields fields, @Nullable String first, @Nullable String second) {
-        assertEquals(first, fields.getFirst());
-        assertEquals(second, fields.getSecond());
+        assertThat(fields.getFirst()).isEqualTo(first);
+        assertThat(fields.getSecond()).isEqualTo(second);
     }
     
     @Test

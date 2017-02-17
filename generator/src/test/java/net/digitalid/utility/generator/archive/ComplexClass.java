@@ -66,4 +66,9 @@ public abstract class ComplexClass extends RootClass {
         text = null;
     }
     
+    @Pure
+    public int getHashCode() {
+        return hashCode();
+    }
+    
 }
