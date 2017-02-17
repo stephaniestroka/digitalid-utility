@@ -14,7 +14,9 @@ import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.ElementInformation;
+import net.digitalid.utility.generator.information.filter.MethodSignatureMatcher;
 import net.digitalid.utility.generator.information.method.ExecutableInformation;
+import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.type.InstantiableTypeInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
@@ -128,6 +130,15 @@ public class BuilderGenerator extends JavaFileGenerator {
         return listOfInterfaces;
     }
     
+    private @Nonnull FiniteIterable<@Nonnull ? extends TypeMirror> getThrownTypesOfInitializeMethod() {
+        final @Nullable MethodInformation initializeMethod = typeInformation.getOverriddenMethods().findFirst(MethodSignatureMatcher.of("initialize"));
+        if (initializeMethod != null) {
+            return initializeMethod.getThrownTypes();
+        } else {
+            return FiniteIterable.of();
+        }
+    }
+    
     /**
      * Creates a builder that collects all fields and provides a build() method, which returns an instance of the type that the builder builds.
      */
@@ -167,6 +178,7 @@ public class BuilderGenerator extends JavaFileGenerator {
                 throwTypes.addAll(constructorOrRecoverMethod.getElement().getThrownTypes());
             }
         }
+        throwTypes.addAll(getThrownTypesOfInitializeMethod().toList());
         beginMethod("public " + typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " build()" + (throwTypes.isEmpty() ? "" : " throws " + FiniteIterable.of(throwTypes).map(this::importIfPossible).join()));
         
         addStatement(typeInformation.getInstantiationCode(false, true, true, null));
