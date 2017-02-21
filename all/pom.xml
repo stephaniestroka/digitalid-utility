@@ -10,21 +10,31 @@
     <artifactId>utility-all</artifactId>
     
     <dependencies>
+        
         <dependency>
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-system</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-console</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-time</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-initializer</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
     </dependencies>
     
 </project>
