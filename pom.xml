@@ -67,6 +67,7 @@
         <module>concurrency</module>
         <module>property</module>
         <module>console</module>
+        <module>time</module>
         <module>all</module>
     </modules>
     

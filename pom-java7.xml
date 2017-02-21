@@ -67,6 +67,7 @@
         <module>concurrency-java7</module>
         <module>property-java7</module>
         <module>console-java7</module>
+        <module>time-java7</module>
         <module>all-java7</module>
     </modules>
     
