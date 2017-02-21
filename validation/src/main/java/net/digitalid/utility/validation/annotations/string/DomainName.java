@@ -26,7 +26,7 @@ import net.digitalid.utility.validation.validators.StringValidator;
  */
 @Documented
 @Target({ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @ValueValidator(DomainName.Validator.class)
 public @interface DomainName {
     

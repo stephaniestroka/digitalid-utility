@@ -12,7 +12,9 @@ import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.ElementInformation;
+import net.digitalid.utility.generator.information.filter.MethodSignatureMatcher;
 import net.digitalid.utility.generator.information.method.ExecutableInformation;
+import net.digitalid.utility.generator.information.method.MethodInformation;
 import net.digitalid.utility.generator.information.type.TypeInformation;
 import net.digitalid.utility.generator.information.variable.VariableElementInformation;
 import net.digitalid.utility.processing.logging.ProcessingLog;
@@ -126,12 +128,31 @@ public class BuilderGenerator extends JavaFileGenerator {
     }
     
     /**
+     * Returns the types that are thrown by the initialize method.
+     */
+    private @Nonnull FiniteIterable<@Nonnull TypeMirror> getThrownTypesOfInitializeMethod() {
+        final @Nullable MethodInformation initializeMethod = typeInformation.getOverriddenMethods().findFirst(MethodSignatureMatcher.of("initialize"));
+        if (initializeMethod != null) {
+            return initializeMethod.getThrownTypes();
+        } else {
+            return FiniteIterable.of();
+        }
+    }
+    
+    /**
      * Returns the types that are thrown by the recover constructor or method.
      */
     private @Nonnull @NonNullableElements FiniteIterable<? extends TypeMirror> getThrownTypes() {
         final @Nullable ExecutableInformation recoverConstructorOrMethod = typeInformation.getRecoverConstructorOrMethod();
-        if (recoverConstructorOrMethod != null) { return FiniteIterable.of(recoverConstructorOrMethod.getElement().getThrownTypes()); }
-        else { return FiniteIterable.of(); }
+        final @Nonnull FiniteIterable<@Nonnull ? extends TypeMirror> thrownTypes;
+        if (recoverConstructorOrMethod != null) {
+            final List<@Nonnull TypeMirror> typeMirrorList = getThrownTypesOfInitializeMethod().toList();
+            typeMirrorList.addAll(recoverConstructorOrMethod.getElement().getThrownTypes());
+            thrownTypes = FiniteIterable.of(typeMirrorList);
+        } else {
+            thrownTypes = getThrownTypesOfInitializeMethod();
+        }
+        return thrownTypes;
     }
     
     /**
@@ -201,8 +222,8 @@ public class BuilderGenerator extends JavaFileGenerator {
     
             for (@Nonnull ElementInformation optionalField : typeInformation.getConstructorParameters()) {
                 final @Nonnull String methodName = Strings.capitalizeFirstLetters(optionalField.getName());
-                beginMethod(getSetterForFieldStatementString(optionalField, typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, ""), "buildWith" + methodName));
-                addStatement("return new " + nameOfBuilder + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + "().with" + methodName + Brackets.inRound(optionalField.getName()) + ".build()" + getThrownTypes().map(this::importIfPossible).join(" throws ", "", ""));
+                beginMethod(getSetterForFieldStatementString(optionalField, typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, ""), "buildWith" + methodName) + getThrownTypes().map(this::importIfPossible).join(" throws ", "", ""));
+                addStatement("return new " + nameOfBuilder + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + "().with" + methodName + Brackets.inRound(optionalField.getName()) + ".build()");
                 endMethod();
             }
         }

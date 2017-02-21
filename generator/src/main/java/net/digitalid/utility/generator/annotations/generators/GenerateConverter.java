@@ -19,4 +19,6 @@ import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @TypeValidator(GenerateAnnotationValidator.class)
-public @interface GenerateConverter {}
+public @interface GenerateConverter {
+    
+}

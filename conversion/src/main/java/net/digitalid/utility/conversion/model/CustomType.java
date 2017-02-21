@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -17,13 +18,13 @@ import net.digitalid.utility.annotations.reference.NonRawRecipient;
 import net.digitalid.utility.circumfixes.Brackets;
 import net.digitalid.utility.contracts.Require;
 import net.digitalid.utility.conversion.interfaces.Converter;
+import net.digitalid.utility.conversion.model.utility.FieldTypeSignature;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Tuple;
-import net.digitalid.utility.validation.annotations.size.MaxSize;
 
 /**
  * Instances of the custom type represent the types used in Digital ID.
@@ -41,7 +42,7 @@ public class CustomType {
         /**
          * Creates a custom type.
          */
-        private IterableType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName) {
+        private IterableType(@Nonnull Predicate<@Nonnull FieldTypeSignature> predicate, @Nonnull String typeName) {
             super(predicate, typeName);
         }
         
@@ -79,7 +80,7 @@ public class CustomType {
             return compositeType;
         }
     
-        private CompositeType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName, @Nonnull CustomType compositeType) {
+        private CompositeType(@Nonnull Predicate<@Nonnull FieldTypeSignature> predicate, @Nonnull String typeName, @Nonnull CustomType compositeType) {
             super(predicate, typeName);
             this.compositeType = compositeType;
         }
@@ -96,7 +97,7 @@ public class CustomType {
         /**
          * Creates a custom type.
          */
-        private MapType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName) {
+        private MapType(@Nonnull Predicate<@Nonnull FieldTypeSignature> predicate, @Nonnull String typeName) {
             super(predicate, typeName);
         }
         
@@ -146,7 +147,7 @@ public class CustomType {
             return valueType;
         }
         
-        private KeyValueType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName, @Nonnull CustomType keyType, @Nonnull CustomType valueType) {
+        private KeyValueType(@Nonnull Predicate<@Nonnull FieldTypeSignature> predicate, @Nonnull String typeName, @Nonnull CustomType keyType, @Nonnull CustomType valueType) {
             super(predicate, typeName);
             this.keyType = keyType;
             this.valueType = valueType;
@@ -164,7 +165,7 @@ public class CustomType {
         /**
          * Creates a tuple type.
          */
-        private TupleType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName) {
+        private TupleType(@Nonnull Predicate<@Nonnull FieldTypeSignature> predicate, @Nonnull String typeName) {
             super(predicate, typeName);
         }
         
@@ -203,7 +204,7 @@ public class CustomType {
         /**
          * Creates a new custom converter type.
          */
-        private CustomConverterType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName, @Nonnull Converter<?, ?> converter) {
+        private CustomConverterType(@Nonnull Predicate<@Nonnull FieldTypeSignature> predicate, @Nonnull String typeName, @Nonnull Converter<?, ?> converter) {
             super(predicate, typeName);
             this.converter = converter;
         }
@@ -211,46 +212,46 @@ public class CustomType {
     
     /* -------------------------------------------------- Static Instances -------------------------------------------------- */
     
-    public static final CustomType BOOLEAN = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, boolean.class), "BOOLEAN");
+    public static final CustomType BOOLEAN = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(boolean.class), "BOOLEAN");
     
-    public static final CustomType INTEGER08 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, byte.class), "INTEGER08");
+    public static final CustomType INTEGER08 = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(byte.class), "INTEGER08");
     
-    public static final CustomType INTEGER16 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, short.class), "INTEGER16");
+    public static final CustomType INTEGER16 = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(short.class), "INTEGER16");
     
-    public static final CustomType INTEGER32 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, int.class), "INTEGER32");
+    public static final CustomType INTEGER32 = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(int.class), "INTEGER32");
     
-    public static final CustomType INTEGER64 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, long.class), "INTEGER64");
+    public static final CustomType INTEGER64 = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(long.class), "INTEGER64");
     
-    public static final CustomType INTEGER = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, BigInteger.class), "INTEGER");
+    public static final CustomType INTEGER = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(BigInteger.class), "INTEGER");
     
-    public static final CustomType DECIMAL32 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, float.class), "DECIMAL32");
+    public static final CustomType DECIMAL32 = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(float.class), "DECIMAL32");
     
-    public static final CustomType DECIMAL64 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, double.class), "DECIMAL64");
+    public static final CustomType DECIMAL64 = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(double.class), "DECIMAL64");
     
-    public static final CustomType STRING01 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, char.class), "STRING01");
+    public static final CustomType STRING01 = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(char.class), "STRING01");
     
-    public static final CustomType STRING64 = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, String.class) && typeMirror.getAnnotation(MaxSize.class) != null && typeMirror.getAnnotation(MaxSize.class).value() <= 64, "STRING64");
+    public static final CustomType STRING64 = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(String.class) && fieldTypeSignature.hasMaxSize(64), "STRING64");
     
-    public static final CustomType STRING = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, String.class) && (typeMirror.getAnnotation(MaxSize.class) == null || typeMirror.getAnnotation(MaxSize.class).value() > 64), "STRING");
+    public static final CustomType STRING = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(String.class) && !fieldTypeSignature.hasMaxSize(64), "STRING");
     
-    public static final CustomType BINARY128 = new CustomType(typeMirror -> (ProcessingUtility.isRawlyAssignable(typeMirror, byte[].class) || ProcessingUtility.isRawlyAssignable(typeMirror, Byte[].class)) && typeMirror.getAnnotation(MaxSize.class) != null && typeMirror.getAnnotation(MaxSize.class).value() <= 128, "BINARY128");
+    public static final CustomType BINARY128 = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(byte[].class) && fieldTypeSignature.hasMaxSize(128), "BINARY128");
     
-    public static final CustomType BINARY256 = new CustomType(typeMirror -> (ProcessingUtility.isRawlyAssignable(typeMirror, byte[].class) || ProcessingUtility.isRawlyAssignable(typeMirror, Byte[].class)) && typeMirror.getAnnotation(MaxSize.class) != null && typeMirror.getAnnotation(MaxSize.class).value() <= 256, "BINARY256");
+    public static final CustomType BINARY256 = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(byte[].class) && fieldTypeSignature.hasMaxSize(256), "BINARY256");
     
-    public static final CustomType BINARY = new CustomType(typeMirror -> (ProcessingUtility.isRawlyAssignable(typeMirror, byte[].class) || ProcessingUtility.isRawlyAssignable(typeMirror, Byte[].class)) && (typeMirror.getAnnotation(MaxSize.class) == null || typeMirror.getAnnotation(MaxSize.class).value() > 256), "BINARY");
+    public static final CustomType BINARY = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(byte[].class) && !fieldTypeSignature.hasMaxSize(256), "BINARY");
     
-    public static final CustomType BINARYSTREAM = new CustomType(typeMirror -> ProcessingUtility.isRawlyAssignable(typeMirror, InputStream.class), "BINARYSTREAM");
+    public static final CustomType BINARYSTREAM = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(InputStream.class), "BINARYSTREAM");
     
-    public static final IterableType SET = new IterableType(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, Set.class), "SET");
+    public static final IterableType SET = new IterableType(fieldTypeSignature -> ProcessingUtility.isRawSubtype(fieldTypeSignature.getTypeMirror(), Set.class), "SET");
     
     // TODO: Consider ReadOnlyList and co.
-    public static final IterableType LIST = new IterableType(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, List.class), "LIST");
+    public static final IterableType LIST = new IterableType(fieldTypeSignature -> ProcessingUtility.isRawSubtype(fieldTypeSignature.getTypeMirror(), List.class), "LIST");
     
-    public static final IterableType ARRAY = new IterableType(typeMirror -> typeMirror.getKind() == TypeKind.ARRAY, "ARRAY");
+    public static final IterableType ARRAY = new IterableType(fieldTypeSignature -> fieldTypeSignature.getTypeMirror().getKind() == TypeKind.ARRAY, "ARRAY");
     
-    public static final MapType MAP = new MapType(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, Map.class), "MAP");
+    public static final MapType MAP = new MapType(fieldTypeSignature -> ProcessingUtility.isRawSubtype(fieldTypeSignature.getTypeMirror(), Map.class), "MAP");
     
-    public static final TupleType TUPLE = new TupleType(typeMirror -> ProcessingUtility.isRawSubtype(typeMirror, Tuple.class), "TUPLE");
+    public static final TupleType TUPLE = new TupleType(fieldTypeSignature -> ProcessingUtility.isRawSubtype(fieldTypeSignature.getTypeMirror(), Tuple.class), "TUPLE");
     
     /**
      * A list of custom types that are statically defined in this class.
@@ -263,7 +264,7 @@ public class CustomType {
      * Indicates whether the custom type is an appropriate representation for the given type mirror.
      * The predicate evaluates to true iff the type mirror fits the instance.
      */
-    private final @Nonnull Predicate<TypeMirror> predicate;
+    private final @Nonnull Predicate<@Nonnull FieldTypeSignature> predicate;
     
     /* -------------------------------------------------- Type Name -------------------------------------------------- */
     
@@ -307,7 +308,7 @@ public class CustomType {
     /**
      * Creates a new custom type object and sets the predicate and the type name.
      */
-    private CustomType(@Nonnull Predicate<TypeMirror> predicate, @Nonnull String typeName) {
+    private CustomType(@Nonnull Predicate<@Nonnull FieldTypeSignature> predicate, @Nonnull String typeName) {
         this.predicate = predicate;
         this.typeName = typeName;
     }
@@ -317,8 +318,8 @@ public class CustomType {
      * one which predicate evaluates to true.
      * If no custom type is found, null may be returned.
      */
-    private static @Nullable CustomType get(TypeMirror typeMirror) {
-        return customTypes.findFirst(customType -> customType.predicate.evaluate(typeMirror));
+    private static @Nullable CustomType get(TypeMirror typeMirror, @Nonnull FiniteIterable<AnnotationMirror> annotations) {
+        return customTypes.findFirst(customType -> customType.predicate.evaluate(FieldTypeSignature.of(typeMirror, annotations)));
     }
     
     /**
@@ -326,8 +327,8 @@ public class CustomType {
      * one which predicate evaluates to true.
      * If no custom type is found, a type is inferred: It is either a tuple (for classes and interfaces) or a string (for enums).
      */
-    public static @Nonnull CustomType of(@Nonnull TypeMirror typeMirror) {
-        final @Nullable CustomType syntacticType = get(typeMirror);
+    public static @Nonnull CustomType of(@Nonnull TypeMirror typeMirror, @Nonnull FiniteIterable<AnnotationMirror> annotations) {
+        final @Nullable CustomType syntacticType = get(typeMirror, annotations);
         return syntacticType != null ? syntacticType : CustomType.TUPLE;
     }
     
@@ -354,8 +355,8 @@ public class CustomType {
      * Returns the imported name (if possible) of the converter of the given type.
      */
     @Pure
-    public static @Nonnull String importConverterType(@Nonnull TypeMirror type, @Nonnull TypeImporter typeImporter) {
-        final @Nullable CustomType customType = get(type);
+    public static @Nonnull String importConverterType(@Nonnull TypeMirror type, @Nonnull FiniteIterable<@Nonnull AnnotationMirror> annotations, @Nonnull TypeImporter typeImporter) {
+        final @Nullable CustomType customType = get(type, annotations);
         final @Nonnull String qualifiedName;
         if (customType == null || customType.isObjectType()) {
             qualifiedName = ProcessingUtility.getQualifiedName(type);
@@ -368,18 +369,18 @@ public class CustomType {
     /**
      * Returns the custom type for the given representing field.
      */
-    public static @Nonnull String getTypeName(@Nonnull TypeMirror representingFieldType, @Nonnull TypeImporter typeImporter) {
-        @Nonnull CustomType customType = CustomType.of(representingFieldType);
+    public static String getTypeName(@Nonnull TypeMirror representingFieldType, @Nonnull FiniteIterable<@Nonnull AnnotationMirror> annotations, @Nonnull TypeImporter typeImporter) {
+        @Nonnull CustomType customType = CustomType.of(representingFieldType, annotations);
         // TODO: ProcessingUtility.getTypeElement(representingFieldType) is null for generic types but checking this only here leads to new problems (namely "The name 'TConverter' has to be qualified.").
         if (customType == CustomType.TUPLE && ProcessingUtility.getTypeElement(representingFieldType).getKind() == ElementKind.ENUM) {
             return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(typeImporter.importIfPossible("net.digitalid.utility.conversion.converters.StringConverter") + ".INSTANCE");
         } else if (customType == CustomType.SET || customType == CustomType.LIST || customType == CustomType.ARRAY) {
             final @Nonnull TypeMirror componentType = ProcessingUtility.getComponentType(representingFieldType);
-            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(getTypeName(componentType, typeImporter));
+            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(getTypeName(componentType, FiniteIterable.of(), typeImporter));
         } else if (customType == CustomType.MAP) {
             final @Nullable List<TypeMirror> componentTypes = ProcessingUtility.getComponentTypes(representingFieldType);
             Require.that(componentTypes.size() == 2).orThrow("Map type does not have 2 component types.");
-            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(getTypeName(componentTypes.get(0), typeImporter) + ", " + getTypeName(componentTypes.get(1), typeImporter));
+            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName()) + ".of" + Brackets.inRound(getTypeName(componentTypes.get(0), FiniteIterable.of(), typeImporter) + ", " + getTypeName(componentTypes.get(1), FiniteIterable.of(), typeImporter));
         } else if (representingFieldType.getKind().isPrimitive() || customType == BINARY || customType == BINARY128 || customType == BINARY256) {
             return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + customType.getTypeName());
         } else {
@@ -388,7 +389,7 @@ public class CustomType {
             if (!qualifiedName.startsWith("net.digitalid")) {
                 typeName = TUPLE.getTypeName();
             }
-            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + typeName) + ".of" + Brackets.inRound(importConverterType(representingFieldType, typeImporter));
+            return typeImporter.importStaticallyIfPossible(CustomType.class.getCanonicalName() + "." + typeName) + ".of" + Brackets.inRound(importConverterType(representingFieldType, annotations, typeImporter));
         }
     }
     
