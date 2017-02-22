@@ -15,7 +15,7 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  * This class makes it easier to test (generated) contracts.
  */
 @Stateless
-public abstract class ContractTest extends RootTest {
+public abstract class ContractTest extends UtilityTest {
     
     @Pure
     protected static <@Specifiable TYPE, @Unspecifiable EXCEPTION extends Exception> void test(@NonCaptured @Modified @Nonnull FailableConsumer<? super TYPE, ? extends EXCEPTION> consumer, TYPE positive, TYPE negative) throws EXCEPTION {

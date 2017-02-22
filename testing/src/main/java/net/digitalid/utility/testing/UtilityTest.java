@@ -24,7 +24,7 @@ import org.junit.BeforeClass;
  * The base class for all unit tests written for Digital ID.
  */
 @Stateless
-public abstract class RootTest extends Assertions {
+public abstract class UtilityTest extends Assertions {
     
     private static boolean initialized = false;
     

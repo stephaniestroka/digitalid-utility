@@ -3,14 +3,14 @@ package net.digitalid.utility.generator.archive;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.functional.iterables.FiniteIterable;
-import net.digitalid.utility.testing.RootTest;
+import net.digitalid.utility.testing.UtilityTest;
 
 import org.junit.Test;
 
 /**
  * Tests the instantiation of the generated subclass of {@link SimpleClass}.
  */
-public class SimpleClassTest extends RootTest {
+public class SimpleClassTest extends UtilityTest {
     
     @Test
     public void shouldInstantiateObjectWithNumber() throws Exception {

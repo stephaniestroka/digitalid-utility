@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
 import net.digitalid.utility.generator.annotations.interceptors.Cached;
-import net.digitalid.utility.testing.RootTest;
+import net.digitalid.utility.testing.UtilityTest;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
@@ -41,7 +41,7 @@ class CachedMethod {
     
 }
 
-public class CachedTest extends RootTest {
+public class CachedTest extends UtilityTest {
     
     @Test
     public void testCaching() {

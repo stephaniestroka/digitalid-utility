@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
-import net.digitalid.utility.testing.RootTest;
+import net.digitalid.utility.testing.UtilityTest;
 import net.digitalid.utility.validation.annotations.generation.Default;
 import net.digitalid.utility.validation.annotations.generation.Recover;
 import net.digitalid.utility.validation.annotations.type.Immutable;
@@ -109,7 +109,7 @@ class ClassWithGenericTypesWithBounds<K extends Number> {
     
 }
 
-public class BuilderTest extends RootTest {
+public class BuilderTest extends UtilityTest {
     
     @Pure
     private void testFields(@Nonnull AbstractFields fields, @Nullable String first, @Nullable String second) {

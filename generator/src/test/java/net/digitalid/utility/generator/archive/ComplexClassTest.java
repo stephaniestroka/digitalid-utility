@@ -10,13 +10,13 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.immutable.ImmutableMap;
 import net.digitalid.utility.immutable.ImmutableSet;
-import net.digitalid.utility.testing.RootTest;
+import net.digitalid.utility.testing.UtilityTest;
 
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ComplexClassTest extends RootTest {
+public class ComplexClassTest extends UtilityTest {
     
     @Pure
     public ComplexClassBuilder.@Nonnull InnerComplexClassBuilder prepareBuilder() {

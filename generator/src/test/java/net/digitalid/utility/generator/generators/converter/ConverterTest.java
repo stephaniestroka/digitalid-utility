@@ -15,7 +15,7 @@ import net.digitalid.utility.conversion.model.CustomField;
 import net.digitalid.utility.generator.annotations.generators.GenerateConverter;
 import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.string.Strings;
-import net.digitalid.utility.testing.RootTest;
+import net.digitalid.utility.testing.UtilityTest;
 import net.digitalid.utility.tuples.Pair;
 import net.digitalid.utility.validation.annotations.generation.Provide;
 import net.digitalid.utility.validation.annotations.generation.Provided;
@@ -195,7 +195,7 @@ class ClassContainingEnum {
     
 }
 
-public class ConverterTest extends RootTest {
+public class ConverterTest extends UtilityTest {
     
     @Test
     public void testFieldsOfClass() {
