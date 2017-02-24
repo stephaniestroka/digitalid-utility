@@ -63,8 +63,8 @@ public abstract class UtilityTest extends Assertions {
     @BeforeClass
     public static void initializeAllConfigurations() {
         if (!initialized) {
-            Configuration.initializeAllConfigurations();
             initialized = true;
+            Configuration.initializeAllConfigurations();
         }
     }
     
