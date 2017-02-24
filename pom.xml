@@ -51,16 +51,16 @@
         <module>processing-testset</module>
         <module>processing</module>
         <module>validation</module>
-        <module>testing</module>
         <module>system</module>
         <module>threading</module>
+        <module>conversion</module>
         <module>casting</module>
         <module>rootclass</module>
         <module>freezable</module>
         <module>processor</module>
         <module>initialization</module>
         <module>initializer</module>
-        <module>conversion</module>
+        <module>testing</module>
         <module>generator</module>
         <module>templates</module>
         <module>collections</module>

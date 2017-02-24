@@ -51,16 +51,16 @@
         <module>processing-testset-java7</module>
         <module>processing-java7</module>
         <module>validation-java7</module>
-        <module>testing-java7</module>
         <module>system-java7</module>
         <module>threading-java7</module>
+        <module>conversion-java7</module>
         <module>casting-java7</module>
         <module>rootclass-java7</module>
         <module>freezable-java7</module>
         <module>processor-java7</module>
         <module>initialization-java7</module>
         <module>initializer-java7</module>
-        <module>conversion-java7</module>
+        <module>testing-java7</module>
         <module>generator-java7</module>
         <module>templates-java7</module>
         <module>collections-java7</module>

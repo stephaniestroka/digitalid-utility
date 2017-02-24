@@ -211,8 +211,8 @@ public class Configuration<@Unspecifiable PROVIDER> {
     public static void initializeAllConfigurations() {
         Require.that(!isLibraryInitialized()).orThrow("This library may not already have been initialized.");
         
-        libraryInitialized = true;
         for (@Nonnull Initializer initializer : ServiceLoader.load(Initializer.class)) { initializer.toString(); } // Just to remove the unused variable warning and prevent dead code elimination.
+        libraryInitialized = true;
         for (@Nonnull Configuration<?> configuration : configurations) { configuration.initialize(); }
     }
     
@@ -221,6 +221,7 @@ public class Configuration<@Unspecifiable PROVIDER> {
     /**
      * Creates a configuration with the given nullable provider.
      */
+    @SuppressWarnings("UseOfSystemOutOrSystemErr")
     protected Configuration(@Nullable PROVIDER provider) {
         this.provider = provider;
         
@@ -229,7 +230,11 @@ public class Configuration<@Unspecifiable PROVIDER> {
         this.className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf('.') + 1);
         this.lineNumber = element.getLineNumber();
         
-        configurations.add(this);
+        if (isLibraryInitialized()) {
+            System.out.println("[ERROR] The configuration of '" + qualifiedClassName + "' could not be added because the library has already been initialized.");
+        } else {
+            configurations.add(this);
+        }
     }
     
     /**

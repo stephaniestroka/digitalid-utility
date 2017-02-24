@@ -6,8 +6,10 @@ import java.io.FileNotFoundException;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.method.PureWithSideEffects;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.file.Files;
+import net.digitalid.utility.initialization.annotations.Initialize;
 import net.digitalid.utility.logging.Level;
 import net.digitalid.utility.logging.filter.ConfigurationBasedLoggingFilter;
 import net.digitalid.utility.logging.filter.LoggingFilter;
@@ -26,19 +28,41 @@ import org.junit.BeforeClass;
 @Stateless
 public abstract class UtilityTest extends Assertions {
     
+    /* -------------------------------------------------- Logging Filter -------------------------------------------------- */
+    
+    /**
+     * Initializes the logging filter.
+     */
+    @PureWithSideEffects
+    @Initialize(target = LoggingFilter.class)
+    public static void initializeLoggingFilter() {
+        final @Nonnull @Absolute File projectDirectory = new File("").getAbsoluteFile();
+        final @Nonnull String callerPrefix = "net.digitalid." + projectDirectory.getParentFile().getName() + "." + projectDirectory.getName();
+        LoggingFilter.filter.set(ConfigurationBasedLoggingFilter.with(Files.relativeToWorkingDirectory("config/TestingLogging.conf"), LoggingRule.with(Level.VERBOSE, callerPrefix), LoggingRule.with(Level.INFORMATION)));
+    }
+    
+    /* -------------------------------------------------- File Logger -------------------------------------------------- */
+    
+    /**
+     * Initializes the output file of the logger.
+     */
+    @PureWithSideEffects
+    @Initialize(target = Logger.class)
+    public static void initializeLogger() throws FileNotFoundException {
+        Logger.logger.set(FileLogger.with(Files.relativeToWorkingDirectory("target/test-logs/test.log")));
+    }
+    
+    /* -------------------------------------------------- All Configurations -------------------------------------------------- */
+    
     private static boolean initialized = false;
     
     /**
-     * Initializes the output file of the logger and all configurations.
+     * Initializes all configurations of the library.
      */
     @Impure
     @BeforeClass
-    public static void initializeLogger() throws IllegalArgumentException, FileNotFoundException {
+    public static void initializeAllConfigurations() {
         if (!initialized) {
-            final @Nonnull @Absolute File projectDirectory = new File("").getAbsoluteFile();
-            final @Nonnull String callerPrefix = "net.digitalid." + projectDirectory.getParentFile().getName() + "." + projectDirectory.getName();
-            LoggingFilter.filter.set(ConfigurationBasedLoggingFilter.with(Files.relativeToWorkingDirectory("config/TestingLogging.conf"), LoggingRule.with(Level.VERBOSE, callerPrefix), LoggingRule.with(Level.INFORMATION)));
-            Logger.logger.set(FileLogger.with(Files.relativeToWorkingDirectory("target/test-logs/test.log")));
             Configuration.initializeAllConfigurations();
             initialized = true;
         }

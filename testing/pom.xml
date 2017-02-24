@@ -13,7 +13,7 @@
         
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-validation</artifactId>
+            <artifactId>utility-initializer</artifactId>
             <version>${project.version}</version>
         </dependency>
         
