@@ -230,11 +230,7 @@ public class Configuration<@Unspecifiable PROVIDER> {
         this.className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf('.') + 1);
         this.lineNumber = element.getLineNumber();
         
-        if (isLibraryInitialized()) {
-            System.out.println("[ERROR] The configuration of '" + qualifiedClassName + "' could not be added because the library has already been initialized.");
-        } else {
-            configurations.add(this);
-        }
+        if (!isLibraryInitialized()) { configurations.add(this); }
     }
     
     /**
