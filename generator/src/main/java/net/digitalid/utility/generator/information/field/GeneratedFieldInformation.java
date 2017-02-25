@@ -34,7 +34,7 @@ public abstract class GeneratedFieldInformation extends NonDirectlyAccessibleFie
     @Pure
     @Override
     public @Nonnull FiniteIterable<@Nonnull AnnotationMirror> getAnnotations() {
-        return FiniteIterable.of(getGetter().getElement().getReturnType().getAnnotationMirrors());
+        return super.getAnnotations().combine(FiniteIterable.of(getGetter().getElement().getReturnType().getAnnotationMirrors()));
     }
     
 }
