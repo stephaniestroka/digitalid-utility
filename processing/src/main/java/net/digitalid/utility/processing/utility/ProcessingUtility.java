@@ -533,7 +533,7 @@ public class ProcessingUtility {
         @Pure
         @Override 
         public @Nonnull String visitString(@Nonnull String string, @NonCaptured @Modified @Nullable TypeImporter typeImporter) {
-            return Quotes.inDouble(string);
+            return Quotes.inDouble(string.replaceAll("\"", "\\\\\""));
         }
         
         @Pure
