@@ -10,7 +10,6 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.method.PureWithSideEffects;
 import net.digitalid.utility.configuration.Configuration;
-import net.digitalid.utility.exceptions.UncheckedExceptionBuilder;
 import net.digitalid.utility.file.Files;
 import net.digitalid.utility.initialization.annotations.Initialize;
 import net.digitalid.utility.logging.Level;
@@ -64,14 +63,14 @@ public class UtilityInitializer {
      */
     @PureWithSideEffects
     @Initialize(target = Files.class, dependencies = {UtilityInitializer.class})
-    public static void initializeDirectory() {
+    public static void initializeDirectory() throws IOException {
         if (!Files.directory.isSet()) {
             final @Nonnull @Absolute @ExistentParent File directory = Files.relativeToWorkingDirectory(System.getProperty("user.home") + "/.digitalid/");
             if (directory.isDirectory() || directory.mkdir()) {
                 Files.directory.set(directory);
                 Log.verbose("Set the configuration directory to '~/.digitalid/'.");
             } else {
-                throw UncheckedExceptionBuilder.withCause(new IOException("Could not create the directory '~/.digitalid/'.")).build();
+                throw new IOException("Could not create the directory '~/.digitalid/'.");
             }
         } else {
             Log.verbose("Did not set the configuration directory to '~/.digitalid/' because it is already set to $.", Files.directory.get().getAbsolutePath());

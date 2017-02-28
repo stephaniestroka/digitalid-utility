@@ -2,6 +2,7 @@ package net.digitalid.utility.testing;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.annotation.Nonnull;
 
@@ -15,6 +16,7 @@ import net.digitalid.utility.logging.filter.LoggingFilter;
 import net.digitalid.utility.logging.filter.LoggingRule;
 import net.digitalid.utility.logging.logger.FileLogger;
 import net.digitalid.utility.logging.logger.Logger;
+import net.digitalid.utility.validation.annotations.file.existence.ExistentParent;
 import net.digitalid.utility.validation.annotations.file.path.Absolute;
 import net.digitalid.utility.validation.annotations.type.Stateless;
 
@@ -26,6 +28,19 @@ import org.junit.BeforeClass;
  */
 @Stateless
 public abstract class UtilityTest extends Assertions {
+    
+    /* -------------------------------------------------- Directory -------------------------------------------------- */
+    
+    /**
+     * Initializes the directory.
+     */
+    @PureWithSideEffects
+    @Initialize(target = Files.class)
+    public static void initializeDirectory() throws IOException {
+        final @Nonnull @Absolute @ExistentParent File directory = Files.relativeToWorkingDirectory("target/test-files/");
+        if (directory.isDirectory() || directory.mkdir()) { Files.directory.set(directory); }
+        else { throw new IOException("Could not create the directory 'target/test-files/'."); }
+    }
     
     /* -------------------------------------------------- Logging Filter -------------------------------------------------- */
     
