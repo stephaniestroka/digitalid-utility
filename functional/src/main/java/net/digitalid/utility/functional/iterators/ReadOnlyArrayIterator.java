@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
@@ -17,16 +18,16 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * This class implements an array iterator that iterates over the given elements.
  */
 @Mutable
-public class ReadOnlyArrayIterator<E> extends ReadOnlyIterator<E> {
+public class ReadOnlyArrayIterator<@Specifiable ELEMENT> extends ReadOnlyIterator<ELEMENT> {
     
     /* -------------------------------------------------- Elements -------------------------------------------------- */
     
-    protected final @Shared @Nonnull E[] elements;
+    protected final @Shared @Nonnull ELEMENT[] elements;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     @SafeVarargs
-    protected ReadOnlyArrayIterator(@Shared @Unmodified @Nonnull E... elements) {
+    protected ReadOnlyArrayIterator(@Shared @Unmodified @Nonnull ELEMENT... elements) {
         this.elements = elements;
     }
     
@@ -35,7 +36,7 @@ public class ReadOnlyArrayIterator<E> extends ReadOnlyIterator<E> {
      */
     @Pure
     @SafeVarargs
-    public static @Capturable <E> @Nonnull ReadOnlyArrayIterator<E> with(@Shared @Unmodified @Nonnull E... elements) {
+    public static @Capturable <@Specifiable ELEMENT> @Nonnull ReadOnlyArrayIterator<ELEMENT> with(@Shared @Unmodified @Nonnull ELEMENT... elements) {
         return new ReadOnlyArrayIterator<>(elements);
     }
     
@@ -51,7 +52,7 @@ public class ReadOnlyArrayIterator<E> extends ReadOnlyIterator<E> {
     
     @Impure
     @Override
-    public @NonCapturable E next() {
+    public @NonCapturable ELEMENT next() {
         if (hasNext()) { return elements[cursor++]; }
         else { throw new NoSuchElementException(); }
     }
@@ -79,7 +80,7 @@ public class ReadOnlyArrayIterator<E> extends ReadOnlyIterator<E> {
      * Returns the previous element of this iterator.
      */
     @Impure
-    public @NonCapturable E previous() {
+    public @NonCapturable ELEMENT previous() {
         if (hasPrevious()) { return elements[--cursor]; }
         else { throw new NoSuchElementException(); }
     }

@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -11,18 +12,18 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * This class implements an iterator which is based on a primary and a secondary iterator.
  */
 @Mutable
-public abstract class DoubleIteratorBasedIterator<O, I0, I1> extends SingleIteratorBasedIterator<O, I0> {
+public abstract class DoubleIteratorBasedIterator<@Specifiable OUTPUT, @Specifiable INPUT0, @Specifiable INPUT1> extends SingleIteratorBasedIterator<OUTPUT, INPUT0> {
     
     /* -------------------------------------------------- Secondary Iterator -------------------------------------------------- */
     
     /**
      * Stores the secondary iterator on which this iterator is based.
      */
-    protected final @Nonnull Iterator<? extends I1> secondaryIterator;
+    protected final @Nonnull Iterator<? extends INPUT1> secondaryIterator;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected DoubleIteratorBasedIterator(@Captured @Nonnull Iterator<? extends I0> primaryIterator, @Captured @Nonnull Iterator<? extends I1> secondaryIterator) {
+    protected DoubleIteratorBasedIterator(@Captured @Nonnull Iterator<? extends INPUT0> primaryIterator, @Captured @Nonnull Iterator<? extends INPUT1> secondaryIterator) {
         super(primaryIterator);
         
         this.secondaryIterator = secondaryIterator;

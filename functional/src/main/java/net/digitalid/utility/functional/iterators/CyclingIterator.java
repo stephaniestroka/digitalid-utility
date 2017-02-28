@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
@@ -15,15 +16,15 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * This class implements a cycling iterator that iterates over the elements of the given iterable indefinitely.
  */
 @Mutable
-public class CyclingIterator<E> extends ReadOnlyIterator<E> {
+public class CyclingIterator<@Specifiable ELEMENT> extends ReadOnlyIterator<ELEMENT> {
     
     /* -------------------------------------------------- Iterable -------------------------------------------------- */
     
-    protected final @Nonnull FiniteIterable<? extends E> iterable;
+    protected final @Nonnull FiniteIterable<? extends ELEMENT> iterable;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected CyclingIterator(@Nonnull FiniteIterable<? extends E> iterable) {
+    protected CyclingIterator(@Nonnull FiniteIterable<? extends ELEMENT> iterable) {
         this.iterable = iterable;
         this.iterator = iterable.iterator();
         this.hasNext = iterator.hasNext();
@@ -33,13 +34,13 @@ public class CyclingIterator<E> extends ReadOnlyIterator<E> {
      * Returns a new cycling iterator that iterates over the elements of the given iterable indefinitely.
      */
     @Pure
-    public static @Capturable <E> @Nonnull CyclingIterator<E> with(@Nonnull FiniteIterable<? extends E> iterable) {
+    public static @Capturable <@Specifiable ELEMENT> @Nonnull CyclingIterator<ELEMENT> with(@Nonnull FiniteIterable<? extends ELEMENT> iterable) {
         return new CyclingIterator<>(iterable);
     }
     
     /* -------------------------------------------------- Methods -------------------------------------------------- */
     
-    private @Nonnull Iterator<? extends E> iterator;
+    private @Nonnull Iterator<? extends ELEMENT> iterator;
     
     private final boolean hasNext;
     
@@ -51,7 +52,7 @@ public class CyclingIterator<E> extends ReadOnlyIterator<E> {
     
     @Impure
     @Override
-    public @NonCapturable E next() {
+    public @NonCapturable ELEMENT next() {
         if (!iterator.hasNext()) { iterator = iterable.iterator(); }
         return iterator.next();
     }

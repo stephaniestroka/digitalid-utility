@@ -14,19 +14,19 @@ import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * This functional interface models a failable method that consumes objects of type {@code TYPE} without returning a result.
+ * This functional interface models a failable method that consumes objects of type {@code INPUT} without returning a result.
  */
 @Mutable
 @Functional
-public interface FailableConsumer<@Specifiable TYPE, @Unspecifiable EXCEPTION extends Exception> {
+public interface FailableConsumer<@Specifiable INPUT, @Unspecifiable EXCEPTION extends Exception> {
     
     /* -------------------------------------------------- Consumption -------------------------------------------------- */
     
     /**
-     * Consumes the given object.
+     * Consumes the given input.
      */
     @Impure
-    public void consume(@Captured TYPE object) throws EXCEPTION;
+    public void consume(@Captured INPUT input) throws EXCEPTION;
     
     /* -------------------------------------------------- Suppression -------------------------------------------------- */
     
@@ -34,10 +34,10 @@ public interface FailableConsumer<@Specifiable TYPE, @Unspecifiable EXCEPTION ex
      * Returns a consumer that suppresses the exceptions of this consumer and passes them to the given exception handler instead.
      */
     @Pure
-    public default @Capturable @Nonnull Consumer<TYPE> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
-        return object -> {
+    public default @Capturable @Nonnull Consumer<INPUT> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
+        return input -> {
             try {
-                consume(object);
+                consume(input);
             } catch (@Nonnull Exception exception) {
                 handler.consume(exception);
             }
@@ -48,7 +48,7 @@ public interface FailableConsumer<@Specifiable TYPE, @Unspecifiable EXCEPTION ex
      * Returns a consumer that suppresses the exceptions of this consumer.
      */
     @Pure
-    public default @Capturable @Nonnull Consumer<TYPE> suppressExceptions() {
+    public default @Capturable @Nonnull Consumer<INPUT> suppressExceptions() {
         return suppressExceptions(Consumer.DO_NOTHING);
     }
     
@@ -58,8 +58,8 @@ public interface FailableConsumer<@Specifiable TYPE, @Unspecifiable EXCEPTION ex
      * Returns the composition of the given consumers with a flexible exception type.
      */
     @Pure
-    public static @Capturable <@Specifiable TYPE, @Unspecifiable EXCEPTION extends Exception> @Nonnull FailableConsumer<TYPE, EXCEPTION> compose(@Captured @Nonnull FailableConsumer<? super TYPE, ? extends EXCEPTION> consumer0, @Captured @Nonnull FailableConsumer<? super TYPE, ? extends EXCEPTION> consumer1) {
-        return object -> { consumer0.consume(object); consumer1.consume(object); };
+    public static @Capturable <@Specifiable INPUT, @Unspecifiable EXCEPTION extends Exception> @Nonnull FailableConsumer<INPUT, EXCEPTION> compose(@Captured @Nonnull FailableConsumer<? super INPUT, ? extends EXCEPTION> consumer0, @Captured @Nonnull FailableConsumer<? super INPUT, ? extends EXCEPTION> consumer1) {
+        return input -> { consumer0.consume(input); consumer1.consume(input); };
     }
     
     /**
@@ -69,8 +69,8 @@ public interface FailableConsumer<@Specifiable TYPE, @Unspecifiable EXCEPTION ex
      * @see #compose(net.digitalid.utility.functional.failable.FailableConsumer, net.digitalid.utility.functional.failable.FailableConsumer)
      */
     @Pure
-    public default @Capturable <@Specifiable SUBTYPE extends TYPE> @Nonnull FailableConsumer<SUBTYPE, EXCEPTION> before(@Captured @Nonnull FailableConsumer<? super SUBTYPE, ? extends EXCEPTION> consumer) {
-        return object -> { consume(object); consumer.consume(object); };
+    public default @Capturable <@Specifiable SUBTYPE extends INPUT> @Nonnull FailableConsumer<SUBTYPE, EXCEPTION> before(@Captured @Nonnull FailableConsumer<? super SUBTYPE, ? extends EXCEPTION> consumer) {
+        return input -> { consume(input); consumer.consume(input); };
     }
     
     /**
@@ -80,8 +80,8 @@ public interface FailableConsumer<@Specifiable TYPE, @Unspecifiable EXCEPTION ex
      * @see #compose(net.digitalid.utility.functional.failable.FailableConsumer, net.digitalid.utility.functional.failable.FailableConsumer)
      */
     @Pure
-    public default @Capturable <@Specifiable SUBTYPE extends TYPE> @Nonnull FailableConsumer<SUBTYPE, EXCEPTION> after(@Captured @Nonnull FailableConsumer<? super SUBTYPE, ? extends EXCEPTION> consumer) {
-        return object -> { consumer.consume(object); consume(object); };
+    public default @Capturable <@Specifiable SUBTYPE extends INPUT> @Nonnull FailableConsumer<SUBTYPE, EXCEPTION> after(@Captured @Nonnull FailableConsumer<? super SUBTYPE, ? extends EXCEPTION> consumer) {
+        return input -> { consumer.consume(input); consume(input); };
     }
     
     /**
@@ -89,8 +89,8 @@ public interface FailableConsumer<@Specifiable TYPE, @Unspecifiable EXCEPTION ex
      * Unfortunately, it is not possible to make the exception type flexible as well.
      */
     @Pure
-    public default @Capturable <@Specifiable INPUT> @Nonnull FailableConsumer<INPUT, EXCEPTION> after(@Nonnull FailableUnaryFunction<? super INPUT, ? extends TYPE, ? extends EXCEPTION> function) {
-        return object -> consume(function.evaluate(object));
+    public default @Capturable <@Specifiable INITIAL_INPUT> @Nonnull FailableConsumer<INITIAL_INPUT, EXCEPTION> after(@Nonnull FailableUnaryFunction<? super INITIAL_INPUT, ? extends INPUT, ? extends EXCEPTION> function) {
+        return input -> consume(function.evaluate(input));
     }
     
     /* -------------------------------------------------- Conversion -------------------------------------------------- */
@@ -101,8 +101,8 @@ public interface FailableConsumer<@Specifiable TYPE, @Unspecifiable EXCEPTION ex
      */
     @Pure
     @SuppressWarnings("null")
-    public default @Nonnull FailableUnaryFunction<TYPE, @Nullable Void, EXCEPTION> asFunction() {
-        return object -> { consume(object); return null; };
+    public default @Nonnull FailableUnaryFunction<INPUT, @Nullable Void, EXCEPTION> asFunction() {
+        return input -> { consume(input); return null; };
     }
     
     /* -------------------------------------------------- Synchronization -------------------------------------------------- */
@@ -111,10 +111,10 @@ public interface FailableConsumer<@Specifiable TYPE, @Unspecifiable EXCEPTION ex
      * Returns a consumer that synchronizes on this consumer.
      */
     @Pure
-    public default @Nonnull FailableConsumer<TYPE, EXCEPTION> synchronize() {
-        return object -> {
+    public default @Nonnull FailableConsumer<INPUT, EXCEPTION> synchronize() {
+        return input -> {
             synchronized (this) {
-                consume(object);
+                consume(input);
             }
         };
     }

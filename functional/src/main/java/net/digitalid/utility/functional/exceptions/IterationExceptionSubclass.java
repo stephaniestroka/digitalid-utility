@@ -1,4 +1,4 @@
-package net.digitalid.utility.exceptions;
+package net.digitalid.utility.functional.exceptions;
 
 import javax.annotation.Nonnull;
 
@@ -6,7 +6,7 @@ import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 @Immutable
-class UncheckedExceptionSubclass extends UncheckedException {
+class IterationExceptionSubclass extends IterationException {
     
     /* -------------------------------------------------- Cause -------------------------------------------------- */
     
@@ -20,7 +20,7 @@ class UncheckedExceptionSubclass extends UncheckedException {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    UncheckedExceptionSubclass(@Nonnull Exception cause) {
+    IterationExceptionSubclass(@Nonnull Exception cause) {
         this.cause = cause;
     }
     

@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Impure;
-import net.digitalid.utility.console.exceptions.EscapeOptionException;
+import net.digitalid.utility.console.exceptions.EscapeException;
 import net.digitalid.utility.exceptions.UncheckedExceptionBuilder;
 import net.digitalid.utility.property.set.WritableVolatileSimpleSetProperty;
 import net.digitalid.utility.property.set.WritableVolatileSimpleSetPropertyBuilder;
@@ -185,7 +185,7 @@ public abstract class Console {
             final int input = readNumber("Execute the option: ", null);
             writeLine();
             if (input >= 0 && input < size) {
-                try { options.get().get(input).execute(); } catch (@Nonnull EscapeOptionException exception) {}
+                try { options.get().get(input).execute(); } catch (@Nonnull EscapeException exception) {}
             } else {
                 writeLine("Please choose one of the given options!");
             }

@@ -3,6 +3,8 @@ package net.digitalid.utility.functional.failable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
@@ -14,11 +16,11 @@ import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- * This functional interface models a failable binary function that maps an object of type {@code I0} and an object of type {@code I1} to an object of type {@code O}.
+ * This functional interface models a failable binary function that maps an object of type {@code INPUT0} and an object of type {@code INPUT1} to an object of type {@code OUTPUT}.
  */
 @Immutable
 @Functional
-public interface FailableBinaryFunction<I0, I1, O, X extends Exception> {
+public interface FailableBinaryFunction<@Specifiable INPUT0, @Specifiable INPUT1, @Specifiable OUTPUT, @Unspecifiable EXCEPTION extends Exception> {
     
     /* -------------------------------------------------- Evaluation -------------------------------------------------- */
     
@@ -27,13 +29,13 @@ public interface FailableBinaryFunction<I0, I1, O, X extends Exception> {
      * All implementations of this method have to be side-effect-free.
      */
     @Pure
-    public O evaluate(@NonCaptured @Unmodified I0 object0, @NonCaptured @Unmodified I1 object1) throws X;
+    public OUTPUT evaluate(@NonCaptured @Unmodified INPUT0 input0, @NonCaptured @Unmodified INPUT1 input1) throws EXCEPTION;
     
     /**
      * Evaluates this function for the objects in the given pair.
      */
     @Pure
-    public default O evaluate(@Nonnull Pair<I0, I1> pair) throws X {
+    public default OUTPUT evaluate(@Nonnull Pair<INPUT0, INPUT1> pair) throws EXCEPTION {
         return evaluate(pair.get0(), pair.get1());
     }
     
@@ -43,10 +45,10 @@ public interface FailableBinaryFunction<I0, I1, O, X extends Exception> {
      * Returns a function that catches the exceptions of this function, passes them to the given exception handler and returns the given default output instead.
      */
     @Pure
-    public default @Nonnull BinaryFunction<I0, I1, O> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, @Captured O defaultOutput) {
-        return (object0, object1) -> {
+    public default @Nonnull BinaryFunction<INPUT0, INPUT1, OUTPUT> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, @Captured OUTPUT defaultOutput) {
+        return (input0, input1) -> {
             try {
-                return evaluate(object0, object1);
+                return evaluate(input0, input1);
             } catch (@Nonnull Exception exception) {
                 handler.consume(exception);
                 return defaultOutput;
@@ -58,7 +60,7 @@ public interface FailableBinaryFunction<I0, I1, O, X extends Exception> {
      * Returns a function that catches the exceptions of this function, passes them to the given exception handler and returns null instead.
      */
     @Pure
-    public default @Nonnull BinaryFunction<I0, I1, @Nullable O> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
+    public default @Nonnull BinaryFunction<INPUT0, INPUT1, @Nullable OUTPUT> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
         return suppressExceptions(handler, null);
     }
     
@@ -66,7 +68,7 @@ public interface FailableBinaryFunction<I0, I1, O, X extends Exception> {
      * Returns a function that suppresses the exceptions of this function and returns the given default output instead.
      */
     @Pure
-    public default @Nonnull BinaryFunction<I0, I1, O> suppressExceptions(@Captured O defaultOutput) {
+    public default @Nonnull BinaryFunction<INPUT0, INPUT1, OUTPUT> suppressExceptions(@Captured OUTPUT defaultOutput) {
         return suppressExceptions(Consumer.DO_NOTHING, defaultOutput);
     }
     
@@ -74,7 +76,7 @@ public interface FailableBinaryFunction<I0, I1, O, X extends Exception> {
      * Returns a function that suppresses the exceptions of this function and returns null instead.
      */
     @Pure
-    public default @Nonnull BinaryFunction<I0, I1, @Nullable O> suppressExceptions() {
+    public default @Nonnull BinaryFunction<INPUT0, INPUT1, @Nullable OUTPUT> suppressExceptions() {
         return suppressExceptions(Consumer.DO_NOTHING, null);
     }
     
@@ -84,8 +86,8 @@ public interface FailableBinaryFunction<I0, I1, O, X extends Exception> {
      * Returns the composition of the given functions with a flexible exception type.
      */
     @Pure
-    public static <I0, I1, O, T, X extends Exception> @Nonnull FailableBinaryFunction<I0, I1, O, X> compose(@Nonnull FailableBinaryFunction<? super I0, ? super I1, ? extends T, ? extends X> binaryFunction, @Nonnull FailableUnaryFunction<? super T, ? extends O, ? extends X> unaryFunction) {
-        return (object0, object1) -> unaryFunction.evaluate(binaryFunction.evaluate(object0, object1));
+    public static <@Specifiable INPUT0, @Specifiable INPUT1, @Specifiable INTERMEDIATE, @Specifiable OUTPUT, @Unspecifiable EXCEPTION extends Exception> @Nonnull FailableBinaryFunction<INPUT0, INPUT1, OUTPUT, EXCEPTION> compose(@Nonnull FailableBinaryFunction<? super INPUT0, ? super INPUT1, ? extends INTERMEDIATE, ? extends EXCEPTION> binaryFunction, @Nonnull FailableUnaryFunction<? super INTERMEDIATE, ? extends OUTPUT, ? extends EXCEPTION> unaryFunction) {
+        return (input0, input1) -> unaryFunction.evaluate(binaryFunction.evaluate(input0, input1));
     }
     
     /**
@@ -95,16 +97,16 @@ public interface FailableBinaryFunction<I0, I1, O, X extends Exception> {
      * @see #compose(net.digitalid.utility.functional.failable.FailableBinaryFunction, net.digitalid.utility.functional.failable.FailableUnaryFunction)
      */
     @Pure
-    public default <T> @Nonnull FailableBinaryFunction<I0, I1, T, X> before(@Nonnull FailableUnaryFunction<? super O, ? extends T, ? extends X> function) {
-        return (object0, object1) -> function.evaluate(evaluate(object0, object1));
+    public default <@Specifiable FINAL_OUTPUT> @Nonnull FailableBinaryFunction<INPUT0, INPUT1, FINAL_OUTPUT, EXCEPTION> before(@Nonnull FailableUnaryFunction<? super OUTPUT, ? extends FINAL_OUTPUT, ? extends EXCEPTION> function) {
+        return (input0, input1) -> function.evaluate(evaluate(input0, input1));
     }
     
     /**
      * Returns the composition of the given functions with a flexible exception type.
      */
     @Pure
-    public static <I0, I1, O, T0, T1, X extends Exception> @Nonnull FailableBinaryFunction<I0, I1, O, X> compose(@Nonnull FailableUnaryFunction<? super I0, ? extends T0, ? extends X> unaryFunction0, @Nonnull FailableUnaryFunction<? super I1, ? extends T1, ? extends X> unaryFunction1, @Nonnull FailableBinaryFunction<? super T0, ? super T1, ? extends O, ? extends X> binaryFunction) {
-        return (object0, object1) -> binaryFunction.evaluate(unaryFunction0.evaluate(object0), unaryFunction1.evaluate(object1));
+    public static <@Specifiable INPUT0, @Specifiable INPUT1, @Specifiable INTERMEDIATE0, @Specifiable INTERMEDIATE1, @Specifiable OUTPUT, @Unspecifiable EXCEPTION extends Exception> @Nonnull FailableBinaryFunction<INPUT0, INPUT1, OUTPUT, EXCEPTION> compose(@Nonnull FailableUnaryFunction<? super INPUT0, ? extends INTERMEDIATE0, ? extends EXCEPTION> unaryFunction0, @Nonnull FailableUnaryFunction<? super INPUT1, ? extends INTERMEDIATE1, ? extends EXCEPTION> unaryFunction1, @Nonnull FailableBinaryFunction<? super INTERMEDIATE0, ? super INTERMEDIATE1, ? extends OUTPUT, ? extends EXCEPTION> binaryFunction) {
+        return (input0, input1) -> binaryFunction.evaluate(unaryFunction0.evaluate(input0), unaryFunction1.evaluate(input1));
     }
     
     /**
@@ -114,8 +116,8 @@ public interface FailableBinaryFunction<I0, I1, O, X extends Exception> {
      * @see #compose(net.digitalid.utility.functional.failable.FailableUnaryFunction, net.digitalid.utility.functional.failable.FailableUnaryFunction, net.digitalid.utility.functional.failable.FailableBinaryFunction)
      */
     @Pure
-    public default <T0, T1> @Nonnull FailableBinaryFunction<T0, T1, O, X> after(@Nonnull FailableUnaryFunction<? super T0, ? extends I0, ? extends X> function0, @Nonnull FailableUnaryFunction<? super T1, ? extends I1, ? extends X> function1) {
-        return (object0, object1) -> evaluate(function0.evaluate(object0), function1.evaluate(object1));
+    public default <@Specifiable INITIAL_INPUT0, @Specifiable INITIAL_INPUT1> @Nonnull FailableBinaryFunction<INITIAL_INPUT0, INITIAL_INPUT1, OUTPUT, EXCEPTION> after(@Nonnull FailableUnaryFunction<? super INITIAL_INPUT0, ? extends INPUT0, ? extends EXCEPTION> function0, @Nonnull FailableUnaryFunction<? super INITIAL_INPUT1, ? extends INPUT1, ? extends EXCEPTION> function1) {
+        return (input0, input1) -> evaluate(function0.evaluate(input0), function1.evaluate(input1));
     }
     
     /* -------------------------------------------------- Null Handling -------------------------------------------------- */
@@ -124,15 +126,15 @@ public interface FailableBinaryFunction<I0, I1, O, X extends Exception> {
      * Returns a new function based on this function that returns the given default output if either input is null.
      */
     @Pure
-    public default @Nonnull FailableBinaryFunction<@Nullable I0, @Nullable I1, O, X> replaceNull(@Captured O defaultOutput) {
-        return (object0, object1) -> object0 != null && object1 != null ? evaluate(object0, object1) : defaultOutput;
+    public default @Nonnull FailableBinaryFunction<@Nullable INPUT0, @Nullable INPUT1, OUTPUT, EXCEPTION> replaceNull(@Captured OUTPUT defaultOutput) {
+        return (input0, input1) -> input0 != null && input1 != null ? evaluate(input0, input1) : defaultOutput;
     }
     
     /**
      * Returns a new function based on this function that propagates null instead of evaluating it.
      */
     @Pure
-    public default @Nonnull FailableBinaryFunction<@Nullable I0, @Nullable I1, @Nullable O, X> propagateNull() {
+    public default @Nonnull FailableBinaryFunction<@Nullable INPUT0, @Nullable INPUT1, @Nullable OUTPUT, EXCEPTION> propagateNull() {
         return replaceNull(null);
     }
     

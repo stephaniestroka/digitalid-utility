@@ -3,6 +3,8 @@ package net.digitalid.utility.functional.failable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.functional.interfaces.Consumer;
@@ -11,20 +13,20 @@ import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- * This functional interface models a failable unary operator that maps an object of type {@code T} to another object of type {@code T}.
+ * This functional interface models a failable unary operator that maps an object of type {@code TYPE} to another object of type {@code TYPE}.
  */
 @Immutable
 @Functional
-public interface FailableUnaryOperator<T, X extends Exception> extends FailableUnaryFunction<T, T, X> {
+public interface FailableUnaryOperator<@Specifiable TYPE, @Unspecifiable EXCEPTION extends Exception> extends FailableUnaryFunction<TYPE, TYPE, EXCEPTION> {
     
     /* -------------------------------------------------- Suppression -------------------------------------------------- */
     
     @Pure
     @Override
-    public default @Nonnull UnaryOperator<T> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, @Captured T defaultOutput) {
-        return object -> {
+    public default @Nonnull UnaryOperator<TYPE> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, @Captured TYPE defaultOutput) {
+        return input -> {
             try {
-                return evaluate(object);
+                return evaluate(input);
             } catch (@Nonnull Exception exception) {
                 handler.consume(exception);
                 return defaultOutput;
@@ -34,19 +36,19 @@ public interface FailableUnaryOperator<T, X extends Exception> extends FailableU
     
     @Pure
     @Override
-    public default @Nonnull UnaryOperator<@Nullable T> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
+    public default @Nonnull UnaryOperator<@Nullable TYPE> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
         return suppressExceptions(handler, null);
     }
     
     @Pure
     @Override
-    public default @Nonnull UnaryOperator<T> suppressExceptions(@Captured T defaultOutput) {
+    public default @Nonnull UnaryOperator<TYPE> suppressExceptions(@Captured TYPE defaultOutput) {
         return suppressExceptions(Consumer.DO_NOTHING, defaultOutput);
     }
     
     @Pure
     @Override
-    public default @Nonnull UnaryOperator<@Nullable T> suppressExceptions() {
+    public default @Nonnull UnaryOperator<@Nullable TYPE> suppressExceptions() {
         return suppressExceptions(Consumer.DO_NOTHING, null);
     }
     
@@ -56,8 +58,8 @@ public interface FailableUnaryOperator<T, X extends Exception> extends FailableU
      * Returns the composition of the given operators with a flexible exception type.
      */
     @Pure
-    public static <T, X extends Exception> @Nonnull FailableUnaryOperator<T, X> compose(@Nonnull FailableUnaryOperator<T, ? extends X> operator0, @Nonnull FailableUnaryOperator<T, ? extends X> operator1) {
-        return object -> operator1.evaluate(operator0.evaluate(object));
+    public static <@Specifiable TYPE, @Unspecifiable EXCEPTION extends Exception> @Nonnull FailableUnaryOperator<TYPE, EXCEPTION> compose(@Nonnull FailableUnaryOperator<TYPE, ? extends EXCEPTION> operator0, @Nonnull FailableUnaryOperator<TYPE, ? extends EXCEPTION> operator1) {
+        return input -> operator1.evaluate(operator0.evaluate(input));
     }
     
     /**
@@ -67,8 +69,8 @@ public interface FailableUnaryOperator<T, X extends Exception> extends FailableU
      * @see #compose(net.digitalid.utility.functional.failable.FailableUnaryOperator, net.digitalid.utility.functional.failable.FailableUnaryOperator)
      */
     @Pure
-    public default @Nonnull FailableUnaryOperator<T, X> before(@Nonnull FailableUnaryOperator<T, ? extends X> operator) {
-        return object -> operator.evaluate(evaluate(object));
+    public default @Nonnull FailableUnaryOperator<TYPE, EXCEPTION> before(@Nonnull FailableUnaryOperator<TYPE, ? extends EXCEPTION> operator) {
+        return input -> operator.evaluate(evaluate(input));
     }
     
     /**
@@ -78,21 +80,21 @@ public interface FailableUnaryOperator<T, X extends Exception> extends FailableU
      * @see #compose(net.digitalid.utility.functional.failable.FailableUnaryOperator, net.digitalid.utility.functional.failable.FailableUnaryOperator)
      */
     @Pure
-    public default @Nonnull FailableUnaryOperator<T, X> after(@Nonnull FailableUnaryOperator<T, ? extends X> operator) {
-        return object -> evaluate(operator.evaluate(object));
+    public default @Nonnull FailableUnaryOperator<TYPE, EXCEPTION> after(@Nonnull FailableUnaryOperator<TYPE, ? extends EXCEPTION> operator) {
+        return input -> evaluate(operator.evaluate(input));
     }
     
     /* -------------------------------------------------- Null Handling -------------------------------------------------- */
     
     @Pure
     @Override
-    public default @Nonnull FailableUnaryOperator<@Nullable T, X> replaceNull(@Captured T defaultOutput) {
-        return object -> object != null ? evaluate(object) : defaultOutput;
+    public default @Nonnull FailableUnaryOperator<@Nullable TYPE, EXCEPTION> replaceNull(@Captured TYPE defaultOutput) {
+        return input -> input != null ? evaluate(input) : defaultOutput;
     }
     
     @Pure
     @Override
-    public default @Nonnull FailableUnaryOperator<@Nullable T, X> propagateNull() {
+    public default @Nonnull FailableUnaryOperator<@Nullable TYPE, EXCEPTION> propagateNull() {
         return replaceNull(null);
     }
     

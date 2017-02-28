@@ -3,6 +3,8 @@ package net.digitalid.utility.functional.failable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.functional.interfaces.BinaryOperator;
@@ -11,20 +13,20 @@ import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- * This functional interface models a failable binary operator that maps two objects of type {@code T} to another object of type {@code T}.
+ * This functional interface models a failable binary operator that maps two objects of type {@code TYPE} to another object of type {@code TYPE}.
  */
 @Immutable
 @Functional
-public interface FailableBinaryOperator<T, X extends Exception> extends FailableBinaryFunction<T, T, T, X> {
+public interface FailableBinaryOperator<@Specifiable TYPE, @Unspecifiable EXCEPTION extends Exception> extends FailableBinaryFunction<TYPE, TYPE, TYPE, EXCEPTION> {
     
     /* -------------------------------------------------- Suppression -------------------------------------------------- */
     
     @Pure
     @Override
-    public default @Nonnull BinaryOperator<T> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, @Captured T defaultOutput) {
-        return (object0, object1) -> {
+    public default @Nonnull BinaryOperator<TYPE> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, @Captured TYPE defaultOutput) {
+        return (input0, input1) -> {
             try {
-                return evaluate(object0, object1);
+                return evaluate(input0, input1);
             } catch (@Nonnull Exception exception) {
                 handler.consume(exception);
                 return defaultOutput;
@@ -34,19 +36,19 @@ public interface FailableBinaryOperator<T, X extends Exception> extends Failable
     
     @Pure
     @Override
-    public default @Nonnull BinaryOperator<@Nullable T> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
+    public default @Nonnull BinaryOperator<@Nullable TYPE> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
         return suppressExceptions(handler, null);
     }
     
     @Pure
     @Override
-    public default @Nonnull BinaryOperator<T> suppressExceptions(@Captured T defaultOutput) {
+    public default @Nonnull BinaryOperator<TYPE> suppressExceptions(@Captured TYPE defaultOutput) {
         return suppressExceptions(Consumer.DO_NOTHING, defaultOutput);
     }
     
     @Pure
     @Override
-    public default @Nonnull BinaryOperator<@Nullable T> suppressExceptions() {
+    public default @Nonnull BinaryOperator<@Nullable TYPE> suppressExceptions() {
         return suppressExceptions(Consumer.DO_NOTHING, null);
     }
     
@@ -56,8 +58,8 @@ public interface FailableBinaryOperator<T, X extends Exception> extends Failable
      * Returns the composition of the given operators with a flexible exception type.
      */
     @Pure
-    public static <T, X extends Exception> @Nonnull FailableBinaryOperator<T, X> compose(@Nonnull FailableBinaryOperator<T, ? extends X> binaryOperator, @Nonnull FailableUnaryOperator<T, ? extends X> unaryOperator) {
-        return (object0, object1) -> unaryOperator.evaluate(binaryOperator.evaluate(object0, object1));
+    public static <@Specifiable TYPE, @Unspecifiable EXCEPTION extends Exception> @Nonnull FailableBinaryOperator<TYPE, EXCEPTION> compose(@Nonnull FailableBinaryOperator<TYPE, ? extends EXCEPTION> binaryOperator, @Nonnull FailableUnaryOperator<TYPE, ? extends EXCEPTION> unaryOperator) {
+        return (input0, input1) -> unaryOperator.evaluate(binaryOperator.evaluate(input0, input1));
     }
     
     /**
@@ -67,16 +69,16 @@ public interface FailableBinaryOperator<T, X extends Exception> extends Failable
      * @see #compose(net.digitalid.utility.functional.failable.FailableBinaryOperator, net.digitalid.utility.functional.failable.FailableUnaryOperator)
      */
     @Pure
-    public default @Nonnull FailableBinaryOperator<T, X> before(@Nonnull FailableUnaryOperator<T, ? extends X> operator) {
-        return (object0, object1) -> operator.evaluate(evaluate(object0, object1));
+    public default @Nonnull FailableBinaryOperator<TYPE, EXCEPTION> before(@Nonnull FailableUnaryOperator<TYPE, ? extends EXCEPTION> operator) {
+        return (input0, input1) -> operator.evaluate(evaluate(input0, input1));
     }
     
     /**
      * Returns the composition of the given operators with a flexible exception type.
      */
     @Pure
-    public static <T, X extends Exception> @Nonnull FailableBinaryOperator<T, X> compose(@Nonnull FailableUnaryOperator<T, ? extends X> unaryOperator0, @Nonnull FailableUnaryOperator<T, ? extends X> unaryOperator1, @Nonnull FailableBinaryOperator<T, ? extends X> binaryOperator) {
-        return (object0, object1) -> binaryOperator.evaluate(unaryOperator0.evaluate(object0), unaryOperator1.evaluate(object1));
+    public static <@Specifiable TYPE, @Unspecifiable EXCEPTION extends Exception> @Nonnull FailableBinaryOperator<TYPE, EXCEPTION> compose(@Nonnull FailableUnaryOperator<TYPE, ? extends EXCEPTION> unaryOperator0, @Nonnull FailableUnaryOperator<TYPE, ? extends EXCEPTION> unaryOperator1, @Nonnull FailableBinaryOperator<TYPE, ? extends EXCEPTION> binaryOperator) {
+        return (input0, input1) -> binaryOperator.evaluate(unaryOperator0.evaluate(input0), unaryOperator1.evaluate(input1));
     }
     
     /**
@@ -86,21 +88,21 @@ public interface FailableBinaryOperator<T, X extends Exception> extends Failable
      * @see #compose(net.digitalid.utility.functional.failable.FailableUnaryOperator, net.digitalid.utility.functional.failable.FailableUnaryOperator, net.digitalid.utility.functional.failable.FailableBinaryOperator)
      */
     @Pure
-    public default @Nonnull FailableBinaryOperator<T, X> after(@Nonnull FailableUnaryOperator<T, ? extends X> operator0, @Nonnull FailableUnaryOperator<T, ? extends X> operator1) {
-        return (object0, object1) -> evaluate(operator0.evaluate(object0), operator1.evaluate(object1));
+    public default @Nonnull FailableBinaryOperator<TYPE, EXCEPTION> after(@Nonnull FailableUnaryOperator<TYPE, ? extends EXCEPTION> operator0, @Nonnull FailableUnaryOperator<TYPE, ? extends EXCEPTION> operator1) {
+        return (input0, input1) -> evaluate(operator0.evaluate(input0), operator1.evaluate(input1));
     }
     
     /* -------------------------------------------------- Null Handling -------------------------------------------------- */
     
     @Pure
     @Override
-    public default @Nonnull FailableBinaryOperator<@Nullable T, X> replaceNull(@Captured T defaultOutput) {
-        return (object0, object1) -> object0 != null && object1 != null ? evaluate(object0, object1) : defaultOutput;
+    public default @Nonnull FailableBinaryOperator<@Nullable TYPE, EXCEPTION> replaceNull(@Captured TYPE defaultOutput) {
+        return (input0, input1) -> input0 != null && input1 != null ? evaluate(input0, input1) : defaultOutput;
     }
     
     @Pure
     @Override
-    public default @Nonnull FailableBinaryOperator<@Nullable T, X> propagateNull() {
+    public default @Nonnull FailableBinaryOperator<@Nullable TYPE, EXCEPTION> propagateNull() {
         return replaceNull(null);
     }
     

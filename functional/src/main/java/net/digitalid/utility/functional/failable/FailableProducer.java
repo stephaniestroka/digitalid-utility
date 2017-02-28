@@ -3,6 +3,8 @@ package net.digitalid.utility.functional.failable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
@@ -13,11 +15,11 @@ import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * This functional interface models a failable method that produces objects of type {@code T} without requiring a parameter.
+ * This functional interface models a failable method that produces objects of type {@code OUTPUT} without requiring a parameter.
  */
 @Mutable
 @Functional
-public interface FailableProducer<T, X extends Exception> {
+public interface FailableProducer<@Specifiable OUTPUT, @Unspecifiable EXCEPTION extends Exception> {
     
     /* -------------------------------------------------- Production -------------------------------------------------- */
     
@@ -25,7 +27,7 @@ public interface FailableProducer<T, X extends Exception> {
      * Produces a result.
      */
     @Impure
-    public @Capturable T produce() throws X;
+    public @Capturable OUTPUT produce() throws EXCEPTION;
     
     /* -------------------------------------------------- Suppression -------------------------------------------------- */
     
@@ -33,7 +35,7 @@ public interface FailableProducer<T, X extends Exception> {
      * Returns a producer that catches the exceptions of this producer, passes them to the given exception handler and returns the given default output instead.
      */
     @Pure
-    public default @Nonnull Producer<T> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, @Captured T defaultOutput) {
+    public default @Nonnull Producer<OUTPUT> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, @Captured OUTPUT defaultOutput) {
         return () -> {
             try {
                 return produce();
@@ -48,7 +50,7 @@ public interface FailableProducer<T, X extends Exception> {
      * Returns a producer that catches the exceptions of this producer, passes them to the given exception handler and returns null instead.
      */
     @Pure
-    public default @Nonnull Producer<@Nullable T> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
+    public default @Nonnull Producer<@Nullable OUTPUT> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
         return suppressExceptions(handler, null);
     }
     
@@ -56,7 +58,7 @@ public interface FailableProducer<T, X extends Exception> {
      * Returns a producer that suppresses the exceptions of this producer and returns the given default output instead.
      */
     @Pure
-    public default @Nonnull Producer<T> suppressExceptions(@Captured T defaultOutput) {
+    public default @Nonnull Producer<OUTPUT> suppressExceptions(@Captured OUTPUT defaultOutput) {
         return suppressExceptions(Consumer.DO_NOTHING, defaultOutput);
     }
     
@@ -64,7 +66,7 @@ public interface FailableProducer<T, X extends Exception> {
      * Returns a producer that suppresses the exceptions of this producer and returns null instead.
      */
     @Pure
-    public default @Nonnull Producer<@Nullable T> suppressExceptions() {
+    public default @Nonnull Producer<@Nullable OUTPUT> suppressExceptions() {
         return suppressExceptions(Consumer.DO_NOTHING, null);
     }
     
@@ -74,7 +76,7 @@ public interface FailableProducer<T, X extends Exception> {
      * Returns the composition of the given producer and function with a flexible exception type.
      */
     @Pure
-    public static @Capturable <T, O, X extends Exception> @Nonnull FailableProducer<O, X> compose(@Captured @Nonnull FailableProducer<? extends T, ? extends X> producer, @Nonnull FailableUnaryFunction<? super T, ? extends O, ? extends X> function) {
+    public static @Capturable <@Specifiable INTERMEDIATE, @Specifiable OUTPUT, @Unspecifiable EXCEPTION extends Exception> @Nonnull FailableProducer<OUTPUT, EXCEPTION> compose(@Captured @Nonnull FailableProducer<? extends INTERMEDIATE, ? extends EXCEPTION> producer, @Nonnull FailableUnaryFunction<? super INTERMEDIATE, ? extends OUTPUT, ? extends EXCEPTION> function) {
         return () -> function.evaluate(producer.produce());
     }
     
@@ -85,7 +87,7 @@ public interface FailableProducer<T, X extends Exception> {
      * @see #compose(net.digitalid.utility.functional.failable.FailableProducer, net.digitalid.utility.functional.failable.FailableUnaryFunction)
      */
     @Pure
-    public default <O> @Nonnull FailableProducer<O, X> before(@Nonnull FailableUnaryFunction<? super T, ? extends O, ? extends X> function) {
+    public default <@Specifiable FINAL_OUTPUT> @Nonnull FailableProducer<FINAL_OUTPUT, EXCEPTION> before(@Nonnull FailableUnaryFunction<? super OUTPUT, ? extends FINAL_OUTPUT, ? extends EXCEPTION> function) {
         return () -> function.evaluate(produce());
     }
     
@@ -96,8 +98,8 @@ public interface FailableProducer<T, X extends Exception> {
      * This method may only be called if this producer is side-effect-free.
      */
     @Pure
-    public default @Nonnull FailableUnaryFunction<@Nullable Object, T, X> asFunction() {
-        return object -> produce();
+    public default @Nonnull FailableUnaryFunction<@Nullable Object, OUTPUT, EXCEPTION> asFunction() {
+        return input -> produce();
     }
     
     /* -------------------------------------------------- Synchronization -------------------------------------------------- */
@@ -106,7 +108,7 @@ public interface FailableProducer<T, X extends Exception> {
      * Returns a producer that synchronizes on this producer.
      */
     @Pure
-    public default @Nonnull FailableProducer<T, X> synchronize() {
+    public default @Nonnull FailableProducer<OUTPUT, EXCEPTION> synchronize() {
         return () -> {
             synchronized (this) {
                 return produce();
@@ -120,22 +122,22 @@ public interface FailableProducer<T, X extends Exception> {
      * Returns a producer that caches each object produced by this producer for the given duration in milliseconds.
      */
     @Pure
-    public default @Nonnull FailableProducer<T, X> memoize(long duration) {
-        return new FailableProducer<T, X>() {
+    public default @Nonnull FailableProducer<OUTPUT, EXCEPTION> memoize(long duration) {
+        return new FailableProducer<OUTPUT, EXCEPTION>() {
             
-            private T cachedObject = null;
+            private OUTPUT cachedOutput = null;
             
             private long lastProduction = 0;
             
             @Impure
             @Override
-            public T produce() throws X {
+            public OUTPUT produce() throws EXCEPTION {
                 final long currentTime = System.currentTimeMillis();
                 if (lastProduction == 0 || lastProduction + duration < currentTime) {
-                    this.cachedObject = FailableProducer.this.produce();
+                    this.cachedOutput = FailableProducer.this.produce();
                     this.lastProduction = currentTime;
                 }
-                return cachedObject;
+                return cachedOutput;
             }
             
         };

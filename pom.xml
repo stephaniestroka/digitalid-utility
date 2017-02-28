@@ -35,15 +35,15 @@
         <module>android</module>
         <module>collaboration</module>
         <module>annotations</module>
-        <module>interfaces</module>
         <module>circumfixes</module>
+        <module>interfaces</module>
+        <module>throwable</module>
+        <module>exceptions</module>
+        <module>errors</module>
         <module>tuples</module>
         <module>functional</module>
         <module>immutable</module>
         <module>string</module>
-        <module>throwable</module>
-        <module>exceptions</module>
-        <module>errors</module>
         <module>contracts</module>
         <module>configuration</module>
         <module>file</module>

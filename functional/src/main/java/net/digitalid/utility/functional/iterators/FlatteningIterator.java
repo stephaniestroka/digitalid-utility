@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
@@ -20,7 +21,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * This class implements a flattening iterator that iterates over the elements of the given iterator with all collections up to the given level flattened.
  */
 @Mutable
-public class FlatteningIterator<F, E> extends SingleIteratorBasedIterator<F, E> {
+public class FlatteningIterator<@Specifiable OUTPUT, @Specifiable INPUT> extends SingleIteratorBasedIterator<OUTPUT, INPUT> {
     
     /* -------------------------------------------------- Level -------------------------------------------------- */
     
@@ -28,7 +29,7 @@ public class FlatteningIterator<F, E> extends SingleIteratorBasedIterator<F, E> 
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected FlatteningIterator(@Captured @Nonnull Iterator<? extends E> primaryIterator, @NonNegative int level) {
+    protected FlatteningIterator(@Captured @Nonnull Iterator<? extends INPUT> primaryIterator, @NonNegative int level) {
         super(primaryIterator);
         
         this.level = level;
@@ -38,17 +39,17 @@ public class FlatteningIterator<F, E> extends SingleIteratorBasedIterator<F, E> 
      * Returns a new flattening iterator that iterates over the elements of the given iterator with all collections up to the given level flattened.
      */
     @Pure
-    public static @Capturable <F, E> @Nonnull FlatteningIterator<F, E> with(@Captured @Nonnull Iterator<? extends E> iterator, @NonNegative int level) {
+    public static @Capturable <@Specifiable OUTPUT, @Specifiable INPUT> @Nonnull FlatteningIterator<OUTPUT, INPUT> with(@Captured @Nonnull Iterator<? extends INPUT> iterator, @NonNegative int level) {
         return new FlatteningIterator<>(iterator, level);
     }
     
     /* -------------------------------------------------- Methods -------------------------------------------------- */
     
-    private @Nullable E nextElement = null;
+    private @Nullable INPUT nextElement = null;
     
     private boolean found = false;
     
-    private @Nullable Iterator<F> subiterator = null;
+    private @Nullable Iterator<OUTPUT> subiterator = null;
     
     @Pure
     @Override
@@ -67,7 +68,7 @@ public class FlatteningIterator<F, E> extends SingleIteratorBasedIterator<F, E> 
             return true;
         } else {
             while (primaryIterator.hasNext()) {
-                final E element = primaryIterator.next();
+                final INPUT element = primaryIterator.next();
                 if (level > 0) {
                     final FiniteIterable<?> iterable;
                     if (element instanceof Collection<?>) { iterable = FiniteIterable.of((Collection<?>) element); }
@@ -94,13 +95,13 @@ public class FlatteningIterator<F, E> extends SingleIteratorBasedIterator<F, E> 
     @Impure
     @Override
     @SuppressWarnings("unchecked")
-    public @NonCapturable F next() {
+    public @NonCapturable OUTPUT next() {
         if (hasNext()) {
             if (subiterator != null) {
                 return subiterator.next();
             } else {
                 found = false;
-                return (F) nextElement;
+                return (OUTPUT) nextElement;
             }
         } else {
             throw new NoSuchElementException();

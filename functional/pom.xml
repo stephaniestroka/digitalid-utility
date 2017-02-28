@@ -10,11 +10,19 @@
     <artifactId>utility-functional</artifactId>
     
     <dependencies>
+        
         <dependency>
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-tuples</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>net.digitalid.utility</groupId>
+            <artifactId>utility-exceptions</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
     </dependencies>
     
 </project>

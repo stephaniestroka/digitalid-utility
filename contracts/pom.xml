@@ -10,16 +10,13 @@
     <artifactId>utility-contracts</artifactId>
     
     <dependencies>
-        <dependency>
-            <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-exceptions</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        
         <dependency>
             <groupId>net.digitalid.utility</groupId>
             <artifactId>utility-string</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
     </dependencies>
     
 </project>

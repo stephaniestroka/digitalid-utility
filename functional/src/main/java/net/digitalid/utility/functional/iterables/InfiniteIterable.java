@@ -3,6 +3,8 @@ package net.digitalid.utility.functional.iterables;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.functional.failable.FailablePredicate;
@@ -29,7 +31,7 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  */
 @ReadOnly
 @Functional
-public interface InfiniteIterable<E> extends FunctionalIterable<E> {
+public interface InfiniteIterable<@Specifiable ELEMENT> extends FunctionalIterable<ELEMENT> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
@@ -37,7 +39,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
      * Returns a new infinite iterable that repeats the given element infinitely.
      */
     @Pure
-    public static <E> @Nonnull InfiniteIterable<E> repeat(@Captured E element) {
+    public static <@Specifiable ELEMENT> @Nonnull InfiniteIterable<ELEMENT> repeat(@Captured ELEMENT element) {
         return () -> RepeatingIterator.with(element);
     }
     
@@ -45,7 +47,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
      * Returns a new infinite iterable that iterates over the sequence produced by the given operator from the given first element.
      */
     @Pure
-    public static <E> @Nonnull InfiniteIterable<E> iterate(@Captured E firstElement, @Nonnull FailableUnaryOperator<E, ?> unaryOperator) {
+    public static <@Specifiable ELEMENT> @Nonnull InfiniteIterable<ELEMENT> iterate(@Captured ELEMENT firstElement, @Nonnull FailableUnaryOperator<ELEMENT, ?> unaryOperator) {
         return () -> IteratingIterator.with(firstElement, unaryOperator);
     }
     
@@ -55,7 +57,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
      * {@link #get(int)} are no longer side-effect free and calling them repeatedly leads to unexpected results.
      */
     @Pure
-    public static <E> @Nonnull InfiniteIterable<E> generate(@Captured @Nonnull Producer<? extends FailableProducer<? extends E, ?>> producer) {
+    public static <@Specifiable ELEMENT> @Nonnull InfiniteIterable<ELEMENT> generate(@Captured @Nonnull Producer<? extends FailableProducer<? extends ELEMENT, ?>> producer) {
         return () -> GeneratingIterator.with(producer.produce());
     }
     
@@ -79,19 +81,19 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default @Nonnull InfiniteIterable<E> filter(@Nonnull FailablePredicate<? super E, ?> predicate) {
+    public default @Nonnull InfiniteIterable<ELEMENT> filter(@Nonnull FailablePredicate<? super ELEMENT, ?> predicate) {
         return () -> FilteringIterator.with(iterator(), predicate);
     }
     
     @Pure
     @Override
-    public default @Nonnull InfiniteIterable<E> filterNot(@Nonnull FailablePredicate<? super E, ?> predicate) {
+    public default @Nonnull InfiniteIterable<ELEMENT> filterNot(@Nonnull FailablePredicate<? super ELEMENT, ?> predicate) {
         return filter(predicate.negate());
     }
     
     @Pure
     @Override
-    public default @Nonnull InfiniteIterable<E> filterNulls() {
+    public default @Nonnull InfiniteIterable<ELEMENT> filterNulls() {
         return filter(element -> element != null);
     }
     
@@ -99,7 +101,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default <F> @Nonnull InfiniteIterable<F> map(@Nonnull FailableUnaryFunction<? super E, ? extends F, ?> function) {
+    public default <@Specifiable TYPE> @Nonnull InfiniteIterable<TYPE> map(@Nonnull FailableUnaryFunction<? super ELEMENT, ? extends TYPE, ?> function) {
         return () -> MappingIterator.with(iterator(), function);
     }
     
@@ -107,7 +109,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default <T> @Nonnull InfiniteIterable<T> instanceOf(@Nonnull Class<T> type) {
+    public default <@Specifiable TYPE> @Nonnull InfiniteIterable<TYPE> instanceOf(@Nonnull Class<TYPE> type) {
         return filter(type::isInstance).map(type::cast);
     }
     
@@ -115,7 +117,7 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default @Nonnull InfiniteIterable<E> skip(@Positive int number) {
+    public default @Nonnull InfiniteIterable<ELEMENT> skip(@Positive int number) {
         return () -> PruningIterator.with(iterator(), number, Integer.MAX_VALUE);
     }
     
@@ -123,13 +125,13 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default <F> @Nonnull InfiniteIterable<@Nonnull Pair<E, F>> zipShortest(@Nonnull InfiniteIterable<? extends F> iterable) {
+    public default <@Specifiable TYPE> @Nonnull InfiniteIterable<@Nonnull Pair<ELEMENT, TYPE>> zipShortest(@Nonnull InfiniteIterable<? extends TYPE> iterable) {
         return () -> ZippingIterator.with(iterator(), iterable.iterator(), true);
     }
     
     @Pure
     @Override
-    public default <F> @Nonnull InfiniteIterable<@Nonnull Pair<E, @Nullable F>> zipLongest(@Nonnull FiniteIterable<? extends F> iterable) {
+    public default <@Unspecifiable TYPE> @Nonnull InfiniteIterable<@Nonnull Pair<ELEMENT, @Nullable TYPE>> zipLongest(@Nonnull FiniteIterable<? extends TYPE> iterable) {
         return () -> ZippingIterator.with(iterator(), iterable.iterator(), false);
     }
     
@@ -137,19 +139,19 @@ public interface InfiniteIterable<E> extends FunctionalIterable<E> {
     
     @Pure
     @Override
-    public default <F> @Nonnull InfiniteIterable<F> flatten(@Positive int level) {
+    public default <@Specifiable TYPE> @Nonnull InfiniteIterable<TYPE> flatten(@Positive int level) {
         return () -> FlatteningIterator.with(iterator(), level);
     }
     
     @Pure
     @Override
-    public default <F> @Nonnull InfiniteIterable<F> flattenOne() {
+    public default <@Specifiable TYPE> @Nonnull InfiniteIterable<TYPE> flattenOne() {
         return flatten(1);
     }
     
     @Pure
     @Override
-    public default <F> @Nonnull InfiniteIterable<F> flattenAll() {
+    public default <@Specifiable TYPE> @Nonnull InfiniteIterable<TYPE> flattenAll() {
         return flatten(Integer.MAX_VALUE);
     }
     

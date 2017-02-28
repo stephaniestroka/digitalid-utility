@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.annotations.ownership.Shared;
@@ -17,15 +18,15 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * This class implements the collection iterable interface based on a collection.
  */
 @ReadOnly
-public class CollectionBasedIterable<E> implements CollectionIterable<E> {
+public class CollectionBasedIterable<@Specifiable ELEMENT> implements CollectionIterable<ELEMENT> {
     
     /* -------------------------------------------------- Collection -------------------------------------------------- */
     
-    private final @Shared @Nonnull Collection<? extends E> collection;
+    private final @Shared @Nonnull Collection<? extends ELEMENT> collection;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected CollectionBasedIterable(@Shared @Unmodified @Nonnull Collection<? extends E> collection) {
+    protected CollectionBasedIterable(@Shared @Unmodified @Nonnull Collection<? extends ELEMENT> collection) {
         this.collection = collection;
     }
     
@@ -33,7 +34,7 @@ public class CollectionBasedIterable<E> implements CollectionIterable<E> {
     
     @Pure
     @Override
-    public @Capturable @Nonnull ReadOnlyIterator<E> iterator() {
+    public @Capturable @Nonnull ReadOnlyIterator<ELEMENT> iterator() {
         return ReadOnlyIterableIterator.with(collection.iterator());
     }
     

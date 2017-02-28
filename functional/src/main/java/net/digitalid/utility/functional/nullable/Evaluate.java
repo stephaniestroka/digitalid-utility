@@ -3,6 +3,8 @@ package net.digitalid.utility.functional.nullable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
@@ -27,7 +29,7 @@ public class Evaluate {
      * Lets the given consumer consume the given input if it is not null.
      */
     @Pure
-    public static <I, X extends Exception> void consumerIfNotNull(@Captured @Nullable I input, @Nonnull FailableConsumer<? super I, ? extends X> consumer) throws X {
+    public static <@Unspecifiable INPUT, @Unspecifiable EXCEPTION extends Exception> void consumerIfNotNull(@Captured @Nullable INPUT input, @Nonnull FailableConsumer<? super INPUT, ? extends EXCEPTION> consumer) throws EXCEPTION {
         if (input != null) { consumer.consume(input); }
     }
     
@@ -37,7 +39,7 @@ public class Evaluate {
      * Evaluates the given predicate for the given input if it is not null or returns the given default output otherwise.
      */
     @Pure
-    public static <I, X extends Exception> boolean predicateIfNotNull(@NonCaptured @Unmodified @Nullable I input, @Nonnull FailablePredicate<? super I, ? extends X> predicate, boolean defaultOutput) throws X {
+    public static <@Unspecifiable INPUT, @Unspecifiable EXCEPTION extends Exception> boolean predicateIfNotNull(@NonCaptured @Unmodified @Nullable INPUT input, @Nonnull FailablePredicate<? super INPUT, ? extends EXCEPTION> predicate, boolean defaultOutput) throws EXCEPTION {
         return input != null ? predicate.evaluate(input) : defaultOutput;
     }
     
@@ -45,7 +47,7 @@ public class Evaluate {
      * Evaluates the given predicate for the given input if it is not null or returns false otherwise.
      */
     @Pure
-    public static <I, X extends Exception> boolean predicateIfNotNull(@NonCaptured @Unmodified @Nullable I input, @Nonnull FailablePredicate<? super I, ? extends X> predicate) throws X {
+    public static <@Unspecifiable INPUT, @Unspecifiable EXCEPTION extends Exception> boolean predicateIfNotNull(@NonCaptured @Unmodified @Nullable INPUT input, @Nonnull FailablePredicate<? super INPUT, ? extends EXCEPTION> predicate) throws EXCEPTION {
         return Evaluate.predicateIfNotNull(input, predicate, false);
     }
     
@@ -55,7 +57,7 @@ public class Evaluate {
      * Evaluates the given function for the given input if it is not null or returns the given default output otherwise.
      */
     @Pure
-    public static <I, O, X extends Exception> O functionIfNotNull(@NonCaptured @Unmodified @Nullable I input, @Nonnull FailableUnaryFunction<? super I, ? extends O, ? extends X> function, @NonCaptured @Unmodified O defaultOutput) throws X {
+    public static <@Unspecifiable INPUT, @Specifiable OUTPUT, @Unspecifiable EXCEPTION extends Exception> OUTPUT functionIfNotNull(@NonCaptured @Unmodified @Nullable INPUT input, @Nonnull FailableUnaryFunction<? super INPUT, ? extends OUTPUT, ? extends EXCEPTION> function, @NonCaptured @Unmodified OUTPUT defaultOutput) throws EXCEPTION {
         return input != null ? function.evaluate(input) : defaultOutput;
     }
     
@@ -63,7 +65,7 @@ public class Evaluate {
      * Evaluates the given function for the given input if it is not null or propagates null otherwise.
      */
     @Pure
-    public static <I, O, X extends Exception> @Nullable O functionIfNotNull(@NonCaptured @Unmodified @Nullable I input, @Nonnull FailableUnaryFunction<? super I, ? extends O, ? extends X> function) throws X {
+    public static <@Unspecifiable INPUT, @Unspecifiable OUTPUT, @Unspecifiable EXCEPTION extends Exception> @Nullable OUTPUT functionIfNotNull(@NonCaptured @Unmodified @Nullable INPUT input, @Nonnull FailableUnaryFunction<? super INPUT, ? extends OUTPUT, ? extends EXCEPTION> function) throws EXCEPTION {
         return Evaluate.functionIfNotNull(input, function, null);
     }
     
@@ -73,7 +75,7 @@ public class Evaluate {
      * Evaluates the given function for the given inputs if the first input is not null or returns the given default output otherwise.
      */
     @Pure
-    public static <I0, I1, O, X extends Exception> O functionIfFirstNotNull(@NonCaptured @Unmodified @Nullable I0 input0, @NonCaptured @Unmodified I1 input1, @Nonnull FailableBinaryFunction<? super I0, ? super I1, ? extends O, ? extends X> function, @NonCaptured @Unmodified O defaultOutput) throws X {
+    public static <@Unspecifiable INPUT0, @Specifiable INPUT1, @Specifiable OUTPUT, @Unspecifiable EXCEPTION extends Exception> OUTPUT functionIfFirstNotNull(@NonCaptured @Unmodified @Nullable INPUT0 input0, @NonCaptured @Unmodified INPUT1 input1, @Nonnull FailableBinaryFunction<? super INPUT0, ? super INPUT1, ? extends OUTPUT, ? extends EXCEPTION> function, @NonCaptured @Unmodified OUTPUT defaultOutput) throws EXCEPTION {
         return input0 != null ? function.evaluate(input0, input1) : defaultOutput;
     }
     
@@ -81,7 +83,7 @@ public class Evaluate {
      * Evaluates the given function for the given inputs if the first input is not null or propagates null otherwise.
      */
     @Pure
-    public static <I0, I1, O, X extends Exception> @Nullable O functionIfFirstNotNull(@NonCaptured @Unmodified @Nullable I0 input0, @NonCaptured @Unmodified I1 input1, @Nonnull FailableBinaryFunction<? super I0, ? super I1, ? extends O, ? extends X> function) throws X {
+    public static <@Unspecifiable INPUT0, @Specifiable INPUT1, @Unspecifiable OUTPUT, @Unspecifiable EXCEPTION extends Exception> @Nullable OUTPUT functionIfFirstNotNull(@NonCaptured @Unmodified @Nullable INPUT0 input0, @NonCaptured @Unmodified INPUT1 input1, @Nonnull FailableBinaryFunction<? super INPUT0, ? super INPUT1, ? extends OUTPUT, ? extends EXCEPTION> function) throws EXCEPTION {
         return Evaluate.functionIfFirstNotNull(input0, input1, function, null);
     }
     
@@ -89,7 +91,7 @@ public class Evaluate {
      * Evaluates the given function for the given inputs if both inputs are not null or returns the given default output otherwise.
      */
     @Pure
-    public static <I0, I1, O, X extends Exception> O functionIfBothNotNull(@NonCaptured @Unmodified @Nullable I0 input0, @NonCaptured @Unmodified @Nullable I1 input1, @Nonnull FailableBinaryFunction<? super I0, ? super I1, ? extends O, ? extends X> function, @NonCaptured @Unmodified O defaultOutput) throws X {
+    public static <@Unspecifiable INPUT0, @Unspecifiable INPUT1, @Specifiable OUTPUT, @Unspecifiable EXCEPTION extends Exception> OUTPUT functionIfBothNotNull(@NonCaptured @Unmodified @Nullable INPUT0 input0, @NonCaptured @Unmodified @Nullable INPUT1 input1, @Nonnull FailableBinaryFunction<? super INPUT0, ? super INPUT1, ? extends OUTPUT, ? extends EXCEPTION> function, @NonCaptured @Unmodified OUTPUT defaultOutput) throws EXCEPTION {
         return input0 != null && input1 != null ? function.evaluate(input0, input1) : defaultOutput;
     }
     
@@ -97,7 +99,7 @@ public class Evaluate {
      * Evaluates the given function for the given inputs if both inputs are not null or propagates null otherwise.
      */
     @Pure
-    public static <I0, I1, O, X extends Exception> @Nullable O functionIfBothNotNull(@NonCaptured @Unmodified @Nullable I0 input0, @NonCaptured @Unmodified @Nullable I1 input1, @Nonnull FailableBinaryFunction<? super I0, ? super I1, ? extends O, ? extends X> function) throws X {
+    public static <@Unspecifiable INPUT0, @Unspecifiable INPUT1, @Unspecifiable OUTPUT, @Unspecifiable EXCEPTION extends Exception> @Nullable OUTPUT functionIfBothNotNull(@NonCaptured @Unmodified @Nullable INPUT0 input0, @NonCaptured @Unmodified @Nullable INPUT1 input1, @Nonnull FailableBinaryFunction<? super INPUT0, ? super INPUT1, ? extends OUTPUT, ? extends EXCEPTION> function) throws EXCEPTION {
         return Evaluate.functionIfBothNotNull(input0, input1, function, null);
     }
     

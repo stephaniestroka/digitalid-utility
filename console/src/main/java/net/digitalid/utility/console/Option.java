@@ -3,7 +3,7 @@ package net.digitalid.utility.console;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.method.Pure;
-import net.digitalid.utility.console.exceptions.EscapeOptionException;
+import net.digitalid.utility.console.exceptions.EscapeException;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -35,9 +35,9 @@ public abstract class Option /* extends RootClass */ {
     /**
      * Executes this option.
      * 
-     * @throws EscapeOptionException if the user escapes.
+     * @throws EscapeException if the user escapes.
      */
     @Pure
-    public abstract void execute() throws EscapeOptionException;
+    public abstract void execute() throws EscapeException;
     
 }

@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
@@ -17,15 +18,15 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * This class implements a read-only list iterator.
  */
 @Mutable
-public class ReadOnlyListIterator<E> extends ReadOnlyIterableIterator<E> implements ListIterator<E> {
+public class ReadOnlyListIterator<@Specifiable ELEMENT> extends ReadOnlyIterableIterator<ELEMENT> implements ListIterator<ELEMENT> {
     
     /* -------------------------------------------------- List Iterator -------------------------------------------------- */
     
-    protected final @Nonnull ListIterator<? extends E> listIterator;
+    protected final @Nonnull ListIterator<? extends ELEMENT> listIterator;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected ReadOnlyListIterator(@Captured @Nonnull ListIterator<? extends E> iterator) {
+    protected ReadOnlyListIterator(@Captured @Nonnull ListIterator<? extends ELEMENT> iterator) {
         super(iterator);
         
         this.listIterator = Objects.requireNonNull(iterator);
@@ -35,7 +36,7 @@ public class ReadOnlyListIterator<E> extends ReadOnlyIterableIterator<E> impleme
      * Returns a read-only list iterator that captures the given list iterator.
      */
     @Pure
-    public static @Capturable <E> @Nonnull ReadOnlyListIterator<E> with(@Captured @Nonnull ListIterator<? extends E> iterator) {
+    public static @Capturable <@Specifiable ELEMENT> @Nonnull ReadOnlyListIterator<ELEMENT> with(@Captured @Nonnull ListIterator<? extends ELEMENT> iterator) {
         return new ReadOnlyListIterator<>(iterator);
     }
     
@@ -49,7 +50,7 @@ public class ReadOnlyListIterator<E> extends ReadOnlyIterableIterator<E> impleme
     
     @Impure
     @Override
-    public E previous() {
+    public ELEMENT previous() {
         return listIterator.previous();
     }
     
@@ -69,13 +70,13 @@ public class ReadOnlyListIterator<E> extends ReadOnlyIterableIterator<E> impleme
     
     @Pure
     @Override
-    public final void set(@NonCaptured @Unmodified E e) {
+    public final void set(@NonCaptured @Unmodified ELEMENT e) {
         throw new UnsupportedOperationException();
     }
     
     @Pure
     @Override
-    public final void add(@NonCaptured @Unmodified E e) {
+    public final void add(@NonCaptured @Unmodified ELEMENT e) {
         throw new UnsupportedOperationException();
     }
     

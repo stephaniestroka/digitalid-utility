@@ -14,10 +14,10 @@ import net.digitalid.utility.functional.interfaces.Consumer;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * A failable collector consumes objects of type {@code TYPE} and produces a result of type {@code RESULT}.
+ * A failable collector consumes objects of type {@code INPUT} and produces a result of type {@code RESULT}.
  */
 @Mutable
-public interface FailableCollector<@Specifiable TYPE, @Specifiable RESULT, @Unspecifiable COLLECT_EXCEPTION extends Exception, @Unspecifiable RESULT_EXCEPTION extends Exception> extends FailableConsumer<TYPE, COLLECT_EXCEPTION> {
+public interface FailableCollector<@Specifiable INPUT, @Specifiable RESULT, @Unspecifiable COLLECT_EXCEPTION extends Exception, @Unspecifiable RESULT_EXCEPTION extends Exception> extends FailableConsumer<INPUT, COLLECT_EXCEPTION> {
     
     /* -------------------------------------------------- Result -------------------------------------------------- */
     
@@ -33,14 +33,14 @@ public interface FailableCollector<@Specifiable TYPE, @Specifiable RESULT, @Unsp
      * Returns a collector that suppresses the exceptions of this collector, passes them to the given exception handler and returns the given default result instead.
      */
     @Pure
-    public default @Capturable @Nonnull Collector<TYPE, RESULT> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, @Captured RESULT defaultResult) {
-        return new Collector<TYPE, RESULT>() {
+    public default @Capturable @Nonnull Collector<INPUT, RESULT> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, @Captured RESULT defaultResult) {
+        return new Collector<INPUT, RESULT>() {
             
             @Impure
             @Override
-            public void consume(@Captured TYPE object) {
+            public void consume(@Captured INPUT input) {
                 try {
-                    FailableCollector.this.consume(object);
+                    FailableCollector.this.consume(input);
                 } catch (@Nonnull Exception exception) {
                     handler.consume(exception);
                 }
@@ -65,7 +65,7 @@ public interface FailableCollector<@Specifiable TYPE, @Specifiable RESULT, @Unsp
      */
     @Pure
     @Override
-    public default @Capturable @Nonnull Collector<TYPE, @Nullable RESULT> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
+    public default @Capturable @Nonnull Collector<INPUT, @Nullable RESULT> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
         return suppressExceptions(handler, null);
     }
     
@@ -73,7 +73,7 @@ public interface FailableCollector<@Specifiable TYPE, @Specifiable RESULT, @Unsp
      * Returns a collector that suppresses the exceptions of this collector and returns the given default result instead.
      */
     @Pure
-    public default @Capturable @Nonnull Collector<TYPE, RESULT> suppressExceptions(@Captured RESULT defaultResult) {
+    public default @Capturable @Nonnull Collector<INPUT, RESULT> suppressExceptions(@Captured RESULT defaultResult) {
         return suppressExceptions(Consumer.DO_NOTHING, defaultResult);
     }
     
@@ -82,7 +82,7 @@ public interface FailableCollector<@Specifiable TYPE, @Specifiable RESULT, @Unsp
      */
     @Pure
     @Override
-    public default @Capturable @Nonnull Collector<TYPE, @Nullable RESULT> suppressExceptions() {
+    public default @Capturable @Nonnull Collector<INPUT, @Nullable RESULT> suppressExceptions() {
         return suppressExceptions(Consumer.DO_NOTHING, null);
     }
     
@@ -90,14 +90,14 @@ public interface FailableCollector<@Specifiable TYPE, @Specifiable RESULT, @Unsp
     
     @Pure
     @Override
-    public default @Nonnull FailableCollector<TYPE, RESULT, COLLECT_EXCEPTION, RESULT_EXCEPTION> synchronize() {
-        return new FailableCollector<TYPE, RESULT, COLLECT_EXCEPTION, RESULT_EXCEPTION>() {
+    public default @Nonnull FailableCollector<INPUT, RESULT, COLLECT_EXCEPTION, RESULT_EXCEPTION> synchronize() {
+        return new FailableCollector<INPUT, RESULT, COLLECT_EXCEPTION, RESULT_EXCEPTION>() {
             
             @Impure
             @Override
-            public void consume(@Captured TYPE object) throws COLLECT_EXCEPTION {
+            public void consume(@Captured INPUT input) throws COLLECT_EXCEPTION {
                 synchronized (FailableCollector.this) {
-                    FailableCollector.this.consume(object);
+                    FailableCollector.this.consume(input);
                 }
             }
             

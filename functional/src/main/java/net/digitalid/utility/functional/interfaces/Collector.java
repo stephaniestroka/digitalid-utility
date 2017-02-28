@@ -11,23 +11,23 @@ import net.digitalid.utility.functional.failable.FailableCollector;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * A collector consumes objects of type {@code TYPE} and produces a result of type {@code RESULT}.
+ * A collector consumes objects of type {@code INPUT} and produces a result of type {@code RESULT}.
  */
 @Mutable
-public interface Collector<@Specifiable TYPE, @Specifiable RESULT> extends Consumer<TYPE>, FailableCollector<TYPE, RESULT, RuntimeException, RuntimeException> {
+public interface Collector<@Specifiable INPUT, @Specifiable RESULT> extends Consumer<INPUT>, FailableCollector<INPUT, RESULT, RuntimeException, RuntimeException> {
     
     /* -------------------------------------------------- Synchronization -------------------------------------------------- */
     
     @Pure
     @Override
-    public default @Nonnull Collector<TYPE, RESULT> synchronize() {
-        return new Collector<TYPE, RESULT>() {
+    public default @Nonnull Collector<INPUT, RESULT> synchronize() {
+        return new Collector<INPUT, RESULT>() {
             
             @Impure
             @Override
-            public void consume(@Captured TYPE object) {
+            public void consume(@Captured INPUT input) {
                 synchronized (Collector.this) {
-                    Collector.this.consume(object);
+                    Collector.this.consume(input);
                 }
             }
             

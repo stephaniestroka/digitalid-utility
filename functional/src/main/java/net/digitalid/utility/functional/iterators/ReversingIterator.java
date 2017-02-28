@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
@@ -16,16 +17,16 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * This class implements a reversing iterator that iterates over the given elements in reverse order.
  */
 @Mutable
-public class ReversingIterator<E> extends ReadOnlyIterator<E> {
+public class ReversingIterator<@Specifiable ELEMENT> extends ReadOnlyIterator<ELEMENT> {
     
     /* -------------------------------------------------- Elements -------------------------------------------------- */
     
-    protected final @Nonnull E[] elements;
+    protected final @Nonnull ELEMENT[] elements;
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     @SafeVarargs
-    protected ReversingIterator(@Shared @Unmodified @Nonnull E... elements) {
+    protected ReversingIterator(@Shared @Unmodified @Nonnull ELEMENT... elements) {
         this.elements = elements;
         this.cursor = elements.length - 1;
     }
@@ -35,7 +36,7 @@ public class ReversingIterator<E> extends ReadOnlyIterator<E> {
      */
     @Pure
     @SafeVarargs
-    public static @Capturable <E> @Nonnull ReversingIterator<E> with(@Shared @Unmodified @Nonnull E... elements) {
+    public static @Capturable <@Specifiable ELEMENT> @Nonnull ReversingIterator<ELEMENT> with(@Shared @Unmodified @Nonnull ELEMENT... elements) {
         return new ReversingIterator<>(elements);
     }
     
@@ -51,7 +52,7 @@ public class ReversingIterator<E> extends ReadOnlyIterator<E> {
     
     @Impure
     @Override
-    public @NonCapturable E next() {
+    public @NonCapturable ELEMENT next() {
         if (hasNext()) { return elements[cursor--]; }
         else { throw new NoSuchElementException(); }
     }

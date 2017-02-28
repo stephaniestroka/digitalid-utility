@@ -3,6 +3,8 @@ package net.digitalid.utility.functional.failable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
@@ -15,20 +17,20 @@ import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- * This functional interface models a failable predicate that evaluates whether an object of type {@code T} satisfies a condition.
+ * This functional interface models a failable predicate that evaluates whether an input of type {@code INPUT} satisfies a condition.
  */
 @Immutable
 @Functional
-public interface FailablePredicate<T, X extends Exception> {
+public interface FailablePredicate<@Specifiable INPUT, @Unspecifiable EXCEPTION extends Exception> {
     
     /* -------------------------------------------------- Evaluation -------------------------------------------------- */
     
     /**
-     * Evaluates whether the given object satisfies this predicate.
+     * Evaluates whether the given input satisfies this predicate.
      * All implementations of this method have to be side-effect-free.
      */
     @Pure
-    public boolean evaluate(@NonCaptured @Unmodified T object) throws X;
+    public boolean evaluate(@NonCaptured @Unmodified INPUT input) throws EXCEPTION;
     
     /* -------------------------------------------------- Suppression -------------------------------------------------- */
     
@@ -36,10 +38,10 @@ public interface FailablePredicate<T, X extends Exception> {
      * Returns a predicate that catches the exceptions of this predicate, passes them to the given exception handler and returns the given default output instead.
      */
     @Pure
-    public default @Nonnull Predicate<T> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, boolean defaultOutput) {
-        return object -> {
+    public default @Nonnull Predicate<INPUT> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, boolean defaultOutput) {
+        return input -> {
             try {
-                return evaluate(object);
+                return evaluate(input);
             } catch (@Nonnull Exception exception) {
                 handler.consume(exception);
                 return defaultOutput;
@@ -51,7 +53,7 @@ public interface FailablePredicate<T, X extends Exception> {
      * Returns a predicate that catches the exceptions of this predicate, passes them to the given exception handler and returns false instead.
      */
     @Pure
-    public default @Nonnull Predicate<T> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
+    public default @Nonnull Predicate<INPUT> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
         return suppressExceptions(handler, false);
     }
     
@@ -59,7 +61,7 @@ public interface FailablePredicate<T, X extends Exception> {
      * Returns a predicate that suppresses the exceptions of this predicate and returns the given default output instead.
      */
     @Pure
-    public default @Nonnull Predicate<T> suppressExceptions(boolean defaultOutput) {
+    public default @Nonnull Predicate<INPUT> suppressExceptions(boolean defaultOutput) {
         return suppressExceptions(Consumer.DO_NOTHING, defaultOutput);
     }
     
@@ -67,7 +69,7 @@ public interface FailablePredicate<T, X extends Exception> {
      * Returns a predicate that suppresses the exceptions of this predicate and returns false instead.
      */
     @Pure
-    public default @Nonnull Predicate<T> suppressExceptions() {
+    public default @Nonnull Predicate<INPUT> suppressExceptions() {
         return suppressExceptions(Consumer.DO_NOTHING, false);
     }
     
@@ -77,18 +79,18 @@ public interface FailablePredicate<T, X extends Exception> {
      * Returns the conjunction of this predicate with the given predicate.
      */
     @Pure
-    public default @Nonnull FailablePredicate<T, X> and(@Nonnull FailablePredicate<? super T, ? extends X> predicate) {
-        return object -> evaluate(object) && predicate.evaluate(object);
+    public default @Nonnull FailablePredicate<INPUT, EXCEPTION> and(@Nonnull FailablePredicate<? super INPUT, ? extends EXCEPTION> predicate) {
+        return input -> evaluate(input) && predicate.evaluate(input);
     }
     
     /**
      * Returns the conjunction of the given predicates.
      */
     @Pure
-    public static <T, X extends Exception> @Nonnull FailablePredicate<T, X> and(@Nonnull FiniteIterable<@Nonnull ? extends FailablePredicate<? super T, ? extends X>> predicates) {
-        return object -> {
-            for (@Nonnull FailablePredicate<? super T, ? extends X> predicate : predicates) {
-                if (!predicate.evaluate(object)) { return false; }
+    public static <@Specifiable INPUT, @Unspecifiable EXCEPTION extends Exception> @Nonnull FailablePredicate<INPUT, EXCEPTION> and(@Nonnull FiniteIterable<@Nonnull ? extends FailablePredicate<? super INPUT, ? extends EXCEPTION>> predicates) {
+        return input -> {
+            for (@Nonnull FailablePredicate<? super INPUT, ? extends EXCEPTION> predicate : predicates) {
+                if (!predicate.evaluate(input)) { return false; }
             }
             return true;
         };
@@ -100,8 +102,8 @@ public interface FailablePredicate<T, X extends Exception> {
      * Returns the disjunction of this predicate with the given predicate.
      */
     @Pure
-    public default @Nonnull FailablePredicate<T, X> or(@Nonnull FailablePredicate<? super T, ? extends X> predicate) {
-        return object -> evaluate(object) || predicate.evaluate(object);
+    public default @Nonnull FailablePredicate<INPUT, EXCEPTION> or(@Nonnull FailablePredicate<? super INPUT, ? extends EXCEPTION> predicate) {
+        return input -> evaluate(input) || predicate.evaluate(input);
     }
     
     /**
@@ -109,10 +111,10 @@ public interface FailablePredicate<T, X extends Exception> {
      */
     @Pure
     @SafeVarargs
-    public static <T, X extends Exception> @Nonnull FailablePredicate<T, X> or(@Nonnull @NonNullableElements FailablePredicate<? super T, ? extends X>... predicates) {
-        return object -> {
-            for (@Nonnull FailablePredicate<? super T, ? extends X> predicate : predicates) {
-                if (predicate.evaluate(object)) { return true; }
+    public static <@Specifiable INPUT, @Unspecifiable EXCEPTION extends Exception> @Nonnull FailablePredicate<INPUT, EXCEPTION> or(@Nonnull @NonNullableElements FailablePredicate<? super INPUT, ? extends EXCEPTION>... predicates) {
+        return input -> {
+            for (@Nonnull FailablePredicate<? super INPUT, ? extends EXCEPTION> predicate : predicates) {
+                if (predicate.evaluate(input)) { return true; }
             }
             return false;
         };
@@ -122,10 +124,10 @@ public interface FailablePredicate<T, X extends Exception> {
      * Returns the disjunction of the given predicates.
      */
     @Pure
-    public static <T, X extends Exception> @Nonnull FailablePredicate<T, X> or(@Nonnull FiniteIterable<@Nonnull ? extends FailablePredicate<? super T, ? extends X>> predicates) {
-        return object -> {
-            for (@Nonnull FailablePredicate<? super T, ? extends X> predicate : predicates) {
-                if (predicate.evaluate(object)) { return true; }
+    public static <@Specifiable INPUT, @Unspecifiable EXCEPTION extends Exception> @Nonnull FailablePredicate<INPUT, EXCEPTION> or(@Nonnull FiniteIterable<@Nonnull ? extends FailablePredicate<? super INPUT, ? extends EXCEPTION>> predicates) {
+        return input -> {
+            for (@Nonnull FailablePredicate<? super INPUT, ? extends EXCEPTION> predicate : predicates) {
+                if (predicate.evaluate(input)) { return true; }
             }
             return false;
         };
@@ -137,8 +139,8 @@ public interface FailablePredicate<T, X extends Exception> {
      * Returns the negation of this predicate.
      */
     @Pure
-    public default @Nonnull FailablePredicate<T, X> negate() {
-        return object -> !evaluate(object);
+    public default @Nonnull FailablePredicate<INPUT, EXCEPTION> negate() {
+        return input -> !evaluate(input);
     }
     
     /* -------------------------------------------------- Composition -------------------------------------------------- */
@@ -147,8 +149,8 @@ public interface FailablePredicate<T, X extends Exception> {
      * Returns the composition of the given function and predicate with a flexible exception type.
      */
     @Pure
-    public static <I, T, X extends Exception> @Nonnull FailablePredicate<I, X> compose(@Nonnull FailableUnaryFunction<? super I, ? extends T, ? extends X> function, @Nonnull FailablePredicate<? super T, ? extends X> predicate) {
-        return object -> predicate.evaluate(function.evaluate(object));
+    public static <@Specifiable INPUT, @Specifiable INTERMEDIATE, @Unspecifiable EXCEPTION extends Exception> @Nonnull FailablePredicate<INPUT, EXCEPTION> compose(@Nonnull FailableUnaryFunction<? super INPUT, ? extends INTERMEDIATE, ? extends EXCEPTION> function, @Nonnull FailablePredicate<? super INTERMEDIATE, ? extends EXCEPTION> predicate) {
+        return input -> predicate.evaluate(function.evaluate(input));
     }
     
     /**
@@ -158,8 +160,8 @@ public interface FailablePredicate<T, X extends Exception> {
      * @see #compose(net.digitalid.utility.functional.failable.FailableUnaryFunction, net.digitalid.utility.functional.failable.FailablePredicate)
      */
     @Pure
-    public default <I> @Nonnull FailablePredicate<I, X> after(@Nonnull FailableUnaryFunction<? super I, ? extends T, ? extends X> function) {
-        return object -> evaluate(function.evaluate(object));
+    public default <@Specifiable INITIAL_INPUT> @Nonnull FailablePredicate<INITIAL_INPUT, EXCEPTION> after(@Nonnull FailableUnaryFunction<? super INITIAL_INPUT, ? extends INPUT, ? extends EXCEPTION> function) {
+        return input -> evaluate(function.evaluate(input));
     }
     
     /* -------------------------------------------------- Conversion -------------------------------------------------- */
@@ -168,7 +170,7 @@ public interface FailablePredicate<T, X extends Exception> {
      * Returns this predicate as a unary function.
      */
     @Pure
-    public default @Nonnull FailableUnaryFunction<T, @Nonnull Boolean, X> asFunction() {
+    public default @Nonnull FailableUnaryFunction<INPUT, @Nonnull Boolean, EXCEPTION> asFunction() {
         return this::evaluate;
     }
     
@@ -178,8 +180,8 @@ public interface FailablePredicate<T, X extends Exception> {
      * Returns a new predicate based on this predicate that returns the given default value for null.
      */
     @Pure
-    public default @Nonnull FailablePredicate<@Nullable T, X> replaceNull(boolean defaultValue) {
-        return object -> object != null ? evaluate(object) : defaultValue;
+    public default @Nonnull FailablePredicate<@Nullable INPUT, EXCEPTION> replaceNull(boolean defaultValue) {
+        return input -> input != null ? evaluate(input) : defaultValue;
     }
     
 }

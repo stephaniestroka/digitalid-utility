@@ -1,5 +1,6 @@
 package net.digitalid.utility.functional.iterables;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.math.NonNegative;
 import net.digitalid.utility.validation.annotations.math.Positive;
@@ -11,7 +12,7 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * @see CollectionBasedIterable
  */
 @ReadOnly
-public interface CollectionIterable<E> extends FiniteIterable<E> {
+public interface CollectionIterable<@Specifiable ELEMENT> extends FiniteIterable<ELEMENT> {
     
     /* -------------------------------------------------- Size -------------------------------------------------- */
     

@@ -2,6 +2,8 @@ package net.digitalid.utility.collections.iterable;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
 import net.digitalid.utility.collections.array.FreezableArray;
@@ -28,13 +30,13 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
  * @see ReadOnlyArray
  */
 @ReadOnly(FreezableIterable.class)
-public interface ReadOnlyIterable<E> extends CollectionIterable<E>, ReadOnlyInterface {
+public interface ReadOnlyIterable<@Specifiable ELEMENT> extends CollectionIterable<ELEMENT>, ReadOnlyInterface {
     
     /* -------------------------------------------------- Cloneable -------------------------------------------------- */
     
     @Pure
     @Override
-    public @Capturable @Nonnull @NonFrozen FreezableIterable<E> clone();
+    public @Capturable @Nonnull @NonFrozen FreezableIterable<ELEMENT> clone();
     
     /* -------------------------------------------------- Exports -------------------------------------------------- */
     
@@ -42,7 +44,7 @@ public interface ReadOnlyIterable<E> extends CollectionIterable<E>, ReadOnlyInte
      * Returns the elements of this collection as a freezable array.
      */
     @Pure
-    public default @Capturable @Nonnull @NonFrozen FreezableArray<E> toFreezableArray() {
+    public default @Capturable @Nonnull @NonFrozen FreezableArray<ELEMENT> toFreezableArray() {
         return FreezableArray.withElementsOf(this);
     }
     
@@ -50,7 +52,7 @@ public interface ReadOnlyIterable<E> extends CollectionIterable<E>, ReadOnlyInte
      * Returns the elements of this collection as a freezable list.
      */
     @Pure
-    public default @Capturable @Nonnull @NonFrozen FreezableList<E> toFreezableList() {
+    public default @Capturable @Nonnull @NonFrozen FreezableList<ELEMENT> toFreezableList() {
         return FreezableLinkedList.withElementsOf(this);
     }
     
@@ -58,7 +60,7 @@ public interface ReadOnlyIterable<E> extends CollectionIterable<E>, ReadOnlyInte
      * Returns the elements of this collection as a freezable set.
      */
     @Pure
-    public default @Capturable @Nonnull @NonFrozen FreezableSet<E> toFreezableSet() {
+    public default @Capturable @Nonnull @NonFrozen FreezableSet<ELEMENT> toFreezableSet() {
         return FreezableLinkedHashSet.withElementsOf(this);
     }
     
@@ -66,9 +68,9 @@ public interface ReadOnlyIterable<E> extends CollectionIterable<E>, ReadOnlyInte
      * Returns the elements of this iterable as a freezable map with their key determined by the given function.
      */
     @Pure
-    public default @Capturable <K, X extends Exception> @Nonnull @NonFrozen FreezableMap<K, E> toFreezableMap(@Nonnull FailableUnaryFunction<? super E, ? extends K, ? extends X> function) throws X {
-        final @Nonnull FreezableMap<K, E> result = FreezableLinkedHashMapBuilder.build();
-        for (E element : this) {
+    public default @Capturable <@Specifiable KEY, @Unspecifiable EXCEPTION extends Exception> @Nonnull @NonFrozen FreezableMap<KEY, ELEMENT> toFreezableMap(@Nonnull FailableUnaryFunction<? super ELEMENT, ? extends KEY, ? extends EXCEPTION> function) throws EXCEPTION {
+        final @Nonnull FreezableMap<KEY, ELEMENT> result = FreezableLinkedHashMapBuilder.build();
+        for (ELEMENT element : this) {
             result.put(function.evaluate(element), element);
         }
         return result;

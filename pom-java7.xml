@@ -35,15 +35,15 @@
         <module>android-java7</module>
         <module>collaboration-java7</module>
         <module>annotations-java7</module>
-        <module>interfaces-java7</module>
         <module>circumfixes-java7</module>
+        <module>interfaces-java7</module>
+        <module>throwable-java7</module>
+        <module>exceptions-java7</module>
+        <module>errors-java7</module>
         <module>tuples-java7</module>
         <module>functional-java7</module>
         <module>immutable-java7</module>
         <module>string-java7</module>
-        <module>throwable-java7</module>
-        <module>exceptions-java7</module>
-        <module>errors-java7</module>
         <module>contracts-java7</module>
         <module>configuration-java7</module>
         <module>file-java7</module>

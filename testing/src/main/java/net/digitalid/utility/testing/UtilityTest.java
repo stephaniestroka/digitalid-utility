@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.PureWithSideEffects;
 import net.digitalid.utility.configuration.Configuration;
 import net.digitalid.utility.file.Files;
@@ -38,7 +37,7 @@ public abstract class UtilityTest extends Assertions {
     public static void initializeLoggingFilter() {
         final @Nonnull @Absolute File projectDirectory = new File("").getAbsoluteFile();
         final @Nonnull String callerPrefix = "net.digitalid." + projectDirectory.getParentFile().getName() + "." + projectDirectory.getName();
-        LoggingFilter.filter.set(ConfigurationBasedLoggingFilter.with(Files.relativeToWorkingDirectory("config/TestingLogging.conf"), LoggingRule.with(Level.VERBOSE, callerPrefix), LoggingRule.with(Level.INFORMATION)));
+        LoggingFilter.filter.set(ConfigurationBasedLoggingFilter.with(Files.relativeToWorkingDirectory("config/TestingLogging.conf"), LoggingRule.with(Level.VERBOSE, callerPrefix + "."), LoggingRule.with(Level.INFORMATION)));
     }
     
     /* -------------------------------------------------- File Logger -------------------------------------------------- */
@@ -59,8 +58,8 @@ public abstract class UtilityTest extends Assertions {
     /**
      * Initializes all configurations of the library.
      */
-    @Impure
     @BeforeClass
+    @PureWithSideEffects
     public static void initializeAllConfigurations() {
         if (!initialized) {
             initialized = true;

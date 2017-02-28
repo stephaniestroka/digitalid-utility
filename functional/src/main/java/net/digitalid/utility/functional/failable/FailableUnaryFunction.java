@@ -3,6 +3,8 @@ package net.digitalid.utility.functional.failable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
 import net.digitalid.utility.annotations.ownership.NonCaptured;
@@ -13,11 +15,11 @@ import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
- * This functional interface models a failable unary function that maps an object of type {@code I} to an object of type {@code O}.
+ * This functional interface models a failable unary function that maps an object of type {@code INPUT} to an object of type {@code OUTPUT}.
  */
 @Immutable
 @Functional
-public interface FailableUnaryFunction<I, O, X extends Exception> {
+public interface FailableUnaryFunction<@Specifiable INPUT, @Specifiable OUTPUT, @Unspecifiable EXCEPTION extends Exception> {
     
     /* -------------------------------------------------- Evaluation -------------------------------------------------- */
     
@@ -26,7 +28,7 @@ public interface FailableUnaryFunction<I, O, X extends Exception> {
      * All implementations of this method have to be side-effect-free.
      */
     @Pure
-    public O evaluate(@NonCaptured @Unmodified I object) throws X;
+    public OUTPUT evaluate(@NonCaptured @Unmodified INPUT input) throws EXCEPTION;
     
     /* -------------------------------------------------- Suppression -------------------------------------------------- */
     
@@ -34,10 +36,10 @@ public interface FailableUnaryFunction<I, O, X extends Exception> {
      * Returns a function that catches the exceptions of this function, passes them to the given exception handler and returns the given default output instead.
      */
     @Pure
-    public default @Nonnull UnaryFunction<I, O> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, @Captured O defaultOutput) {
-        return object -> {
+    public default @Nonnull UnaryFunction<INPUT, OUTPUT> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler, @Captured OUTPUT defaultOutput) {
+        return input -> {
             try {
-                return evaluate(object);
+                return evaluate(input);
             } catch (@Nonnull Exception exception) {
                 handler.consume(exception);
                 return defaultOutput;
@@ -49,7 +51,7 @@ public interface FailableUnaryFunction<I, O, X extends Exception> {
      * Returns a function that catches the exceptions of this function, passes them to the given exception handler and returns null instead.
      */
     @Pure
-    public default @Nonnull UnaryFunction<I, @Nullable O> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
+    public default @Nonnull UnaryFunction<INPUT, @Nullable OUTPUT> suppressExceptions(@Captured @Nonnull Consumer<@Nonnull ? super Exception> handler) {
         return suppressExceptions(handler, null);
     }
     
@@ -57,7 +59,7 @@ public interface FailableUnaryFunction<I, O, X extends Exception> {
      * Returns a function that suppresses the exceptions of this function and returns the given default output instead.
      */
     @Pure
-    public default @Nonnull UnaryFunction<I, O> suppressExceptions(@Captured O defaultOutput) {
+    public default @Nonnull UnaryFunction<INPUT, OUTPUT> suppressExceptions(@Captured OUTPUT defaultOutput) {
         return suppressExceptions(Consumer.DO_NOTHING, defaultOutput);
     }
     
@@ -65,7 +67,7 @@ public interface FailableUnaryFunction<I, O, X extends Exception> {
      * Returns a function that suppresses the exceptions of this function and returns null instead.
      */
     @Pure
-    public default @Nonnull UnaryFunction<I, @Nullable O> suppressExceptions() {
+    public default @Nonnull UnaryFunction<INPUT, @Nullable OUTPUT> suppressExceptions() {
         return suppressExceptions(Consumer.DO_NOTHING, null);
     }
     
@@ -75,8 +77,8 @@ public interface FailableUnaryFunction<I, O, X extends Exception> {
      * Returns the composition of the given functions with a flexible exception type.
      */
     @Pure
-    public static <I, O, T, X extends Exception> @Nonnull FailableUnaryFunction<I, O, X> compose(@Nonnull FailableUnaryFunction<? super I, ? extends T, ? extends X> function0, @Nonnull FailableUnaryFunction<? super T, ? extends O, ? extends X> function1) {
-        return object -> function1.evaluate(function0.evaluate(object));
+    public static <@Specifiable INPUT, @Specifiable INTERMEDIATE, @Specifiable OUTPUT, @Unspecifiable EXCEPTION extends Exception> @Nonnull FailableUnaryFunction<INPUT, OUTPUT, EXCEPTION> compose(@Nonnull FailableUnaryFunction<? super INPUT, ? extends INTERMEDIATE, ? extends EXCEPTION> function0, @Nonnull FailableUnaryFunction<? super INTERMEDIATE, ? extends OUTPUT, ? extends EXCEPTION> function1) {
+        return input -> function1.evaluate(function0.evaluate(input));
     }
     
     /**
@@ -86,8 +88,8 @@ public interface FailableUnaryFunction<I, O, X extends Exception> {
      * @see #compose(net.digitalid.utility.functional.failable.FailableUnaryFunction, net.digitalid.utility.functional.failable.FailableUnaryFunction)
      */
     @Pure
-    public default <T> @Nonnull FailableUnaryFunction<I, T, X> before(@Nonnull FailableUnaryFunction<? super O, ? extends T, ? extends X> function) {
-        return object -> function.evaluate(evaluate(object));
+    public default <@Specifiable FINAL_OUTPUT> @Nonnull FailableUnaryFunction<INPUT, FINAL_OUTPUT, EXCEPTION> before(@Nonnull FailableUnaryFunction<? super OUTPUT, ? extends FINAL_OUTPUT, ? extends EXCEPTION> function) {
+        return input -> function.evaluate(evaluate(input));
     }
     
     /**
@@ -97,8 +99,8 @@ public interface FailableUnaryFunction<I, O, X extends Exception> {
      * @see #compose(net.digitalid.utility.functional.failable.FailableUnaryFunction, net.digitalid.utility.functional.failable.FailableUnaryFunction)
      */
     @Pure
-    public default <T> @Nonnull FailableUnaryFunction<T, O, X> after(@Nonnull FailableUnaryFunction<? super T, ? extends I, ? extends X> function) {
-        return object -> evaluate(function.evaluate(object));
+    public default <@Specifiable INITIAL_INPUT> @Nonnull FailableUnaryFunction<INITIAL_INPUT, OUTPUT, EXCEPTION> after(@Nonnull FailableUnaryFunction<? super INITIAL_INPUT, ? extends INPUT, ? extends EXCEPTION> function) {
+        return input -> evaluate(function.evaluate(input));
     }
     
     /* -------------------------------------------------- Null Handling -------------------------------------------------- */
@@ -107,15 +109,15 @@ public interface FailableUnaryFunction<I, O, X extends Exception> {
      * Returns a new function based on this function that returns the given default output for null.
      */
     @Pure
-    public default @Nonnull FailableUnaryFunction<@Nullable I, O, X> replaceNull(@Captured O defaultOutput) {
-        return object -> object != null ? evaluate(object) : defaultOutput;
+    public default @Nonnull FailableUnaryFunction<@Nullable INPUT, OUTPUT, EXCEPTION> replaceNull(@Captured OUTPUT defaultOutput) {
+        return input -> input != null ? evaluate(input) : defaultOutput;
     }
     
     /**
      * Returns a new function based on this function that propagates null instead of evaluating it.
      */
     @Pure
-    public default @Nonnull FailableUnaryFunction<@Nullable I, @Nullable O, X> propagateNull() {
+    public default @Nonnull FailableUnaryFunction<@Nullable INPUT, @Nullable OUTPUT, EXCEPTION> propagateNull() {
         return replaceNull(null);
     }
     

@@ -12,11 +12,11 @@ import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * This functional interface models a method that consumes objects of type {@code T} without returning a result.
+ * This functional interface models a method that consumes objects of type {@code INPUT} without returning a result.
  */
 @Mutable
 @Functional
-public interface Consumer<@Specifiable TYPE> extends FailableConsumer<TYPE, RuntimeException> {
+public interface Consumer<@Specifiable INPUT> extends FailableConsumer<INPUT, RuntimeException> {
     
     /* -------------------------------------------------- Composition -------------------------------------------------- */
     
@@ -24,24 +24,24 @@ public interface Consumer<@Specifiable TYPE> extends FailableConsumer<TYPE, Runt
      * Returns the composition of this consumer followed by the given consumer.
      */
     @Pure
-    public default @Capturable @Nonnull Consumer<TYPE> before(@Captured @Nonnull Consumer<? super TYPE> consumer) {
-        return object -> { consume(object); consumer.consume(object); };
+    public default @Capturable @Nonnull Consumer<INPUT> before(@Captured @Nonnull Consumer<? super INPUT> consumer) {
+        return input -> { consume(input); consumer.consume(input); };
     }
     
     /**
      * Returns the composition of the given consumer followed by this consumer.
      */
     @Pure
-    public default @Capturable @Nonnull Consumer<TYPE> after(@Captured @Nonnull Consumer<? super TYPE> consumer) {
-        return object -> { consumer.consume(object); consume(object); };
+    public default @Capturable @Nonnull Consumer<INPUT> after(@Captured @Nonnull Consumer<? super INPUT> consumer) {
+        return input -> { consumer.consume(input); consume(input); };
     }
     
     /**
      * Returns the composition of the given function followed by this consumer.
      */
     @Pure
-    public default @Capturable <@Specifiable INPUT> @Nonnull Consumer<INPUT> after(@Nonnull UnaryFunction<? super INPUT, ? extends TYPE> function) {
-        return object -> consume(function.evaluate(object));
+    public default @Capturable <@Specifiable INITIAL_INPUT> @Nonnull Consumer<INITIAL_INPUT> after(@Nonnull UnaryFunction<? super INITIAL_INPUT, ? extends INPUT> function) {
+        return input -> consume(function.evaluate(input));
     }
     
     /* -------------------------------------------------- Conversion -------------------------------------------------- */
@@ -49,18 +49,18 @@ public interface Consumer<@Specifiable TYPE> extends FailableConsumer<TYPE, Runt
     @Pure
     @Override
     @SuppressWarnings("null")
-    public default @Nonnull UnaryFunction<TYPE, @Nullable Void> asFunction() {
-        return object -> { consume(object); return null; };
+    public default @Nonnull UnaryFunction<INPUT, @Nullable Void> asFunction() {
+        return input -> { consume(input); return null; };
     }
     
     /* -------------------------------------------------- Synchronization -------------------------------------------------- */
     
     @Pure
     @Override
-    public default @Nonnull Consumer<TYPE> synchronize() {
-        return object -> {
+    public default @Nonnull Consumer<INPUT> synchronize() {
+        return input -> {
             synchronized (this) {
-                consume(object);
+                consume(input);
             }
         };
     }
@@ -70,6 +70,6 @@ public interface Consumer<@Specifiable TYPE> extends FailableConsumer<TYPE, Runt
     /**
      * Stores a consumer that does nothing.
      */
-    public static final @Nonnull Consumer<@Nullable Object> DO_NOTHING = object -> {};
+    public static final @Nonnull Consumer<@Nullable Object> DO_NOTHING = input -> {};
     
 }

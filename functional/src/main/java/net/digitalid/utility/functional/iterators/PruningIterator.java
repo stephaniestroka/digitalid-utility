@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 
 import javax.annotation.Nonnull;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Capturable;
@@ -19,7 +20,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * If the end index is {@link Integer#MAX_VALUE}, this iterator returns values as long as the given iterator does, which is important for skipping infinite iterables.
  */
 @Mutable
-public class PruningIterator<E> extends SingleIteratorBasedIterator<E, E> {
+public class PruningIterator<@Specifiable ELEMENT> extends SingleIteratorBasedIterator<ELEMENT, ELEMENT> {
     
     /* -------------------------------------------------- Indexes -------------------------------------------------- */
     
@@ -29,7 +30,7 @@ public class PruningIterator<E> extends SingleIteratorBasedIterator<E, E> {
     
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
-    protected PruningIterator(@Captured @Nonnull Iterator<? extends E> primaryIterator, @NonNegative int startIndex, @Positive int endIndex) {
+    protected PruningIterator(@Captured @Nonnull Iterator<? extends ELEMENT> primaryIterator, @NonNegative int startIndex, @Positive int endIndex) {
         super(primaryIterator);
         
         this.startIndex = startIndex;
@@ -40,7 +41,7 @@ public class PruningIterator<E> extends SingleIteratorBasedIterator<E, E> {
      * Returns a new pruning iterator that iterates over the elements of the given iterator from the given start index to but not including the given end index.
      */
     @Pure
-    public static @Capturable <E> @Nonnull PruningIterator<E> with(@Captured @Nonnull Iterator<? extends E> iterator, @NonNegative int startIndex, @Positive int endIndex) {
+    public static @Capturable <@Specifiable ELEMENT> @Nonnull PruningIterator<ELEMENT> with(@Captured @Nonnull Iterator<? extends ELEMENT> iterator, @NonNegative int startIndex, @Positive int endIndex) {
         return new PruningIterator<>(iterator, startIndex, endIndex);
     }
     
@@ -60,7 +61,7 @@ public class PruningIterator<E> extends SingleIteratorBasedIterator<E, E> {
     
     @Impure
     @Override
-    public @NonCapturable E next() {
+    public @NonCapturable ELEMENT next() {
         if (hasNext()) {
             // This condition prevents an index overflow for infinite iterables:
             if (endIndex != Integer.MAX_VALUE) {

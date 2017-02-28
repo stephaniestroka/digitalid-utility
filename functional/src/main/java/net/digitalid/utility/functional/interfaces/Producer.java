@@ -3,6 +3,7 @@ package net.digitalid.utility.functional.interfaces;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.ownership.Captured;
@@ -11,11 +12,11 @@ import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
 /**
- * This functional interface models a method that produces objects of type {@code T} without requiring a parameter.
+ * This functional interface models a method that produces objects of type {@code OUTPUT} without requiring a parameter.
  */
 @Mutable
 @Functional
-public interface Producer<T> extends FailableProducer<T, RuntimeException> {
+public interface Producer<@Specifiable OUTPUT> extends FailableProducer<OUTPUT, RuntimeException> {
     
     /* -------------------------------------------------- Composition -------------------------------------------------- */
     
@@ -23,7 +24,7 @@ public interface Producer<T> extends FailableProducer<T, RuntimeException> {
      * Returns the composition of this producer followed by the given function.
      */
     @Pure
-    public default <O> @Nonnull Producer<O> before(@Nonnull UnaryFunction<? super T, ? extends O> function) {
+    public default <@Specifiable FINAL_OUTPUT> @Nonnull Producer<FINAL_OUTPUT> before(@Nonnull UnaryFunction<? super OUTPUT, ? extends FINAL_OUTPUT> function) {
         return () -> function.evaluate(produce());
     }
     
@@ -31,15 +32,15 @@ public interface Producer<T> extends FailableProducer<T, RuntimeException> {
     
     @Pure
     @Override
-    public default @Nonnull UnaryFunction<@Nullable Object, T> asFunction() {
-        return object -> produce();
+    public default @Nonnull UnaryFunction<@Nullable Object, OUTPUT> asFunction() {
+        return input -> produce();
     }
     
     /* -------------------------------------------------- Synchronization -------------------------------------------------- */
     
     @Pure
     @Override
-    public default @Nonnull Producer<T> synchronize() {
+    public default @Nonnull Producer<OUTPUT> synchronize() {
         return () -> {
             synchronized (this) {
                 return produce();
@@ -51,22 +52,22 @@ public interface Producer<T> extends FailableProducer<T, RuntimeException> {
     
     @Pure
     @Override
-    public default @Nonnull Producer<T> memoize(long duration) {
-        return new Producer<T>() {
+    public default @Nonnull Producer<OUTPUT> memoize(long duration) {
+        return new Producer<OUTPUT>() {
             
-            private T cachedObject = null;
+            private OUTPUT cachedOutput = null;
             
             private long lastProduction = 0;
             
             @Impure
             @Override
-            public T produce() {
+            public OUTPUT produce() {
                 final long currentTime = System.currentTimeMillis();
                 if (lastProduction == 0 || lastProduction + duration < currentTime) {
-                    this.cachedObject = Producer.this.produce();
+                    this.cachedOutput = Producer.this.produce();
                     this.lastProduction = currentTime;
                 }
-                return cachedObject;
+                return cachedOutput;
             }
             
         };
@@ -75,11 +76,11 @@ public interface Producer<T> extends FailableProducer<T, RuntimeException> {
     /* -------------------------------------------------- Constant -------------------------------------------------- */
     
     /**
-     * Returns a producer that always produces the given object.
+     * Returns a producer that always produces the given output.
      */
     @Pure
-    public static <T> @Nonnull Producer<T> constant(@Captured T object) {
-        return () -> object;
+    public static <@Specifiable OUTPUT> @Nonnull Producer<OUTPUT> constant(@Captured OUTPUT output) {
+        return () -> output;
     }
     
 }
