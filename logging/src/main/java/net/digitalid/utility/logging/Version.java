@@ -9,13 +9,13 @@ import net.digitalid.utility.validation.annotations.type.Utility;
  * The version of this library is used for logging.
  */
 @Utility
-public class Version {
+public abstract class Version {
     
     /* -------------------------------------------------- Configuration -------------------------------------------------- */
     
     /**
      * Stores the version of this library.
      */
-    public static final @Nonnull Configuration<String> string = Configuration.with("");
+    public static final @Nonnull Configuration<String> string = Configuration.with("1.0.0");
     
 }

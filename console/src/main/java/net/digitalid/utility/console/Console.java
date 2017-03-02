@@ -8,10 +8,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.method.Impure;
+import net.digitalid.utility.annotations.ownership.NonCaptured;
+import net.digitalid.utility.annotations.parameter.Unmodified;
 import net.digitalid.utility.console.exceptions.EscapeException;
 import net.digitalid.utility.exceptions.UncheckedExceptionBuilder;
+import net.digitalid.utility.logging.Level;
+import net.digitalid.utility.logging.Log;
+import net.digitalid.utility.logging.logger.Logger;
 import net.digitalid.utility.property.set.WritableVolatileSimpleSetProperty;
 import net.digitalid.utility.property.set.WritableVolatileSimpleSetPropertyBuilder;
+import net.digitalid.utility.string.Strings;
+import net.digitalid.utility.validation.annotations.elements.NullableElements;
 import net.digitalid.utility.validation.annotations.type.Utility;
 
 /**
@@ -26,19 +33,25 @@ public abstract class Console {
     /* -------------------------------------------------- Writing -------------------------------------------------- */
     
     /**
-     * Writes the given string to the standard output without terminating the line.
+     * Writes the given message to the standard output without terminating the line.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void write(@Nonnull String string) {
-        System.out.print(string);
+    public static void write(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
+        final @Nonnull String formattedMessage = Strings.format(message, arguments);
+        System.out.print(formattedMessage);
+        Log.information("Wrote the string $ to the console.", formattedMessage);
     }
     
     /**
-     * Writes the given string to the standard output and terminates the line.
+     * Writes the given message to the standard output and terminates the line.
+     * Each dollar sign in the message is replaced with the corresponding argument.
      */
     @Impure
-    public static void writeLine(@Nonnull String string) {
-        System.out.println(string);
+    public static void writeLine(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
+        final @Nonnull String formattedMessage = Strings.format(message, arguments);
+        System.out.println(formattedMessage);
+        Log.information("Wrote the line $ to the console.", formattedMessage);
     }
     
     /**
@@ -57,6 +70,35 @@ public abstract class Console {
         System.out.flush();
     }
     
+    /* -------------------------------------------------- Logging -------------------------------------------------- */
+    
+    /**
+     * Logs the given message and throwable both to the console and the log file.
+     * Each dollar sign in the message is replaced with the corresponding argument.
+     */
+    @Impure
+    @SuppressWarnings("CallToPrintStackTrace")
+    public static void log(@Nonnull Level level, @Nonnull CharSequence message, @Nullable Throwable throwable, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
+        Logger.log(level, message, throwable, arguments);
+        
+        System.out.println(Strings.format(message, arguments));
+        if (throwable != null) {
+            System.out.println();
+            throwable.printStackTrace();
+            System.out.println();
+        }
+    }
+    
+    /**
+     * Logs the given message both to the console and the log file.
+     * Each dollar sign in the message is replaced with the corresponding argument.
+     */
+    @Impure
+    public static void log(@Nonnull Level level, @Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
+        Logger.log(level, message, null, arguments);
+        System.out.println(Strings.format(message, arguments));
+    }
+    
     /* -------------------------------------------------- Reading -------------------------------------------------- */
     
     /**
@@ -68,10 +110,11 @@ public abstract class Console {
      * Reads a line from the standard input and returns it.
      */
     @Impure
-    private static @Nonnull String read() {
+    private static @Nonnull String readLine() {
         try {
             final @Nullable String input = reader.readLine();
             if (input == null) { throw new IOException("The end of the standard input has been reached."); }
+            Log.information("Read the line $ from the console.", input);
             return input;
         } catch (@Nonnull IOException exception) {
             throw UncheckedExceptionBuilder.withCause(exception).build();
@@ -85,7 +128,7 @@ public abstract class Console {
      */
     @Impure
     public static @Nonnull String readString(@Nullable String defaultValue) {
-        final @Nonnull String input = read();
+        final @Nonnull String input = readLine();
         if (input.isEmpty() && defaultValue != null) { return defaultValue; }
         else { return input; }
     }
@@ -98,7 +141,7 @@ public abstract class Console {
     @Impure
     public static int readNumber(@Nullable Integer defaultValue) {
         while (true) {
-            final @Nonnull String input = read();
+            final @Nonnull String input = readLine();
             if (input.isEmpty() && defaultValue != null) { return defaultValue; }
             try {
                 return Integer.decode(input);
@@ -116,7 +159,7 @@ public abstract class Console {
     @Impure
     public static boolean readBoolean(@Nullable Boolean defaultValue) {
         while (true) {
-            final @Nonnull String input = read();
+            final @Nonnull String input = readLine();
             if (input.isEmpty() && defaultValue != null) { return defaultValue; }
             if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("yes") || input.equalsIgnoreCase("y")) { return true; }
             if (input.equalsIgnoreCase("false") || input.equalsIgnoreCase("no") || input.equalsIgnoreCase("n")) { return false; }
@@ -145,7 +188,7 @@ public abstract class Console {
     @Impure
     public static int readNumber(@Nonnull String prompt, @Nullable Integer defaultValue) {
         write(prompt);
-        return Console.readNumber(defaultValue);
+        return readNumber(defaultValue);
     }
     
     /**

@@ -55,7 +55,7 @@ public class UtilityInitializer {
     @Initialize(target = UtilityInitializer.class)
     public static void initializeDefaultUncaughtExceptionHandler() throws FileNotFoundException {
         // NetBeans 8.1 crashes if you use type annotations on anonymous classes and lambda expressions!
-        Thread.setDefaultUncaughtExceptionHandler((Thread thread, Throwable throwable) -> Log.error("The following issue caused this thread to terminate.", throwable));
+        Thread.setDefaultUncaughtExceptionHandler((Thread thread, Throwable throwable) -> Log.fatal("The following problem caused this thread to terminate.", throwable));
     }
     
     /**
@@ -97,7 +97,7 @@ public class UtilityInitializer {
      * Initializes the logger with a rotating file logger.
      */
     @PureWithSideEffects
-    @Initialize(target = Logger.class, dependencies = {Files.class})
+    @Initialize(target = Logger.class, dependencies = {LoggingFilter.class})
     public static void initializeLogger() throws FileNotFoundException {
         if (Logger.logger.get() instanceof StandardOutputLogger) {
             Logger.logger.set(RotatingFileLogger.withDefaultDirectory());
