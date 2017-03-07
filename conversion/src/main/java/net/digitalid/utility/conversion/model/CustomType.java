@@ -228,7 +228,7 @@ public class CustomType {
     
     public static final CustomType DECIMAL64 = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(double.class), "DECIMAL64");
     
-    public static final CustomType STRING01 = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(char.class), "STRING01");
+    public static final CustomType STRING1 = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(char.class), "STRING01");
     
     public static final CustomType STRING64 = new CustomType(fieldTypeSignature -> fieldTypeSignature.isAssignable(String.class) && fieldTypeSignature.hasMaxSize(64), "STRING64");
     
@@ -258,7 +258,7 @@ public class CustomType {
     /**
      * A list of custom types that are statically defined in this class.
      */
-    private static final @Nonnull FiniteIterable<@Nonnull CustomType> customTypes = FiniteIterable.of(BOOLEAN, INTEGER08, INTEGER16, INTEGER32, INTEGER64, INTEGER, DECIMAL32, DECIMAL64, STRING01, STRING64, STRING128, STRING, BINARY128, BINARY256, BINARY, SET, LIST, ARRAY, MAP, TUPLE);
+    private static final @Nonnull FiniteIterable<@Nonnull CustomType> customTypes = FiniteIterable.of(BOOLEAN, INTEGER08, INTEGER16, INTEGER32, INTEGER64, INTEGER, DECIMAL32, DECIMAL64, STRING1, STRING64, STRING128, STRING, BINARY128, BINARY256, BINARY, SET, LIST, ARRAY, MAP, TUPLE);
     
     /* -------------------------------------------------- Predicate -------------------------------------------------- */
     
