@@ -62,7 +62,7 @@ public class UtilityInitializer {
      * Initializes the configuration directory with '~/.digitalid/'.
      */
     @PureWithSideEffects
-    @Initialize(target = Files.class, dependencies = {UtilityInitializer.class})
+    @Initialize(target = Files.class, dependencies = UtilityInitializer.class)
     public static void initializeDirectory() throws IOException {
         if (!Files.directory.isSet()) {
             final @Nonnull @Absolute @ExistentParent File directory = Files.relativeToWorkingDirectory(System.getProperty("user.home") + "/.digitalid/");
@@ -83,7 +83,7 @@ public class UtilityInitializer {
      * @throws IllegalArgumentException if a rule has an invalid level.
      */
     @PureWithSideEffects
-    @Initialize(target = LoggingFilter.class, dependencies = {Files.class})
+    @Initialize(target = LoggingFilter.class, dependencies = Files.class)
     public static void initializeLoggingFilter() throws IllegalArgumentException {
         if (LoggingFilter.filter.get() instanceof LevelBasedLoggingFilter) {
             LoggingFilter.filter.set(ConfigurationBasedLoggingFilter.with(Files.relativeToConfigurationDirectory("configs/logging.conf"), LoggingRule.with(Level.INFORMATION)));
@@ -97,7 +97,7 @@ public class UtilityInitializer {
      * Initializes the logger with a rotating file logger.
      */
     @PureWithSideEffects
-    @Initialize(target = Logger.class, dependencies = {LoggingFilter.class})
+    @Initialize(target = Logger.class)
     public static void initializeLogger() throws FileNotFoundException {
         if (Logger.logger.get() instanceof StandardOutputLogger) {
             Logger.logger.set(RotatingFileLogger.withDefaultDirectory());

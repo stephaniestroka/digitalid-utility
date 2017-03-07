@@ -22,7 +22,7 @@ public abstract class LoggingFilter {
     /**
      * Stores the filter which is used to filter the log messages.
      */
-    public static final @Nonnull Configuration<LoggingFilter> filter = Configuration.<LoggingFilter>with(LevelBasedLoggingFilter.with(Level.INFORMATION));
+    public static final @Nonnull Configuration<LoggingFilter> filter = Configuration.with(LevelBasedLoggingFilter.with(Level.INFORMATION));
     
     /* -------------------------------------------------- Methods -------------------------------------------------- */
     

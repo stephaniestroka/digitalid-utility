@@ -928,14 +928,14 @@ public class ProcessingUtility {
     }
     
     /**
-     * Returns the unique, public and static field with the given type in the given type element.
+     * Returns the first public and static field with the given type in the given type element.
      */
     @Pure
     @LogsErrorWhenReturningNull
-    public static @Nullable VariableElement getUniquePublicStaticFieldOfType(@Nonnull TypeElement typeElement, @Nonnull Class<?> fieldType) {
+    public static @Nullable VariableElement getFirstPublicStaticFieldOfType(@Nonnull TypeElement typeElement, @Nonnull Class<?> fieldType) {
         final @Nonnull FiniteIterable<@Nonnull VariableElement> fields = getFieldsOfType(typeElement, fieldType);
-        if (fields.isSingle()) {
-            final @Nonnull VariableElement field = fields.getFirst();
+        final @Nullable VariableElement field = fields.getFirstOrNull();
+        if (field != null) {
             if (!field.getModifiers().contains(Modifier.PUBLIC)) {
                 ProcessingLog.error("The field of type $ has to be public:", SourcePosition.of(field), fieldType.getCanonicalName());
             } else if (!field.getModifiers().contains(Modifier.STATIC)) {
@@ -944,7 +944,7 @@ public class ProcessingUtility {
                 return field;
             }
         } else {
-            ProcessingLog.error("There is not exactly one field of type $ in the class", SourcePosition.of(typeElement), fieldType.getCanonicalName());
+            ProcessingLog.error("There is not a field of type $ in the class", SourcePosition.of(typeElement), fieldType.getCanonicalName());
         }
         return null;
     }

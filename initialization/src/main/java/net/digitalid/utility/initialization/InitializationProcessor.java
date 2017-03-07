@@ -66,7 +66,7 @@ public class InitializationProcessor extends CustomProcessor {
         final @Nonnull DeclaredType declaredType = (DeclaredType) annotationValue.getValue();
         ProcessingLog.debugging("The declared type is " + Quotes.inSingle(declaredType));
         final @Nonnull TypeElement typeElement = (TypeElement) declaredType.asElement();
-        return ProcessingUtility.getUniquePublicStaticFieldOfType(typeElement, Configuration.class);
+        return ProcessingUtility.getFirstPublicStaticFieldOfType(typeElement, Configuration.class);
     }
     
     /**
@@ -129,7 +129,7 @@ public class InitializationProcessor extends CustomProcessor {
                 if (entry.getKey().getSimpleName().contentEquals("target")) {
                     targetConfigurationField = getConfigurationField(entry.getValue());
                     if (targetConfigurationField == null) {
-                        ProcessingLog.error("The referenced class does not have a unique, public and static configuration field:", SourcePosition.of(annotatedMethod, annotationMirror, entry.getValue()));
+                        ProcessingLog.error("The referenced class does not have a public and static configuration field:", SourcePosition.of(annotatedMethod, annotationMirror, entry.getValue()));
                     }
                 } else if (entry.getKey().getSimpleName().contentEquals("dependencies")) {
                     @SuppressWarnings("unchecked") final @Nonnull List<? extends AnnotationValue> dependencyClassValues = (List<? extends AnnotationValue>) entry.getValue().getValue();
@@ -137,7 +137,7 @@ public class InitializationProcessor extends CustomProcessor {
                     for (@Nonnull AnnotationValue dependencyClassValue : dependencyClassValues) {
                         final @Nullable VariableElement dependencyConfigurationField = getConfigurationField(dependencyClassValue);
                         if (dependencyConfigurationField == null) {
-                            ProcessingLog.error("The referenced class does not have a unique, public and static configuration field:", SourcePosition.of(annotatedMethod, annotationMirror, dependencyClassValue));
+                            ProcessingLog.error("The referenced class does not have a public and static configuration field:", SourcePosition.of(annotatedMethod, annotationMirror, dependencyClassValue));
                         } else {
                             dependencyConfigurationFields.add(dependencyConfigurationField);
                         }

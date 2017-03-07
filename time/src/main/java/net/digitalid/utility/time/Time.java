@@ -1,6 +1,7 @@
 package net.digitalid.utility.time;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.annotation.Nonnull;
@@ -279,7 +280,7 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
     
     private static final @Nonnull ThreadLocal<DateFormat> formatter = new ThreadLocal<DateFormat>() {
         @Override protected DateFormat initialValue() {
-            return DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.LONG);
+            return new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss");
         }
     };
     
@@ -332,7 +333,8 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
      * Returns this time as a date or an interval.
      */
     @Pure
-    public @Nonnull String asString() {
+    @Override
+    public @Nonnull String toString() {
         return isGreaterThan(DECADE) ? asDate() : asInterval();
     }
     
