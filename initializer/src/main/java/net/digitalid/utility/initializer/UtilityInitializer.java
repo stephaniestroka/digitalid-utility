@@ -37,7 +37,7 @@ public abstract class UtilityInitializer {
     /**
      * Stores a dummy configuration in order to have an initialization target.
      */
-    public static final @Nonnull Configuration<String> configuration = Configuration.with("");
+    public static final @Nonnull Configuration<Boolean> configuration = Configuration.with(Boolean.TRUE);
     
     /**
      * Initializes the main thread as early as possible.
