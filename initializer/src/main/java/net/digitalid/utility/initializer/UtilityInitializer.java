@@ -30,7 +30,7 @@ import net.digitalid.utility.validation.annotations.type.Utility;
  * This class initializes the utility classes.
  */
 @Utility
-public class UtilityInitializer {
+public abstract class UtilityInitializer {
     
     /* -------------------------------------------------- Logging -------------------------------------------------- */
     

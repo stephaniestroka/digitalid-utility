@@ -26,8 +26,6 @@ public interface WritableValueProperty<@Specifiable VALUE, @Unspecifiable EXCEPT
      * Sets the value of this property to the given value.
      * 
      * @return the old value of this property that got replaced by the given value.
-     * 
-     * @throws ReentranceException if this method is called by an observer of this property.
      */
     @Impure
     @LockNotHeldByCurrentThread
