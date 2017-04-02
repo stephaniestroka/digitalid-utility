@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
@@ -21,6 +22,7 @@ import net.digitalid.utility.conversion.interfaces.Converter;
 import net.digitalid.utility.conversion.model.utility.FieldTypeSignature;
 import net.digitalid.utility.functional.interfaces.Predicate;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.processing.logging.ProcessingLog;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.TypeImporter;
 import net.digitalid.utility.string.Strings;
@@ -358,6 +360,21 @@ public class CustomType {
      */
     @Pure
     public static @Nonnull String importConverterType(@Nonnull TypeMirror type, @Nonnull FiniteIterable<@Nonnull AnnotationMirror> annotations, @Nonnull TypeImporter typeImporter) {
+        // The following if-block is a suboptimal fix for generic types and should be solved differently (e.g. by storing the built converters).
+        if (type instanceof DeclaredType) {
+            final @Nonnull DeclaredType declaredType = (DeclaredType) type;
+            final @Nonnull List<? extends TypeMirror> typeArguments = declaredType.getTypeArguments();
+            if (!typeArguments.isEmpty()) {
+                ProcessingLog.debugging("The type $ has the following type arguments:", type, typeArguments);
+                final @Nonnull TypeMirror firstArgument = typeArguments.get(0);
+                if (firstArgument.getKind() != TypeKind.WILDCARD) {
+                    final @Nonnull String converterBuilder = typeImporter.importIfPossible(ProcessingUtility.getQualifiedName(type) + "ConverterBuilder");
+                    final @Nonnull String typeArgumentConverter = importConverterType(firstArgument, FiniteIterable.of(), typeImporter);
+                    return converterBuilder + ".withObjectConverter(" + typeArgumentConverter + ").build()";
+                }
+            }
+        }
+        
         final @Nullable CustomType customType = get(type, annotations);
         final @Nonnull String qualifiedName;
         if (customType == null || customType.isObjectType()) {

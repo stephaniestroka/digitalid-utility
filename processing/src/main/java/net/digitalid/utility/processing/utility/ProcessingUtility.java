@@ -24,7 +24,6 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.AbstractAnnotationValueVisitor8;
 import javax.lang.model.util.SimpleTypeVisitor8;
 
@@ -741,12 +740,6 @@ public class ProcessingUtility {
         @Override
         public @Nonnull String visitDeclared(@Nonnull DeclaredType type, @Nullable Void none) {
             return ((QualifiedNameable) type.asElement()).getQualifiedName().toString();
-        }
-        
-        @Pure
-        @Override
-        public @Nonnull String visitWildcard(@Nonnull WildcardType type, @Nullable Void none) {
-            return visit(type.getExtendsBound());
         }
         
     }

@@ -19,6 +19,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
 
 import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
@@ -430,7 +431,8 @@ public class ConverterGenerator extends JavaFileGenerator {
      */
     @Impure
     private void generateInstanceField() {
-        addField("public static final @" + importIfPossible(Nonnull.class) + " " + typeInformation.getSimpleNameOfGeneratedConverter() + " INSTANCE = new " + typeInformation.getSimpleNameOfGeneratedConverter() + "()");
+        final @Nonnull @NonNullableElements FiniteIterable<TypeVariable> typeArguments = typeInformation.getTypeArguments();
+        addField("public static final @" + importIfPossible(Nonnull.class) + " " + typeInformation.getSimpleNameOfGeneratedConverter() + typeArguments.map(typeVariable -> "?").join(Brackets.POINTY, "") + " INSTANCE = new " + typeInformation.getSimpleNameOfGeneratedConverter() + (typeArguments.isEmpty() ? "" : "<>") + "()");
     }
     
     /* -------------------------------------------------- Class Fields -------------------------------------------------- */
@@ -491,7 +493,7 @@ public class ConverterGenerator extends JavaFileGenerator {
             if (fieldsString.length() != 0) {
                 fieldsString.append(", ");
             }
-            fieldsString.append(importIfPossible(CustomField.class)).append(".with(").append(CustomType.getTypeName(representingField.getType(), representingField.getAnnotations(), this)).append(", ").append(Quotes.inDouble(fieldName)).append(", ImmutableList." + Brackets.inPointy(importIfPossible(CustomAnnotation.class)) + "withElements(").append(customAnnotations.toString()).append("))");
+            fieldsString.append(importIfPossible(CustomField.class)).append(".with(").append(CustomType.getTypeName(representingField.getType(), representingField.getAnnotations(), this)).append(", ").append(Quotes.inDouble(fieldName)).append(", ImmutableList.").append(Brackets.inPointy(importIfPossible(CustomAnnotation.class))).append("withElements(").append(customAnnotations.toString()).append("))");
         }
         addField("private static final @" + importIfPossible(Nonnull.class) + " " + importIfPossible(ImmutableList.class) + Brackets.inPointy(importTypeAnnotationIfPossible(Nonnull.class) + importIfPossible(CustomField.class)) + " fields");
         beginBlock(true);
