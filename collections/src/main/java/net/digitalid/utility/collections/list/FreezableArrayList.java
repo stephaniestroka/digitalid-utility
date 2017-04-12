@@ -87,7 +87,7 @@ public abstract class FreezableArrayList<E> extends ArrayList<E> implements Free
      */
     @Pure
     @SafeVarargs
-    public static @Capturable <E> @Nonnull @NonFrozen FreezableArrayList<E> withElements(@NonCaptured @Unmodified E... elements) {
+    public static @Capturable <E> @NonFrozen FreezableArrayList<E> withElements(@NonCaptured @Unmodified E... elements) {
         return elements == null ? null : new FreezableArrayListSubclass<>(elements.length, Arrays.asList(elements));
     }
     

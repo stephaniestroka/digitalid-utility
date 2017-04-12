@@ -358,7 +358,7 @@ public class ConverterGenerator extends JavaFileGenerator {
                     } else if (ProcessingUtility.isRawSubtype(type, Set.class)) {
                         final @Nonnull String collection;
                         if (!typeName.startsWith("Freezable") && !typeName.startsWith("ReadOnly")) { collection = "new " + importIfPossible(LinkedHashSet.class) + "<>(size)"; }
-                        else { collection = importIfPossible("net.digitalid.utility.collections.set.FreezableLinkedHashSet") + ".withInitialCapacity(size)"; }
+                        else { collection = importIfPossible("net.digitalid.utility.collections.set.FreezableLinkedHashSetBuilder") + ".buildWithInitialCapacity(size)"; }
                         collector = "size -> " + importIfPossible(CollectionCollector.class) + ".with(" + collection + ")";
                     } else { collector = "null"; }
                     addStatement("final " + importIfPossible(field.getType()) + " " + field.getName() + " = decoder.decode" + (unordered ? "Unordered" : "Ordered") + "Iterable" + (nullable ? "WithNullableElements" : "") + "(" + importConverterType(componentType, FiniteIterable.of()) + ", " + provided + ", " + collector + ")");
