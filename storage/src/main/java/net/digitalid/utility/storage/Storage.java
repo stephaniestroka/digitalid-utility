@@ -8,6 +8,7 @@ import net.digitalid.utility.annotations.method.CallSuper;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.method.PureWithSideEffects;
 import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.validation.annotations.generation.Default;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
 import net.digitalid.utility.validation.annotations.type.Mutable;
@@ -27,6 +28,7 @@ public abstract class Storage extends RootClass {
      * Returns the parent module to which this storage belongs.
      */
     @Pure
+    @Default("null") // TODO: This should not be necessary but it still is.
     public abstract @Nullable Module getParentModule();
     
     @Pure
