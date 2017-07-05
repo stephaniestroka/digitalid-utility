@@ -23,6 +23,9 @@ import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 @TypeValidator(GenerateAnnotationValidator.class)
 public @interface GenerateSubclass {
     
+    /**
+     * Returns whether the generated subclass shall be public.
+     */
     @Nonnull boolean makePublic() default false;
     
 }

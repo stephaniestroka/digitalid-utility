@@ -15,7 +15,7 @@
     <name>Digital ID Utility</name>
     <description>This project provides utility classes for the Digital ID library.</description>
     <url>https://code.digitalid.net/digitalid/utility</url>
-
+    
     <repositories>
         <repository>
             <id>digitalid-releases</id>
@@ -28,7 +28,7 @@
             <url>https://repo.digitalid.net/content/repositories/snapshots/</url>
         </repository>
     </repositories>
-
+    
     <modules>
         <module>taglets-java7</module>
         <module>bootstrap-java7</module>
@@ -53,7 +53,6 @@
         <module>validation-java7</module>
         <module>system-java7</module>
         <module>threading-java7</module>
-        <module>conversion-java7</module>
         <module>casting-java7</module>
         <module>rootclass-java7</module>
         <module>freezable-java7</module>
@@ -61,6 +60,8 @@
         <module>initialization-java7</module>
         <module>initializer-java7</module>
         <module>testing-java7</module>
+        <module>conversion-java7</module>
+        <module>storage-java7</module>
         <module>generator-java7</module>
         <module>templates-java7</module>
         <module>collections-java7</module>

@@ -15,7 +15,7 @@
     <name>Digital ID Utility</name>
     <description>This project provides utility classes for the Digital ID library.</description>
     <url>https://code.digitalid.net/digitalid/utility</url>
-
+    
     <repositories>
         <repository>
             <id>digitalid-releases</id>
@@ -28,7 +28,7 @@
             <url>https://repo.digitalid.net/content/repositories/snapshots/</url>
         </repository>
     </repositories>
-
+    
     <modules>
         <module>taglets</module>
         <module>bootstrap</module>
@@ -53,7 +53,6 @@
         <module>validation</module>
         <module>system</module>
         <module>threading</module>
-        <module>conversion</module>
         <module>casting</module>
         <module>rootclass</module>
         <module>freezable</module>
@@ -61,6 +60,8 @@
         <module>initialization</module>
         <module>initializer</module>
         <module>testing</module>
+        <module>conversion</module>
+        <module>storage</module>
         <module>generator</module>
         <module>templates</module>
         <module>collections</module>

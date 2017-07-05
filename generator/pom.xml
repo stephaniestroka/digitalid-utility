@@ -19,7 +19,7 @@
         
         <dependency>
             <groupId>net.digitalid.utility</groupId>
-            <artifactId>utility-conversion</artifactId>
+            <artifactId>utility-storage</artifactId>
             <version>${project.version}</version>
         </dependency>
         
