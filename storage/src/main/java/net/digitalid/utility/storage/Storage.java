@@ -89,4 +89,24 @@ public abstract class Storage extends RootClass {
     @PureWithSideEffects
     public abstract <@Specifiable RESULT, @Specifiable PARAMETER> RESULT accept(@Nonnull StorageVisitor<RESULT, PARAMETER> visitor, PARAMETER parameter);
     
+    /* -------------------------------------------------- Object -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public boolean equals(@Nullable Object object) {
+        return object == this;
+    }
+    
+    @Pure
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+    
+    @Pure
+    @Override
+    public @Nonnull String toString() {
+        return getFullNameWithUnderlines();
+    }
+    
 }

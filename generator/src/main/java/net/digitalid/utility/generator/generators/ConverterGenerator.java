@@ -44,6 +44,7 @@ import net.digitalid.utility.conversion.model.CustomField;
 import net.digitalid.utility.conversion.model.CustomType;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.GeneratorProcessor;
+import net.digitalid.utility.generator.annotations.generators.GenerateTableConverter;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.information.field.FieldInformation;
 import net.digitalid.utility.generator.information.filter.MethodSignatureMatcher;
@@ -58,6 +59,10 @@ import net.digitalid.utility.processing.logging.SourcePosition;
 import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
+import net.digitalid.utility.storage.Module;
+import net.digitalid.utility.storage.Table;
+import net.digitalid.utility.storage.enumerations.ForeignKeyAction;
+import net.digitalid.utility.storage.interfaces.Unit;
 import net.digitalid.utility.string.Strings;
 import net.digitalid.utility.tuples.Tuple;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
@@ -589,6 +594,97 @@ public class ConverterGenerator extends JavaFileGenerator {
         generateGetSubtypeConvertersMethod();
     }
     
+    /* -------------------------------------------------- Table -------------------------------------------------- */
+    
+    @Impure
+    private void generateGetParentModule(@Nonnull GenerateTableConverter generateTableConverterAnnotation) {
+        final @Nonnull String module = generateTableConverterAnnotation.module();
+        if (!module.isEmpty()) {
+            addAnnotation(Pure.class);
+            addAnnotation(Override.class);
+            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + importIfPossible(Module.class) + " getParentModule()");
+            addStatement("return " + module);
+            endMethod();
+        }
+    }
+    
+    @Impure
+    private void generateGetName(@Nonnull GenerateTableConverter generateTableConverterAnnotation) {
+        final @Nonnull String name = generateTableConverterAnnotation.name();
+        if (!name.isEmpty()) {
+            addAnnotation(Pure.class);
+            addAnnotation(Override.class);
+            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + " getName()");
+            addStatement("return " + Quotes.inDouble(name));
+            endMethod();
+        }
+    }
+    
+    @Impure
+    private void generateGetSchemaName(@Nonnull GenerateTableConverter generateTableConverterAnnotation) {
+        final @Nonnull String schema = generateTableConverterAnnotation.schema();
+        if (!schema.isEmpty()) {
+            addAnnotation(Pure.class);
+            addAnnotation(Override.class);
+            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + " getSchemaName(@" + importIfPossible(Nonnull.class) + " " + importIfPossible(Unit.class) + " unit)");
+            addStatement("return " + Quotes.inDouble(schema));
+            endMethod();
+        }
+    }
+    
+    @Impure
+    private void generateGetTableName(@Nonnull GenerateTableConverter generateTableConverterAnnotation) {
+        final @Nonnull String table = generateTableConverterAnnotation.table();
+        if (!table.isEmpty()) {
+            addAnnotation(Pure.class);
+            addAnnotation(Override.class);
+            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + importIfPossible(String.class) + " getTableName(@" + importIfPossible(Nonnull.class) + " " + importIfPossible(Unit.class) + " unit)");
+            addStatement("return " + Quotes.inDouble(table));
+            endMethod();
+        }
+    }
+    
+    @Impure
+    private void generateGetColumnNames(@Nonnull GenerateTableConverter generateTableConverterAnnotation) {
+        addAnnotation(Pure.class);
+        addAnnotation(Override.class);
+        beginMethod("public @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonNullableElements.class) + " " + importIfPossible(ImmutableList.class) + Brackets.inPointy(importIfPossible(String.class)) + " getColumnNames(@" + importIfPossible(Nonnull.class) + " " + importIfPossible(Unit.class) + " unit)");
+        final @Nonnull List<String> columns = FiniteIterable.of(generateTableConverterAnnotation.columns()).toList();
+        if (columns.isEmpty()) {
+            for (@Nonnull FieldInformation representingField : filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation())) {
+                if (representingField.hasAnnotation("net.digitalid.database.annotations.constraints.PrimaryKey")) {
+                    columns.add(representingField.getName()); // TODO: This is too simple because the field might be a composite type. (Additionally, we should probably add all fields if none of them is annotated as a primary key.)
+                }
+            }
+        }
+        addStatement("return " + importIfPossible(ImmutableList.class) + ".withElements(" + FiniteIterable.of(columns).map(Quotes::inDouble).join() + ")");
+        endMethod();
+    }
+    
+    @Impure
+    private void generateGetOnDeleteAction(@Nonnull GenerateTableConverter generateTableConverterAnnotation) {
+        final @Nonnull ForeignKeyAction onDelete = generateTableConverterAnnotation.onDelete();
+        if (onDelete != ForeignKeyAction.CASCADE) {
+            addAnnotation(Pure.class);
+            addAnnotation(Override.class);
+            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + importIfPossible(ForeignKeyAction.class) + " getOnDeleteAction()");
+            addStatement("return " + importIfPossible(ForeignKeyAction.class) + "." + onDelete.name());
+            endMethod();
+        }
+    }
+    
+    @Impure
+    private void generateGetOnUpdateAction(@Nonnull GenerateTableConverter generateTableConverterAnnotation) {
+        final @Nonnull ForeignKeyAction onUpdate = generateTableConverterAnnotation.onUpdate();
+        if (onUpdate != ForeignKeyAction.CASCADE) {
+            addAnnotation(Pure.class);
+            addAnnotation(Override.class);
+            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + importIfPossible(ForeignKeyAction.class) + " getOnUpdateAction()");
+            addStatement("return " + importIfPossible(ForeignKeyAction.class) + "." + onUpdate.name());
+            endMethod();
+        }
+    }
+    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
@@ -596,10 +692,22 @@ public class ConverterGenerator extends JavaFileGenerator {
      */
     protected ConverterGenerator(@Nonnull TypeInformation typeInformation) {
         super(typeInformation.getQualifiedNameOfGeneratedConverter(), typeInformation.getElement());
-    
+        
         this.typeInformation = typeInformation;
-    
-        beginClass("public class " + typeInformation.getSimpleNameOfGeneratedConverter() + importWithBounds(typeInformation.getTypeArguments()) + " implements " + importIfPossible(Converter.class) + "<" + typeInformation.getName() + ", " + getExternallyProvidedParameterDeclarationsAsString("") + ">");
+        
+        final @Nullable GenerateTableConverter generateTableConverterAnnotation = typeInformation.getAnnotationOrNull(GenerateTableConverter.class);
+        final @Nonnull String superType = generateTableConverterAnnotation != null ? " extends " + importIfPossible(Table.class) : " implements " + importIfPossible(Converter.class);
+        beginClass("public class " + typeInformation.getSimpleNameOfGeneratedConverter() + importWithBounds(typeInformation.getTypeArguments()) + superType + "<" + typeInformation.getName() + ", " + getExternallyProvidedParameterDeclarationsAsString("") + ">");
+        
+        if (generateTableConverterAnnotation != null) {
+            generateGetParentModule(generateTableConverterAnnotation);
+            generateGetName(generateTableConverterAnnotation);
+            generateGetSchemaName(generateTableConverterAnnotation);
+            generateGetTableName(generateTableConverterAnnotation);
+            generateGetColumnNames(generateTableConverterAnnotation);
+            generateGetOnDeleteAction(generateTableConverterAnnotation);
+            generateGetOnUpdateAction(generateTableConverterAnnotation);
+        }
         
         generateInstanceField();
         generateGetType();

@@ -16,6 +16,7 @@ import net.digitalid.utility.functional.iterables.FiniteIterable;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateConverter;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
+import net.digitalid.utility.generator.annotations.generators.GenerateTableConverter;
 import net.digitalid.utility.generator.exceptions.FailedClassGenerationException;
 import net.digitalid.utility.generator.generators.BuilderGenerator;
 import net.digitalid.utility.generator.generators.ConverterGenerator;
@@ -104,7 +105,7 @@ public class GeneratorProcessor extends CustomProcessor {
                 
                 BuilderGenerator.generateBuilderFor(typeInformation);
             }
-            if (typeInformation.hasAnnotation(GenerateConverter.class)) {
+            if (typeInformation.hasAnnotation(GenerateConverter.class) || typeInformation.hasAnnotation(GenerateTableConverter.class)) { // TODO: Handle the table converter with a different generator as soon as one can be implemented in the database project.
                 ConverterGenerator.generateConverterFor(typeInformation);
             }
             return true;

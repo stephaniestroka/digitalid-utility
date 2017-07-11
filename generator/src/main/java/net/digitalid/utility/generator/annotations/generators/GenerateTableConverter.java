@@ -11,6 +11,7 @@ import javax.annotation.Nonnull;
 import net.digitalid.utility.collaboration.annotations.TODO;
 import net.digitalid.utility.collaboration.enumerations.Author;
 import net.digitalid.utility.generator.generators.ConverterGenerator;
+import net.digitalid.utility.storage.enumerations.ForeignKeyAction;
 import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 
 /**
@@ -27,54 +28,52 @@ import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 @TODO(task = "Move this class to the database layer again once generators can be declared in higher artifacts.", date = "2017-04-16", author = Author.KASPAR_ETTER)
 public @interface GenerateTableConverter {
     
-    /* -------------------------------------------------- Name -------------------------------------------------- */
-    
-    /**
-     * Returns the name of the generated table.
-     */
-    @Nonnull String name() default "";
-    
     /* -------------------------------------------------- Module -------------------------------------------------- */
     
     /**
      * Returns the module to which the generated table belongs.
+     * Leave this empty to generate a table without a parent module.
      */
     @Nonnull String module() default "";
+    
+    /* -------------------------------------------------- Name -------------------------------------------------- */
+    
+    /**
+     * Returns the name of the generated storage.
+     * Leave this empty to use the default name.
+     */
+    @Nonnull String name() default "";
     
     /* -------------------------------------------------- Reference -------------------------------------------------- */
     
     /**
-     * Returns ...
-     */
-    @Nonnull String reference() default "";
-    
-    // or
-    
-    /**
-     * Returns ...
+     * Returns the schema on which the table was created.
+     * Leave this empty to use the current schema.
      */
     @Nonnull String schema() default "";
     
     /**
-     * Returns ...
+     * Returns the name with which the table was created.
+     * Leave this empty to use the default name.
      */
     @Nonnull String table() default "";
     
     /**
-     * Returns ...
+     * Returns the columns of the primary key of the generate table.
+     * Leave this empty to use the default mechanism to determine the primary keys.
      */
-    @Nonnull String columns() default "";
+    @Nonnull String[] columns() default {};
     
     /* -------------------------------------------------- Actions -------------------------------------------------- */
     
     /**
-     * Returns ...
+     * Returns the action that determines what happens with entries that have a foreign key constraint on the generated table when an entry of the generated table is deleted.
      */
-    @Nonnull String /* TODO: ForeignKeyAction */ onDelete() default "";
+    @Nonnull ForeignKeyAction onDelete() default ForeignKeyAction.CASCADE;
     
     /**
-     * Returns ...
+     * Returns the action that determines what happens with entries that have a foreign key constraint on the generated table when an entry of the generated table is updated.
      */
-    @Nonnull String /* TODO: ForeignKeyAction */ onUpdate() default "";
+    @Nonnull ForeignKeyAction onUpdate() default ForeignKeyAction.CASCADE;
     
 }

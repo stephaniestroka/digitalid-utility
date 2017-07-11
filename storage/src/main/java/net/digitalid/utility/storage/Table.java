@@ -1,6 +1,7 @@
 package net.digitalid.utility.storage;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.generics.Specifiable;
 import net.digitalid.utility.annotations.generics.Unspecifiable;
@@ -13,6 +14,8 @@ import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.storage.enumerations.ForeignKeyAction;
 import net.digitalid.utility.storage.interfaces.Unit;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.size.MaxSize;
+import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -20,6 +23,22 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  */
 @Immutable
 public abstract class Table<@Unspecifiable ENTRY, @Specifiable PROVIDED> extends Storage implements Converter<ENTRY, PROVIDED> {
+    
+    /* -------------------------------------------------- Parent Module -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public @Nullable Module getParentModule() {
+        return null;
+    }
+    
+    /* -------------------------------------------------- Name -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public @Nonnull @CodeIdentifier @MaxSize(63) String getName() {
+        return getTypeName();
+    }
     
     /* -------------------------------------------------- Reference -------------------------------------------------- */
     

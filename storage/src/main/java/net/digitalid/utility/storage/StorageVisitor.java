@@ -29,6 +29,6 @@ public interface StorageVisitor<@Specifiable RESULT, @Specifiable PARAMETER> {
      * Visits the given table with the given parameter and returns a result.
      */
     @PureWithSideEffects
-    public RESULT visit(@Nonnull Table table, PARAMETER parameter);
+    public RESULT visit(@Nonnull Table<?, ?> table, PARAMETER parameter);
     
 }

@@ -2,35 +2,44 @@ package net.digitalid.utility.storage.enumerations;
 
 import javax.annotation.Nonnull;
 
-import net.digitalid.utility.collaboration.annotations.TODO;
-import net.digitalid.utility.collaboration.enumerations.Author;
+import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
  * This type enumerates the various actions that can be specified for when a referenced entry is updated or deleted.
+ * (Once the storage artifact can be moved to the database project again, move this enum to a new enumerations artifact because the SQLReferenceOption interface of the dialect also depends on this.)
  */
 @Immutable
-@TODO(task = "There is also an enumeration called SQLReferenceOption. One of them is likely redundant.", date = "2017-04-16", author = Author.KASPAR_ETTER)
 public enum ForeignKeyAction {
     
     /* -------------------------------------------------- Constants -------------------------------------------------- */
     
-    RESTRICT("RESTRICT"),
+    /**
+     * Rejects the delete or update operation for the parent table.
+     */
+    RESTRICT,
     
-    CASCADE("CASCADE"),
+    /**
+     * Propagates the delete or update operation to the child table.
+     */
+    CASCADE,
     
-    SET_NULL("SET NULL"),
+    /**
+     * Sets the foreign key column or columns in the child table to NULL.
+     */
+    SET_NULL,
     
-    NO_ACTION("NO ACTION");
+    /**
+     * The same as {@link #RESTRICT} (at least in case of MySQL).
+     */
+    NO_ACTION;
     
-    /* -------------------------------------------------- Value -------------------------------------------------- */
+    /* -------------------------------------------------- String -------------------------------------------------- */
     
-    public final @Nonnull String value;
-    
-    /* -------------------------------------------------- Constructor -------------------------------------------------- */
-    
-    private ForeignKeyAction(@Nonnull String value) {
-        this.value = value;
+    @Pure
+    @Override
+    public @Nonnull String toString() {
+        return name().replace("_", " ");
     }
     
 }

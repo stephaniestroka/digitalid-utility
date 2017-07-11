@@ -3,6 +3,7 @@ package net.digitalid.utility.generator.information;
 import java.lang.annotation.Annotation;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
@@ -166,6 +167,14 @@ public interface ElementInformation extends RootInterface {
      */
     @Pure
     public boolean hasAnnotation(@Nonnull Class<? extends Annotation> annotationType);
+    
+    /**
+     * Returns the annotation with the given type of the represented {@link #getElement() element} or null.
+     */
+    @Pure
+    public default <A extends Annotation> @Nullable A getAnnotationOrNull(@Nonnull Class<A> annotationType) {
+        return getElement().getAnnotation(annotationType);
+    }
     
     /**
      * Returns the annotation with the given type of the represented {@link #getElement() element}.
