@@ -646,19 +646,14 @@ public class ConverterGenerator extends JavaFileGenerator {
     
     @Impure
     private void generateGetColumnNames(@Nonnull GenerateTableConverter generateTableConverterAnnotation) {
-        addAnnotation(Pure.class);
-        addAnnotation(Override.class);
-        beginMethod("public @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonNullableElements.class) + " " + importIfPossible(ImmutableList.class) + Brackets.inPointy(importIfPossible(String.class)) + " getColumnNames(@" + importIfPossible(Nonnull.class) + " " + importIfPossible(Unit.class) + " unit)");
-        final @Nonnull List<String> columns = FiniteIterable.of(generateTableConverterAnnotation.columns()).toList();
-        if (columns.isEmpty()) {
-            for (@Nonnull FieldInformation representingField : filterNonExternallyProvidedFields(typeInformation.getRepresentingFieldInformation())) {
-                if (representingField.hasAnnotation("net.digitalid.database.annotations.constraints.PrimaryKey")) {
-                    columns.add(representingField.getName()); // TODO: This is too simple because the field might be a composite type. (Additionally, we should probably add all fields if none of them is annotated as a primary key.)
-                }
-            }
+        final @Nonnull FiniteIterable<String> columns = FiniteIterable.of(generateTableConverterAnnotation.columns());
+        if (!columns.isEmpty()) {
+            addAnnotation(Pure.class);
+            addAnnotation(Override.class);
+            beginMethod("public @" + importIfPossible(Nonnull.class) + " @" + importIfPossible(NonNullableElements.class) + " " + importIfPossible(ImmutableList.class) + Brackets.inPointy(importIfPossible(String.class)) + " getColumnNames(@" + importIfPossible(Nonnull.class) + " " + importIfPossible(Unit.class) + " unit)");
+            addStatement("return " + importIfPossible(ImmutableList.class) + ".withElements(" + columns.map(Quotes::inDouble).join() + ")");
+            endMethod();
         }
-        addStatement("return " + importIfPossible(ImmutableList.class) + ".withElements(" + FiniteIterable.of(columns).map(Quotes::inDouble).join() + ")");
-        endMethod();
     }
     
     @Impure
