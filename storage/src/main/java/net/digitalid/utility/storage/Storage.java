@@ -30,7 +30,7 @@ public interface Storage extends RootInterface {
      */
     @Pure
     @Default("null") // TODO: This should not be necessary but it still is.
-    public abstract @Nullable Module getParentModule();
+    public @Nullable Module getParentModule();
     
     /* -------------------------------------------------- Name -------------------------------------------------- */
     

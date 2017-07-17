@@ -21,6 +21,8 @@ import net.digitalid.utility.immutable.ImmutableList;
 import net.digitalid.utility.storage.enumerations.ForeignKeyAction;
 import net.digitalid.utility.storage.interfaces.Unit;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
+import net.digitalid.utility.validation.annotations.size.MaxSize;
+import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
 import net.digitalid.utility.validation.annotations.type.Immutable;
 
 /**
@@ -28,6 +30,14 @@ import net.digitalid.utility.validation.annotations.type.Immutable;
  */
 @Immutable
 public interface Table<@Unspecifiable ENTRY, @Specifiable PROVIDED> extends Storage, Converter<ENTRY, PROVIDED> {
+    
+    /* -------------------------------------------------- Name -------------------------------------------------- */
+    
+    @Pure
+    @Override
+    public default @Nonnull @CodeIdentifier @MaxSize(63) String getName() {
+        return getTypeName();
+    }
     
     /* -------------------------------------------------- Reference -------------------------------------------------- */
     
