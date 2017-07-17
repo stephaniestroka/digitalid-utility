@@ -60,7 +60,7 @@ import net.digitalid.utility.processing.utility.ProcessingUtility;
 import net.digitalid.utility.processing.utility.StaticProcessingEnvironment;
 import net.digitalid.utility.processor.generator.JavaFileGenerator;
 import net.digitalid.utility.storage.Module;
-import net.digitalid.utility.storage.Table;
+import net.digitalid.utility.storage.TableImplementation;
 import net.digitalid.utility.storage.enumerations.ForeignKeyAction;
 import net.digitalid.utility.storage.interfaces.Unit;
 import net.digitalid.utility.string.Strings;
@@ -598,14 +598,12 @@ public class ConverterGenerator extends JavaFileGenerator {
     
     @Impure
     private void generateGetParentModule(@Nonnull GenerateTableConverter generateTableConverterAnnotation) {
+        addAnnotation(Pure.class);
+        addAnnotation(Override.class);
         final @Nonnull String module = generateTableConverterAnnotation.module();
-        if (!module.isEmpty()) {
-            addAnnotation(Pure.class);
-            addAnnotation(Override.class);
-            beginMethod("public @" + importIfPossible(Nonnull.class) + " " + importIfPossible(Module.class) + " getParentModule()");
-            addStatement("return " + module);
-            endMethod();
-        }
+        beginMethod("public @" + importIfPossible(module.isEmpty() ? Nullable.class : Nonnull.class) + " " + importIfPossible(Module.class) + " getParentModule()");
+        addStatement("return " + (module.isEmpty() ? "null" : module));
+        endMethod();
     }
     
     @Impure
@@ -691,7 +689,7 @@ public class ConverterGenerator extends JavaFileGenerator {
         this.typeInformation = typeInformation;
         
         final @Nullable GenerateTableConverter generateTableConverterAnnotation = typeInformation.getAnnotationOrNull(GenerateTableConverter.class);
-        final @Nonnull String superType = generateTableConverterAnnotation != null ? " extends " + importIfPossible(Table.class) : " implements " + importIfPossible(Converter.class);
+        final @Nonnull String superType = generateTableConverterAnnotation != null ? " extends " + importIfPossible(TableImplementation.class) : " implements " + importIfPossible(Converter.class);
         beginClass("public class " + typeInformation.getSimpleNameOfGeneratedConverter() + importWithBounds(typeInformation.getTypeArguments()) + superType + "<" + typeInformation.getName() + ", " + getExternallyProvidedParameterDeclarationsAsString("") + ">");
         
         if (generateTableConverterAnnotation != null) {

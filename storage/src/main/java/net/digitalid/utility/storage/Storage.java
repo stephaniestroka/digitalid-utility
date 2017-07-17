@@ -4,10 +4,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.generics.Specifiable;
-import net.digitalid.utility.annotations.method.CallSuper;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.method.PureWithSideEffects;
-import net.digitalid.utility.rootclass.RootClass;
+import net.digitalid.utility.rootclass.RootInterface;
 import net.digitalid.utility.validation.annotations.generation.Default;
 import net.digitalid.utility.validation.annotations.size.MaxSize;
 import net.digitalid.utility.validation.annotations.string.CodeIdentifier;
@@ -18,9 +17,11 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * 
  * @see Module
  * @see Table
+ * 
+ * @see StorageImplementation
  */
 @Mutable
-public abstract class Storage extends RootClass {
+public interface Storage extends RootInterface {
     
     /* -------------------------------------------------- Parent Module -------------------------------------------------- */
     
@@ -31,29 +32,19 @@ public abstract class Storage extends RootClass {
     @Default("null") // TODO: This should not be necessary but it still is.
     public abstract @Nullable Module getParentModule();
     
-    @Pure
-    @Override
-    @CallSuper
-    protected void initialize() {
-        super.initialize();
-        
-        final @Nullable Module parentModule = getParentModule();
-        if (parentModule != null) { parentModule.addChildStorage(this); }
-    }
-    
     /* -------------------------------------------------- Name -------------------------------------------------- */
     
     /**
      * Returns the name of this storage.
      */
     @Pure
-    public abstract @Nonnull @CodeIdentifier @MaxSize(63) String getName();
+    public @Nonnull @CodeIdentifier @MaxSize(63) String getName();
     
     /**
      * Returns the full name of this storage with the given delimiter between the names of the parent modules in the given direction.
      */
     @Pure
-    public @Nonnull String getFullName(@Nonnull String delimiter, boolean rootToLeaf) {
+    public default @Nonnull String getFullName(@Nonnull String delimiter, boolean rootToLeaf) {
         final @Nullable Module parentModule = getParentModule();
         if (parentModule != null) {
             final @Nonnull String parentName = parentModule.getFullName(delimiter, rootToLeaf);
@@ -68,7 +59,7 @@ public abstract class Storage extends RootClass {
      */
     @Pure
     // TODO: @Cached
-    public @Nonnull String getFullNameWithPeriods() {
+    public default @Nonnull String getFullNameWithPeriods() {
         return getFullName(".", false);
     }
     
@@ -77,7 +68,7 @@ public abstract class Storage extends RootClass {
      */
     @Pure
     // TODO: @Cached
-    public @Nonnull @CodeIdentifier String getFullNameWithUnderlines() {
+    public default @Nonnull @CodeIdentifier String getFullNameWithUnderlines() {
         return getFullName("_", true);
     }
     
@@ -87,26 +78,6 @@ public abstract class Storage extends RootClass {
      * Accepts the given visitor with the given parameter and returns the result of the visitor.
      */
     @PureWithSideEffects
-    public abstract <@Specifiable RESULT, @Specifiable PARAMETER> RESULT accept(@Nonnull StorageVisitor<RESULT, PARAMETER> visitor, PARAMETER parameter);
-    
-    /* -------------------------------------------------- Object -------------------------------------------------- */
-    
-    @Pure
-    @Override
-    public boolean equals(@Nullable Object object) {
-        return object == this;
-    }
-    
-    @Pure
-    @Override
-    public int hashCode() {
-        return toString().hashCode();
-    }
-    
-    @Pure
-    @Override
-    public @Nonnull String toString() {
-        return getFullNameWithUnderlines();
-    }
+    public <@Specifiable RESULT, @Specifiable PARAMETER> RESULT accept(@Nonnull StorageVisitor<RESULT, PARAMETER> visitor, PARAMETER parameter);
     
 }

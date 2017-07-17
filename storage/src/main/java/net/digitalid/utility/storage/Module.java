@@ -10,6 +10,7 @@ import net.digitalid.utility.annotations.method.Impure;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.method.PureWithSideEffects;
 import net.digitalid.utility.functional.iterables.FiniteIterable;
+import net.digitalid.utility.rootclass.RootClass;
 import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 
@@ -17,7 +18,7 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
  * This class models an inner node in the storage tree.
  */
 @Mutable
-public abstract class Module extends Storage {
+public abstract class Module extends RootClass implements Storage {
     
     /* -------------------------------------------------- Substorages -------------------------------------------------- */
     
