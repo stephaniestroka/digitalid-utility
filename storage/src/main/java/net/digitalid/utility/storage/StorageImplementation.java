@@ -37,7 +37,7 @@ public abstract class StorageImplementation extends RootClass implements Storage
     @Pure
     @Override
     public int hashCode() {
-        return toString().hashCode();
+        return getHashCode();
     }
     
     @Pure

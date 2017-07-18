@@ -39,4 +39,15 @@ public abstract class RootClassWithException<@Unspecifiable EXCEPTION extends Ex
     @Override
     public abstract @Nonnull String toString();
     
+    /* -------------------------------------------------- Inheritance -------------------------------------------------- */
+    
+    /**
+     * Returns the natively implemented hash code of the {@link Object} class.
+     * (Java does not allow to call the implementation of a super super class.)
+     */
+    @Pure
+    protected int getHashCode() {
+        return super.hashCode();
+    }
+    
 }
