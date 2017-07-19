@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.digitalid.utility.annotations.generics.Specifiable;
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.Pure;
 import net.digitalid.utility.annotations.method.PureWithSideEffects;
 import net.digitalid.utility.rootclass.RootInterface;
@@ -78,6 +79,14 @@ public interface Storage extends RootInterface {
      * Accepts the given visitor with the given parameter and returns the result of the visitor.
      */
     @PureWithSideEffects
-    public <@Specifiable RESULT, @Specifiable PARAMETER> RESULT accept(@Nonnull StorageVisitor<RESULT, PARAMETER> visitor, PARAMETER parameter);
+    public <@Specifiable RESULT, @Specifiable PARAMETER, @Unspecifiable EXCEPTION extends Exception> RESULT accept(@Nonnull StorageVisitor<RESULT, PARAMETER, EXCEPTION> visitor, PARAMETER parameter) throws EXCEPTION;
+    
+    /**
+     * Accepts the given simple visitor.
+     */
+    @PureWithSideEffects
+    public default <@Unspecifiable EXCEPTION extends Exception> void accept(@Nonnull SimpleStorageVisitor<EXCEPTION> visitor) throws EXCEPTION {
+        accept(visitor, null);
+    }
     
 }

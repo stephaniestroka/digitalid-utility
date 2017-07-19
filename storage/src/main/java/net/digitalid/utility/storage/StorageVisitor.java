@@ -3,6 +3,7 @@ package net.digitalid.utility.storage;
 import javax.annotation.Nonnull;
 
 import net.digitalid.utility.annotations.generics.Specifiable;
+import net.digitalid.utility.annotations.generics.Unspecifiable;
 import net.digitalid.utility.annotations.method.PureWithSideEffects;
 import net.digitalid.utility.validation.annotations.type.Functional;
 import net.digitalid.utility.validation.annotations.type.Stateless;
@@ -12,13 +13,13 @@ import net.digitalid.utility.validation.annotations.type.Stateless;
  */
 @Stateless
 @Functional
-public interface StorageVisitor<@Specifiable RESULT, @Specifiable PARAMETER> {
+public interface StorageVisitor<@Specifiable RESULT, @Specifiable PARAMETER, @Unspecifiable EXCEPTION extends Exception> {
     
     /**
      * Visits the given module with the given parameter and returns a result.
      */
     @PureWithSideEffects
-    public default RESULT visit(@Nonnull Module module, PARAMETER parameter) {
+    public default RESULT visit(@Nonnull Module module, PARAMETER parameter) throws EXCEPTION {
         for (final @Nonnull Storage storage : module.getChildStorages()) {
             storage.accept(this, parameter);
         }
@@ -29,6 +30,6 @@ public interface StorageVisitor<@Specifiable RESULT, @Specifiable PARAMETER> {
      * Visits the given table with the given parameter and returns a result.
      */
     @PureWithSideEffects
-    public RESULT visit(@Nonnull Table<?, ?> table, PARAMETER parameter);
+    public RESULT visit(@Nonnull Table<?, ?> table, PARAMETER parameter) throws EXCEPTION;
     
 }

@@ -59,6 +59,9 @@ public interface Table<@Unspecifiable ENTRY, @Specifiable PROVIDED> extends Stor
         return getFullNameWithUnderlines();
     }
     
+    /**
+     * Adds the columns of the given field with the given prefix to the given list of columns.
+     */
     @Pure
     public static void addColumns(@Nonnull CustomField field, @Nullable String prefix, @Modified @NonCaptured @Nonnull @NonNullableElements List<String> columns) {
         final @Nonnull CustomType type = field.getCustomType();

@@ -17,7 +17,7 @@ public abstract class TableImplementation<@Unspecifiable ENTRY, @Specifiable PRO
     
     @Override
     @PureWithSideEffects
-    public <@Specifiable RESULT, @Specifiable PARAMETER> RESULT accept(@Nonnull StorageVisitor<RESULT, PARAMETER> visitor, PARAMETER parameter) {
+    public <@Specifiable RESULT, @Specifiable PARAMETER, @Unspecifiable EXCEPTION extends Exception> RESULT accept(@Nonnull StorageVisitor<RESULT, PARAMETER, EXCEPTION> visitor, PARAMETER parameter) throws EXCEPTION {
         return visitor.visit(this, parameter);
     }
     
