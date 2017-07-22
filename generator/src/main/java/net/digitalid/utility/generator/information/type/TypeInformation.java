@@ -99,6 +99,12 @@ public abstract class TypeInformation extends ElementInformationImplementation {
     /* -------------------------------------------------- Constructor Parameters -------------------------------------------------- */
     
     /**
+     * Return parameters required for the recovery of an object of the class.
+     */
+    @Pure
+    public abstract @Nonnull FiniteIterable<VariableElementInformation> getRecoverParameters();
+    
+    /**
      * Return parameters required for the construction of the class.
      */
     @Pure
@@ -268,19 +274,19 @@ public abstract class TypeInformation extends ElementInformationImplementation {
         // - the call to the recover method, if useRecoverMethodIfAvailable is true and a @Recover annotated method is available, or
         // - the call to the generated subclass constructor, if useSubclassIfAvailable is true and the @GenerateSubclass annotation is available for the type,
         // - the call to the constructor.
-        if (useBuilderIfAvailable && hasAnnotation(GenerateBuilder.class)) {
+        if (useRecoverMethodIfAvailable && getRecoverMethod() != null) {
+            final @Nonnull MethodInformation recoverMethod = getRecoverMethod();
+            return "return " + getName() + "." + recoverMethod.getName() + getRecoverParameters().map(ElementInformation::getName).join(Brackets.ROUND);
+        } else if (useBuilderIfAvailable && hasAnnotation(GenerateBuilder.class)) {
             final @Nonnull StringBuilder assignedParameters = new StringBuilder();
             final @Nonnull StringBuilder optionalParameters = new StringBuilder();
-            for (@Nonnull VariableElementInformation constructorParameter : getConstructorParameters()) {
+            for (@Nonnull VariableElementInformation constructorParameter : getRecoverParameters()) {
                 if (variables == null || variables.map(FieldInformation::getName).contains(constructorParameter.getName())) {
                     (constructorParameter.isMandatory() ? assignedParameters : optionalParameters).append(".with").append(Strings.capitalizeFirstLetters(constructorParameter.getName())).append("(").append(constructorParameter.getName()).append(")");
                 }
             }
             assignedParameters.append(optionalParameters);
             return "return " + getSimpleNameOfGeneratedBuilder() + assignedParameters.append(".build()").toString();
-        } else if (useRecoverMethodIfAvailable && getRecoverMethod() != null) {
-            final @Nonnull MethodInformation recoverMethod = getRecoverMethod();
-            return "return " + getName() + "." + recoverMethod.getName() + getConstructorParameters().map(ElementInformation::getName).join(Brackets.ROUND);
         } else if (getElement().getKind() == ElementKind.ENUM) {
             // maybe move to subclass, because that's a special case of EnumInformation
             return "return " + getName() + ".valueOf(value)";

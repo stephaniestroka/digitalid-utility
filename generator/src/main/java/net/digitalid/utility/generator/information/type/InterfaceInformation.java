@@ -69,6 +69,12 @@ public final class InterfaceInformation extends TypeInformation {
     
     @Pure
     @Override
+    public @Nonnull FiniteIterable<VariableElementInformation> getRecoverParameters() {
+        return generatedRepresentingFieldInformation.map(field -> (VariableElementInformation) field).filter(field -> !field.hasAnnotation(NonRepresentative.class));
+    }
+    
+    @Pure
+    @Override
     public @Nonnull FiniteIterable<VariableElementInformation> getConstructorParameters() {
         return generatedRepresentingFieldInformation.map(field -> (VariableElementInformation) field).filter(field -> !field.hasAnnotation(NonRepresentative.class));
     }

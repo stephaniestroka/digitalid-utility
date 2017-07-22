@@ -11,6 +11,7 @@ import net.digitalid.utility.collaboration.enumerations.Priority;
 import net.digitalid.utility.collections.set.ReadOnlySet;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.property.Property;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.type.ReadOnly;
 import net.digitalid.utility.validation.annotations.value.Valid;
 
@@ -32,6 +33,6 @@ public interface ReadOnlySetProperty<@Unspecifiable VALUE, @Unspecifiable READON
      * Returns a read-only set with the values of this property.
      */
     @Pure
-    public @Nonnull @NonFrozen READONLY_SET get() throws EXCEPTION1, EXCEPTION2;
+    public @Nonnull @NonFrozen @NonNullableElements READONLY_SET get() throws EXCEPTION1, EXCEPTION2;
     
 }

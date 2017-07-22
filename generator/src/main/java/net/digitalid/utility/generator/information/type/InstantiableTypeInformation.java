@@ -50,25 +50,31 @@ public abstract class InstantiableTypeInformation extends TypeInformation {
     
     @Pure
     @Override
-    public @Nonnull FiniteIterable<VariableElementInformation> getConstructorParameters() {
+    public @Nonnull FiniteIterable<VariableElementInformation> getRecoverParameters() {
         if (recoverMethod != null) {
             return recoverMethod.getParameters().map(parameterInformation -> parameterInformation);
         } else {
-            final @Nonnull FiniteIterable<VariableElementInformation> constructorParameters;
-            @Unmodifiable @Nonnull final FiniteIterable<@Nonnull ConstructorInformation> constructors = getConstructors();
-            @Nonnull ConstructorInformation constructorInformation;
-            if (constructors.size() > 1) {
-                try {
-                    constructorInformation = constructors.findUnique(constructor -> constructor.hasAnnotation(Recover.class));
-                } catch (NoSuchElementException e) {
-                    throw FailedClassGenerationException.with("Multiple constructors found, but none is marked with @Recover.", SourcePosition.of(getElement()));
-                }
-            } else {
-                constructorInformation = constructors.getFirst();
-            }
-            constructorParameters = constructorInformation.getParameters().map(parameter -> (VariableElementInformation) parameter).combine(generatedRepresentingFieldInformation);
-            return constructorParameters;
+            return getConstructorParameters();
         }
+    }
+    
+    @Pure
+    @Override
+    public @Nonnull FiniteIterable<VariableElementInformation> getConstructorParameters() {
+        final @Nonnull FiniteIterable<VariableElementInformation> constructorParameters;
+        @Unmodifiable @Nonnull final FiniteIterable<@Nonnull ConstructorInformation> constructors = getConstructors();
+        @Nonnull ConstructorInformation constructorInformation;
+        if (constructors.size() > 1) {
+            try {
+                constructorInformation = constructors.findUnique(constructor -> constructor.hasAnnotation(Recover.class));
+            } catch (NoSuchElementException e) {
+                throw FailedClassGenerationException.with("Multiple constructors found, but none is marked with @Recover.", SourcePosition.of(getElement()));
+            }
+        } else {
+            constructorInformation = constructors.getFirst();
+        }
+        constructorParameters = constructorInformation.getParameters().map(parameter -> (VariableElementInformation) parameter).combine(generatedRepresentingFieldInformation);
+        return constructorParameters;
     }
     
     /* -------------------------------------------------- Directly Accessible Field Information -------------------------------------------------- */
