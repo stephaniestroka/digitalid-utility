@@ -188,7 +188,7 @@ public class BuilderGenerator extends JavaFileGenerator {
         
         beginMethod("public " + typeInformation.getName() + typeInformation.getTypeArguments().join(Brackets.POINTY, "") + " build()" + getThrownTypes().map(this::importIfPossible).join(" throws ", "", ""));
         
-        addStatement(typeInformation.getInstantiationCode(false, true, true, null));
+        addStatement(typeInformation.getInstantiationCode(false, true, false /* This was true until 2017-07-21. */, null));
         
         endMethod();
         endClass();
