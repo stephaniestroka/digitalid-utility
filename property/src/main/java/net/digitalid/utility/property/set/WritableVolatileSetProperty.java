@@ -16,6 +16,7 @@ import net.digitalid.utility.contracts.Validate;
 import net.digitalid.utility.freezable.annotations.NonFrozen;
 import net.digitalid.utility.generator.annotations.generators.GenerateBuilder;
 import net.digitalid.utility.generator.annotations.generators.GenerateSubclass;
+import net.digitalid.utility.validation.annotations.elements.NonNullableElements;
 import net.digitalid.utility.validation.annotations.lock.LockNotHeldByCurrentThread;
 import net.digitalid.utility.validation.annotations.type.Mutable;
 import net.digitalid.utility.validation.annotations.value.Valid;
@@ -40,12 +41,12 @@ public abstract class WritableVolatileSetProperty<@Unspecifiable VALUE, @Unspeci
     /* -------------------------------------------------- Set -------------------------------------------------- */
     
     @Pure
-    protected abstract @Nonnull @NonFrozen FREEZABLE_SET getSet();
+    protected abstract @Nonnull @NonFrozen @NonNullableElements FREEZABLE_SET getSet();
     
     @Pure
     @Override
     @SuppressWarnings("unchecked")
-    public @Nonnull @NonFrozen READONLY_SET get() {
+    public @Nonnull @NonFrozen @NonNullableElements READONLY_SET get() {
         return (READONLY_SET) getSet();
     }
     
