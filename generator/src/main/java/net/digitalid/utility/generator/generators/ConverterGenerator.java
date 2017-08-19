@@ -498,7 +498,16 @@ public class ConverterGenerator extends JavaFileGenerator {
             if (fieldsString.length() != 0) {
                 fieldsString.append(", ");
             }
-            fieldsString.append(importIfPossible(CustomField.class)).append(".with(").append(CustomType.getTypeName(representingField.getType(), representingField.getAnnotations(), this)).append(", ").append(Quotes.inDouble(fieldName)).append(", ImmutableList.").append(Brackets.inPointy(importIfPossible(CustomAnnotation.class))).append("withElements(").append(customAnnotations.toString()).append("))");
+            fieldsString.append(importIfPossible(CustomField.class));
+            fieldsString.append(".with(");
+            fieldsString.append(CustomType.getTypeName(representingField.getType(), representingField.getAnnotations(), this));
+            fieldsString.append(", ");
+            fieldsString.append(Quotes.inDouble(fieldName));
+            fieldsString.append(", ImmutableList.");
+            fieldsString.append(Brackets.inPointy(importIfPossible(CustomAnnotation.class)));
+            fieldsString.append("withElements(");
+            fieldsString.append(customAnnotations.toString());
+            fieldsString.append("))");
         }
         addField("private static final @" + importIfPossible(Nonnull.class) + " " + importIfPossible(ImmutableList.class) + Brackets.inPointy(importTypeAnnotationIfPossible(Nonnull.class) + importIfPossible(CustomField.class)) + " fields");
         beginBlock(true);

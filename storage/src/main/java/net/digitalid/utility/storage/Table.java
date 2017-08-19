@@ -68,11 +68,13 @@ public interface Table<@Unspecifiable ENTRY, @Specifiable PROVIDED> extends Stor
         final @Nonnull String name = (prefix != null ? prefix + "_" : "") + field.getName();
         if (type instanceof CustomType.CustomConverterType) {
             final @Nonnull Converter<?, ?> converter = ((CustomType.CustomConverterType) type).getConverter();
-            final @Nonnull @NonNullableElements ImmutableList<CustomField> fields = converter.getFields(Representation.INTERNAL);
-            for (@Nonnull CustomField customField : fields) { addColumns(customField, name, columns); }
-        } else {
-            columns.add(name);
+            if (!converter.isPrimitiveConverter()) {
+                final @Nonnull @NonNullableElements ImmutableList<CustomField> fields = converter.getFields(Representation.INTERNAL);
+                for (@Nonnull CustomField customField : fields) { addColumns(customField, name, columns); }
+                return;
+            }
         }
+        columns.add(name);
     }
     
     /**
