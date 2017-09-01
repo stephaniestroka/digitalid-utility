@@ -207,7 +207,7 @@ public abstract class Time extends RootClass implements LongNumerical<Time> {
      */
     @Pure
     public boolean isInPast() {
-        return getValue() < System.currentTimeMillis();
+        return getValue() <= System.currentTimeMillis();
     }
     
     /* -------------------------------------------------- Retrievals -------------------------------------------------- */
