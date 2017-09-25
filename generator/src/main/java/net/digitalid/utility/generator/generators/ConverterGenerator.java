@@ -244,7 +244,7 @@ public class ConverterGenerator extends JavaFileGenerator {
                 } else {
                     final boolean unordered = ProcessingUtility.isRawSubtype(type, Set.class);
                     final boolean nullable = !field.hasAnnotation(NonNullableElements.class);
-                    addStatement("encoder.encode" + (unordered ? "Unordered" : "Ordered") + "Iterable" + (nullable ? "WithNullableElements" : "") + "(" + importConverterType(componentType, FiniteIterable.of()) + ", " + importIfPossible(FiniteIterable.class) + ".of(" + access + "))");
+                    addStatement("encoder.encode" + (unordered ? "Unordered" : "Ordered") + "Iterable" + (nullable ? "WithNullableElements" : "") + "(" + importConverterType(componentType, FiniteIterable.of()) + ", " + (ProcessingUtility.isRawSubtype(type, FiniteIterable.class) ? access : importIfPossible(FiniteIterable.class) + ".of(" + access + ")") + ")");
                 }
             }
         } else if (ProcessingUtility.getTypeElement(type).getKind() == ElementKind.ENUM && StaticProcessingEnvironment.getTypeUtils().isAssignable(type, typeInformation.getType())) {
@@ -354,16 +354,19 @@ public class ConverterGenerator extends JavaFileGenerator {
                     final boolean nullable = !field.hasAnnotation(NonNullableElements.class);
                     final @Nonnull String collector;
                     final @Nonnull String typeName = ProcessingUtility.getSimpleName(type);
-                    if (type.getKind() == TypeKind.ARRAY) { collector = importIfPossible(ArrayCollector.class) + "::with"; }
-                    else if (ProcessingUtility.isRawSubtype(type, List.class)) {
-                        final @Nonnull String collection;
-                        if (!typeName.startsWith("Freezable") && !typeName.startsWith("ReadOnly")) { collection = "new " + importIfPossible(ArrayList.class) + "<>(size)"; }
-                        else { collection = importIfPossible("net.digitalid.utility.collections.list.FreezableArrayList") + ".withInitialCapacity(size)"; }
-                        collector = "size -> " + importIfPossible(CollectionCollector.class) + ".with(" + collection + ")";
+                    if (type.getKind() == TypeKind.ARRAY) {
+                        collector = importIfPossible(ArrayCollector.class) + "::with";
                     } else if (ProcessingUtility.isRawSubtype(type, Set.class)) {
                         final @Nonnull String collection;
                         if (!typeName.startsWith("Freezable") && !typeName.startsWith("ReadOnly")) { collection = "new " + importIfPossible(LinkedHashSet.class) + "<>(size)"; }
                         else { collection = importIfPossible("net.digitalid.utility.collections.set.FreezableLinkedHashSetBuilder") + ".buildWithInitialCapacity(size)"; }
+                        collector = "size -> " + importIfPossible(CollectionCollector.class) + ".with(" + collection + ")";
+                    // SORRY: The problem with checking if the type is a FiniteIterable instead of ReadOnlyList is, that it also matches the ReadOnlySet type.
+                    // TODO: Use ReadOnlyList instead of FiniteIterable as soon as the generator can be above collections or introduce intermediate types of FiniteIterable below.
+                    } else if (ProcessingUtility.isRawSubtype(type, List.class) || ProcessingUtility.isRawSubtype(type, FiniteIterable.class)) {
+                        final @Nonnull String collection;
+                        if (!typeName.startsWith("Freezable") && !typeName.startsWith("ReadOnly")) { collection = "new " + importIfPossible(ArrayList.class) + "<>(size)"; }
+                        else { collection = importIfPossible("net.digitalid.utility.collections.list.FreezableArrayList") + ".withInitialCapacity(size)"; }
                         collector = "size -> " + importIfPossible(CollectionCollector.class) + ".with(" + collection + ")";
                     } else { collector = "null"; }
                     addStatement("final " + importIfPossible(field.getType()) + " " + field.getName() + " = decoder.decode" + (unordered ? "Unordered" : "Ordered") + "Iterable" + (nullable ? "WithNullableElements" : "") + "(" + importConverterType(componentType, FiniteIterable.of()) + ", " + provided + ", " + collector + ")");

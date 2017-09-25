@@ -248,8 +248,7 @@ public class CustomType {
     
     public static final IterableType SET = new IterableType(fieldTypeSignature -> ProcessingUtility.isRawSubtype(fieldTypeSignature.getTypeMirror(), Set.class), "SET");
     
-    // TODO: Consider ReadOnlyList and co.
-    public static final IterableType LIST = new IterableType(fieldTypeSignature -> ProcessingUtility.isRawSubtype(fieldTypeSignature.getTypeMirror(), List.class), "LIST");
+    public static final IterableType LIST = new IterableType(fieldTypeSignature -> ProcessingUtility.isRawSubtype(fieldTypeSignature.getTypeMirror(), List.class) || ProcessingUtility.isRawSubtype(fieldTypeSignature.getTypeMirror(), FiniteIterable.class), "LIST");
     
     public static final IterableType ARRAY = new IterableType(fieldTypeSignature -> fieldTypeSignature.getTypeMirror().getKind() == TypeKind.ARRAY, "ARRAY");
     
