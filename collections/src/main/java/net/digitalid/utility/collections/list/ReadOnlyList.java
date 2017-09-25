@@ -22,6 +22,8 @@ import net.digitalid.utility.validation.annotations.type.ReadOnly;
 /**
  * This interface provides read-only access to {@link List lists} and should <em>never</em> be cast away (unless external code requires it).
  * It is recommended to use only {@link ReadOnly} or {@link Immutable} types for the elements.
+ * 
+ * TODO: write custom ReadOnlyListConverter
  */
 @GenerateConverter
 @ReadOnly(FreezableList.class)
