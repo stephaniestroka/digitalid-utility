@@ -1,5 +1,6 @@
 package net.digitalid.utility.logging.logger;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -25,6 +26,30 @@ import net.digitalid.utility.validation.annotations.type.Mutable;
 @Mutable
 public class FileLogger extends PrintStreamLogger {
     
+    /* -------------------------------------------------- Print Stream -------------------------------------------------- */
+    
+    /**
+     * Sets the file to which the messages are printed.
+     * 
+     * @throws FileNotFoundException if the given file cannot be opened or created.
+     */
+    @Impure
+    protected void setFile(@Captured @Nonnull @Normal @Writable @ExistentParent File file) throws FileNotFoundException {
+        final boolean fileDidNotExist = !file.exists();
+        final @Nonnull PrintStream printStream = new PrintStream(new FileOutputStream(file, true));
+        
+        if (fileDidNotExist) {
+            final @Nonnull Properties properties = System.getProperties();
+            printStream.println();
+            printStream.println(properties.getProperty("java.runtime.name") + " " + properties.getProperty("java.runtime.version"));
+            printStream.println(properties.getProperty("java.vm.name") + " " + properties.getProperty("java.vm.version"));
+            printStream.println(properties.getProperty("os.name") + " " + properties.getProperty("os.version") + " on " + properties.getProperty("os.arch"));
+            printStream.println();
+        }
+        
+        setPrintStream(printStream);
+    }
+    
     /* -------------------------------------------------- Constructors -------------------------------------------------- */
     
     /**
@@ -33,7 +58,9 @@ public class FileLogger extends PrintStreamLogger {
      * @throws FileNotFoundException if the given file cannot be opened or created.
      */
     protected FileLogger(@Captured @Nonnull @Normal @Writable @ExistentParent File file) throws FileNotFoundException {
-        super(new PrintStream(new FileOutputStream(file, true)));
+        super(new PrintStream(new ByteArrayOutputStream(0))); // Dummy print stream because setPrintStream(file) cannot be called here.
+        
+        setFile(file);
     }
     
     /**
@@ -44,27 +71,6 @@ public class FileLogger extends PrintStreamLogger {
     @Pure
     public static @Capturable @Nonnull FileLogger with(@Captured @Nonnull @Normal @Writable @ExistentParent File file) throws FileNotFoundException {
         return new FileLogger(file);
-    }
-    
-    /* -------------------------------------------------- File -------------------------------------------------- */
-    
-    /**
-     * Sets the file to which the messages are logged.
-     * 
-     * @throws FileNotFoundException if the given file cannot be opened or created.
-     */
-    @Impure
-    protected void setFile(@Captured @Nonnull @Normal @Writable @ExistentParent File file) throws FileNotFoundException {
-        final @Nonnull PrintStream printStream = new PrintStream(new FileOutputStream(file, true));
-        
-        final @Nonnull Properties properties = System.getProperties();
-        printStream.println();
-        printStream.println(properties.getProperty("java.runtime.name") + " " + properties.getProperty("java.runtime.version"));
-        printStream.println(properties.getProperty("java.vm.name") + " " + properties.getProperty("java.vm.version"));
-        printStream.println(properties.getProperty("os.name") + " " + properties.getProperty("os.version") + " on " + properties.getProperty("os.arch"));
-        printStream.println();
-        
-        setPrintStream(printStream);
     }
     
 }
