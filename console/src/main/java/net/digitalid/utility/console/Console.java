@@ -40,7 +40,7 @@ public abstract class Console {
     public static void write(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         final @Nonnull String formattedMessage = Strings.format(message, arguments);
         System.out.print(formattedMessage);
-        Log.information("Wrote the string $ to the console.", formattedMessage);
+        Log.verbose("Wrote the string $ to the console.", formattedMessage);
     }
     
     /**
@@ -51,7 +51,7 @@ public abstract class Console {
     public static void writeLine(@Nonnull CharSequence message, @NonCaptured @Unmodified @Nonnull @NullableElements Object... arguments) {
         final @Nonnull String formattedMessage = Strings.format(message, arguments);
         System.out.println(formattedMessage);
-        Log.information("Wrote the line $ to the console.", formattedMessage);
+        Log.verbose("Wrote the line $ to the console.", formattedMessage);
     }
     
     /**
@@ -114,7 +114,7 @@ public abstract class Console {
         try {
             final @Nullable String input = reader.readLine();
             if (input == null) { throw new IOException("The end of the standard input has been reached."); }
-            Log.information("Read the line $ from the console.", input);
+            Log.verbose("Read the line $ from the console.", input);
             return input;
         } catch (@Nonnull IOException exception) {
             throw UncheckedExceptionBuilder.withCause(exception).build();
