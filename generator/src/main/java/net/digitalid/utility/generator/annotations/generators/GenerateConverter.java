@@ -12,9 +12,9 @@ import net.digitalid.utility.validation.annotations.meta.TypeValidator;
 /**
  * Marks a class such that the {@link ConverterGenerator converter generator} generates a converter for the annotated class.
  * 
- * @see GenerateTable
  * @see GenerateBuilder
  * @see GenerateSubclass
+ * @see GenerateTableConverter
  */
 @Documented
 @Target(ElementType.TYPE)
