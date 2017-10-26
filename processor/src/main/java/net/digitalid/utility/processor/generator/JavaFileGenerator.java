@@ -152,6 +152,7 @@ public class JavaFileGenerator extends FileGenerator implements TypeImporter {
     private final @Nonnull ImmutableList<@Nonnull ImportGroup> importGroups = ImmutableList.withElements(
         new ImportGroup("java."),
         new ImportGroup("javax."),
+        new ImportGroup("javafx."),
         new ImportGroup("net.digitalid.utility."),
         new ImportGroup("net.digitalid.database"),
         new ImportGroup("net.digitalid.core"),
