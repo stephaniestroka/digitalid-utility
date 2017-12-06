@@ -9,25 +9,18 @@
     
     <groupId>net.digitalid.utility</groupId>
     <artifactId>utility</artifactId>
-    <version>1.0.0</version>
+    <version>0.7.0</version>
     <packaging>pom</packaging>
     
     <name>Digital ID Utility</name>
-    <description>This project provides utility classes for the Digital ID library.</description>
-    <url>https://code.digitalid.net/digitalid/utility</url>
+    <description>This project provides utility classes for the Digital ID Library.</description>
+    <url>http://www.digitalid.net/library/#utility</url>
     
-    <repositories>
-        <repository>
-            <id>digitalid-releases</id>
-            <name>Digital ID Releases</name>
-            <url>https://repo.digitalid.net/content/repositories/releases/</url>
-        </repository>
-        <repository>
-            <id>digitalid-snapshots</id>
-            <name>Digital ID Snapshots</name>
-            <url>https://repo.digitalid.net/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
+    <scm>
+        <connection>scm:git:git@github.com:synacts/digitalid-utility.git</connection>
+        <developerConnection>scm:git:git@github.com:synacts/digitalid-utility.git</developerConnection>
+        <url>https://github.com/synacts/digitalid-utility</url>
+    </scm>
     
     <modules>
         <module>taglets</module>
