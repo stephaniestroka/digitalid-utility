@@ -1,1 +1,1 @@
-This project provides utility classes for the Digital ID library.
+See the [Digital ID Library](http://www.digitalid.net/library/#utility).
