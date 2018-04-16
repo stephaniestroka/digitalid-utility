@@ -37,7 +37,7 @@ public interface Castable {
      */
     @Pure
     public default @Chainable <T> @Nonnull T castTo(@Nonnull Class<T> targetClass) {
-        Require.that(targetClass.isInstance(this)).orThrow("This object $ has to be an instance of the target class $.", this, targetClass);
+        Require.that(targetClass.isInstance(this)).orThrow("This object $ (type: $) has to be an instance of the target class $.", this, this.getClass(), targetClass);
         
         return targetClass.cast(this);
     }
